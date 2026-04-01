@@ -1,0 +1,209 @@
+////
+////  Pedal.swift
+////  blueBird
+////
+////  Created by opus arc on 2026/3/30.
+////
+//
+//import SwiftUI
+//
+//struct PedalShape: Shape {
+//    var angle: Double
+//    var hinge: CGPoint = CGPoint(x: 12.75, y: 0)
+//    var builder: ((CGPoint) -> CGPoint) -> Path
+//
+//    var animatableData: Double {
+//        get { angle }
+//        set { angle = newValue }
+//    }
+//
+//    func project(_ point: CGPoint) -> CGPoint {
+//        let radians = angle * .pi / 180
+//        let dx = point.x - hinge.x
+//        let dy = point.y - hinge.y
+//
+//        let projectedX = hinge.x + dx
+//        let projectedY = hinge.y + dy / max(cos(radians), 0.001)
+//
+//        return CGPoint(x: projectedX, y: projectedY)
+//    }
+//
+//    func path(in rect: CGRect) -> Path {
+//        builder(project)
+//    }
+//}
+//
+//struct Pedal: View {
+//    @State private var isPedalPressed = false
+//    @State private var pedal1TopAngle: Double = 0
+//    @State private var pedal1SideAngle: Double = 0
+//
+//    var body: some View {
+//        ZStack {
+//            pedalRangeBox.position(x: 95, y: 44)
+//            pedalHole.position(x: 32, y: 22)
+//            pedalHole.position(x: 80, y: 22)  // 这里在中间隔开两个像素看着稍微自然一些
+//
+//            pedalHole.position(x: 130, y: 22)
+//            pedalHole.position(x: 178, y: 22)
+//
+//            pedal_1
+//                .position(x: 43, y: 27)
+//                .contentShape(Rectangle())
+//                .onTapGesture {
+//                    withAnimation(
+//                        // 让踏板更像踏板 二阶动力学系统 apple 原装
+//                        .interpolatingSpring(
+//                            mass: 1.5,  // 质量 - 惯性
+//                            stiffness: 200,  // 刚度 - 下压力
+//                            damping: 25,  // 阻尼 - 阻力
+//                            initialVelocity: 0  // 初始冲量
+//                        )
+//                    ) {
+//                        isPedalPressed.toggle()
+//                        pedal1TopAngle = isPedalPressed ? 80 : 0
+//                        pedal1SideAngle = isPedalPressed ? 80 : 0
+//                    }
+//                }
+//
+//            //            pedal_2
+//            //                .position(x: 92, y: 28)
+//            //
+//            //            pedal_3
+//            //                .position(x: 118, y: 28)
+//            //
+//            //            pedal_4
+//            //                .position(x: 167, y: 28)
+//        }
+//        .frame(width: 280, height: 88, alignment: .topLeading)
+//
+//    }
+//
+//    var pedalHole: some View {
+//        ZStack {
+//            RoundedRectangle(cornerRadius: 2)
+//                .stroke(
+//                    Color(red: 60 / 255, green: 60 / 255, blue: 60 / 255),
+//                    lineWidth: 1
+//                )
+//                .fill(Color.black)
+//                .frame(width: 29.5, height: 22)
+//
+//            pedalFelt
+//                .position(x: 10, y: -6.3)
+//                .frame(width: 20, height: 3.5)
+//
+//        }
+//    }
+//
+//    var pedalFelt: some View {
+//        Rectangle()
+//            .fill(
+//                LinearGradient(
+//                    colors: [
+//                        Color(red: 36 / 255, green: 3 / 255, blue: 5 / 255),
+//                        Color(red: 36 / 255, green: 3 / 255, blue: 3 / 255),
+//                        Color(red: 36 / 255, green: 3 / 255, blue: 5 / 255),
+//                    ],
+//                    startPoint: .top,
+//                    endPoint: .bottom
+//                )
+//            )
+//            .frame(width: 28, height: 3)
+//    }
+//
+//    var pedal_1: some View {
+//        ZStack {
+//            PedalShape(angle: pedal1SideAngle, hinge: CGPoint(x: 12.75, y: 5)) { project in
+//                Path { path in
+//                    path.move(to: project(CGPoint(x: 0, y: 5)))
+//                    path.addLine(to: project(CGPoint(x: 26.5, y: 5)))
+//                    path.addLine(to: project(CGPoint(x: 12.5, y: 14.7)))
+//                    path.addCurve(
+//                        to: project(CGPoint(x: -24, y: 16)),
+//                        control1: project(CGPoint(x: -8, y: 24.7)),
+//                        control2: project(CGPoint(x: -24, y: 17))
+//                    )
+//                    path.addQuadCurve(
+//                        to: project(CGPoint(x: -4.8, y: 10.5)),
+//                        control: project(CGPoint(x: -20.5, y: 12))
+//                    )
+//                    path.closeSubpath()
+//                }
+//            }
+//            .fill(Color(red: 250 / 255, green: 243 / 255, blue: 192 / 255))
+//            .overlay {
+//                PedalShape(angle: pedal1SideAngle, hinge: CGPoint(x: 12.75, y: 5)) { project in
+//                    Path { path in
+//                        path.move(to: project(CGPoint(x: 0, y: 5)))
+//                        path.addLine(to: project(CGPoint(x: 26.5, y: 5)))
+//                        path.addLine(to: project(CGPoint(x: 12.5, y: 14.7)))
+//                        path.addCurve(
+//                            to: project(CGPoint(x: -24, y: 16)),
+//                            control1: project(CGPoint(x: -8, y: 24.7)),
+//                            control2: project(CGPoint(x: -24, y: 17))
+//                        )
+//                        path.addQuadCurve(
+//                            to: project(CGPoint(x: -4.8, y: 10.5)),
+//                            control: project(CGPoint(x: -20.5, y: 12))
+//                        )
+//                        path.closeSubpath()
+//                    }
+//                }
+//                .stroke(Color.white, lineWidth: 0.5)
+//            }
+//            
+//            
+//            PedalShape(angle: pedal1TopAngle, hinge: CGPoint(x: 12.75, y: 0)) { project in
+//                Path { path in
+//                    path.move(to: project(CGPoint(x: 0, y: 0)))
+//                    path.addLine(to: project(CGPoint(x: 26.5, y: 0)))
+//                    path.addLine(to: project(CGPoint(x: 12.5, y: 9.7)))
+//                    path.addCurve(
+//                        to: project(CGPoint(x: -24, y: 11)),
+//                        control1: project(CGPoint(x: -8, y: 19.7)),
+//                        control2: project(CGPoint(x: -24, y: 12))
+//                    )
+//                    path.addQuadCurve(
+//                        to: project(CGPoint(x: -4.8, y: 5.5)),
+//                        control: project(CGPoint(x: -20.5, y: 7))
+//                    )
+//                    path.closeSubpath()
+//                }
+//            }
+//            .fill(Color(red: 100 / 255, green: 85 / 255, blue: 60 / 255))
+//            .overlay {
+//                PedalShape(angle: pedal1TopAngle, hinge: CGPoint(x: 12.75, y: 0)) { project in
+//                    Path { path in
+//                        path.move(to: project(CGPoint(x: 0, y: 0)))
+//                        path.addLine(to: project(CGPoint(x: 26.5, y: 0)))
+//                        path.addLine(to: project(CGPoint(x: 12.5, y: 9.7)))
+//                        path.addCurve(
+//                            to: project(CGPoint(x: -24, y: 11)),
+//                            control1: project(CGPoint(x: -8, y: 19.7)),
+//                            control2: project(CGPoint(x: -24, y: 12))
+//                        )
+//                        path.addQuadCurve(
+//                            to: project(CGPoint(x: -4.8, y: 5.5)),
+//                            control: project(CGPoint(x: -20.5, y: 7))
+//                        )
+//                        path.closeSubpath()
+//                    }
+//                }
+//                .stroke(Color.white, lineWidth: 0.5)
+//            }
+//        }
+//        .frame(width: 48, height: 18, alignment: .topLeading)
+//    }
+//
+//
+//    var pedalRangeBox: some View {
+//        Rectangle()
+//            .fill(Color(red: 25 / 255, green: 25 / 255, blue: 25 / 255))
+//            .frame(width: 260, height: 88)
+//    }
+//}
+//
+//#Preview {
+//    ContentView()
+//}
