@@ -23,53 +23,61 @@
 
 public class VKController {
     static func NoteOn(note: Int, velocity: Double) {
-        print("按下：Midi" + String(note) + "按下速度: " + String(velocity) + "\n")
+        print("NoteOn: Midi" + String(note) + "PressVelocity: " + String(velocity) + "\n")
     }
 
     static func NoteOff(note: Int, velocity: Double) {
-        print("释放：Midi" + String(note) + "释放速度: " + String(velocity) + "\n")
+        print("NoteOff：Midi" + String(note) + "ReleaseVelocity: " + String(velocity) + "\n")
     }
 
     static func PolyAftertouch(note: Int, pressure: Double) {
-        print("触后：Midi" + String(note) + "压力: " + String(pressure) + "\n")
+        print("PolyAfterTouch：Midi" + String(note) + "Pressure: " + String(pressure) + "\n")
     }
 
     static func ChannelAftertouch(pressure: Double) {
-        print("通道压力:" + String(pressure) + "\n")
+        print("ChannelAftertouch: Pressure: " + String(pressure) + "\n")
     }
 
-    static func ControlChange_pedal(pedal: Int, targetStatus: Bool) {
+    static func ControlChange_pedal(
+        pedal: Int,
+        targetStatus: Bool,
+        depth: Double
+    ) {
         switch pedal {
         case 1:
             if targetStatus {
-                print("Soft pedal (una corda) has been pressed.")
+                print("PedalPressed: Soft pedal (una corda) has been pressed.")
+                print("Pedal depth: " + String(depth) + "\n")
             } else {
-                print("Soft pedal (una corda) has been released.")
+                print("PedalReleased: Soft pedal (una corda) has been released.\n")
             }
 
         case 2:
             if targetStatus {
-                print("Harmonic pedal has been pressed.")
+                print("PedalPressed: Harmonic pedal has been pressed.")
+                print("Pedal depth: " + String(depth) + "\n")
             } else {
-                print("Harmonic pedal has been released.")
+                print("PedalReleased: Harmonic pedal has been released.\n")
             }
 
         case 3:
             if targetStatus {
-                print("Sostenuto pedal has been pressed.")
+                print("PedalPressed: Sostenuto pedal has been pressed.")
+                print("Pedal depth: " + String(depth) + "\n")
             } else {
-                print("Sostenuto pedal has been released.")
+                print("PedalReleased: Sostenuto pedal has been released.\n")
             }
 
         case 4:
             if targetStatus {
-                print("Sustain pedal (damper) has been pressed.")
+                print("PedalPressed: Sustain pedal (damper) has been pressed.")
+                print("Pedal depth: " + String(depth) + "\n")
             } else {
-                print("Sustain pedal (damper) has been released.")
+                print("PedalReleased: Sustain pedal (damper) has been released.\n")
             }
 
         default:
-            fatalError("Received incorrect pedal press signal")
+            fatalError("Received incorrect pedal press signal.\n")
         }
     }
 }

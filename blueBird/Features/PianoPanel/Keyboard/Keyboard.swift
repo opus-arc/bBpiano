@@ -218,7 +218,9 @@ private extension Keyboard {
 
                 if let midi {
                     highlightedMIDIVelocities[midi] = pressure
-                    print("midi\(midi) 按下 velocity \(pressure)")
+//                    print("midi\(midi) 按下 velocity \(pressure)")
+                    VKController
+                        .PolyAftertouch(note: midi, pressure: Double(pressure))
                 }
 
                 scheduleDelayedRelease(for: previousMIDINote)
