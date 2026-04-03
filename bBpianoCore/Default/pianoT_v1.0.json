@@ -1,0 +1,10 @@
+{
+"version": 1.0
+"name": pianoT
+"tuning"{
+    "referenceHz": 440.0,
+    "unisonWidth": 0.32,
+    "directSoundDuration": 0.48,
+    "temperament": "equal"
+}
+}

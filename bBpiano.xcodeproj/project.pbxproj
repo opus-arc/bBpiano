@@ -7,86 +7,101 @@
 	objects = {
 
 /* Begin PBXContainerItemProxy section */
-		14E708492F78BE0D005C806C /* PBXContainerItemProxy */ = {
+		14E70AA12F7E53D4005C806C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14E7082E2F78BE0C005C806C /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 14E708352F78BE0C005C806C;
-			remoteInfo = blueBird;
-		};
-		14E708532F78BE0D005C806C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 14E7082E2F78BE0C005C806C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 14E708352F78BE0C005C806C;
-			remoteInfo = blueBird;
+			remoteInfo = bBpiano;
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		14E70AA82F7E53FF005C806C /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		14E708362F78BE0C005C806C /* bBpiano.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bBpiano.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		14E708482F78BE0D005C806C /* bBpianoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = bBpianoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		14E708522F78BE0D005C806C /* bBpianoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = bBpianoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		14E70A9D2F7E53D4005C806C /* bBpianoCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = bBpianoCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		14E70AAA2F7E53FF005C806C /* bBpianoCoreMainTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bBpianoCoreMainTest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		14E708702F78DF5D005C806C /* Exceptions for "Test" folder in "bBpianoTests" target */ = {
+		14E709BA2F7E4DED005C806C /* Exceptions for "bBpianoCore" folder in "bBpiano" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				blueBirdTests/blueBirdTests.swift,
-			);
-			target = 14E708472F78BE0D005C806C /* bBpianoTests */;
-		};
-		14E708712F78DF5D005C806C /* Exceptions for "Test" folder in "bBpianoUITests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				blueBirdTests/blueBirdTests.swift,
-			);
-			target = 14E708512F78BE0D005C806C /* bBpianoUITests */;
-		};
-		14E709352F7D4431005C806C /* Exceptions for "Doc" folder in "bBpiano" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Pedal_.txt,
-				Pedal.txt,
+				CppCore/BridgingHelpers/src/PCMProducer.cpp,
+				CppCore/BridgingHelpers/src/VKController.cpp,
+				main.swift,
 			);
 			target = 14E708352F78BE0C005C806C /* bBpiano */;
+		};
+		14E70AB42F7E54C3005C806C /* Exceptions for "bBpianoCore" folder in "bBpianoCoreMainTest" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				bBpianoCore.swift,
+				main.swift,
+				PresetManager/PresetManager.swift,
+				PresetManager/PresetStruct.swift,
+				userPreset.json,
+			);
+			target = 14E70AA92F7E53FF005C806C /* bBpianoCoreMainTest */;
+		};
+		14E70AB62F7E55DC005C806C /* Exceptions for "bBpianoCore" folder in "bBpianoCoreTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				userPreset.json,
+			);
+			target = 14E70A9C2F7E53D4005C806C /* bBpianoCoreTests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		14E709362F7D4431005C806C /* Exceptions for "Doc" folder in "Compile Sources" phase from "bBpiano" target */ = {
+		14E709BB2F7E4DED005C806C /* Exceptions for "bBpianoCore" folder in "Compile Sources" phase from "bBpiano" target */ = {
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = 14E708322F78BE0C005C806C /* Sources */;
 			membershipExceptions = (
-				Pedal_.txt,
-				Pedal.txt,
+				CppCore/BridgingHelpers/PCMProducer.h,
+				CppCore/BridgingHelpers/PresetManager.h,
+				CppCore/BridgingHelpers/VKController.h,
+				userPreset.json,
 			);
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		14E708382F78BE0C005C806C /* blueBird */ = {
+		14E708382F78BE0C005C806C /* bBpianoApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = blueBird;
-			sourceTree = "<group>";
-		};
-		14E708672F78DF4B005C806C /* Test */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				14E708702F78DF5D005C806C /* Exceptions for "Test" folder in "bBpianoTests" target */,
-				14E708712F78DF5D005C806C /* Exceptions for "Test" folder in "bBpianoUITests" target */,
-			);
-			path = Test;
+			path = bBpianoApp;
 			sourceTree = "<group>";
 		};
 		14E7092E2F7D43C4005C806C /* Doc */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				14E709352F7D4431005C806C /* Exceptions for "Doc" folder in "bBpiano" target */,
-				14E709362F7D4431005C806C /* Exceptions for "Doc" folder in "Compile Sources" phase from "bBpiano" target */,
-			);
 			path = Doc;
+			sourceTree = "<group>";
+		};
+		14E709AA2F7E3F01005C806C /* bBpianoCore */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				14E709BA2F7E4DED005C806C /* Exceptions for "bBpianoCore" folder in "bBpiano" target */,
+				14E709BB2F7E4DED005C806C /* Exceptions for "bBpianoCore" folder in "Compile Sources" phase from "bBpiano" target */,
+				14E70AB42F7E54C3005C806C /* Exceptions for "bBpianoCore" folder in "bBpianoCoreMainTest" target */,
+				14E70AB62F7E55DC005C806C /* Exceptions for "bBpianoCore" folder in "bBpianoCoreTests" target */,
+			);
+			path = bBpianoCore;
+			sourceTree = "<group>";
+		};
+		14E70A9E2F7E53D4005C806C /* bBpianoCoreTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = bBpianoCoreTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -99,14 +114,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		14E708452F78BE0D005C806C /* Frameworks */ = {
+		14E70A9A2F7E53D4005C806C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		14E7084F2F78BE0D005C806C /* Frameworks */ = {
+		14E70AA72F7E53FF005C806C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -119,10 +134,11 @@
 		14E7082D2F78BE0C005C806C = {
 			isa = PBXGroup;
 			children = (
+				14E709AA2F7E3F01005C806C /* bBpianoCore */,
 				14E7092E2F7D43C4005C806C /* Doc */,
-				14E708382F78BE0C005C806C /* blueBird */,
+				14E708382F78BE0C005C806C /* bBpianoApp */,
+				14E70A9E2F7E53D4005C806C /* bBpianoCoreTests */,
 				14E708372F78BE0C005C806C /* Products */,
-				14E708672F78DF4B005C806C /* Test */,
 			);
 			sourceTree = "<group>";
 		};
@@ -130,8 +146,8 @@
 			isa = PBXGroup;
 			children = (
 				14E708362F78BE0C005C806C /* bBpiano.app */,
-				14E708482F78BE0D005C806C /* bBpianoTests.xctest */,
-				14E708522F78BE0D005C806C /* bBpianoUITests.xctest */,
+				14E70A9D2F7E53D4005C806C /* bBpianoCoreTests.xctest */,
+				14E70AAA2F7E53FF005C806C /* bBpianoCoreMainTest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -152,8 +168,9 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				14E708382F78BE0C005C806C /* blueBird */,
+				14E708382F78BE0C005C806C /* bBpianoApp */,
 				14E7092E2F7D43C4005C806C /* Doc */,
+				14E709AA2F7E3F01005C806C /* bBpianoCore */,
 			);
 			name = bBpiano;
 			packageProductDependencies = (
@@ -162,48 +179,48 @@
 			productReference = 14E708362F78BE0C005C806C /* bBpiano.app */;
 			productType = "com.apple.product-type.application";
 		};
-		14E708472F78BE0D005C806C /* bBpianoTests */ = {
+		14E70A9C2F7E53D4005C806C /* bBpianoCoreTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 14E7085F2F78BE0D005C806C /* Build configuration list for PBXNativeTarget "bBpianoTests" */;
+			buildConfigurationList = 14E70AA32F7E53D4005C806C /* Build configuration list for PBXNativeTarget "bBpianoCoreTests" */;
 			buildPhases = (
-				14E708442F78BE0D005C806C /* Sources */,
-				14E708452F78BE0D005C806C /* Frameworks */,
-				14E708462F78BE0D005C806C /* Resources */,
+				14E70A992F7E53D4005C806C /* Sources */,
+				14E70A9A2F7E53D4005C806C /* Frameworks */,
+				14E70A9B2F7E53D4005C806C /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				14E7084A2F78BE0D005C806C /* PBXTargetDependency */,
-			);
-			name = bBpianoTests;
-			packageProductDependencies = (
-			);
-			productName = blueBirdTests;
-			productReference = 14E708482F78BE0D005C806C /* bBpianoTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		14E708512F78BE0D005C806C /* bBpianoUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 14E708622F78BE0D005C806C /* Build configuration list for PBXNativeTarget "bBpianoUITests" */;
-			buildPhases = (
-				14E7084E2F78BE0D005C806C /* Sources */,
-				14E7084F2F78BE0D005C806C /* Frameworks */,
-				14E708502F78BE0D005C806C /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				14E708542F78BE0D005C806C /* PBXTargetDependency */,
+				14E70AA22F7E53D4005C806C /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				14E708672F78DF4B005C806C /* Test */,
+				14E70A9E2F7E53D4005C806C /* bBpianoCoreTests */,
 			);
-			name = bBpianoUITests;
+			name = bBpianoCoreTests;
 			packageProductDependencies = (
 			);
-			productName = blueBirdUITests;
-			productReference = 14E708522F78BE0D005C806C /* bBpianoUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
+			productName = bBpianoCoreTests;
+			productReference = 14E70A9D2F7E53D4005C806C /* bBpianoCoreTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		14E70AA92F7E53FF005C806C /* bBpianoCoreMainTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 14E70AAE2F7E53FF005C806C /* Build configuration list for PBXNativeTarget "bBpianoCoreMainTest" */;
+			buildPhases = (
+				14E70AA62F7E53FF005C806C /* Sources */,
+				14E70AA72F7E53FF005C806C /* Frameworks */,
+				14E70AA82F7E53FF005C806C /* CopyFiles */,
+				14E70ABA2F7E56FB005C806C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = bBpianoCoreMainTest;
+			packageProductDependencies = (
+			);
+			productName = bBpianoCoreMainTest;
+			productReference = 14E70AAA2F7E53FF005C806C /* bBpianoCoreMainTest */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -217,14 +234,14 @@
 				TargetAttributes = {
 					14E708352F78BE0C005C806C = {
 						CreatedOnToolsVersion = 26.2;
+						LastSwiftMigration = 2620;
 					};
-					14E708472F78BE0D005C806C = {
+					14E70A9C2F7E53D4005C806C = {
 						CreatedOnToolsVersion = 26.2;
 						TestTargetID = 14E708352F78BE0C005C806C;
 					};
-					14E708512F78BE0D005C806C = {
+					14E70AA92F7E53FF005C806C = {
 						CreatedOnToolsVersion = 26.2;
-						TestTargetID = 14E708352F78BE0C005C806C;
 					};
 				};
 			};
@@ -243,8 +260,8 @@
 			projectRoot = "";
 			targets = (
 				14E708352F78BE0C005C806C /* bBpiano */,
-				14E708472F78BE0D005C806C /* bBpianoTests */,
-				14E708512F78BE0D005C806C /* bBpianoUITests */,
+				14E70AA92F7E53FF005C806C /* bBpianoCoreMainTest */,
+				14E70A9C2F7E53D4005C806C /* bBpianoCoreTests */,
 			);
 		};
 /* End PBXProject section */
@@ -257,14 +274,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		14E708462F78BE0D005C806C /* Resources */ = {
+		14E70A9B2F7E53D4005C806C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		14E708502F78BE0D005C806C /* Resources */ = {
+		14E70ABA2F7E56FB005C806C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -281,14 +298,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		14E708442F78BE0D005C806C /* Sources */ = {
+		14E70A992F7E53D4005C806C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		14E7084E2F78BE0D005C806C /* Sources */ = {
+		14E70AA62F7E53FF005C806C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -298,15 +315,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		14E7084A2F78BE0D005C806C /* PBXTargetDependency */ = {
+		14E70AA22F7E53D4005C806C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 14E708352F78BE0C005C806C /* bBpiano */;
-			targetProxy = 14E708492F78BE0D005C806C /* PBXContainerItemProxy */;
-		};
-		14E708542F78BE0D005C806C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 14E708352F78BE0C005C806C /* bBpiano */;
-			targetProxy = 14E708532F78BE0D005C806C /* PBXContainerItemProxy */;
+			targetProxy = 14E70AA12F7E53D4005C806C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -437,6 +449,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -461,6 +474,8 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "bBpianoCore/CppCore/bBpiano-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -472,6 +487,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -496,12 +512,13 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "bBpianoCore/CppCore/bBpiano-Bridging-Header.h";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
-		14E708602F78BE0D005C806C /* Debug */ = {
+		14E70AA42F7E53D4005C806C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -509,9 +526,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L746W9JTR3;
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 15.7;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.opusarc.blueBirdTests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.opusarc.bBpianoCoreTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -522,7 +538,7 @@
 			};
 			name = Debug;
 		};
-		14E708612F78BE0D005C806C /* Release */ = {
+		14E70AA52F7E53D4005C806C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -530,9 +546,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L746W9JTR3;
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 15.7;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.opusarc.blueBirdTests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.opusarc.bBpianoCoreTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -543,41 +558,29 @@
 			};
 			name = Release;
 		};
-		14E708632F78BE0D005C806C /* Debug */ = {
+		14E70AAF2F7E53FF005C806C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L746W9JTR3;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.opusarc.blueBirdUITests;
+				ENABLE_HARDENED_RUNTIME = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = blueBird;
 			};
 			name = Debug;
 		};
-		14E708642F78BE0D005C806C /* Release */ = {
+		14E70AB02F7E53FF005C806C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L746W9JTR3;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.opusarc.blueBirdUITests;
+				ENABLE_HARDENED_RUNTIME = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = blueBird;
 			};
 			name = Release;
 		};
@@ -602,20 +605,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		14E7085F2F78BE0D005C806C /* Build configuration list for PBXNativeTarget "bBpianoTests" */ = {
+		14E70AA32F7E53D4005C806C /* Build configuration list for PBXNativeTarget "bBpianoCoreTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				14E708602F78BE0D005C806C /* Debug */,
-				14E708612F78BE0D005C806C /* Release */,
+				14E70AA42F7E53D4005C806C /* Debug */,
+				14E70AA52F7E53D4005C806C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		14E708622F78BE0D005C806C /* Build configuration list for PBXNativeTarget "bBpianoUITests" */ = {
+		14E70AAE2F7E53FF005C806C /* Build configuration list for PBXNativeTarget "bBpianoCoreMainTest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				14E708632F78BE0D005C806C /* Debug */,
-				14E708642F78BE0D005C806C /* Release */,
+				14E70AAF2F7E53FF005C806C /* Debug */,
+				14E70AB02F7E53FF005C806C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
