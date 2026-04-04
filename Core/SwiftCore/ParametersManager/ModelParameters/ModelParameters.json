@@ -1,6 +1,6 @@
 {
     "version": 1.0,
-    "name": "pianoT",
+    "name": "ModelParameters_Default",
     "tuning": {
         "referenceHz": 440.0,
         "unisonWidth": 0.32,

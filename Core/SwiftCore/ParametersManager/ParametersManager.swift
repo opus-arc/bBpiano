@@ -1,5 +1,5 @@
 //
-//  PresetManager.swift
+//  ParametersManager.swift
 //  bBpiano
 //
 //  Created by opus arc on 2026/4/3.
@@ -23,7 +23,7 @@ public class PresetManager {
     static func readPreset() -> Preset {
         let url = URL(
             filePath:
-                "/Users/opusarc/XCodeProjects/bBpiano/bBpianoCore/userPreset.json"
+                "/Users/opusarc/XCodeProjects/bBpiano/bBpianoCore/ModelParameters/ModelParameters.json"
         )
 
         do {

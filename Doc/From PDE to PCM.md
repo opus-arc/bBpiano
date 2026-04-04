@@ -77,7 +77,44 @@ ___
 
 1. **采样（Sampling）**：把连续时间信号变成离散时间点
 
-   根据**奈奎斯特定理（Nyquist Theorem）**，为了避免**混叠（aliasing）**，**采样率必须大于或等于信号最高频率的 2 倍**，**人耳上限约 20 kHz**，故至少需要 40 kHz 的采样率，也就是至少要一秒钟记录音频函数 $$y(x,t)$$ 的 $$y$$ 值 40000 次，从而我们能够得到一个关于 y 在 $$t2-t1$$ 间的 $$y$$ 的离散数组
+   根据**奈奎斯特定理（Nyquist Theorem）**，为了避免**混叠（aliasing）**，**采样率（sampleRate）必须大于或等于信号最高频率的 2 倍**，**人耳上限约 20 kHz**，故至少需要 40 kHz 的采样率，也就是至少要一秒钟记录音频函数 $$y(x,t)$$ 在 **$$x=pickup$$ （拾音点，pickup point）**的 $$y$$ 值 40000 次， $$y(x,t)$$ 是关于空间与时间的函数，而这基本上也是声音的本质，这在后文会逐步解释，此处的拾音方式除了定点，还有多弦耦合或者分布式拾音，在后文或许都会解释
+
+   这里还需要补充一点，因为我只讨论了单声道的情况，然而当多个采样数据相互叠加，就会出现多个声道，关于多声道的采样，我们需要讨论 channel 的值
+
+   其实无论是采样还是播放 ，都需要 sampleRate、channel 两个信息作为支撑，sampleRate 在播放时的作用基于上文的解释就很好理解了，它能告诉播放器 PCM 数组从一个定点位置开始往后多少个 sample 是一秒之内的内容，而 channel 则使得播放器能区分不同声道的数据
+
+   我们以双声道为例，
+
+   假设数据为 [0.43214224, -0.10, 0.2222345, 0, 0, 0.78, 1, -1]
+
+   在绝大多数音频系统中（WAV、CoreAudio、ASIO、VST 等）：
+
+   **立体声 PCM 默认顺序是：Left → Right（LRLRLR…）** 
+
+   用代码分离左右声道的方式如下：
+
+   ```c
+   int16_t* data;
+   
+   for (int i = 0; i < numFrames; i++) {
+       int16_t left  = data[i * 2 + 0]; // 左声道
+       int16_t right = data[i * 2 + 1]; // 右声道
+   }
+   ```
+
+   用示例的数据能得到如下的结果：
+
+   
+
+   > Left = [0.43214224, 0.2222345, 0, 1]
+   >
+   > Right = [-0.10, 0, 0.78, -1]
+
+   这样就区分了不同声道的数据。
+
+   
+
+   基于上述的内容，通过  $$y(pickup,t)$$，sampleRate,  channel，我们能够得到一个关于 y 在 $$t2-t1$$ 间的 $$y$$ 的离散数组
 
    
 
@@ -119,13 +156,206 @@ ___
 
 不难看出，整个工作流最后的输出都将以PCM流的方式呈现
 
-接着我会尝试使用 cpp 编写 y(x,t) （音频波）的生成器，选用 swift 编写接收并加工这一信息的声卡接口
+接着我会尝试使用 cpp 编写 y(x,t) （音频波）的生成器，选用 Swift 编写接收并加工这一信息的声卡接口
 
-cpp 在音频加工的领域拥有极好的生态，而 swift 拥有优美与完善的硬件生态，这是我选用这两种语言的原因
+C++ 在音频加工的领域拥有极好的生态，而 swift 拥有优美与完善的硬件生态，这是我选用这两种语言的原因
 
-先谈 swift 应该接收什么样的数据类型，
+先谈 swift 应该接收什么样的数据类型：
+
+```swift
+//  Created by opus arc on 2026/4/3.
+
+private func render(
+        frameCount: AVAudioFrameCount,
+        audioBufferList: UnsafeMutablePointer<AudioBufferList>
+    ) -> OSStatus {
+        // 复制一份 bufferList
+        let bufferList = UnsafeMutableAudioBufferListPointer(audioBufferList)
+        // 通常来说只有一个 buffer，但是通过遍历的方式能更通用
+        for buffer in bufferList {
+            // 取出底层数据指针，这是裸内存地址，指向真正的音频采样区。
+            // 这里用 guard let 就是为了确保数据不为空
+            // 这一步获取了这块内存上的数据
+            guard let mData = buffer.mData else { continue }
+            // 这里 assumingMemoryBound 的用法是：
+            // “我知道这块内存其实就是 Float 类型，请按 Float* 来看待它。”
+            // 也就是说我们此处我们保证计算机用 float 的格式看待这个数据
+            let out = mData.assumingMemoryBound(to: Float.self)
+            for frame in 0..<Int(frameCount) {
+                // 为这个 buffer 的每一帧生成数据
+                if isPlayingTone {
+                    let sample = sin(2.0 * Double.pi * phase)
+                    // 这一步就是限制总音量，并排除削波
+                    out[frame] = Float(sample) * amplitude
+                    // 一秒钟 frequency 个周期
+                    // 一秒钟 sampleRate 帧
+                    // frequency / sampleRate 为几周期一帧
+                    // 而 phase 从 0~1 就代表一个周期
+                    // 故此处加工的数据是1帧要前进多少个周期
+                    // 这样便能解释这里的表达式
+                    phase += frequency / sampleRate
+                    // 当走完一个周期，就回到原点
+                    if phase >= 1.0 {
+                        phase -= 1.0
+                    }
+                } else {
+                    out[frame] = 0.0
+                }
+            }
+        }
+        return noErr
+    }
+```
+
+<audio src="/Users/opusarc/XCodeProjects/bBpiano/Doc/audio/440Hz正弦波.wav"></audio>
+
+这是桥接 PCM 数据和声卡的 swift 最核心的部分代码，**AVAudioSourceNode **是一个“源节点”，我们可以写入自己的数据，这也是 Apple 提供的实时合成音频的关键工具。
+
+这其中还包含了一个很经典的正弦波的生成方式，不是通过 $$ct$$ 而是通过归一化 $$phase$$ [0, 1] 使得正弦图像变动起来
+
+不过当然，我们需要的音频函数仍然需要通过 C++ 来生成，我们需要编写 cpp 和 swift 的桥接代码，理论上来说 WWDC 2023 session 10172: [Mix Swift and C++](https://developer.apple.com/wwdc23/10172)  Swift 5 提出了一种基于 framework 能够直接暴露 C++ API 的特性，但经过多轮测试，这样的方式仍然存在许多潜在的 bug 与坏处，偶发的闪退与内存出错令我略为沮丧，此处我们还是使用传统桥接的方式：
+
+<p align="center">  
+  <img src="./assets/File%20from%20Template.png" width="200" style="float:right; margin-left:10px;">
+</p>
 
 
+不过这里需要提醒的是，在 xcode 中我们尽量通过模版进行新建，而不要通过 empty file 修改后缀或者将其他文件直接拖进来，如果采取了后者的方式，也一定要 xcode 中补充好相关的配置
+
+
+
+
+
+
+
+我们先通过这样正确的方式创建 main.hpp 文件
+
+```cpp
+//
+//  main.hpp
+//  bBpiano
+//
+//  Created by opus arc on 2026/4/4.
+//
+
+#ifndef main_hpp
+#define main_hpp
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void say_hello();
+
+#ifdef __cplusplus
+
+}
+#endif
+
+#endif /* main_hpp */
+
+```
+
+这实际上是一个**ABI 边界声明文件（C-compatible interface header）**，由于 C++ 会自动修饰名称的默认行为，我们所写的 say_hello 可能在编译的过程中变成类似 _Z9say_hellov 这样的名字， Swift 通过 C ABI 调用函数，而 C 将无法理解这样的名称，于是我们使用这样的方式：
+
+```cpp
+extern "C" {
+    void say_hello();
+}
+```
+
+关闭**C++ name mangling**，让符号变成纯 C ABI
+
+然后我们新建 cpp 文件写下它的实现：
+
+```cpp
+//
+//  Created by opus arc on 2026/4/4.
+//
+
+#include "main.hpp"
+#include <iostream>
+
+void say_hello() {
+    std::cout << "Hello World from C++" << std::endl;
+}
+
+```
+
+然后通过至关重要的一步，通过 xxxx-Bridging-Header.h 来暴露 cpp header ，如果使用模版创建 cpp 文件，xcode 会自动生成这样一个文件，我们只需要加上一个 include， 确保 Swift 能看到这个头文件：
+
+```cpp
+//
+//  Use this file to import your target's public headers that you would like to expose to Swift.
+//
+
+#include "main.hpp"
+```
+
+于是我们在同一个 target 下的任意 swift 文件中都可以调用 say_hello() 这个函数：
+
+<p align="center">  
+  <img src="./assets/Hello%20World%20Form%20C++.png" width="200" style="float:left; margin-left:10px;">
+</p>
+
+
+
+
+
+
+
+这样的输出正是我想看到的，这代表着 C++ 和 Swift 的桥接完成，接下来我们来编写 C++ 应对 Swift 类对于 buffer 的请求，
+
+这里我需要做出一些解释，因为从常理上看，即便声音信号不是由 C++ 文件主动激发，用户指令也是由 UI 传递出来，无论如何都不会由声卡来 “要” 数据，这其实很奇怪，最好的情况是当然是想让声卡发出声音时，调用一个类似 playSound(buffer) 的函数，但实际上的情况是，每当遇到这样软件和硬件的边界时，软件总是要主动遵循硬件的工作机理，声卡并非是灵活的，且事实上我们并不知道上一个 buffer 何时播放结束，故实际上我们需要写的调用逻辑是 Swift 调用 C++
+
+既然之前用 Swift 写出了正弦波，那此次用 Cpp 尝试写一个方波：
+
+```cpp
+void get_next_buffer(float* buffer, int frameCount, double amplitudeLimiter) {
+    for(int i = 0; i < frameCount; i++) {
+        // 音频代码需要显示强调类型
+        if (phase < 0.5)
+            buffer[i] = static_cast<float>(amplitudeLimiter);
+        else
+            buffer[i] = static_cast<float>(-amplitudeLimiter);
+        phase += frequency / sampleRate;
+        if(phase >= 1.0) phase -= 1.0;
+    }
+}
+```
+
+这个逻辑会产生一个 **440Hz 的 50% duty 方波**，我们通过桥接使得 Swift 能够调用这里的函数：
+
+```swift
+private func render(
+        frameCount: AVAudioFrameCount,
+        audioBufferList: UnsafeMutablePointer<AudioBufferList>
+    ) -> OSStatus {
+        // 复制一份 bufferList
+        let bufferList = UnsafeMutableAudioBufferListPointer(audioBufferList)
+        // 通常来说只有一个 buffer，但是通过遍历的方式能更通用
+        for buffer in bufferList {
+            // 取出底层数据指针，这是裸内存地址，指向真正的音频采样区。
+            // 这里用 guard let 就是为了确保数据不为空
+            // 这一步获取了这块内存上的数据
+            guard let mData = buffer.mData else { continue }
+            // 这里 assumingMemoryBound 的用法是：
+            // “我知道这块内存其实就是 Float 类型，请按 Float* 来看待它。”
+            // 也就是说我们此处我们保证计算机用 float 的格式看待这个数据
+            let out = mData.assumingMemoryBound(to: Float.self)
+            get_next_buffer(
+                out,
+                Int32(frameCount),
+                Double(amplitudeLimiter)
+            )
+        }
+        return noErr
+    }
+```
+
+<audio src="/Users/opusarc/XCodeProjects/bBpiano/Doc/audio/440Hz50%duty方波.wav"></audio>
+
+通过上述的实践，我搭建了一个非常简易的 **DSP, Digital Signal Processing（数字信号处理）**模型
 
 
 
@@ -135,7 +365,17 @@ ___
 
 ## 4 一维弦振动模型
 
-检验一个建模的好坏，最好的方式就是倾听它所发出的声响，而为了还原这样声音的同时又不希望伴随太大的工程难度，我只好聚焦它最核心的部分，尽管我明白击弦锤和音板都同等重要，但钢琴的主要储能部分仍然是弦，作为工程最开始的最简模型，为了简易地描述钢琴声响的由来，我需要检验这种扰动的根源: 弦的振动方程
+检验一个建模的好坏，最好的方式就是倾听它所发出的声响，上一章节我已经搭建了让我们聆听到音频函数的装置，这里我会尝试编写相对进阶一些的音频函数，我聚焦钢琴最核心的部分，尽管我明白击弦锤和音板都同等重要，但钢琴的主要储能部分仍然是弦，作为工程最开始的最简模型，为了简易地描述钢琴声响的由来，我需要检验这种扰动的根源: 弦的振动方程
+
+令人困扰的是，结合前文关于**PCM采样**的论述，**PCM 的理论采样对象应当是空气中的声压时间函数，而不是机械系统本身的位移函数**，但为了衔接上文的 C++ 函数，也为了所有急于得到整齐接口的工程师，我想先陈述这样一个命题：
+
+
+
+> **命题： 在一维理想弦的小振幅线性模型中，弦上某一固定点 x_p 的位移随时间的变化  y(x_p,t)，可以作为该弦最终辐射声压频率内容的一个近似代表**
+
+这样一个命题决定了我们计算出来的弦的位移模型正是 PCM 采样可以接受的模型，但在理解这个命题之前，我需要先论证一维弦振动模型：
+
+
 
 “连续体”（continuum）是一种理想化模型，其核心含义是：**物质在空间中被视为连续分布的介质，而非由离散粒子组成**。这一假设使得我们可以用连续函数来描述物理量（如密度、速度、温度等）在空间和时间中的变化。在宏观尺度上，忽略物质的分子或原子结构，将其视为连续分布。
 
@@ -143,7 +383,7 @@ ___
 
 故弦在位置 x 时间 t 的位移 y 可以用连续函数 $$y(x,t)$$ 描述
 
-我们引出一维弦振动公式并尝试证明它，这也是本文的第一个**PDE = Partial Differential Equation**偏微分方程: 
+我们引出一维弦振动公式并尝试证明它，这也是本文的第一个 **PDE = Partial Differential Equation** 偏微分方程: 
 
 考虑一根拉紧的弦：弦的平衡位置沿 x 轴，横向位移记为 y(x,t)，弦上的张力大小为 T，线密度（单位长度质量）为  $$\mu$$
 
@@ -161,45 +401,73 @@ ___
 
 这段弦元质量为 $$\mu \Delta x$$，横向加速度约为 $$\frac{\partial^2 y}{\partial t^2}$$，因此横向合力满足
 
+
+
 $$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\sin\theta(x+\Delta x,t)-T\sin\theta(x,t)$$
 
-即
 
-$$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\bigl[\sin\theta(x+\Delta x,t)-\sin\theta(x,t)\bigr]$$
+
+即 $$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\bigl[\sin\theta(x+\Delta x,t)-\sin\theta(x,t)\bigr]$$
+
+
 
 因为振动很小，弦的斜率很小，所以
 
+
+
 $$\tan\theta \approx \sin\theta \approx \frac{\partial y}{\partial x}$$
 
+
+
 于是
+
+
 
 $$\sin\theta(x,t)\approx \frac{\partial y}{\partial x}(x,t)$$
 
 $$\sin\theta(x+\Delta x,t)\approx \frac{\partial y}{\partial x}(x+\Delta x,t)$$
 
-代回去：
 
- $$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\left[ \frac{\partial y}{\partial x}(x+\Delta x,t) - \frac{\partial y}{\partial x}(x,t) \right]$$ 
+
+代回去： $$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\left[ \frac{\partial y}{\partial x}(x+\Delta x,t) - \frac{\partial y}{\partial x}(x,t) \right]$$ 
+
+
 
 化为二阶空间导数并将上式除以 $$\Delta x：$$
 
+
+
 $$\mu \frac{\partial^2 y}{\partial t^2} = T\, \frac{ \frac{\partial y}{\partial x}(x+\Delta x,t) - \frac{\partial y}{\partial x}(x,t) }{ \Delta x }$$ 
+
+
 
 令 $$ \Delta x\to 0$$，右边变成二阶导数：
 
+
+
 $$\mu \frac{\partial^2 y}{\partial t^2} = T\frac{\partial^2 y}{\partial x^2}$$ 
+
+
 
 于是得到
 
+
+
 $$\frac{\partial^2 y}{\partial t^2} = \frac{T}{\mu}\frac{\partial^2 y}{\partial x^2}$$ 
 
-记
 
-$$c^2=\frac{T}{\mu}$$ 
+
+记 $$c^2=\frac{T}{\mu}$$ 
+
+
 
 便是
 
+
+
 ## $$\frac{\partial^2 y}{\partial t^2} = c^2\frac{\partial^2 y}{\partial x^2}$$
+
+
 
 $$\frac{\partial^2 y}{\partial t^2}$$ 是加速度 a
 
@@ -213,12 +481,218 @@ $$y(x)$$ 是当时间为常量，即静止时候的波形状
 
 这个方程的通解是：
 
+
+
 $$y(x,t) = f(x - ct) + g(x + ct)$$
+
+
 
 $$f(x)$$ 是一个固定形状的函数，而 $$ct$$ 则说明这个函数在向着 x 轴的方向移动
 
+
+
 这个方程说明了**弦的振动 = 两个沿相反方向传播的波的叠加**
 
+**只要是一根满足“小振幅、恒定张力、连续介质、无耗散”的理想弦，其任意运动** y(x,t) **都必然可以表示为两列以速度** c **相反方向传播的波形之和：**
+
+$$f(x-ct)+g(x+ct)$$。
+
+
+
+由 **Maxwell** 方程组，这个方程的波速除了：
+
+弦振动：$$c = \sqrt{\frac{T}{\mu}}$$
+
+​	同样满足：
+
+声波： $$c = \sqrt{\frac{\gamma P}{\rho}}$$
+
+- $$P$$：压强
+- $$\rho$$：密度
+
+电磁波：$$c = 3 \times 10^8 \,\text{m/s}$$
+
+……
+
+
+
+好了，证明了这么多，必须要问的是，回到工程实践中，这样的数学方程对我们达成目标有多大的帮助？
+
+
+
+为了彻底解释这一点，接下来我开始证明前文提到过的命题：
+
+> **证明：一维理想弦的小振幅线性模型中，弦上某一固定点 x_p 的位移随时间的变化  y(x_p,t)，可以作为该弦最终辐射声压频率内容的一个近似代表**
+
+严格来说，人耳最终感知到的并不是弦的位移本身，而是弦振动经过桥码、音板与空气耦合之后形成的声压变化。然而在此处所讨论的最简线性模型中，取弦上某一固定点的时间信号作为分析对象，是一个合理且有效的近似。
+
+
+
+为了证明这一点，我们从两端固定的一维理想弦出发。其运动满足波动方程
+
+
+
+$$\frac{\partial^2 y}{\partial t^2}=c^2\frac{\partial^2 y}{\partial x^2},\qquad y(0,t)=y(L,t)=0$$
+
+
+
+其中 L 为弦长，边界条件表示弦的两端固定。
+
+对于这样的系统，位移场可以展开为一组驻波模态的叠加：
+
+
+
+$$y(x,t)=\sum_{n=1}^{\infty} q_n(t)\sin!\left(\frac{n\pi x}{L}\right)$$
+
+
+
+这里 $$\sin\left(\frac{n\pi x}{L}\right) $$ 是第 n 阶空间模态，而 q_n(t) 是对应的时间系数。将这一形式代入波动方程，可以得到每一个模态都满足一个独立的简谐振动方程：
+
+
+
+$$\ddot q_n(t)+\omega_n^2 q_n(t)=0$$
+
+
+
+其中 $$\omega_n=\frac{n\pi c}{L}$$ ，因此，第 n 阶模态的时间部分可以写成：
+
+
+
+$$q_n(t)=A_n\cos(\omega_n t+\phi_n)$$
+
+
+
+于是整根弦的运动可写为：
+
+
+
+$$y(x,t)=\sum_{n=1}^{\infty} A_n\sin!\left(\frac{n\pi x}{L}\right)\cos(\omega_n t+\phi_n)$$
+
+
+
+这说明：理想弦的振动，本质上是若干个不同频率 $$\omega_n$$ 的模态线性叠加。也就是说，所谓“弦的频率内容”，正体现在这些模态频率之中。
+
+现在固定弦上的一个位置 x=x_p，并考察该点的位移随时间的变化。定义
+
+
+
+$$s(t):=y(x_p,t)$$
+
+
+
+则代入上式得到
+
+
+
+$$s(t)=\sum_{n=1}^{\infty} A_n\sin!\left(\frac{n\pi x_p}{L}\right)\cos(\omega_n t+\phi_n)$$
+
+
+
+由于 x_p 已固定，空间部分
+
+
+
+$$\sin!\left(\frac{n\pi x_p}{L}\right)$$
+
+
+
+对每一个 n 都只是一个常数。因此可记
+
+
+
+$$B_n=A_n\sin!\left(\frac{n\pi x_p}{L}\right)$$
+
+
+
+于是
+
+
+
+$$s(t)=\sum_{n=1}^{\infty} B_n\cos(\omega_n t+\phi_n)$$
+
+
+
+这个结果具有决定性的意义：
+
+
+
+> **固定点** x_p **上的时间信号，仍然由整根弦的全部模态频率** $$\omega_n$$ **叠加而成。**
+
+
+
+换言之，取弦上的某一个点，并不会改变系统包含哪些频率；它所改变的只是各个频率分量在该点上的权重，也就是振幅大小。某些模态在该点可能较强，某些模态可能较弱；若某一点恰好是某一模态的节点，那么该模态在这个点上的系数甚至会变为零。但只要选择的拾音位置不是某个模态的节点集合，y(x_p,t) 就会保留该弦振动的主要频率内容。
+
+
+
+这也解释了一个重要的工程事实：
+
+
+
+> **拾音位置会影响音色，但不会重新定义该弦的模态频率。**
+
+
+
+接下来还需处理一个物理上的疑问：既然耳朵真正听到的是空气中的声压，而不是弦位移本身，为何仍可将 y(x_p,t) 作为 PCM 采样的近似对象？
+
+
+
+某个模态在一点上的位移通常能写为
+
+
+
+$$y(x_p,t)=\cos(\omega t)$$
+
+
+
+从物理的角度上来说，在最简线性辐射模型中，可将声压近似视为与弦局部加速度成正比：
+
+
+
+$$p(t)\approx K\,\frac{\partial^2 y}{\partial t^2}(x_p,t)$$
+
+
+
+且我们能轻易地知道位移的二阶导数（加速度表达式）显然和原式子的频率相同：
+
+
+
+$$\frac{\partial^2 y}{\partial t^2}(x_p,t)=-\omega^2\cos(\omega t)$$
+
+
+
+由于弦振动到声压之间可近似看作线性映射，而线性映射不会改变频率位置，故此处我们能得到如下的论述：
+
+
+
+> **严格来说，PCM 真正应当采样的对象不是弦位移，而是最终可听的声压时间函数；但在最小线性模型中，弦振动到辐射声压之间可近似看作线性映射，因此弦上 pickup point 的时间信号虽然不等于声压本身，却保留了声压中的主要频率结构与模态信息，从而可以作为 PCM 采样对象的近似代表。**
+
+
+
+
+
+至此，我阐述了我对于这个偏微分方程的理解、以及对于这个工程的意义，
+
+然而，波动方程作为连续模型，并不能被计算机直接求解，因此必须将其转化为离散形式。
+
+
+
+___
+
+## **5 **From PDE to FDTD and Digital Waveguide Formulations
+
+## **5 从偏微分方程到 FDTD 与数字波导建模**
+
+> ![Piano Structure](./assets/Piano%20Structure.png)
+
+
+
+
+
+**FDTD（Finite-Difference Time-Domain）** 是一种用于求解电磁场的**数值仿真算法**，基于 **Maxwell** 方程组。
+
+
+
+waveguide 的核心不是形状，而是：
 
 
 
@@ -226,14 +700,15 @@ $$f(x)$$ 是一个固定形状的函数，而 $$ct$$ 则说明这个函数在向
 
 
 
+> **边界条件 + 介质结构 → 允许某些“模式”传播**
 
 
 
+这直接来自 [麦克斯韦方程组](chatgpt://generic-entity?number=0) 的约束。
 
 
 
-
-
+> 但有**声学意义上的 waveguide**
 
 
 
