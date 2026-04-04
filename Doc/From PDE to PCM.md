@@ -25,6 +25,7 @@ This work attempts to answer this question by starting from the most fundamental
 ---
 
 ## 1 Introduction  
+
 ## 1 引言
 
 As pointed out in previous work, the piano is a particularly interesting instrument due to both its prominence in Western music and its complex physical structure.
@@ -220,6 +221,7 @@ private func render(
 </p>
 
 
+
 不过这里需要提醒的是，在 xcode 中我们尽量通过模版进行新建，而不要通过 empty file 修改后缀或者将其他文件直接拖进来，如果采取了后者的方式，也一定要 xcode 中补充好相关的配置
 
 
@@ -297,6 +299,7 @@ void say_hello() {
 <p align="center">  
   <img src="./assets/Hello%20World%20Form%20C++.png" width="200" style="float:left; margin-left:10px;">
 </p>
+
 
 
 
@@ -503,7 +506,7 @@ $$f(x-ct)+g(x+ct)$$。
 
 弦振动：$$c = \sqrt{\frac{T}{\mu}}$$
 
-​	同样满足：
+​    同样满足：
 
 声波： $$c = \sqrt{\frac{\gamma P}{\rho}}$$
 
