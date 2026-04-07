@@ -4,6 +4,8 @@
 //
 //  Created by opus arc on 2026/4/6.
 //
+//  This document is not AI-assisted.
+//
 
 #include "StringModel.hpp"
 
@@ -25,7 +27,7 @@ StringModel::StringModel(double _f0) {
     if(N_int <= 0) N_int = 2;
     N_index = N_int - 1;
 
-    // 计算 力 ↔ 速度 的比例常数
+    // 计算力和速度的比例常数
     Z = std::sqrt(T * rho);
 
     // 初始化 N_int 个 0.0f 的离散位置

@@ -4,6 +4,9 @@
 //
 //  Created by opus arc on 2026/4/6.
 //
+//  This document is not AI-assisted.
+//
+
 
 #include "HammerModel.hpp"
 
@@ -32,12 +35,21 @@ void HammerModel::hammerMovement() {
 
     // 4. 算接触力
     F = computeForce();
-
-    // 5. 反作用力减慢锤子
-    v_in -= (F / m) * pairedString->Ts;
+    
+    // 5. 算高斯分布力
+    int strikePoint_index = std::floor(strikePoint * pairedString->N_index); // 将击弦点从比例转换为索引
+    sigma = computeSigma();
+    int sigma_int = std::max(1, int(std::ceil(sigma))); // 计算 sigma 的 int 值，向上取整
+    int start = std::max(0, strikePoint_index - 3 * sigma_int);
+    int end   = std::min(pairedString->N_index, strikePoint_index + 3 * sigma_int);
+    std::vector<float> string_F = computeGaussianForce(start, end);
 
     // 6. 把力注入弦
-    pairedString->injectForce(strikePoint, static_cast<float>(F));
+    injectForce(string_F, start, end);
+    
+    // 7. 反作用力减慢锤子
+    v_in -= computeReactionForce();
+    
 }
 
 double HammerModel::computeCompressionSpeed(double _string_v){
@@ -70,5 +82,58 @@ double HammerModel::computeForce() {
     F = K * std::pow(dy, P);
     return F;
 }
+	
+std::vector<float> HammerModel::computeGaussianForce(int start, int end){
+    // 创造一个和弦模型一样长的数组
+    std::vector<float> string_F;
+    string_F.assign(pairedString->N_int, 0.0);
     
+    // 将击弦点从比例转换为索引
+    int strikePoint_index = std::floor(strikePoint * pairedString->N_index);
 
+    // 防一下
+    if (sigma <= 0.0f) {
+        return string_F;
+    }
+    
+    // 将分布写入数组，并数组求和
+    double sum = 0;
+    for(int i = start; i <= end; i++) {
+        double dx = i - strikePoint_index; // 算距离
+        double exponent = -(dx * dx) / (2 * sigma * sigma); // 算指数
+        string_F[i] = std::exp(exponent);
+        sum += string_F[i];
+    }
+    
+    // 我再防
+    if (sum <= 0.0) {
+        return string_F;
+    }
+    
+    // 算出比例
+    double scale = F / sum;
+    
+    // 将比例带入数组
+    for(int i = start; i <= end; i++) {
+        string_F[i] *= scale;
+    }
+    
+    
+    return string_F;
+}
+    
+double HammerModel::computeReactionForce(){
+    return (F / m) * pairedString->Ts;
+}
+
+void HammerModel::injectForce(std::vector<float>& string_F, int start, int end){
+    
+    for(int i = start; i <= end; i++) {
+        pairedString->injectForce(i, static_cast<float>(string_F[i]));
+    }
+    
+}
+
+double HammerModel::computeSigma(){
+    return k_sigma * std::sqrt(dy);
+}

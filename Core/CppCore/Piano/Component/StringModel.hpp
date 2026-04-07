@@ -4,6 +4,8 @@
 //
 //  Created by opus arc on 2026/4/6.
 //
+//  This document is not AI-assisted.
+//
 
 #ifndef String_hpp
 #define String_hpp
@@ -70,12 +72,22 @@ public:
     std::vector<float> right;
     
     // --------------------------------------------
-    // MARK: 函数
-    
-    StringModel(double f0);
+    // MARK: 运动帧
     
     // 弦的运动回合，每帧的调用接口
     void stringMovement();
+    
+    
+    // --------------------------------------------
+    // MARK: 初始化
+    
+    
+    StringModel(double f0);
+    
+    
+    
+    // --------------------------------------------
+    // MARK: 函数
     
     // 注入
     //  将力变成波
