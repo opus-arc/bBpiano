@@ -11,9 +11,6 @@ import System
 
 say_hello()
 
-
-
-
 do {
     
     try SoundCard.shared.start()

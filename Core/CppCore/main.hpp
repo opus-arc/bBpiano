@@ -8,9 +8,13 @@
 #ifndef main_hpp
 #define main_hpp
 
+#include "Piano/Component/KeyModel.hpp"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+KeyModel key = KeyModel();
 
 void say_hello();
 
