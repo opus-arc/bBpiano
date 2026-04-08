@@ -10,12 +10,12 @@
 #ifndef Pedal_hpp
 #define Pedal_hpp
 
-class Piano;
+class PianoModel;
 
 #include <iostream>
 
 class PedalModel{
-    Piano *piano;
+    PianoModel *piano;
 };
 
 #endif /* Pedal_hpp */

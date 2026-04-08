@@ -1,5 +1,5 @@
 //
-//  Piano.hpp
+//  PianoModel.hpp
 //  bBpiano
 //
 //  Created by opus arc on 2026/4/4.
@@ -12,7 +12,7 @@
 #include "Component/KeyModel.hpp"
 #include "Component/PedalModel.hpp"
 
-class Piano{
+class PianoModel{
 
 public:
     
@@ -53,7 +53,7 @@ public:
     // MARK: 初始化
     
     
-    Piano();
+    PianoModel();
     
     
     // --------------------------------------------

@@ -22,10 +22,10 @@
 import SwiftUI
 
 
-//@main
+@main
 // 测试阶段 暂时把这个标签留给 Core
 struct blueBirdApp: App {
-
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -36,6 +36,19 @@ struct blueBirdApp: App {
     }
 }
 
+
+//public final class Core {
+//    
+//    public static let shared = Core()
+//
+//    public let pianoShared: PianoModel
+//
+//    private init() {
+//        
+//        self.pianoShared = PianoModel()
+//        // 初始化 cpp 的 piano
+//    }
+//}
 
 
 

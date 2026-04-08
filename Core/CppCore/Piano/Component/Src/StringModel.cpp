@@ -49,6 +49,22 @@ void StringModel::injectForce(double p, float F) {
         p = 0;
 
     int m = std::floor(p * N_index);
+    
+    if (m > N_index) m = N_index - 1;
+    if (m < 0) m = 1;
+
+    // 增量计算公式
+    float delta = F / (2.0f * static_cast<float>(Z));
+
+    // 注入弦
+    right[m] += delta;
+    left[m] += delta;
+}
+void StringModel::injectForce(int m, float F) {
+    
+    // 边界条件
+    if (m > N_index) m = N_index - 1;
+    if (m < 0) m = 1;
 
     // 增量计算公式
     float delta = F / (2.0f * static_cast<float>(Z));

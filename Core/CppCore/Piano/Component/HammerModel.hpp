@@ -28,21 +28,29 @@ public:
     // 非线性指数
     double P = 2.3;
     
-    //锤子质量
+    // 锤子质量
     double m = 0.003; // kg
     
     // 击弦点
-    double strikePoint = 0.14;
+    // 这个不能和采样点完全一样
+    double strikePoint = 0.20;
     
-    // hammer 材料指数
-    double k_sigma = 1.5;
-    
+    // hammer 材料指数 Hertz 接触
+    // 决定这股力在空间上铺多宽
+    double sigmaCoeff = 6.5;
     
     // --------------------------------------------
     // MARK: 传入值
     
+
+    
+    // --------------------------------------------
+    // MARK: 更新值
+    
     // 绑定的 String
-    StringModel* pairedString = nullptr;
+    StringModel* pairedString_a = nullptr;
+    StringModel* pairedString_b = nullptr;
+    StringModel* pairedString_c = nullptr;
     
     // 初速度
     double v0;
@@ -88,6 +96,9 @@ public:
     
     // --------------------------------------------
     // MARK: 函数
+    
+    // 接收按下的速度
+    void setVIn(double _v_in);
     
     // 计算压缩速度
     double computeCompressionSpeed(double _string_v);

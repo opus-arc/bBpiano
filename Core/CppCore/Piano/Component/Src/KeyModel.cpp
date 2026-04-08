@@ -12,26 +12,28 @@
 
 KeyModel::KeyModel(){
     
-    pairedWith(string);
+    pairedWith(string_a, string_b, string_c);
     pairedWith(hammer);
     
 }
 
-void KeyModel::pairedWith(StringModel &string){
-    hammer.pairedString = &string;
+void KeyModel::pairedWith(StringModel &string_a, StringModel& string_b, StringModel& string_c){
+    hammer.pairedString_a = &string_a;
+    hammer.pairedString_b = &string_b;
+    hammer.pairedString_c = &string_c;
 }
 
 void KeyModel::pairedWith(HammerModel &hammer){
-    string.pairedHammer = &hammer;
+    string_a.pairedHammer = &hammer;
 }
 
 void KeyModel::keyMovement(){
-    string.stringMovement();
+    string_a.stringMovement();
     hammer.hammerMovement();
 }
 
 float KeyModel::getSample(){
-    return string.velocityAt(0.24);
+    return string_a.velocityAt(0.24) + string_b.velocityAt(0.24) + string_c.velocityAt(0.24);
 }
 
 

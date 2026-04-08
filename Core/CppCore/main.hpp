@@ -8,17 +8,17 @@
 #ifndef main_hpp
 #define main_hpp
 
-#include "Piano/Component/KeyModel.hpp"
+#include "Piano/PianoModel.hpp"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-KeyModel key = KeyModel();
+void note_on(int midi_n, double velocity);
+void note_off(int midi_n, double velocity);
+void note_afterTouch(int midi_n, double pressure);
 
-void say_hello();
-
-void get_next_buffer(float* buffer, int frameCount, double amplitudeLimiter);
+//void get_next_buffer(float* buffer, int frameCount, double amplitudeLimiter);
 
 #ifdef __cplusplus
 

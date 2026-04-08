@@ -79,12 +79,12 @@ public class SoundCard {
             // “我知道这块内存其实就是 Float 类型，请按 Float* 来看待它。”
             // 也就是说我们此处我们保证计算机用 float 的格式看待这个数据
             let out = mData.assumingMemoryBound(to: Float.self)
-
-            get_next_buffer(
-                out,
-                Int32(frameCount),
-                Double(amplitudeLimiter)
-            )
+//
+//            get_next_buffer(
+//                out,
+//                Int32(frameCount),
+//                Double(amplitudeLimiter)
+//            )
             
             // 这里录音和音频函数计算用的不是一个线程
             // 所以我把虚拟麦克风直接放在这个位置

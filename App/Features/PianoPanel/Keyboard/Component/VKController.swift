@@ -25,15 +25,15 @@
 
 public class VKController {
     static func NoteOn(note: Int, velocity: Double) {
-        print("NoteOn: Midi" + String(note) + "PressVelocity: " + String(velocity) + "\n")
+        note_on(Int32(note), Double(velocity))
     }
 
     static func NoteOff(note: Int, velocity: Double) {
-        print("NoteOff：Midi" + String(note) + "ReleaseVelocity: " + String(velocity) + "\n")
+        note_off(Int32(note), Double(velocity))
     }
 
     static func PolyAftertouch(note: Int, pressure: Double) {
-        print("PolyAfterTouch：Midi" + String(note) + "Pressure: " + String(pressure) + "\n")
+        note_afterTouch(Int32(note), Double(pressure))
     }
 
     static func ChannelAftertouch(pressure: Double) {

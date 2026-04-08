@@ -22,10 +22,10 @@ HammerModel::HammerModel(double _v_in)
 }
 
 void HammerModel::hammerMovement() {
-    if (!pairedString) return;
+    if (!pairedString_a) return;
 
     // 1. 读弦速度
-    string_v = pairedString->velocityAt(strikePoint);
+    string_v = pairedString_a->velocityAt(strikePoint);
 
     // 2. 算压缩速度
     dv = computeCompressionSpeed(string_v);
@@ -37,11 +37,11 @@ void HammerModel::hammerMovement() {
     F = computeForce();
     
     // 5. 算高斯分布力
-    int strikePoint_index = std::floor(strikePoint * pairedString->N_index); // 将击弦点从比例转换为索引
+    int strikePoint_index = std::floor(strikePoint * pairedString_a->N_index); // 将击弦点从比例转换为索引
     sigma = computeSigma();
     int sigma_int = std::max(1, int(std::ceil(sigma))); // 计算 sigma 的 int 值，向上取整
     int start = std::max(0, strikePoint_index - 3 * sigma_int);
-    int end   = std::min(pairedString->N_index, strikePoint_index + 3 * sigma_int);
+    int end   = std::min(pairedString_a->N_index, strikePoint_index + 3 * sigma_int);
     std::vector<float> string_F = computeGaussianForce(start, end);
 
     // 6. 把力注入弦
@@ -55,16 +55,16 @@ void HammerModel::hammerMovement() {
 double HammerModel::computeCompressionSpeed(double _string_v){
     
     // 锤子向着击弦点的相对速度
-    float delta_v = v_in - pairedString->velocityAt(strikePoint);
+    float delta_v = v_in - pairedString_a->velocityAt(strikePoint);
     
     // 上一次力对锤子的反作用力
-    float last_impact = F_Last / (2 * pairedString->Z);
+    float last_impact = F_Last / (2 * pairedString_a->Z);
 
     return delta_v - last_impact;
 }
 
 void HammerModel::updateDy() {
-    dy += dv * pairedString->Ts;
+    dy += dv * pairedString_a->Ts;
 
     if (dy < 0.0) {
         dy = 0.0;
@@ -86,10 +86,10 @@ double HammerModel::computeForce() {
 std::vector<float> HammerModel::computeGaussianForce(int start, int end){
     // 创造一个和弦模型一样长的数组
     std::vector<float> string_F;
-    string_F.assign(pairedString->N_int, 0.0);
+    string_F.assign(pairedString_a->N_int, 0.0);
     
     // 将击弦点从比例转换为索引
-    int strikePoint_index = std::floor(strikePoint * pairedString->N_index);
+    int strikePoint_index = std::floor(strikePoint * pairedString_a->N_index);
 
     // 防一下
     if (sigma <= 0.0f) {
@@ -123,17 +123,23 @@ std::vector<float> HammerModel::computeGaussianForce(int start, int end){
 }
     
 double HammerModel::computeReactionForce(){
-    return (F / m) * pairedString->Ts;
+    return (F / m) * pairedString_a->Ts;
 }
 
 void HammerModel::injectForce(std::vector<float>& string_F, int start, int end){
     
     for(int i = start; i <= end; i++) {
-        pairedString->injectForce(i, static_cast<float>(string_F[i]));
+        pairedString_a->injectForce(i, static_cast<float>(string_F[i] / 3));
+        pairedString_b->injectForce(i, static_cast<float>(string_F[i] / 3));
+        pairedString_c->injectForce(i, static_cast<float>(string_F[i] / 3));
     }
     
 }
 
 double HammerModel::computeSigma(){
-    return k_sigma * std::sqrt(dy);
+    return sigmaCoeff * std::sqrt(dy);
+}
+
+void HammerModel::setVIn(double _v_in){
+    v_in = _v_in;
 }

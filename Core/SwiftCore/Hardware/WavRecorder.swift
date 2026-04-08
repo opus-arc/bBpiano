@@ -4,6 +4,8 @@
 //
 //  Created by opus arc on 2026/4/4.
 //
+//  AI Assisted
+//
 
 import Foundation
 import AVFoundation

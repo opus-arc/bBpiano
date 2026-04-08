@@ -92,6 +92,7 @@ public:
     // 注入
     //  将力变成波
     void injectForce(double p, float F);
+    void injectForce(int m, float F);
     
     // 传播
     void propagate();
