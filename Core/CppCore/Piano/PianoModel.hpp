@@ -22,10 +22,13 @@ public:
     
     
     // --------------------------------------------
-    // MARK: 传入值
+    // MARK: 组件与基本信息
+    //  初始化后固定的内容
+    
+    PianoModel();
     
     // 88个键
-    KeyModel *key;
+    std::vector<KeyModel> pianoKeys;
     
     // Soft pedal
     PedalModel *softPedal;
@@ -40,20 +43,16 @@ public:
     PedalModel *sustainPedal;
     
     // --------------------------------------------
+    // MARK: 实时值与其函数
+    //  Derived Value（派生量） + Lazy Evaluation（惰性计算） + Cache（缓存）
+    
+
+    
+    // --------------------------------------------
     // MARK: 计算值
     
     
-    
-    // --------------------------------------------
-    // MARK: 运动帧
-    
-    void pianoMovement();
-    
-    // --------------------------------------------
-    // MARK: 初始化
-    
-    
-    PianoModel();
+
     
     
     // --------------------------------------------
@@ -62,6 +61,14 @@ public:
     void note_on(int midi_n, double velocity);
     void note_off(int midi_n, double velocity);
     void note_afterTouch(int midi_n, double pressure);
+    
+    
+    // --------------------------------------------
+    // MARK: 运动帧
+    
+    void pianoMovement();
+    
+    float getSample();
 
 };
 

@@ -23,47 +23,60 @@ public:
     // MARK: 常量
     
     // 锤毡刚度系数
-    double K = 1e9;
+    static constexpr double K = 1e9;
     
     // 非线性指数
-    double P = 2.3;
+    static constexpr double P = 2.3;
     
     // 锤子质量
-    double m = 0.003; // kg
+    static constexpr double m = 0.003; // kg
     
     // 击弦点
     // 这个不能和采样点完全一样
-    double strikePoint = 0.20;
+    static constexpr double strikePoint = 0.20;
     
     // hammer 材料指数 Hertz 接触
     // 决定这股力在空间上铺多宽
-    double sigmaCoeff = 6.5;
+    static constexpr double sigmaCoeff = 6.5;
     
     // --------------------------------------------
-    // MARK: 传入值
+    // MARK: 组件与基本信息
+    //  初始化后固定的内容
+    
+    // 初始化
+    // explicit 禁止隐式转换带来的语义污染
+    explicit HammerModel(int _midi_n);
+    
+    // midi 号码
+    const int midi_n;
+    
+    // 弦的数量
+    const int string_count;
+    
+    // Strings
+    const StringModel* pairedString_a;
+    const StringModel* pairedString_b;
+    const StringModel* pairedString_c;
+
+    
+    // --------------------------------------------
+    // MARK: 实时值与其函数
+    //  Derived Value（派生量）, Lazy Evaluation（惰性计算）, Cache（缓存）
     
 
     
     // --------------------------------------------
-    // MARK: 更新值
-    
-    // 绑定的 String
-    StringModel* pairedString_a = nullptr;
-    StringModel* pairedString_b = nullptr;
-    StringModel* pairedString_c = nullptr;
+    // MARK: 状态值
+    //  State 运行时会被反复修改的值
     
     // 初速度
-    double v0;
+//    double v0;
     
     // 接触速度
     double v_in;
     
-    
-    // --------------------------------------------
-    // MARK: 计算值
-    
     // 弦速度
-    double string_v;	
+    double string_v;
 
     // 压缩距离
     double dy;
@@ -79,23 +92,11 @@ public:
     
     // 力分布的尺度参数
     double sigma;
-    
-    // --------------------------------------------
-    // MARK: 运动帧
-    
-    // 锤子的运动回合, 每帧的调用接口
-    void hammerMovement();
+
     
     
     // --------------------------------------------
-    // MARK: 初始化
-    
-    
-    HammerModel(double _v_in);
-    
-    
-    // --------------------------------------------
-    // MARK: 函数
+    // MARK: 计算函数
     
     // 接收按下的速度
     void setVIn(double _v_in);
@@ -120,6 +121,16 @@ public:
     
     // 根据反作用力更新锤子的速度
     double computeReactionForce();
+    
+    
+    // --------------------------------------------
+    // MARK: 运动帧
+    
+    // 锤子的运动回合, 每帧的调用接口
+    void hammerMovement();
+    
+    
+    float getSample();
     
     
 };

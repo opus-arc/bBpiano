@@ -10,15 +10,31 @@
 
 #include "HammerModel.hpp"
 
-HammerModel::HammerModel(double _v_in)
-: v0(_v_in),
-  v_in(_v_in),
-  string_v(0.0),
-  dy(0.0),
-  dv(0.0),
-  F(0.0),
-  F_Last(0.0) {
+HammerModel::HammerModel(int _midi_n) :
+
+    midi_n(_midi_n),
+    string_count(midi_n <= 52 ? 2 : 3)
+
+{
+    
+    
+    pairedString_a = new StringModel(this, midi_n, 1);
+    pairedString_b = new StringModel(this, midi_n, 2);
+    pairedString_c = new StringModel(this, midi_n, 3);
+    
       
+}
+
+float HammerModel::getSample(){
+    
+//    if(string_count == 2) {
+//        return (pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7)) / 2.0;
+//    } else {
+//        return (pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7) + pairedString_c->velocityAt(0.7)) / 3.0;
+//    }
+    
+    return pairedString_a->velocityAt(0.7);
+
 }
 
 void HammerModel::hammerMovement() {
@@ -49,6 +65,17 @@ void HammerModel::hammerMovement() {
     
     // 7. 反作用力减慢锤子
     v_in -= computeReactionForce();
+    
+    // 8. 弦移动帧
+    if(string_count == 2) {
+        pairedString_a->stringMovement();
+        pairedString_b->stringMovement();
+    }else if (string_count == 3) {
+        pairedString_a->stringMovement();
+        pairedString_b->stringMovement();
+        pairedString_c->stringMovement();
+    }
+
     
 }
 
@@ -128,11 +155,19 @@ double HammerModel::computeReactionForce(){
 
 void HammerModel::injectForce(std::vector<float>& string_F, int start, int end){
     
-    for(int i = start; i <= end; i++) {
-        pairedString_a->injectForce(i, static_cast<float>(string_F[i] / 3));
-        pairedString_b->injectForce(i, static_cast<float>(string_F[i] / 3));
-        pairedString_c->injectForce(i, static_cast<float>(string_F[i] / 3));
+    if(string_count == 2) {
+        for(int i = start; i <= end; i++) {
+            pairedString_a->injectForce(i, static_cast<float>(string_F[i] / 2));
+            pairedString_b->injectForce(i, static_cast<float>(string_F[i] / 2));
+        }
+    } else if(string_count == 3) {
+        for(int i = start; i <= end; i++) {
+            pairedString_a->injectForce(i, static_cast<float>(string_F[i] / 3));
+            pairedString_b->injectForce(i, static_cast<float>(string_F[i] / 3));
+            pairedString_c->injectForce(i, static_cast<float>(string_F[i] / 3));
+        }
     }
+
     
 }
 

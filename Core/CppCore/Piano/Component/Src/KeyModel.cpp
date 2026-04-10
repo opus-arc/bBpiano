@@ -10,30 +10,27 @@
 #include "KeyModel.hpp"
 
 
-KeyModel::KeyModel(){
-    
-    pairedWith(string_a, string_b, string_c);
-    pairedWith(hammer);
-    
-}
+KeyModel::KeyModel(int _midi_n) :
 
-void KeyModel::pairedWith(StringModel &string_a, StringModel& string_b, StringModel& string_c){
-    hammer.pairedString_a = &string_a;
-    hammer.pairedString_b = &string_b;
-    hammer.pairedString_c = &string_c;
-}
+    midi_n(_midi_n)
 
-void KeyModel::pairedWith(HammerModel &hammer){
-    string_a.pairedHammer = &hammer;
+{
+    
+    hammer = new HammerModel(midi_n);
+    
 }
 
 void KeyModel::keyMovement(){
-    string_a.stringMovement();
-    hammer.hammerMovement();
+    
+    hammer->hammerMovement();
+    
+    
 }
 
 float KeyModel::getSample(){
-    return string_a.velocityAt(0.24) + string_b.velocityAt(0.24) + string_c.velocityAt(0.24);
+    
+    return hammer->getSample();
+    
 }
 
 

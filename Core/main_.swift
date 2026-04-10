@@ -9,21 +9,21 @@
 //import Foundation
 //import System
 //
-//say_hello()
+//
 //
 //do {
 //    
 //    try SoundCard.shared.start()
 //    
-//    let fileURL = FileManager.default.temporaryDirectory
-//        .appendingPathComponent("test.wav")
-//    
-//    print(fileURL)
-//    
-//    try WavRecorder.shared.start(
-//        url: fileURL,
-//        maxDuration: 5
-//    )
+////    let fileURL = FileManager.default.temporaryDirectory
+////        .appendingPathComponent("test.wav")
+////    
+////    print(fileURL)
+////    
+////    try WavRecorder.shared.start(
+////        url: fileURL,
+////        maxDuration: 5
+////    )
 //
 //
 //} catch {
