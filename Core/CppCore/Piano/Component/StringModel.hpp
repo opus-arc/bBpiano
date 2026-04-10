@@ -91,6 +91,9 @@ public:
     // active 弦检测剪枝计数器
     mutable int activityCounter = 0;
     
+    mutable std::vector<float> leftNext;
+    mutable std::vector<float> rightNext;
+    
     // 时间步长
     double Ts;
     

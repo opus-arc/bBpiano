@@ -36,6 +36,8 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     // 初始化 N_int 个 0.0f 的离散位置
     right.assign(N_int, 0.0f);
     left.assign(N_int, 0.0f);
+    rightNext.assign(N_int, 0.0f);
+    leftNext.assign(N_int, 0.0f);
     
     
     std::cout << "midi_n: " << midi_n << ", string_index: " << string_index << ", f0: " << compute_f0() << std::endl;
@@ -203,24 +205,22 @@ void StringModel::injectForce(int m, float F) const {
 }
 
 void StringModel::propagate() const {
-    std::vector<float> newLeft(N_int);
-    std::vector<float> newRight(N_int);
 
     // 内部传播
     for (int i = 1; i <= N_index; ++i) {
-        newLeft[i - 1] = left[i];
+        leftNext[i - 1] = left[i];
     }
 
     for (int i = 0; i <= N_index - 1; ++i) {
-        newRight[i + 1] = right[i];
+        rightNext[i + 1] = right[i];
     }
 
     // 边界反射
-    newRight[0] = -g * left[0];
-    newLeft[N_index] = -g * right[N_index];
+    rightNext[0] = -g * left[0];
+    leftNext[N_index] = -g * right[N_index];
 
-    left = std::move(newLeft);
-    right = std::move(newRight);
+    std::swap(left, leftNext);
+    std::swap(right, rightNext);
 }
 
 float StringModel::velocityAt(double p) const {
