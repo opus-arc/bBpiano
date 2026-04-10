@@ -49,11 +49,13 @@ public:
 
     
     // --------------------------------------------
-    // MARK: 计算值
+    // MARK: 状态值
     
+    std::vector<bool> activePianoKeys;
     
+    // active 弦检测剪枝计数器
+    mutable int activityCounter = 0;
 
-    
     
     // --------------------------------------------
     // MARK: 函数
@@ -62,11 +64,16 @@ public:
     void note_off(int midi_n, double velocity);
     void note_afterTouch(int midi_n, double pressure);
     
+
+    
     
     // --------------------------------------------
     // MARK: 运动帧
     
     void pianoMovement();
+    
+    // 从单根弦上传来的信息
+    void updateActivity();
     
     float getSample();
 

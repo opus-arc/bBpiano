@@ -19,7 +19,6 @@ void note_on(int midi_n, double velocity);
 void note_off(int midi_n, double velocity);
 void note_afterTouch(int midi_n, double pressure);
 
-//void get_next_buffer(float* buffer, int frameCount, double amplitudeLimiter);
 
 #ifdef __cplusplus
 

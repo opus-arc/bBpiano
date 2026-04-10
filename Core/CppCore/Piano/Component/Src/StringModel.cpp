@@ -8,6 +8,8 @@
 //
 
 #include "StringModel.hpp"
+#include "../HammerModel.hpp"
+#include "../KeyModel.hpp"
 
 StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum) :
 
@@ -35,6 +37,7 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     right.assign(N_int, 0.0f);
     left.assign(N_int, 0.0f);
     
+    
     std::cout << "midi_n: " << midi_n << ", string_index: " << string_index << ", f0: " << compute_f0() << std::endl;
 }
 
@@ -56,6 +59,7 @@ float StringModel::get_f0() const {
     
     return cache_f0;
 }
+
 float StringModel::compute_f0() const {
     const auto& tuning = ModelParameters::instance().tuning;;
 
@@ -73,7 +77,8 @@ float StringModel::compute_f0() const {
 
     switch (tuning->temperament) {
     case ModelParameters::Tuning::Temperament::equal:
-        return f_equal;
+//        return f_equal;
+            break;
 
     case ModelParameters::Tuning::Temperament::pythagore: {
         static const float cents[12] = {
@@ -113,7 +118,8 @@ float StringModel::compute_f0() const {
 
     case ModelParameters::Tuning::Temperament::well:
         // 简化处理（可扩展为具体 well temperament）
-        return f_equal;
+//        return f_equal;
+            break;
     }
 
     // 应用 cent 偏移
@@ -124,13 +130,13 @@ float StringModel::compute_f0() const {
     if(midi_n <= 52) {
         if(string_index == 1){
             f += tuning->unsion_width / 2.0;
-        }else if (string_index == 2){
+        } else if (string_index == 2){
             f -= tuning->unsion_width / 2.0;
         }
     }else if(midi_n >= 53) {
         if(string_index == 1){
             f += tuning->unsion_width / 2.0;
-        }else if (string_index == 3){
+        } else if (string_index == 3){
             f -= tuning->unsion_width / 2.0;
         }
     }
@@ -143,14 +149,21 @@ float StringModel::compute_f0() const {
 // --------------------------------------------
 // MARK: 计算函数
 
-void StringModel::stringMovement() const {
-    // 传播
-    propagate();
-    
-    if(string_index == 1)
-        updateActivity();
-}
 
+void StringModel::stringMovement() const {
+    
+    propagate();
+
+    // 我这里只扫描第一根弦，我假设第一根弦能量不够了，那其他一到两根也差不多结束了
+    // 再加上 128 帧扫描一次的剪枝
+    if (!active) return;
+    if (string_index == 1 && ++activityCounter >= 128) {
+        activityCounter = 0;
+        updateActivity();
+        
+    }
+    
+}
 
 void StringModel::injectForce(double p, float F) const {
     if (std::abs(F) > 0.0f) active = true;
@@ -247,4 +260,7 @@ void StringModel::updateActivity() const {
     }
 
     active = (e > energyThreshold);
+    
+//    std::cout<<"midi_n: "<<midi_n<<", key_active: "<<active<<std::endl;
+    
 }

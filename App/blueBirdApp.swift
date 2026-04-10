@@ -1,3 +1,11 @@
+//  blueBirdApp.swift
+//  blueBird
+//
+//  Created by opus arc on 2026/3/29.
+//
+//  This document is not AI-assisted.
+//
+
 import SwiftUI
 
 @main

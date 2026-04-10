@@ -88,6 +88,9 @@ public:
     // 这根弦的振动能量达到一个 epcilon 以上
     mutable bool active = false;
     
+    // active 弦检测剪枝计数器
+    mutable int activityCounter = 0;
+    
     // 时间步长
     double Ts;
     

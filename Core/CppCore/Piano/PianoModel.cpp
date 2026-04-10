@@ -11,6 +11,10 @@
 
 void PianoModel::note_on(int midi_n, double velocity) {
     std::cout << "note_on: " << midi_n << ", " << velocity << std::endl;
+    
+    // 这里太重要了
+    pianoKeys[midi_n - 21].key_active = true;
+    
     pianoKeys[midi_n - 21].hammer->setVIn(velocity / 120.0);
 }
 
@@ -22,17 +26,35 @@ void PianoModel::note_afterTouch(int midi_n, double pressure) {
     std::cout << "after_touch: " << midi_n << ", " << pressure << std::endl;
 }
 
+void PianoModel::updateActivity(){
+    if (++activityCounter >= 128) {
+        activityCounter = 0;
+        for(int i = 0; i < pianoKeys.size(); i++){
+            activePianoKeys[i] = pianoKeys[i].key_active;
+            
+//            std::cout<<"midi_n: "<<pianoKeys[i].midi_n<<", key_active: "<<pianoKeys[i].key_active<<std::endl;
+        }
+    }
+}
+
 
 PianoModel::PianoModel(){
     for(int i = 21; i <= 108; i++)
-        pianoKeys.push_back(KeyModel(i));
+        pianoKeys.push_back(KeyModel(this, i));
+    
+    activePianoKeys.assign(88, false);
 }
 
 
 void PianoModel::pianoMovement(){
+    
+    
     for(auto key : pianoKeys){
-        key.hammer->hammerMovement();
+        if(key.key_active)
+            key.keyMovement();
     }
+    
+    updateActivity();
 }
 
 float PianoModel::getSample(){

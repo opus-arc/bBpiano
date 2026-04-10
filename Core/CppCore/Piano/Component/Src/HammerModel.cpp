@@ -10,8 +10,9 @@
 
 #include "HammerModel.hpp"
 
-HammerModel::HammerModel(int _midi_n) :
+HammerModel::HammerModel(KeyModel *_pairedKey, int _midi_n) :
 
+    pairedKey(_pairedKey),
     midi_n(_midi_n),
     string_count(midi_n <= 52 ? 2 : 3)
 
@@ -27,11 +28,11 @@ HammerModel::HammerModel(int _midi_n) :
 
 float HammerModel::getSample(){
     
-//    if(string_count == 2) {
-//        return (pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7)) / 2.0;
-//    } else {
-//        return (pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7) + pairedString_c->velocityAt(0.7)) / 3.0;
-//    }
+    if(string_count == 2) {
+        return (pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7)) / 2.0;
+    } else {
+        return (pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7) + pairedString_c->velocityAt(0.7)) / 3.0;
+    }
     
     return pairedString_a->velocityAt(0.7);
 
@@ -75,6 +76,9 @@ void HammerModel::hammerMovement() {
         pairedString_b->stringMovement();
         pairedString_c->stringMovement();
     }
+    
+    // 9. 检测弦振动
+    updateActivity();
 
     
 }
@@ -177,4 +181,12 @@ double HammerModel::computeSigma(){
 
 void HammerModel::setVIn(double _v_in){
     v_in = _v_in;
+}
+
+
+void HammerModel::updateActivity() const {
+    if (++activityCounter >= 128) {
+        activityCounter = 0;
+        strings_active = pairedString_a->active;
+    }
 }

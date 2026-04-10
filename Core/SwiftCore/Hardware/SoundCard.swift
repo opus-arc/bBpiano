@@ -88,11 +88,11 @@ public class SoundCard {
             
             // 这里录音和音频函数计算用的不是一个线程
             // 所以我把虚拟麦克风直接放在这个位置
-            WavRecorder.shared
-                .virtualMicrophone(
-                    samples: out,
-                    frameCount: Int(frameCount)
-                )
+//            WavRecorder.shared
+//                .virtualMicrophone(
+//                    samples: out,
+//                    frameCount: Int(frameCount)
+//                )
 
             
         }

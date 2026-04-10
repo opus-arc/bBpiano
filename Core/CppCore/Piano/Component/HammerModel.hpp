@@ -15,6 +15,7 @@
 
 #include "StringModel.hpp"
 
+class KeyModel;
 
 class HammerModel {
     
@@ -45,7 +46,9 @@ public:
     
     // 初始化
     // explicit 禁止隐式转换带来的语义污染
-    explicit HammerModel(int _midi_n);
+    explicit HammerModel(KeyModel *_pairedKey, int _midi_n) ;
+    
+    const KeyModel *pairedKey;
     
     // midi 号码
     const int midi_n;
@@ -68,6 +71,12 @@ public:
     // --------------------------------------------
     // MARK: 状态值
     //  State 运行时会被反复修改的值
+    
+    // 对应的弦是否有能量
+    mutable double strings_active = false;
+    
+    // active 弦检测剪枝计数器
+    mutable int activityCounter = 0;
     
     // 初速度
 //    double v0;
@@ -129,6 +138,7 @@ public:
     // 锤子的运动回合, 每帧的调用接口
     void hammerMovement();
     
+    void updateActivity() const;
     
     float getSample();
     

@@ -18,7 +18,7 @@
 // 需要反向连接大类节点时为了避免反复引用文件
 // 在小集合中使用签名方式引用
 // 然后在逻辑中使用指针
-//class PianoModel;
+class PianoModel;
 
 class KeyModel{
     
@@ -28,7 +28,9 @@ public:
     // MARK: 组件与基本信息
     //  初始化后固定的内容
     
-    KeyModel(int _midi_n);
+    KeyModel(PianoModel * piano, int _midi_n);
+    
+    PianoModel * piano;
         
     HammerModel *hammer;
         
@@ -37,10 +39,20 @@ public:
     
     
     // --------------------------------------------
+    // MARK: 状态值
+    
+    mutable bool key_active = false;
+    
+    // active 弦检测剪枝计数器
+    mutable int activityCounter = 0;
+    
+    // --------------------------------------------
     // MARK: 函数
     
     // 键的运动回合，每帧的调用接口
     void keyMovement();
+    
+    void updateActivity() const;
     
     // 获取这一帧的振幅数据
     float getSample();
