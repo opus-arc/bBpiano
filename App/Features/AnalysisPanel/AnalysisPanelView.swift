@@ -16,6 +16,10 @@ struct AnalysisPanelView: View {
         ZStack {
             Color("AccentColor")
             
+            SoundWaveView()
+                .position(x: 440, y: 100)
+                .frame(width: 880, height: 300)
+            
 //            PedalFrameView()
 //                .position(x: 455, y: 510)
             PedalView()

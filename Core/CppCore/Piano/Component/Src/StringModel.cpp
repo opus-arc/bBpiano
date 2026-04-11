@@ -235,6 +235,23 @@ float StringModel::velocityAt(double p) const {
     return left[m] + right[m];
 }
 
+float StringModel::nextVelocityAt(double p) const {
+    // 边界条件
+    if (p > 1.0) p = 1.0;
+    if (p < 0.0) p = 0.0;
+
+    int m = std::floor(p * N_index);
+
+    // 左边的右边那一帧下回就到拾音点
+    int ml = m + 1;
+    int mr = m - 1;
+
+    if (ml > N_index) ml = N_index;
+    if (mr < 0) mr = 0;
+
+    return left[ml] + right[mr];
+}
+
 
 
 // TODO: 这里算能量还可以用包络近似，直接看该处的能量怎么样，简化计算

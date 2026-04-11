@@ -37,12 +37,12 @@ private:
     // 弦的线密度
     // 单位 kg / m
     // 这里暂时用一个固定值
-    static constexpr double rho = 0.002;
+    static constexpr double rho = 0.006;
     
     // 反射衰减
     // 按理说 loss × dispersion × fractional delay
     // 但这里先用常数
-    static constexpr double g = 0.995;
+    static constexpr double g = 0.996;
     
     
     // --------------------------------------------
@@ -95,15 +95,15 @@ public:
     mutable std::vector<float> rightNext;
     
     // 时间步长
-    double Ts;
+    double Ts = 0;
     
     // 波导长度
-    double N;
-    int N_int;
-    int N_index;
+    double N = 0.0;
+    int N_int = 0;
+    int N_index = 0;
 
     // 力 ↔ 速度 的比例常数
-    double Z;
+    double Z = 0.0;
     
     // 波的实时离散值
     mutable std::vector<float> left;
@@ -136,8 +136,9 @@ public:
     // 弦的运动回合，每帧的调用接口
     void stringMovement() const ;
     
-    // 获取速度的两种方式
+    // 获取速度的方式
     float velocityAt(double p) const ;
+    float nextVelocityAt(double p) const ;
     
 };
 

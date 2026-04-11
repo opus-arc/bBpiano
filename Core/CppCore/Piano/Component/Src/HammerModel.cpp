@@ -10,6 +10,8 @@
 
 #include "HammerModel.hpp"
 
+// ------------------------------------------------------------------------------------------
+// MARK: 初始化
 HammerModel::HammerModel(KeyModel *_pairedKey, int _midi_n) :
 
     pairedKey(_pairedKey),
@@ -26,34 +28,39 @@ HammerModel::HammerModel(KeyModel *_pairedKey, int _midi_n) :
       
 }
 
+// ------------------------------------------------------------------------------------------
+// MARK: 整合 Sample
 float HammerModel::getSample(){
     
     if(string_count == 2) {
-        return (pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7)) / 2.0;
+        return pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7);
     } else {
-        return (pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7) + pairedString_c->velocityAt(0.7)) / 3.0;
+        return pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7) + pairedString_c->velocityAt(0.7);
     }
     
     return pairedString_a->velocityAt(0.7);
 
 }
 
+// ------------------------------------------------------------------------------------------
+// MARK: 运动帧
 void HammerModel::hammerMovement() {
     if (!pairedString_a) return;
-
-    // 1. 读弦速度
-    string_v = pairedString_a->velocityAt(strikePoint);
-
-    // 2. 算压缩速度
-    dv = computeCompressionSpeed(string_v);
-
-    // 3. 更新压缩量
-    updateDy();
-
-    // 4. 算接触力
-    F = computeForce();
     
-    // 5. 算高斯分布力
+    // 取一半的步长
+    double half_Ts = pairedString_a->Ts / 2.0;
+
+    // 读弦速度
+    double string_v1 = pairedString_a->velocityAt(strikePoint);
+    double string_v2 = pairedString_a->nextVelocityAt(strikePoint);
+
+    // 算接触力
+    double F1 = hammerHalfStepForce(string_v1, half_Ts); // 上半帧
+    double F2 = hammerHalfStepForce(string_v2, half_Ts); // 下半帧
+    F = 0.5 * (F1 + F2);
+//    std::cout << F << std::endl;
+    
+    // 算高斯分布力
     int strikePoint_index = std::floor(strikePoint * pairedString_a->N_index); // 将击弦点从比例转换为索引
     sigma = computeSigma();
     int sigma_int = std::max(1, int(std::ceil(sigma))); // 计算 sigma 的 int 值，向上取整
@@ -61,13 +68,12 @@ void HammerModel::hammerMovement() {
     int end   = std::min(pairedString_a->N_index, strikePoint_index + 3 * sigma_int);
     std::vector<float> string_F = computeGaussianForce(start, end);
 
-    // 6. 把力注入弦
+    // 把力注入弦
     injectForce(string_F, start, end);
     
-    // 7. 反作用力减慢锤子
-    v_in -= computeReactionForce();
+
     
-    // 8. 弦移动帧
+    // 弦移动帧
     if(string_count == 2) {
         pairedString_a->stringMovement();
         pairedString_b->stringMovement();
@@ -77,41 +83,43 @@ void HammerModel::hammerMovement() {
         pairedString_c->stringMovement();
     }
     
-    // 9. 检测弦振动
+    // 检测弦振动
     updateActivity();
 
     
 }
 
-double HammerModel::computeCompressionSpeed(double _string_v){
+double HammerModel::hammerHalfStepForce(double _string_v, double dt) {
     
     // 锤子向着击弦点的相对速度
-    float delta_v = v_in - pairedString_a->velocityAt(strikePoint);
+    double delta_v = v_in - _string_v;
     
     // 上一次力对锤子的反作用力
-    float last_impact = F_Last / (2 * pairedString_a->Z);
+    double last_impact = F_Last / (2 * pairedString_a->Z);
 
-    return delta_v - last_impact;
-}
-
-void HammerModel::updateDy() {
-    dy += dv * pairedString_a->Ts;
+    dv = delta_v - last_impact;
+    
+    // 计算压缩速度
+    dy += dv * dt; // 此处用了一半的时间步长
 
     if (dy < 0.0) {
         dy = 0.0;
     }
-}
+    
+    // 用上面算好的参数合成力
+    if (dy < 0.0) dy = 0.0;
 
-double HammerModel::computeForce() {
-    F_Last = F;
-
-    if (dy <= 0.0) {
-        F = 0.0;
-        return F;
-    }
-
-    F = K * std::pow(dy, P);
-    return F;
+    double F_new = 0.0;
+    
+    if (dy > 0.0) F_new = K * std::pow(dy, P);
+    
+    // 反作用力减慢锤子
+    v_in -= (F_new / m) * dt;
+    
+    // 历史力更新成这一个 half-step 的输出
+    F_Last = F_new;
+    
+    return F_new;
 }
 	
 std::vector<float> HammerModel::computeGaussianForce(int start, int end){
@@ -153,9 +161,6 @@ std::vector<float> HammerModel::computeGaussianForce(int start, int end){
     return string_F;
 }
     
-double HammerModel::computeReactionForce(){
-    return (F / m) * pairedString_a->Ts;
-}
 
 void HammerModel::injectForce(std::vector<float>& string_F, int start, int end){
     

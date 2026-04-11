@@ -82,25 +82,25 @@ public:
 //    double v0;
     
     // 接触速度
-    double v_in;
+    double v_in = 0.0;
     
     // 弦速度
-    double string_v;
+//    double string_v = 0.0;
 
     // 压缩距离
-    double dy;
+    double dy = 0.0;
     
     // 压缩速度
-    double dv;
+    double dv = 0.0;
     
     // 接触力
-    double F;
+    double F = 0.0;
     
     // 上一次的接触力
-    double F_Last;
+    double F_Last = 0.0;
     
     // 力分布的尺度参数
-    double sigma;
+    double sigma = 0.0;
 
     
     
@@ -110,14 +110,8 @@ public:
     // 接收按下的速度
     void setVIn(double _v_in);
     
-    // 计算压缩速度
-    double computeCompressionSpeed(double _string_v);
-    
-    // 更新压缩量
-    void updateDy();
-    
-    // 计算力的大小
-    double computeForce();
+    // 计算半个步长的力的大小
+    double hammerHalfStepForce(double _string_v, double _half_Ts);
     
     // 计算力的分布尺度参数，Hertz 接触
     double computeSigma();
@@ -127,9 +121,6 @@ public:
     
     // 注入力
     void injectForce(std::vector<float>& string_F, int start, int end);
-    
-    // 根据反作用力更新锤子的速度
-    double computeReactionForce();
     
     
     // --------------------------------------------

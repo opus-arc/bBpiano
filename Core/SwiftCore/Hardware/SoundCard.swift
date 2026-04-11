@@ -109,8 +109,4 @@ public class SoundCard {
         engine.stop()
     }
 
-    public func setMaxAmplitude(_ value: Float) {
-        amplitudeLimiter = max(0.0, min(value, 1.0))
-    }
-
 }
