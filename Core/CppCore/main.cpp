@@ -61,9 +61,13 @@ void get_next_buffer(float* out, int frameCount, double amplitudeLimiter) {
         
 //        bBpiano.pianoMovement();
 //        out[i] = bBpiano.pianoKeys[69].hammer->getSample();
+
+        
         
     }
 }
+
+
 
 void note_on(int midi_n, double velocity) {
     bBpiano.note_on(midi_n, velocity);

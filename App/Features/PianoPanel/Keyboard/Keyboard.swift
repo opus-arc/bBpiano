@@ -11,6 +11,9 @@ import SwiftUI
 import CoreGraphics
 
 struct Keyboard: View {
+    
+    @State private var lastPointerLocation: CGPoint?
+    
     private let whiteKeyWidth: CGFloat = 15
     private let whiteKeyHeight: CGFloat = 88
     private let blackKeyWidth: CGFloat = 12
@@ -180,15 +183,17 @@ private extension Keyboard {
                     isPointerTracking = true
                     activePointerMIDINote = midi
                     activePointerVelocity = midi == nil ? nil : pressure
+                    lastPointerLocation = value.location
 
                     if let midi {
                         highlightedMIDIVelocities[midi] = pressure
-//                        print("midi\(midi) 按下 velocity \(pressure)")
-                        VKController
-                            .NoteOn(note: midi, velocity: Double(pressure))
+                        VKController.NoteOn(note: midi, velocity: Double(pressure))
                     }
                     return
                 }
+
+                let previousLocation = lastPointerLocation
+                lastPointerLocation = value.location
 
                 if midi == activePointerMIDINote {
                     guard let midi else {
@@ -196,16 +201,19 @@ private extension Keyboard {
                         return
                     }
 
-                    if activePointerVelocity != pressure {
+                    let horizontalMovement = previousLocation.map { abs(value.location.x - $0.x) } ?? 0
+                    let verticalMovement = previousLocation.map { abs(value.location.y - $0.y) } ?? 0
+
+                    // 只有横向几乎没动，才认为是同键 pressure / aftertouch
+                    if horizontalMovement < 2, activePointerVelocity != pressure {
                         activePointerVelocity = pressure
                         highlightedMIDIVelocities[midi] = pressure
-//                        print("midi\(midi) 变化 velocity \(pressure)")
-                        VKController
-                            .PolyAftertouch(
-                                note: midi,
-                                pressure: Double(pressure)
-                            )
+                        VKController.PolyAftertouch(
+                            note: midi,
+                            pressure: Double(pressure)
+                        )
                     }
+
                     return
                 }
 
@@ -220,9 +228,7 @@ private extension Keyboard {
 
                 if let midi {
                     highlightedMIDIVelocities[midi] = pressure
-//                    print("midi\(midi) 按下 velocity \(pressure)")
-                    VKController
-                        .PolyAftertouch(note: midi, pressure: Double(pressure))
+                    VKController.NoteOn(note: midi, velocity: Double(pressure))
                 }
 
                 scheduleDelayedRelease(for: previousMIDINote)
@@ -232,6 +238,7 @@ private extension Keyboard {
 
                 activePointerMIDINote = nil
                 activePointerVelocity = nil
+                lastPointerLocation = nil
                 isPointerTracking = false
                 scheduleDelayedRelease(for: releasedMIDINote)
             }
