@@ -6,6 +6,8 @@
 
 ---
 
+![Piano Structure](./Doc/assets/bBpiano.png)
+
 ## Preface
 
 ## 前言
@@ -208,7 +210,7 @@ private func render(
     }
 ```
 
-<audio src="./audio/440Hz正弦波.wav"></audio>
+<audio src="./Doc/audio/440Hz正弦波.wav"></audio>
 
 这是桥接 PCM 数据和声卡的 swift 最核心的部分代码，**AVAudioSourceNode **是一个“源节点”，我们可以写入自己的数据，这也是 Apple 提供的实时合成音频的关键工具。
 
@@ -217,7 +219,7 @@ private func render(
 不过当然，我们需要的音频函数仍然需要通过 C++ 来生成，我们需要编写 cpp 和 swift 的桥接代码，理论上来说 WWDC 2023 session 10172: [Mix Swift and C++](https://developer.apple.com/wwdc23/10172)  Swift 5 提出了一种基于 framework 能够直接暴露 C++ API 的特性，但经过多轮测试，这样的方式仍然存在许多潜在的 bug 与坏处，偶发的闪退与内存出错令我略为沮丧，此处我们还是使用传统桥接的方式：
 
 <p align="center">  
-  <img src="./assets/File%20from%20Template.png" width="200" style="float:right; margin-left:10px;">
+  <img src="./Doc/assets/File%20from%20Template.png" width="200" style="float:right; margin-left:10px;">
 </p>
 
 
@@ -297,7 +299,7 @@ void say_hello() {
 于是我们在同一个 target 下的任意 swift 文件中都可以调用 say_hello() 这个函数：
 
 <p align="center">  
-  <img src="./assets/Hello%20World%20Form%20C++.png" width="200" style="float:left; margin-left:10px;">
+  <img src="./Doc/assets/Hello%20World%20Form%20C++.png" width="200" style="float:left; margin-left:10px;">
 </p>
 
 
@@ -356,7 +358,7 @@ private func render(
     }
 ```
 
-<audio src="./audio/440Hz50%duty方波.wav"></audio>
+<audio src="./Doc/audio/440Hz50%duty方波.wav"></audio>
 
 通过上述的实践，我搭建了一个非常简易的 **DSP, Digital Signal Processing（数字信号处理）**模型
 
@@ -687,7 +689,7 @@ ___
 
 ## **5 从偏微分方程到 FDTD 与数字波导建模**
 
-> ![Piano Structure](./assets/Piano%20Structure.png)
+> ![Piano Structure](./Doc/assets/Piano%20Structure.png)
 
 **FDTD（Finite-Difference Time-Domain）** 是一种用于求解电磁场的**数值仿真算法**，基于 **Maxwell** 方程组，尽管本文提到，但实在是不想做出任何解释，这对工程极不友好，经典论文 **Numerical simulations of piano strings. I. A physical model for a struck string using finite difference methods**  中写道：
 
@@ -732,7 +734,7 @@ $$y(x,t) = f(x - ct) + g(x + ct)$$
 
 
 
-![pianist](./assets/pianist.jpg)
+![pianist](./Doc/assets/pianist.jpg)
 
 
 

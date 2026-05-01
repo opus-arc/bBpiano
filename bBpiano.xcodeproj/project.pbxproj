@@ -6,6 +6,10 @@
 	objectVersion = 90;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		146587D72FA42DAF009F5C08 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 146587D62FA42DAF009F5C08 /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		141655472F80105700935D9E /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -18,8 +22,19 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		146587D62FA42DAF009F5C08 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		14E708362F78BE0C005C806C /* bBpiano.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bBpiano.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		146587D52FA42C9E009F5C08 /* Exceptions for "Doc" folder in "bBpiano" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				assets/bBpiano.png,
+			);
+			target = 14E708352F78BE0C005C806C /* bBpiano */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 		14E709BB2F7E4DED005C806C /* Exceptions for "Core" folder in "Compile Sources" phase from "bBpiano" target */ = {
@@ -39,6 +54,9 @@
 		};
 		14E7092E2F7D43C4005C806C /* Doc */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				146587D52FA42C9E009F5C08 /* Exceptions for "Doc" folder in "bBpiano" target */,
+			);
 			path = Doc;
 			sourceTree = "<group>";
 		};
@@ -64,6 +82,7 @@
 		14E7082D2F78BE0C005C806C = {
 			isa = PBXGroup;
 			children = (
+				146587D62FA42DAF009F5C08 /* README.md */,
 				14E709AA2F7E3F01005C806C /* Core */,
 				14E7092E2F7D43C4005C806C /* Doc */,
 				14E708382F78BE0C005C806C /* App */,
@@ -141,6 +160,7 @@
 		14E708342F78BE0C005C806C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
+				146587D72FA42DAF009F5C08 /* README.md in Resources */,
 			);
 		};
 /* End PBXResourcesBuildPhase section */
