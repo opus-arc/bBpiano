@@ -84,7 +84,7 @@ void HammerModel::hammerMovement() {
     }
     
     // 检测弦振动
-    updateActivity();
+//    updateActivity();
 
     
 }

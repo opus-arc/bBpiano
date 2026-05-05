@@ -13,7 +13,7 @@ void PianoModel::note_on(int midi_n, double velocity) {
     std::cout << "note_on: " << midi_n << ", " << velocity << std::endl;
     
     // 这里太重要了
-    pianoKeys[midi_n - 21].key_active = true;
+//    pianoKeys[midi_n - 21].key_active = true;
     
     pianoKeys[midi_n - 21].hammer->setVIn(velocity / 120.0);
 }
@@ -50,11 +50,11 @@ void PianoModel::pianoMovement(){
     
     
     for(auto key : pianoKeys){
-        if(key.key_active)
+//        if(key.key_active)
             key.keyMovement();
     }
     
-    updateActivity();
+//    updateActivity();
 }
 
 float PianoModel::getSample(){

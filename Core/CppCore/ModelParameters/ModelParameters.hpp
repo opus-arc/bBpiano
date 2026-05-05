@@ -46,7 +46,7 @@ struct ModelParameters::Tuning {
     Temperament temperament; // 枚举本身就是数字
 
     // 单音宽度
-    double unsion_width;
+    double unison_width;
 
     // 直接音的持续时间
     double direct_sound_duration;

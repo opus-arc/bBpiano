@@ -25,7 +25,7 @@ void KeyModel::keyMovement(){
     
     hammer->hammerMovement();
     
-    updateActivity();
+//    updateActivity();
     
     
 }

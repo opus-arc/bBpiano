@@ -105,7 +105,7 @@ final class WavRecorder {
             let dst = buffer.floatChannelData![0]
 
             copied.withUnsafeBufferPointer { src in
-                dst.assign(from: src.baseAddress!, count: frameCount)
+                dst.update(from: src.baseAddress!, count: frameCount)
             }
 
             do {

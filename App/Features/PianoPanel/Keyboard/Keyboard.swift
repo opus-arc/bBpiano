@@ -202,7 +202,8 @@ private extension Keyboard {
                     }
 
                     let horizontalMovement = previousLocation.map { abs(value.location.x - $0.x) } ?? 0
-                    let verticalMovement = previousLocation.map { abs(value.location.y - $0.y) } ?? 0
+                    _ = previousLocation
+                        .map { abs(value.location.y - $0.y) } ?? 0
 
                     // 只有横向几乎没动，才认为是同键 pressure / aftertouch
                     if horizontalMovement < 2, activePointerVelocity != pressure {

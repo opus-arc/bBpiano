@@ -18,6 +18,6 @@ ModelParameters::ModelParameters(){
     tuning = new Tuning;
     tuning->reference_tone = 440.0;
     tuning->temperament = Tuning::Temperament::equal;
-    tuning->unsion_width = 1.0;
+    tuning->unison_width = 2.0;
     tuning->direct_sound_duration = 0.0;
 }

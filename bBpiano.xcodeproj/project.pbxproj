@@ -36,16 +36,6 @@
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		14E709BB2F7E4DED005C806C /* Exceptions for "Core" folder in "Compile Sources" phase from "bBpiano" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = 14E708322F78BE0C005C806C /* Sources */;
-			membershipExceptions = (
-				SwiftCore/ParametersManager/ModelParameters/ModelParameters.json,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		14E708382F78BE0C005C806C /* App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -62,9 +52,6 @@
 		};
 		14E709AA2F7E3F01005C806C /* Core */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				14E709BB2F7E4DED005C806C /* Exceptions for "Core" folder in "Compile Sources" phase from "bBpiano" target */,
-			);
 			path = Core;
 			sourceTree = "<group>";
 		};

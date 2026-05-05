@@ -74,9 +74,7 @@ public:
     // 依赖 midi_n, reference_tone, temperament 计算 f0
     // 只与 ModelParameters::shared->tuning->version 有关
     float get_f0() const;
-    float compute_f0() const;
     mutable float cache_f0;
-    mutable float f0_cached_version = 0;
     
     
     // --------------------------------------------
