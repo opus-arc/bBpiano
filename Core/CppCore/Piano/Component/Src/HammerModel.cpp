@@ -125,7 +125,7 @@ double HammerModel::hammerHalfStepForce(double _string_v, double dt) {
 std::vector<float> HammerModel::computeGaussianForce(int start, int end){
     // 创造一个和弦模型一样长的数组
     std::vector<float> string_F;
-    string_F.assign(pairedString_a->N_int, 0.0);
+    string_F.assign(pairedString_a->N_int_length, 0.0);
     
     // 将击弦点从比例转换为索引
     int strikePoint_index = std::floor(strikePoint * pairedString_a->N_index);
@@ -189,9 +189,3 @@ void HammerModel::setVIn(double _v_in){
 }
 
 
-void HammerModel::updateActivity() const {
-    if (++activityCounter >= 128) {
-        activityCounter = 0;
-        strings_active = pairedString_a->active;
-    }
-}

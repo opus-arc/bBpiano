@@ -36,11 +36,3 @@ float KeyModel::getSample(){
     
 }
 
-void KeyModel::updateActivity() const {
-    if (++activityCounter >= 128) {
-        activityCounter = 0;
-        key_active = hammer->pairedString_a->active;
-//        std::cout<<"midi_n: "<<midi_n<<", key_active: "<<key_active<<std::endl;
-    }
-
-}

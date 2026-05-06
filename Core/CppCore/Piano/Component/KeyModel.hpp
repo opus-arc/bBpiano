@@ -52,8 +52,6 @@ public:
     // 键的运动回合，每帧的调用接口
     void keyMovement();
     
-    void updateActivity() const;
-    
     // 获取这一帧的振幅数据
     float getSample();
 

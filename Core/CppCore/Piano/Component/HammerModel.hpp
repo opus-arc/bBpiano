@@ -129,8 +129,6 @@ public:
     // 锤子的运动回合, 每帧的调用接口
     void hammerMovement();
     
-    void updateActivity() const;
-    
     float getSample();
     
     

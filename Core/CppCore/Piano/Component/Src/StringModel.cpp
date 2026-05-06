@@ -23,25 +23,75 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     Ts = 1 / sampleRate;
     
 
-    // 计算波导长度
-    N = double(sampleRate) / double(2 * get_f0());
+//    // 计算波导长度
+//    N = double(sampleRate) / double(2 * get_f0());
+//
+    
+//    // 取不大于波导长度的最大整数作为数组长度
+//    N_int_length = std::floor(N);
+//    if(N_int_length <= 0) N_int_length = 2;
+//    N_index = N_int_length - 1;
+//    N_frac = N - static_cast<double>(N_int_length);
+    
+    
+    // 目标 round-trip delay
+    const double loopDelayTarget = sampleRate / static_cast<double>(get_f0());
 
-    // 取不大于波导长度的最大整数作为数组长度
-    N_int = std::floor(N);
-    if(N_int <= 0) N_int = 2;
-    N_index = N_int - 1;
+    // 目标 half delay
+    halfDelayTarget = 0.5 * loopDelayTarget;
+
+    // Bank 的思想是：整数 delay 取 floor(D - 0.5)，让 fractional delay 落在 [0.5, 1.5)
+    // 这里对 half delay 使用同样思想。
+    const int halfDelayInt = static_cast<int>(std::floor(halfDelayTarget - 0.5));
+
+    N_int_length = std::max(2, halfDelayInt);
+    N_index = N_int_length - 1;
+
+    // 每个半程需要补偿的小数延迟
+    halfDelayFractional = halfDelayTarget - static_cast<double>(N_int_length);
+
+    // 防御：理论上应为 [0.5, 1.5)
+    if (halfDelayFractional < 0.5) {
+        N_int_length -= 1;
+        if (N_int_length < 2) N_int_length = 2;
+        halfDelayFractional = halfDelayTarget - static_cast<double>(N_int_length);
+    }
+
+    if (halfDelayFractional >= 1.5) {
+        N_int_length += 1;
+        halfDelayFractional = halfDelayTarget - static_cast<double>(N_int_length);
+    }
+
+    N = halfDelayTarget;
+    N_frac = halfDelayFractional;
+    N_index = N_int_length - 1;
+
+    // 每个边界各补偿 halfDelayFractional 的相位延迟
+    leftBoundaryFracDelay.setDelay(halfDelayFractional);
+    rightBoundaryFracDelay.setDelay(halfDelayFractional);
+    
 
     // 计算力和速度的比例常数
     Z = std::sqrt(T * rho);
 
     // 初始化 N_int 个 0.0f 的离散位置
-    right.assign(N_int, 0.0f);
-    left.assign(N_int, 0.0f);
-    rightNext.assign(N_int, 0.0f);
-    leftNext.assign(N_int, 0.0f);
+    right.assign(N_int_length, 0.0f);
+    left.assign(N_int_length, 0.0f);
+    rightNext.assign(N_int_length, 0.0f);
+    leftNext.assign(N_int_length, 0.0f);
     
-    if(midi_n == 69)
-    std::cout << "midi_n: " << midi_n << ", string_index: " << string_index << ", f0: " << get_f0() << ", 波导长度: " << N << "\n";
+    if (midi_n == 69) {
+        std::cout
+            << "midi_n: " << midi_n
+            << ", string_index: " << string_index
+            << ", f0: " << get_f0()
+            << ", loopDelayTarget: " << loopDelayTarget
+            << ", halfDelayTarget: " << halfDelayTarget
+            << ", N_int_length: " << N_int_length
+            << ", halfDelayFractional: " << halfDelayFractional
+            << "\n";
+    }
+
 }
 
 // --------------------------------------------
@@ -61,15 +111,6 @@ float StringModel::get_f0() const {
 void StringModel::stringMovement() const {
     
     propagate();
-
-    // 我这里只扫描第一根弦，我假设第一根弦能量不够了，那其他一到两根也差不多结束了
-    // 再加上 128 帧扫描一次的剪枝
-//        if (!active) return;
-//        if (string_index == 1 && ++activityCounter >= 128) {
-//            activityCounter = 0;
-//            updateActivity();
-//
-//        }
     
 }
 
@@ -109,18 +150,22 @@ void StringModel::injectForce(int m, float F) const {
 
 void StringModel::propagate() const {
 
-    // 内部传播
+    // 内部传播：left 向左移动
     for (int i = 1; i <= N_index; ++i) {
         leftNext[i - 1] = left[i];
     }
 
+    // 内部传播：right 向右移动
     for (int i = 0; i <= N_index - 1; ++i) {
         rightNext[i + 1] = right[i];
     }
 
-    // 边界反射
-    rightNext[0] = -g * left[0];
-    leftNext[N_index] = -g * right[N_index];
+    // 边界反射 + 一阶 allpass fractional delay
+    const float reflectedFromLeft  = static_cast<float>(-g) * left[0];
+    const float reflectedFromRight = static_cast<float>(-g) * right[N_index];
+
+    rightNext[0] = leftBoundaryFracDelay.process(reflectedFromLeft);
+    leftNext[N_index] = rightBoundaryFracDelay.process(reflectedFromRight);
 
     std::swap(left, leftNext);
     std::swap(right, rightNext);
@@ -150,33 +195,6 @@ float StringModel::nextVelocityAt(double p) const {
 
     return left[ml] + right[mr];
 }
-
-
-
-// TODO: 这里算能量还可以用包络近似，直接看该处的能量怎么样，简化计算
-float StringModel::energy() const {
-    double e = 0.0;
-    for (int i = 0; i < N_int; ++i) {
-        e += double(left[i]) * double(left[i]);
-        e += double(right[i]) * double(right[i]);
-    }
-    return static_cast<float>(e);
-}
-bool StringModel::isActive() const {
-    constexpr float energyThreshold = 1e-8f;
-    return energy() > energyThreshold;
-}
-void StringModel::updateActivity() const {
-    constexpr float energyThreshold = 1e-8f;
-
-    double e = 0.0;
-    for (int i = 0; i < N_int; ++i) {
-        e += double(left[i]) * double(left[i]);
-        e += double(right[i]) * double(right[i]);
-    }
-
-    active = (e > energyThreshold);
     
-//    std::cout<<"midi_n: "<<midi_n<<", key_active: "<<active<<std::endl;
-    
-}
+
+

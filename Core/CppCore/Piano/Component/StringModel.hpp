@@ -19,6 +19,30 @@
 
 class HammerModel;
 
+struct FirstOrderAllpass {
+    double a = 0.0;
+    float x1 = 0.0f;
+    float y1 = 0.0f;
+
+    void setDelay(double D) {
+        // D 通常应在 0.5 ~ 1.5 左右。
+        // a = (1 - D) / (1 + D)
+        a = (1.0 - D) / (1.0 + D);
+    }
+
+    float process(float x) {
+        const float y = static_cast<float>(a * x + x1 - a * y1);
+        x1 = x;
+        y1 = y;
+        return y;
+    }
+
+    void reset() {
+        x1 = 0.0f;
+        y1 = 0.0f;
+    }
+};
+
 class StringModel {
 
     // --------------------------------------------
@@ -63,7 +87,7 @@ public:
     
     // 弦的编号
     const int string_index;
-    
+        
     
     // --------------------------------------------
     // MARK: 实时值与其函数
@@ -86,9 +110,6 @@ public:
     // 这根弦的振动能量达到一个 epcilon 以上
     mutable bool active = false;
     
-    // active 弦检测剪枝计数器
-    mutable int activityCounter = 0;
-    
     mutable std::vector<float> leftNext;
     mutable std::vector<float> rightNext;
     
@@ -97,8 +118,19 @@ public:
     
     // 波导长度
     double N = 0.0;
-    int N_int = 0;
+    int N_int_length = 0;
     int N_index = 0;
+    double N_frac = 0.0;// 波导长度小数部分
+    
+    // 波导长度：单程 half delay
+    double halfDelayTarget = 0.0;
+    double halfDelayInteger = 0.0;
+    double halfDelayFractional = 0.0;
+
+    // 每个边界使用一个 fractional allpass
+    mutable FirstOrderAllpass leftBoundaryFracDelay;
+    mutable FirstOrderAllpass rightBoundaryFracDelay;
+    
 
     // 力 ↔ 速度 的比例常数
     double Z = 0.0;
@@ -120,11 +152,6 @@ public:
     
     // 传播
     void propagate() const ;
-
-    
-    float energy() const;
-    bool isActive() const;
-    void updateActivity() const;
     
     // --------------------------------------------
     // MARK: 运动帧
@@ -139,5 +166,9 @@ public:
     float nextVelocityAt(double p) const ;
     
 };
+
+
+
+
 
 #endif /* String_hpp */
