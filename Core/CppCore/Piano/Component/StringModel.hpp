@@ -19,30 +19,6 @@
 
 class HammerModel;
 
-struct FirstOrderAllpass {
-    double a = 0.0;
-    float x1 = 0.0f;
-    float y1 = 0.0f;
-
-    void setDelay(double D) {
-        // D 通常应在 0.5 ~ 1.5 左右。
-        // a = (1 - D) / (1 + D)
-        a = (1.0 - D) / (1.0 + D);
-    }
-
-    float process(float x) {
-        const float y = static_cast<float>(a * x + x1 - a * y1);
-        x1 = x;
-        y1 = y;
-        return y;
-    }
-
-    void reset() {
-        x1 = 0.0f;
-        y1 = 0.0f;
-    }
-};
-
 class StringModel {
 
     // --------------------------------------------
@@ -108,7 +84,7 @@ public:
 public:
     
     // 这根弦的振动能量达到一个 epcilon 以上
-    mutable bool active = false;
+//    mutable bool active = false;
     
     mutable std::vector<float> leftNext;
     mutable std::vector<float> rightNext;
@@ -117,20 +93,10 @@ public:
     double Ts = 0;
     
     // 波导长度
-    double N = 0.0;
-    int N_int_length = 0;
-    int N_index = 0;
-    double N_frac = 0.0;// 波导长度小数部分
-    
-    // 波导长度：单程 half delay
-    double halfDelayTarget = 0.0;
-    double halfDelayInteger = 0.0;
-    double halfDelayFractional = 0.0;
-
-    // 每个边界使用一个 fractional allpass
-    mutable FirstOrderAllpass leftBoundaryFracDelay;
-    mutable FirstOrderAllpass rightBoundaryFracDelay;
-    
+    double Delay = 0.0;
+    int Delay_Int = 0;
+    int Delay_Index = 0;
+    double Delay_Frac = 0.0;// 波导长度小数部分
 
     // 力 ↔ 速度 的比例常数
     double Z = 0.0;

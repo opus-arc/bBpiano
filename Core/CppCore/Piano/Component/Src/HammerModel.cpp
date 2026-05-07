@@ -61,11 +61,11 @@ void HammerModel::hammerMovement() {
 //    std::cout << F << std::endl;
     
     // 算高斯分布力
-    int strikePoint_index = std::floor(strikePoint * pairedString_a->N_index); // 将击弦点从比例转换为索引
+    int strikePoint_index = std::floor(strikePoint * pairedString_a->Delay_Index); // 将击弦点从比例转换为索引
     sigma = computeSigma();
     int sigma_int = std::max(1, int(std::ceil(sigma))); // 计算 sigma 的 int 值，向上取整
     int start = std::max(0, strikePoint_index - 3 * sigma_int);
-    int end   = std::min(pairedString_a->N_index, strikePoint_index + 3 * sigma_int);
+    int end   = std::min(pairedString_a->Delay_Index, strikePoint_index + 3 * sigma_int);
     std::vector<float> string_F = computeGaussianForce(start, end);
 
     // 把力注入弦
@@ -125,10 +125,10 @@ double HammerModel::hammerHalfStepForce(double _string_v, double dt) {
 std::vector<float> HammerModel::computeGaussianForce(int start, int end){
     // 创造一个和弦模型一样长的数组
     std::vector<float> string_F;
-    string_F.assign(pairedString_a->N_int_length, 0.0);
+    string_F.assign(pairedString_a->Delay_Int, 0.0);
     
     // 将击弦点从比例转换为索引
-    int strikePoint_index = std::floor(strikePoint * pairedString_a->N_index);
+    int strikePoint_index = std::floor(strikePoint * pairedString_a->Delay_Index);
 
     // 防一下
     if (sigma <= 0.0f) {

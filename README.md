@@ -54,15 +54,49 @@ From an engineering perspective, this observation leads to a central question:
 
 ## 2 研究历史
 
-全量化地建模任何一种乐器都绝非易事，尽管本文会声明钢琴是主要的研究对象，但钢琴拥有极其庞杂的物理信息，我相信在这样的研究过程中，我将听到的声音大部分也和钢琴本身没有太大关系，但同时也不难发现的是，物理方法建模钢琴并非一朝一夕，早在1987年Garnett就尝试通过数字波导替代全离散PDE的方法来模拟钢琴的全部系统，….
+全量化地建模任何一种乐器都绝非易事，尽管本文会声明钢琴是主要的研究对象，但钢琴拥有极其庞杂的物理信息，我相信在这样的研究过程中，我将听到的声音大部分也和钢琴本身没有太大关系，但同时也不难发现的是，物理方法建模钢琴并非一朝一夕，早在1987年Garnett就尝试通过数字波导替代全离散PDE的方法来模拟钢琴的全部系统….
+
+
+
+---
+
+## About bBpiano
+
+## 关于 bBpiano
+
+**bBpiano** 是一个受到 **Pianoteq 9** 启发、目前仍在积极开发中的 macOS 钢琴合成器项目。它以内置的物理建模钢琴引擎为核心，试图在保持轻量、实时响应的同时，捕捉真实乐器演奏时的直接性、存在感与声音生命力。
+
+这不仅是一个合成器项目，也是一次从物理方程到实时音频系统的完整研究实践。bBpiano 试图在数学模型、声学直觉、数值算法与现代软件工程之间建立一条清晰路径：从 PDE 到 PCM，从弦的振动到可听见的声音，从抽象公式到可运行的乐器。
+
+若您对物理建模合成、钢琴声学、数字信号处理或实时音频系统有所兴趣，欢迎交流讨论；也诚挚期待相关领域的前辈、研究者与开发者不吝指教。
+
+
+
+邮箱: arcopus07@gmail.com
+
+微信号: opus_arc
+
+
+
+**bBpiano** is a macOS piano synthesizer project inspired by **Pianoteq 9**, currently under active development. At its core is a physically modeled piano engine, designed to remain lightweight and responsive while capturing the immediacy, presence, and expressive vitality of a live instrument.
+
+The project is not merely an attempt to build a synthesizer, but a complete research practice that moves from physical equations to a real-time audio system. It seeks to establish a clear path between mathematical models, acoustic intuition, numerical algorithms, and modern software engineering: from PDE to PCM, from string vibration to audible sound, from abstract formulas to a playable instrument.
+
+For those interested in physical modeling synthesis, piano acoustics, digital signal processing, or real-time audio systems, discussions and exchanges are warmly welcome. I would also sincerely appreciate guidance and criticism from researchers, developers, and experienced practitioners in related fields.
+
+
+
+Gmail: arcopus07@gmail.com
+
+Wechat: opus_arc
 
 
 
 ___
 
-## 3 Pulse Code Modulation
+## 1 Pulse Code Modulation
 
-## **3 脉冲编码调制**
+## **1 脉冲编码调制**
 
 在物理层面中**声音的本质是介质中的压力扰动传播**，可对于现代人来说，我接触到的声音通常都不是由一个物理声源发出，而是通过声卡，尽管我很想顺便研究声卡的工作原理，但作为一般情况下的最终输出，还是决定从PCM入手，所有的发声引擎都遵循：
 
@@ -366,13 +400,13 @@ private func render(
 
 ___
 
-## 4 The One-Dimensional String Model
+## 2 The One-Dimensional String Model
 
-## 4 一维弦振动模型
+## 2 一维弦振动模型
 
 检验一个建模的好坏，最好的方式就是倾听它所发出的声响，上一章节我已经搭建了让我们聆听到音频函数的装置，这里我会尝试编写相对进阶一些的音频函数，我聚焦钢琴最核心的部分，尽管我明白击弦锤和音板都同等重要，但钢琴的主要储能部分仍然是弦，作为工程最开始的最简模型，为了简易地描述钢琴声响的由来，我需要检验这种扰动的根源: 弦的振动方程
 
-令人困扰的是，结合前文关于**PCM采样**的论述，**PCM 的理论采样对象应当是空气中的声压时间函数，而不是机械系统本身的位移函数**，但为了衔接上文的 C++ 函数，也为了所有急于得到整齐接口的工程师，我想先陈述这样一个命题：
+令人困扰的是，结合前文关于**PCM采样**的论述，**PCM 的理论采样对象应当是空气中的声压时间函数，而不是机械系统本身的位移函数**，但为了衔接上文的 C++ 函数，我想先陈述这样一个命题：
 
 
 
@@ -408,73 +442,43 @@ ___
 
 这段弦元质量为 $$\mu \Delta x$$，横向加速度约为 $$\frac{\partial^2 y}{\partial t^2}$$，因此横向合力满足
 
+### $$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\sin\theta(x+\Delta x,t)-T\sin\theta(x,t)$$
 
+即 
 
-$$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\sin\theta(x+\Delta x,t)-T\sin\theta(x,t)$$
-
-
-
-即 $$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\bigl[\sin\theta(x+\Delta x,t)-\sin\theta(x,t)\bigr]$$
-
-
+### $$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\bigl[\sin\theta(x+\Delta x,t)-\sin\theta(x,t)\bigr]$$
 
 因为振动很小，弦的斜率很小，所以
 
-
-
-$$\tan\theta \approx \sin\theta \approx \frac{\partial y}{\partial x}$$
-
-
+### $$\tan\theta \approx \sin\theta \approx \frac{\partial y}{\partial x}$$
 
 于是
 
+### $$\sin\theta(x,t)\approx \frac{\partial y}{\partial x}(x,t)$$
 
+### $$\sin\theta(x+\Delta x,t)\approx \frac{\partial y}{\partial x}(x+\Delta x,t)$$
 
-$$\sin\theta(x,t)\approx \frac{\partial y}{\partial x}(x,t)$$
+代回去： 
 
-$$\sin\theta(x+\Delta x,t)\approx \frac{\partial y}{\partial x}(x+\Delta x,t)$$
-
-
-
-代回去： $$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\left[ \frac{\partial y}{\partial x}(x+\Delta x,t) - \frac{\partial y}{\partial x}(x,t) \right]$$ 
-
-
+### $$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\left[ \frac{\partial y}{\partial x}(x+\Delta x,t) - \frac{\partial y}{\partial x}(x,t) \right]$$ 
 
 化为二阶空间导数并将上式除以 $$\Delta x：$$
 
-
-
-$$\mu \frac{\partial^2 y}{\partial t^2} = T\, \frac{ \frac{\partial y}{\partial x}(x+\Delta x,t) - \frac{\partial y}{\partial x}(x,t) }{ \Delta x }$$ 
-
-
+### $$\mu \frac{\partial^2 y}{\partial t^2} = T\, \frac{ \frac{\partial y}{\partial x}(x+\Delta x,t) - \frac{\partial y}{\partial x}(x,t) }{ \Delta x }$$ 
 
 令 $$ \Delta x\to 0$$，右边变成二阶导数：
 
-
-
-$$\mu \frac{\partial^2 y}{\partial t^2} = T\frac{\partial^2 y}{\partial x^2}$$ 
-
-
+### $$\mu \frac{\partial^2 y}{\partial t^2} = T\frac{\partial^2 y}{\partial x^2}$$ 
 
 于是得到
 
-
-
-$$\frac{\partial^2 y}{\partial t^2} = \frac{T}{\mu}\frac{\partial^2 y}{\partial x^2}$$ 
-
-
+### $$\frac{\partial^2 y}{\partial t^2} = \frac{T}{\mu}\frac{\partial^2 y}{\partial x^2}$$ 
 
 记 $$c^2=\frac{T}{\mu}$$ 
 
-
-
 便是
 
-
-
 ## $$\frac{\partial^2 y}{\partial t^2} = c^2\frac{\partial^2 y}{\partial x^2}$$
-
-
 
 $$\frac{\partial^2 y}{\partial t^2}$$ 是加速度 a
 
@@ -488,23 +492,15 @@ $$y(x)$$ 是当时间为常量，即静止时候的波形状
 
 这个方程的通解是：
 
-
-
-$$y(x,t) = f(x - ct) + g(x + ct)$$
-
-
+### $$y(x,t) = f(x - ct) + g(x + ct)$$
 
 $$f(x)$$ 是一个固定形状的函数，而 $$ct$$ 则说明这个函数在向着 x 轴的方向移动
-
-
 
 这个方程说明了**弦的振动 = 两个沿相反方向传播的波的叠加**
 
 **只要是一根满足“小振幅、恒定张力、连续介质、无耗散”的理想弦，其任意运动** y(x,t) **都必然可以表示为两列以速度** c **相反方向传播的波形之和：**
 
-$$f(x-ct)+g(x+ct)$$。
-
-
+### $$f(x-ct)+g(x+ct)$$。
 
 由 **Maxwell** 方程组，这个方程的波速除了：
 
@@ -523,7 +519,7 @@ $$f(x-ct)+g(x+ct)$$。
 
 
 
-好了，证明了这么多，必须要问的是，回到工程实践中，这样的数学方程对我们达成目标有多大的帮助？
+得到了这些证明作为保证，必须要做这样的发问：回到工程实践中，这样的数学方程对我们达成目标有多大的帮助？
 
 
 
@@ -533,91 +529,49 @@ $$f(x-ct)+g(x+ct)$$。
 
 严格来说，人耳最终感知到的并不是弦的位移本身，而是弦振动经过桥码、音板与空气耦合之后形成的声压变化。然而在此处所讨论的最简线性模型中，取弦上某一固定点的时间信号作为分析对象，是一个合理且有效的近似。
 
-
-
 为了证明这一点，我们从两端固定的一维理想弦出发。其运动满足波动方程
 
-
-
-$$\frac{\partial^2 y}{\partial t^2}=c^2\frac{\partial^2 y}{\partial x^2},\qquad y(0,t)=y(L,t)=0$$
-
-
+### $$\frac{\partial^2 y}{\partial t^2}=c^2\frac{\partial^2 y}{\partial x^2},\qquad y(0,t)=y(L,t)=0$$
 
 其中 L 为弦长，边界条件表示弦的两端固定。
 
 对于这样的系统，位移场可以展开为一组驻波模态的叠加：
 
-
-
-$$y(x,t)=\sum_{n=1}^{\infty} q_n(t)\sin!\left(\frac{n\pi x}{L}\right)$$
-
-
+### $$y(x,t)=\sum_{n=1}^{\infty} q_n(t)\sin!\left(\frac{n\pi x}{L}\right)$$
 
 这里 $$\sin\left(\frac{n\pi x}{L}\right) $$ 是第 n 阶空间模态，而 q_n(t) 是对应的时间系数。将这一形式代入波动方程，可以得到每一个模态都满足一个独立的简谐振动方程：
 
-
-
-$$\ddot q_n(t)+\omega_n^2 q_n(t)=0$$
-
-
+### $$\ddot q_n(t)+\omega_n^2 q_n(t)=0$$
 
 其中 $$\omega_n=\frac{n\pi c}{L}$$ ，因此，第 n 阶模态的时间部分可以写成：
 
-
-
-$$q_n(t)=A_n\cos(\omega_n t+\phi_n)$$
-
-
+### $$q_n(t)=A_n\cos(\omega_n t+\phi_n)$$
 
 于是整根弦的运动可写为：
 
-
-
-$$y(x,t)=\sum_{n=1}^{\infty} A_n\sin!\left(\frac{n\pi x}{L}\right)\cos(\omega_n t+\phi_n)$$
-
-
+### $$y(x,t)=\sum_{n=1}^{\infty} A_n\sin!\left(\frac{n\pi x}{L}\right)\cos(\omega_n t+\phi_n)$$
 
 这说明：理想弦的振动，本质上是若干个不同频率 $$\omega_n$$ 的模态线性叠加。也就是说，所谓“弦的频率内容”，正体现在这些模态频率之中。
 
 现在固定弦上的一个位置 x=x_p，并考察该点的位移随时间的变化。定义
 
-
-
-$$s(t):=y(x_p,t)$$
-
-
+### $$s(t):=y(x_p,t)$$
 
 则代入上式得到
 
-
-
-$$s(t)=\sum_{n=1}^{\infty} A_n\sin!\left(\frac{n\pi x_p}{L}\right)\cos(\omega_n t+\phi_n)$$
-
-
+### $$s(t)=\sum_{n=1}^{\infty} A_n\sin!\left(\frac{n\pi x_p}{L}\right)\cos(\omega_n t+\phi_n)$$
 
 由于 x_p 已固定，空间部分
 
-
-
-$$\sin!\left(\frac{n\pi x_p}{L}\right)$$
-
-
+### $$\sin!\left(\frac{n\pi x_p}{L}\right)$$
 
 对每一个 n 都只是一个常数。因此可记
 
-
-
-$$B_n=A_n\sin!\left(\frac{n\pi x_p}{L}\right)$$
-
-
+### $$B_n=A_n\sin!\left(\frac{n\pi x_p}{L}\right)$$
 
 于是
 
-
-
-$$s(t)=\sum_{n=1}^{\infty} B_n\cos(\omega_n t+\phi_n)$$
-
-
+### $$s(t)=\sum_{n=1}^{\infty} B_n\cos(\omega_n t+\phi_n)$$
 
 这个结果具有决定性的意义：
 
@@ -641,31 +595,17 @@ $$s(t)=\sum_{n=1}^{\infty} B_n\cos(\omega_n t+\phi_n)$$
 
 接下来还需处理一个物理上的疑问：既然耳朵真正听到的是空气中的声压，而不是弦位移本身，为何仍可将 y(x_p,t) 作为 PCM 采样的近似对象？
 
-
-
 某个模态在一点上的位移通常能写为
-
-
 
 $$y(x_p,t)=\cos(\omega t)$$
 
-
-
 从物理的角度上来说，在最简线性辐射模型中，可将声压近似视为与弦局部加速度成正比：
-
-
 
 $$p(t)\approx K\,\frac{\partial^2 y}{\partial t^2}(x_p,t)$$
 
-
-
 且我们能轻易地知道位移的二阶导数（加速度表达式）显然和原式子的频率相同：
 
-
-
 $$\frac{\partial^2 y}{\partial t^2}(x_p,t)=-\omega^2\cos(\omega t)$$
-
-
 
 由于弦振动到声压之间可近似看作线性映射，而线性映射不会改变频率位置，故此处我们能得到如下的论述：
 
@@ -675,19 +615,15 @@ $$\frac{\partial^2 y}{\partial t^2}(x_p,t)=-\omega^2\cos(\omega t)$$
 
 
 
-
-
-至此，我阐述了我对于这个偏微分方程的理解、以及对于这个工程的意义，
-
 然而，波动方程作为连续模型，并不能被计算机直接求解，因此必须将其转化为离散形式。
 
 
 
 ___
 
-## **5 **From PDE to FDTD and Digital Waveguide Formulations
+## **3 **From PDE to FDTD and Digital Waveguide Formulations
 
-## **5 从偏微分方程到 FDTD 与数字波导建模**
+## **3 从偏微分方程到 FDTD 与数字波导建模**
 
 > ![Piano Structure](./Doc/assets/Piano%20Structure.png)
 
@@ -702,11 +638,9 @@ ___
 > computing time, although it may vary slightly from one
 > string to the other.
 
-尽管 93 年硬件相对堪忧，但是鉴于主流方案（包括最现代的 J. O Smith 教学）都采用的是 DWG 的结构来对 PDE 的解进行**“结构性实现”**，FDTD 作为科研过渡，在工程上就不详尽叙述，我直接采用更现代的方法。
+尽管进行这样一个实验的年代[1993]，计算设备硬件十分堪忧，得到这样的结果也并不出乎意料，但在我的印象中，这样的方式更倾向于有一个明确的、长的计算过程而非实时，鉴于主流方案（包括最现代的 J. O Smith 教学）都采用的是 DWG 的结构来对 PDE 的解进行**“结构性实现”**，我还是直接采用更现代的方法吧。
 
-尽管如此，这里为了表述得更为详尽，还是对这两种方式的框架做出很小的比对：
-
-
+对这两种方式的框架做出很小的比对：
 
 **① propagation（传播）**
 
@@ -722,15 +656,357 @@ ___
 
 - hammer 
 
-
-
 **Digital Waveguide** 是用延迟线 + 反射 + 叠加，来实现波动方程解析解的算法结构 **waveguide** 的核心不是形状，而是**边界条件 + 介质结构 → 允许某些“模式”传播**
 
-基于上文解释过的一维弦振动模型的通解：
+基于上文解释过的一维弦振动模型的通解，也就是从位移波开始：
 
 $$y(x,t) = f(x - ct) + g(x + ct)$$
 
-我们知道了**弦的振动 = 两个沿相反方向传播的波的叠加**
+对时间求导，就得到速度：
+
+$v(x,t)=\frac{\partial y}{\partial t}$
+
+于是：
+
+$v(x,t)=-c f'(x-ct)+c g'(x+ct)$
+
+把这两个新函数重新命名：
+
+$v^+(x-ct)=-c f'(x-ct)$
+
+$v^-(x+ct)=c g'(x+ct)$
+
+于是速度也可以写成：
+
+$v(x,t)=v^+(x-ct)+v^-(x+ct)$
+
+重复此方法，位移、速度、力、斜率、加速度都可以分解成左右行波，于是：
+
+==同一根弦的同一次振动，可以用位移、速度、加速度三种方式观察；==
+
+==可尽管它们描述的是同一个运动，但听起来的频谱重心有明显不同。==
+
+从**物理量的听感**上说：**输出音频时，速度往往比位移更接近“可听信号”**
+
+- 弦的**位移**表示“弦偏离平衡位置有多远”。如果直接把位移当作音频信号，低频成分会比较突出，高频相对弱，所以声音容易显得厚、暗、软。
+- **速度**表示“弦运动得有多快”。速度可以理解为位移变化的快慢，因此它会比位移更强调快速变化的部分，也就是更强调高频。于是听起来会更明亮、更清楚，也更像一个可以送进音板模型或滤波器的声源信号。
+- **加速度**表示“速度变化得有多快”。它比速度更进一步强调快速变化，所以高频会被放得更大。直接听加速度，声音常常会偏尖、偏硬，甚至有刺耳感。
+
+从**运算和物理正确**的角度上说：速度在后续的物理计算中具有更好的可解释性。
+
+- 一方面，后文会涉及**特征阻抗**、**外力注入**和**能量传递**等内容，而这些计算与速度的关系更加直接。击弦锤施加在弦上的力，可以很自然地转换为左右传播的速度波；在**边界反射**时，固定端“速度为零”这一条件也十分直观，因此代码中的反号反射具有清晰的物理含义。
+- 另一方面，最终被人耳听到的声压并不是弦的位移本身。真实钢琴的声音需要经过**弦、琴码、音板和空气辐射**等一系列过程。位移只是弦运动的一种描述，而速度往往更接近一个可以直接用于合成的声源信号。
+
+因此，在本文的数字波导实现中，我选择将左右行波数组解释为**横向速度波**，而不是其他的表示。
+
+
+
+基于此，与**弦的振动 = 两个沿相反方向传播的波的叠加**，得到两个方向的速度行波容器的离散表示如下：
+
+``````cpp
+    mutable std::vector<float> left;
+    mutable std::vector<float> right;
+``````
+
+
+
+而在这个容器中参与传播的即为 samples，如果采样率为 44.1k，则一秒钟特定方向传播 44.1k 个 samples；(此处暂时没有考虑小数部分的传播)
+
+```cpp
+void StringModel::propagate() const {
+    // 考虑了击锤会使用 double-rate 的情况
+
+    // 内部传播
+    for (int i = 1; i <= Delay_Index; ++i) {
+        leftNext[i - 1] = left[i];
+    }
+
+    for (int i = 0; i <= Delay_Index - 1; ++i) {
+        rightNext[i + 1] = right[i];
+    }
+
+    // 边界反射
+    rightNext[0] = -g * left[0];
+    leftNext[Delay_Index] = -g * right[Delay_Index];
+
+    std::swap(left, leftNext);
+    std::swap(right, rightNext);
+}
+```
+
+
+
+用于模拟物理弦的两个数组的大小并非是真实物理意义上的弦长，区别于 FDTD 对空间中每一个点的精确把控，取而代之的是考虑时间上的“弦长”，即这些 samples 从一段传播到另一端的**延迟(Delay)**是多少，而这个延迟本身就是**波导长度(Delay)**，而且不以**秒(s)**作为单位，直接采用从 A 端 到 B 端 所需要的 **采样点 samples** 的数量，这看起来是一个更为工程风格的值，因为它不完全属于时间和空间的任何一个部分，但是又能在知晓采样率的的时候计算出时间，在知晓波速的情况能反推这个数组所模拟的真实物理琴弦的弦长。
+
+```cpp
+    double Delay = 0.0;
+    int Delay_Int = 0;
+    int Delay_Index = 0;
+    double Delay_Frac = 0.0;
+
+    Delay = double(sampleRate) / double(2 * get_f0());
+    Delay_Int = std::floor(Delay);
+    if(Delay_Int <= 0) Delay_Int = 2;
+    Delay_Index = Delay_Int - 1;
+    Delay_Frac = Delay - static_cast<double>(Delay_Int);
+```
+
+
+
+而当我们需要知道某一点的横向速度时：
+
+由于此处规定的数组大小不会是真正物理意义上的弦长，取而代之的是**波导长度(Delay)**，与 FDTD 精确考虑空间的每个点不同，这里采用的是时间上的长度，也就是这些 samples 整体到达另一侧所需要的延迟，而为了便利，这里的单位不用秒(s)而直接采用 samples 本身，只要我们知晓采样率，就很容易能做到这样的代换，如果还知晓波速，甚至也能对模拟的物理弦长做一个粗略的计算。而当我们需要知道某一点的具体横向速度时：
+
+``````cpp
+float StringModel::velocityAt(double p) const {
+    p = std::clamp(p, 0.0, 1.0);
+    int m = std::floor(p * Delay_Index);
+    return left[m] + right[m];
+}
+``````
+
+
+
+此处的 p 值从某种程度上说就是采样点本身，也就是说，当这根“琴弦”，受到某个力或者能量的影响开始在某些点具有速度并且开始传播后，只要使用 velocityAt 函数进行采样，传入之前写好的 DSP 模型让声卡进行回调，就能得到一个基础的听感，事实证明，这样的发声逻辑结合后文的非线性击锤是能直接发出具有钢琴音色的声响效果。
+
+
+
+<video src="./Doc/Vedio/录屏2026-05-07%2018.42.46.mov" controls width="640"></video>
+
+
+
+但实际上我采用的 reference_tune 是 440hz，并非 Friture 所测算的 442hz
+
+```shell
+midi_n: 69, string_index: 1, f0: 440.254, Delay: 50.0847
+midi_n: 69, string_index: 2, f0: 440, Delay: 50.1136
+midi_n: 69, string_index: 3, f0: 439.746, Delay: 50.1426
+Sound card started
+```
+
+出现这样的结果是因为忽略了Delay_Frac，也就是说这里的 Delay_Exact 50.1136 的 Frac 部分 0.1136 没有参与延迟计算，最终波导使用的是整数延迟 `D = 50`，因此得到的频率并不是：
+
+### $
+f_0 = \frac{f_s}{2D}
+= \frac{44100}{2 \times 50.1136}
+\approx 440\ \mathrm{Hz}
+$
+
+而是
+
+### $
+f_0 = \frac{f_s}{2D}
+= \frac{44100}{2 \times 50}
+= 441\ \mathrm{Hz}
+$
+此时，Friture 测得的结果与理论值仍存在一定误差，也是可以理解的。因为 Friture 当前支持的最大 FFT size 只有 16384 points，在采样率为 44100 Hz 时，其频率分辨率约为：
+
+### $\Delta f = \frac{f_s}{N} = \frac{44100}{16384} \approx 2.69\ \mathrm{Hz}$
+
+因此，Friture 显示的频率读数本身会受到 FFT bin 分辨率、窗函数和峰值估计算法的影响，不应将其视为完全精确的基频值，如果说这里因为过大的误差而不能说明问题，那我们再使用被 Frac 影响更大的更高频的 A6 再来做一次试验。
+
+<video src="./Doc/Vedio/录屏2026-05-07%2019.05.55.mov" controls width="640"></video>
+
+### $
+D = \frac{f_s}{2D}
+= \frac{44100}{2 \times 1760}
+\approx 12.5284\ \mathrm{Samples}
+$
+
+只取整数部分：
+
+### $
+f_0
+= \frac{f_s}{2D_\mathrm{int}}
+= \frac{44100}{2 \times 12}
+= 1837.5\ \mathrm{Hz}
+$
+
+这和以 440hz 为 reference_tune 的 A6 频率 
+
+### $f_0
+= \frac{f_s}{2D_\mathrm{int}}
+= \frac{44100}{2 \times 12.5284}
+= 1760\ \mathrm{Hz}
+$
+
+误差为：
+
+### $1837.5 - 1760 = 77.5\ \mathrm{Hz}$
+
+这个误差可比 Friture 的计算误差大得多，甚至导致 Friture 把没有考虑 frac 的 A6 认定成了 A#6
+
+### $A\#6 \approx 1864.66\ \mathrm{Hz}$
+
+很显然，这样的效果不是一个精确的系统所需要的，但是要解决这个问题并不简单，因为这个波导模型所简化的一个点就在于**“每次正好运动一个格点”**这件事本身
+
+而众所周知的是数组的大小是不能含小数的，而当非要取 $ y[n-frac]$ 时(类似 $y[12.5284]$这种情形) 应该怎样在考虑到计算成本的同时去合理地通过上下文近似这个值呢？
+
+这是我在前期搭建这个系统时遇到的第一个难点，我会在下一章节中重点讨论我对这个问题的思考。
+
+___
+
+## **4 Fractional Delay Waveguide**
+
+## **4 分数延迟波导**
+
+当然你可以尝试线性插值的做法，但是这会造成一个更大的问题：
+
+对于一个高频波段的两个相邻 sample 很可能是互为相反数的，这就意味着如果你使用线性插值的方式：
+
+### $y[n-frac] = (1-frac)y[n-1] + (frac)y[n]$
+
+在这样互为相反数的情形下很可能导致中间这个振幅本来会很大的值反而接近0，从而自动地减弱了部分高频的输出，这也是不理想的。
+
+好在 Bank 提供了一些更好的思路：
+
+Bank 的做法其实很明确：他没有用 Lagrange 插值来“移动小数长度”，而是用一阶 **allpass fractional delay filter** 来补偿整数 delay line 不能表示的小数延迟。
+
+在 6.3.5 “Setting the fundamental frequency” 里，Bank 说：数字波导 loop 在基频 f_0 处的 **phase delay 必须非常准确**，否则音就会不准。
+
+他定义目标波导长度：
+
+### $D(f0)=Dwg+Dfd=f0fs−Dgk(f0)−Ddisp(f0)$
+
+其中：
+
+- $f_s$：采样率；
+- $f_0$：目标基频；
+- $D_{gk}(f_0)$：loss filter 在基频处引入的相位延迟；
+- $D_{disp}(f_0)$：dispersion filter 在基频处引入的相位延迟；
+- $D_{wg}$：整数 delay line 长度；
+- $D_{fd}$：fractional delay filter 要补偿的小数延迟。
+
+而非简单地令：
+
+### $D=\frac{f_s}{f_0}$
+
+他的整数 delay line 长度取为：
+
+### $D_{wg} = \left\lfloor D(f_0)-0.5 \right\rfloor$
+
+然后 fractional delay 为：
+
+### $D_{fd}(f_0)=D(f_0)-D_{wg}$
+
+这样做的结果是：
+
+### $0.5 \le D_{fd}(f_0) < 1.5$
+
+Bank 特别指出，这个范围是 **一阶 allpass fractional delay filter 的 optimal range**。 
+
+这点很重要：
+ 他不是让 fractional delay 只落在 [0,1)，而是故意让它落在 [0.5,1.5)。这是因为一阶 allpass 的群延迟近似在这个区间更合适。
+
+Bank 使用 **first-order allpass filter (一阶全通滤波器)**。
+
+形式通常可写为：
+
+### $$H_{fd}(z)=\frac{a_1+z^{-1}}{1+a_1z^{-1}}$$
+
+这里我必须补充关于滤波器的一些基本约定的部分说明：
+
+### $y[n]=x[n-N]$
+
+以上是数字延迟的基本表示，意思是：当前输出 $y[n] = 往前数 N 个输入x[n - N]$
+
+在数字信号处理中，我们约定：
+
+### $z^{-1}$
+
+表示 delay by 1 sample，
+
+一般地：
+
+### $H(z)=z^{-N}$
+
+表示：
+
+### $y[n]=x[n-N]$
+
+
+
+
+
+
+
+系数近似为：
+
+### $$a_1=\frac{1-D_{fd}}{1+D_{fd}}$$
+
+Bank 明确说，这个方案来自 Smith / Jaffe / Välimäki 一系的 fractional delay waveguide 方法。 
+
+所以他的逻辑是：
+
+```cpp
+double D = sampleRate / f0 - lossPhaseDelay - dispersionPhaseDelay;
+
+int Dwg = floor(D - 0.5);
+double Dfd = D - Dwg;       // 0.5 <= Dfd < 1.5
+
+double a1 = (1.0 - Dfd) / (1.0 + Dfd);
+```
+
+然后 loop 里加入一阶 allpass：
+
+```cpp
+// H(z) = (a + z^-1) / (1 + a z^-1)
+float processAllpass(float x) {
+    float y = a * x + x1 - a * y1;
+    x1 = x;
+    y1 = y;
+    return y;
+}
+```
+
+
+
+
+
+Bank 的整体模型非常强调分工：
+
+### $H_r(z)=-H_l(z)H_d(z)H_{fd}(z)$
+
+也就是：
+
+- $H_l(z)$：loss filter，负责衰减；
+- $H_d(z)$：dispersion filter，负责刚性弦的非谐性；
+- $H_{fd}(z)$：fractional delay，负责基频细调。
+
+这个拆分在 Bank 等人的 2003 综述里也有相同表述：reflection filter 通常被拆成 loss、dispersion 和 fine-tuning fractional delay 三部分；fine tuning 可以放在 dispersion filter 里，也可以用单独的 fractional delay filter。 
+
+
+
+
+
+
+
+
+如果输入是一个正弦波：
+
+$x[n] = \sin(\omega n)$
+
+经过 N 个 sample 延迟后：
+
+$y[n] = x[n-N] = \sin(\omega(n-N))$
+
+展开看：
+
+$y[n] = \sin(\omega n - \omega N)$
+
+也就是说，整数 delay 对这个频率造成的相位变化是：
+
+$-\omega N$
+
+所以 delay 本质上就是相位斜率。
+
+
+
+___
+
+## **5 Hammer**
+
+## **5 **
 
 
 
@@ -742,13 +1018,16 @@ $$y(x,t) = f(x - ct) + g(x + ct)$$
 
 钢琴家 按下键盘上的键，Hammer 收到力的作用，与弦发生非线性接触
 
-**Numerical simulations of piano strings.**提到：激励并非是 δ(x-x₀) 而是**f(x,x₀,t) = fₕ(t) · g(x,x₀)**，这里存在一个空间窗口（hammer width）
+**Numerical simulations of piano strings.**提到：激励并非是 δ(x-x₀) 而是**f(x,x₀,t) = fₕ(t) · g(x,x₀)**，这里存在一个空间窗口（hammer width），这也是很明晰的，Hammer 与 String 的相互作用并不是
 
 
 
 
 
-(剩余部分仍然在研究与开发当中…)
+整数 delay line + loss filter + dispersion filter + fractional-delay allpass
+
+
+(剩余部分仍然在研究与开发当中… 随着项目的进步，本文也会逐渐完成)
 
 
 
