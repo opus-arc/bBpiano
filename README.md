@@ -114,7 +114,7 @@ ___
 
 1. **采样（Sampling）**：把连续时间信号变成离散时间点
 
-   根据**奈奎斯特定理（Nyquist Theorem）**，为了避免**混叠（aliasing）**，**采样率（sampleRate）必须大于或等于信号最高频率的 2 倍**，**人耳上限约 20 kHz**，故至少需要 40 kHz 的采样率，也就是至少要一秒钟记录音频函数 $$y(x,t)$$ 在 **$$x=pickup$$ （拾音点，pickup point）**的 $$y$$ 值 40000 次， $$y(x,t)$$ 是关于空间与时间的函数，而这基本上也是声音的本质，这在后文会逐步解释，此处的拾音方式除了定点，还有多弦耦合或者分布式拾音，在后文或许都会解释
+   根据**奈奎斯特定理（Nyquist Theorem）**，为了避免**混叠（aliasing）**，**采样率（sampleRate）必须大于或等于信号最高频率的 2 倍**，**人耳上限约 20 kHz**，故至少需要 40 kHz 的采样率，也就是至少要一秒钟记录音频函数 $y(x,t)$ 在 **$x=pickup$ （拾音点，pickup point）**的 $y$ 值 40000 次， $y(x,t)$ 是关于空间与时间的函数，而这基本上也是声音的本质，这在后文会逐步解释，此处的拾音方式除了定点，还有多弦耦合或者分布式拾音，在后文或许都会解释
 
    这里还需要补充一点，因为我只讨论了单声道的情况，然而当多个采样数据相互叠加，就会出现多个声道，关于多声道的采样，我们需要讨论 channel 的值
 
@@ -151,7 +151,7 @@ ___
 
    
 
-   基于上述的内容，通过  $$y(pickup,t)$$，sampleRate,  channel，我们能够得到一个关于 y 在 $$t2-t1$$ 间的 $$y$$ 的离散数组
+   基于上述的内容，通过  $y(pickup,t)$，sampleRate,  channel，我们能够得到一个关于 y 在 $t2-t1$ 间的 $y$ 的离散数组
 
    
 
@@ -159,9 +159,9 @@ ___
 
    通过采样获得的离散数组从数值上并不能直接喂给声卡，因为函数是理论无限连续的，采样时的精度完全取决于小数点后保留的位数，这显然是不可靠的，声卡作为一种物理器械有它固定的精度，现代声卡的精度（比如我的 Macbook Air 2025）， 尽管系统 Core Audio 的处理精度是 **32-bit float**，但声卡的最终输出（DAC）精度是 **24-bit float**，DAC是声卡中的一个核心部件，它的作用是将PCM转换成模拟电压然后传给放大器然后声音从喇叭放出。
 
-   在解释精度的详细运算之前，我需要先解释**归一化**，也就是把采样离散数组无损映射在 $$[-1,1]$$ 之间，但我需要声明的是，这样的操作也不是必须的，
+   在解释精度的详细运算之前，我需要先解释**归一化**，也就是把采样离散数组无损映射在 $[-1,1]$ 之间，但我需要声明的是，这样的操作也不是必须的，
 
-   我们假设可用值（精度）只有 3 bit（8 个等级，算法：$$2^3 = 8 $$  接着归一化离散）：
+   我们假设可用值（精度）只有 3 bit（8 个等级，算法：$2^3 = 8 $  接着归一化离散）：
    -1.0, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75
 
    如果采样值是：0.68
@@ -248,7 +248,7 @@ private func render(
 
 这是桥接 PCM 数据和声卡的 swift 最核心的部分代码，**AVAudioSourceNode **是一个“源节点”，我们可以写入自己的数据，这也是 Apple 提供的实时合成音频的关键工具。
 
-这其中还包含了一个很经典的正弦波的生成方式，不是通过 $$ct$$ 而是通过归一化 $$phase$$ [0, 1] 使得正弦图像变动起来
+这其中还包含了一个很经典的正弦波的生成方式，不是通过 $ct$ 而是通过归一化 $phase$ [0, 1] 使得正弦图像变动起来
 
 不过当然，我们需要的音频函数仍然需要通过 C++ 来生成，我们需要编写 cpp 和 swift 的桥接代码，理论上来说 WWDC 2023 session 10172: [Mix Swift and C++](https://developer.apple.com/wwdc23/10172)  Swift 5 提出了一种基于 framework 能够直接暴露 C++ API 的特性，但经过多轮测试，这样的方式仍然存在许多潜在的 bug 与坏处，偶发的闪退与内存出错令我略为沮丧，此处我们还是使用传统桥接的方式：
 
@@ -422,98 +422,180 @@ ___
 
 我不能够分别地去描述弦上每一个原子的运动过程，但弦在宏观上正是一个连续体
 
-故弦在位置 x 时间 t 的位移 y 可以用连续函数 $$y(x,t)$$ 描述
+故弦在位置 x 时间 t 的位移 y 可以用连续函数 $y(x,t)$ 描述
 
 我们引出一维弦振动公式并尝试证明它，这也是本文的第一个 **PDE = Partial Differential Equation** 偏微分方程: 
 
-考虑一根拉紧的弦：弦的平衡位置沿 x 轴，横向位移记为 y(x,t)，弦上的张力大小为 T，线密度（单位长度质量）为  $$\mu$$
+考虑一根拉紧的弦：弦的平衡位置沿 x 轴，横向位移记为 y(x,t)，弦上的张力大小为 T，线密度（单位长度质量）为  $\mu$
 
 假设：振动很小，弦的伸长可以忽略，张力 T 近似处处相同，只考虑横向运动
 
-取一小段弦元，取弦上从 $$x$$ 到 $$x+\Delta x$$ 的一小段，这小段弦两端都受张力，方向沿弦的切线方向。
+取一小段弦元，取弦上从 $x$ 到 $x+\Delta x$ 的一小段，这小段弦两端都受张力，方向沿弦的切线方向。
 
-左端张力：$$T$$，与 $$x$$ 轴夹角为 $$\theta(x,t)$$
+左端张力：$T$，与 $x$ 轴夹角为 $\theta(x,t)$
 
-右端张力：$$T$$，与 $$x$$ 轴夹角为 $$\theta(x+\Delta x,t)$$
+右端张力：$T$，与 $x$ 轴夹角为 $\theta(x+\Delta x,t)$
 
 因为只考虑横向振动，所以我们看 y 方向的受力。
 
 列牛顿第二定律：
 
-这段弦元质量为 $$\mu \Delta x$$，横向加速度约为 $$\frac{\partial^2 y}{\partial t^2}$$，因此横向合力满足
+这段弦元质量为 \(\mu \Delta x\)，横向加速度约为
+```math
+\frac{\partial^2 y}{\partial t^2}
+```
 
-### $$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\sin\theta(x+\Delta x,t)-T\sin\theta(x,t)$$
+因此横向合力满足
+```math
+\mu \Delta x \frac{\partial^2 y}{\partial t^2}
+=
+T\sin\theta(x+\Delta x,t)-T\sin\theta(x,t)
+```
 
-即 
-
-### $$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\bigl[\sin\theta(x+\Delta x,t)-\sin\theta(x,t)\bigr]$$
+即
+```math
+\mu \Delta x \frac{\partial^2 y}{\partial t^2}
+=
+T\bigl[\sin\theta(x+\Delta x,t)-\sin\theta(x,t)\bigr]
+```
 
 因为振动很小，弦的斜率很小，所以
-
-### $$\tan\theta \approx \sin\theta \approx \frac{\partial y}{\partial x}$$
+```math
+\tan\theta
+\approx
+\sin\theta
+\approx
+\frac{\partial y}{\partial x}
+```
 
 于是
+```math
+\sin\theta(x,t)
+\approx
+\frac{\partial y}{\partial x}(x,t)
+```
 
-### $$\sin\theta(x,t)\approx \frac{\partial y}{\partial x}(x,t)$$
+```math
+\sin\theta(x+\Delta x,t)
+\approx
+\frac{\partial y}{\partial x}(x+\Delta x,t)
+```
 
-### $$\sin\theta(x+\Delta x,t)\approx \frac{\partial y}{\partial x}(x+\Delta x,t)$$
+代回去：
+```math
+\mu \Delta x \frac{\partial^2 y}{\partial t^2}
+=
+T\left[
+\frac{\partial y}{\partial x}(x+\Delta x,t)
+-
+\frac{\partial y}{\partial x}(x,t)
+\right]
+```
 
-代回去： 
+化为二阶空间导数，并将上式除以 \(\Delta x\)：
+```math
+\mu \frac{\partial^2 y}{\partial t^2}
+=
+T
+\frac{
+\frac{\partial y}{\partial x}(x+\Delta x,t)
+-
+\frac{\partial y}{\partial x}(x,t)
+}{
+\Delta x
+}
+```
 
-### $$\mu \Delta x \frac{\partial^2 y}{\partial t^2} = T\left[ \frac{\partial y}{\partial x}(x+\Delta x,t) - \frac{\partial y}{\partial x}(x,t) \right]$$ 
-
-化为二阶空间导数并将上式除以 $$\Delta x：$$
-
-### $$\mu \frac{\partial^2 y}{\partial t^2} = T\, \frac{ \frac{\partial y}{\partial x}(x+\Delta x,t) - \frac{\partial y}{\partial x}(x,t) }{ \Delta x }$$ 
-
-令 $$ \Delta x\to 0$$，右边变成二阶导数：
-
-### $$\mu \frac{\partial^2 y}{\partial t^2} = T\frac{\partial^2 y}{\partial x^2}$$ 
+令 \( \Delta x\to 0\)，右边变成二阶导数：
+```math
+\mu \frac{\partial^2 y}{\partial t^2}
+=
+T\frac{\partial^2 y}{\partial x^2}
+```
 
 于是得到
+```math
+\frac{\partial^2 y}{\partial t^2}
+=
+\frac{T}{\mu}
+\frac{\partial^2 y}{\partial x^2}
+```
 
-### $$\frac{\partial^2 y}{\partial t^2} = \frac{T}{\mu}\frac{\partial^2 y}{\partial x^2}$$ 
+记
+```math
+c^2=\frac{T}{\mu}
+```
 
-记 $$c^2=\frac{T}{\mu}$$ 
+便是波动方程：
+```math
+\frac{\partial^2 y}{\partial t^2}
+=
+c^2
+\frac{\partial^2 y}{\partial x^2}
+```
 
-便是
+其中
+```math
+\frac{\partial^2 y}{\partial t^2}
+```
 
-## $$\frac{\partial^2 y}{\partial t^2} = c^2\frac{\partial^2 y}{\partial x^2}$$
+是横向加速度 \(a\)。
 
-$$\frac{\partial^2 y}{\partial t^2}$$ 是加速度 a
+当时间 \(t\) 固定时，\(y(x,t)\) 可以看作弦在某一瞬间的空间形状。因此
+```math
+\frac{\partial^2 y}{\partial x^2}
+```
 
-$$y(x)$$ 是当时间为常量，即静止时候的波形状
+描述的是该瞬间波形相对于空间位置 \(x\) 的二阶变化，也就是在小斜率近似下的曲率 \(\kappa\)。
 
-故 $$\frac{\partial^2 y}{\partial x^2}$$ 为空间函数的二阶导数即波在某一静止时间上的弯曲率 $$\kappa$$
+于是可以写成
+```math
+a=c^2\kappa
+```
 
-即 $$a=c^2\kappa$$
+也即：
 
-**加速度 = 波速² × 曲率**
+```math
+\text{加速度}
+=
+\text{波速}^2
+\times
+\text{曲率}
+```
 
 这个方程的通解是：
+```math
+y(x,t)=f(x-ct)+g(x+ct)
+```
 
-### $$y(x,t) = f(x - ct) + g(x + ct)$$
 
-$$f(x)$$ 是一个固定形状的函数，而 $$ct$$ 则说明这个函数在向着 x 轴的方向移动
+
+
+
+其中，\(f(x-ct)\) 表示以速度 \(c\) 向 \(+x\) 方向传播的波；\(g(x+ct)\) 表示以速度 \(c\) 向 \(-x\) 方向传播的波。
 
 这个方程说明了**弦的振动 = 两个沿相反方向传播的波的叠加**
 
 **只要是一根满足“小振幅、恒定张力、连续介质、无耗散”的理想弦，其任意运动** y(x,t) **都必然可以表示为两列以速度** c **相反方向传播的波形之和：**
+```math
+f(x-ct)+g(x+ct)
+```
 
-### $$f(x-ct)+g(x+ct)$$。
+
+
 
 由 **Maxwell** 方程组，这个方程的波速除了：
 
-弦振动：$$c = \sqrt{\frac{T}{\mu}}$$
+弦振动：$c = \sqrt{\frac{T}{\mu}}$
 
 ​    同样满足：
 
-声波： $$c = \sqrt{\frac{\gamma P}{\rho}}$$
+声波： $c = \sqrt{\frac{\gamma P}{\rho}}$
 
-- $$P$$：压强
-- $$\rho$$：密度
+- $P$：压强
+- $\rho$：密度
 
-电磁波：$$c = 3 \times 10^8 \,\text{m/s}$$
+电磁波：$c = 3 \times 10^8 \,\text{m/s}$
 
 ……
 
@@ -525,59 +607,127 @@ $$f(x)$$ 是一个固定形状的函数，而 $$ct$$ 则说明这个函数在向
 
 为了彻底解释这一点，接下来我开始证明前文提到过的命题：
 
-> **证明：一维理想弦的小振幅线性模型中，弦上某一固定点 x_p 的位移随时间的变化  y(x_p,t)，可以作为该弦最终辐射声压频率内容的一个近似代表**
+>  **证明：一维理想弦的小振幅线性模型中，弦上某一固定点 \(x_p\) 的位移随时间的变化 \(y(x_p,t)\)，可以作为该弦最终辐射声压频率内容的一个近似代表**
 
 严格来说，人耳最终感知到的并不是弦的位移本身，而是弦振动经过桥码、音板与空气耦合之后形成的声压变化。然而在此处所讨论的最简线性模型中，取弦上某一固定点的时间信号作为分析对象，是一个合理且有效的近似。
 
 为了证明这一点，我们从两端固定的一维理想弦出发。其运动满足波动方程
+```math
+\frac{\partial^2 y}{\partial t^2}
+=
+c^2
+\frac{\partial^2 y}{\partial x^2},
+\qquad
+y(0,t)=y(L,t)=0
+```
 
-### $$\frac{\partial^2 y}{\partial t^2}=c^2\frac{\partial^2 y}{\partial x^2},\qquad y(0,t)=y(L,t)=0$$
 
-其中 L 为弦长，边界条件表示弦的两端固定。
+
+其中，\(L\) 为弦长，边界条件表示弦的两端固定。
 
 对于这样的系统，位移场可以展开为一组驻波模态的叠加：
+```math
+y(x,t)
+=
+\sum_{n=1}^{\infty}
+q_n(t)
+\sin\left(\frac{n\pi x}{L}\right)
+```
 
-### $$y(x,t)=\sum_{n=1}^{\infty} q_n(t)\sin!\left(\frac{n\pi x}{L}\right)$$
 
-这里 $$\sin\left(\frac{n\pi x}{L}\right) $$ 是第 n 阶空间模态，而 q_n(t) 是对应的时间系数。将这一形式代入波动方程，可以得到每一个模态都满足一个独立的简谐振动方程：
 
-### $$\ddot q_n(t)+\omega_n^2 q_n(t)=0$$
+这里，\(\sin\left(\frac{n\pi x}{L}\right) \) 是第 \(n\) 阶空间模态，而 \(q_n(t)\) 是对应的时间系数。将这一形式代入波动方程，可以得到每一个模态都满足一个独立的简谐振动方程：
+```math
+\ddot q_n(t)+\omega_n^2 q_n(t)=0
+```
 
-其中 $$\omega_n=\frac{n\pi c}{L}$$ ，因此，第 n 阶模态的时间部分可以写成：
 
-### $$q_n(t)=A_n\cos(\omega_n t+\phi_n)$$
+
+其中
+```math
+\omega_n=\frac{n\pi c}{L}
+```
+
+
+
+因此，第 \(n\) 阶模态的时间部分可以写成：
+```math
+q_n(t)=A_n\cos(\omega_n t+\phi_n)
+```
+
+
 
 于是整根弦的运动可写为：
+```math
+y(x,t)
+=
+\sum_{n=1}^{\infty}
+A_n
+\sin\left(\frac{n\pi x}{L}\right)
+\cos(\omega_n t+\phi_n)
+```
 
-### $$y(x,t)=\sum_{n=1}^{\infty} A_n\sin!\left(\frac{n\pi x}{L}\right)\cos(\omega_n t+\phi_n)$$
 
-这说明：理想弦的振动，本质上是若干个不同频率 $$\omega_n$$ 的模态线性叠加。也就是说，所谓“弦的频率内容”，正体现在这些模态频率之中。
 
-现在固定弦上的一个位置 x=x_p，并考察该点的位移随时间的变化。定义
+这说明：理想弦的振动，本质上是若干个不同频率 \(\omega_n\) 的模态线性叠加。也就是说，所谓“弦的频率内容”，正体现在这些模态频率之中。
 
-### $$s(t):=y(x_p,t)$$
+现在固定弦上的一个位置 \(x=x_p\)，并考察该点的位移随时间的变化。定义
+```math
+s(t):=y(x_p,t)
+```
+
+
 
 则代入上式得到
+```math
+s(t)
+=
+\sum_{n=1}^{\infty}
+A_n
+\sin\left(\frac{n\pi x_p}{L}\right)
+\cos(\omega_n t+\phi_n)
+```
 
-### $$s(t)=\sum_{n=1}^{\infty} A_n\sin!\left(\frac{n\pi x_p}{L}\right)\cos(\omega_n t+\phi_n)$$
 
-由于 x_p 已固定，空间部分
 
-### $$\sin!\left(\frac{n\pi x_p}{L}\right)$$
+由于 \(x_p\) 已固定，空间部分
 
-对每一个 n 都只是一个常数。因此可记
 
-### $$B_n=A_n\sin!\left(\frac{n\pi x_p}{L}\right)$$
+
+```math
+\sin\left(\frac{n\pi x_p}{L}\right)
+```
+
+
+
+对每一个 \(n\) 都只是一个常数。因此可记
+
+```math
+B_n
+=
+A_n
+\sin\left(\frac{n\pi x_p}{L}\right)
+```
+
+
 
 于是
 
-### $$s(t)=\sum_{n=1}^{\infty} B_n\cos(\omega_n t+\phi_n)$$
+```math
+s(t)
+=
+\sum_{n=1}^{\infty}
+B_n
+\cos(\omega_n t+\phi_n)
+```
+
+
 
 这个结果具有决定性的意义：
 
 
 
-> **固定点** x_p **上的时间信号，仍然由整根弦的全部模态频率** $$\omega_n$$ **叠加而成。**
+> **固定点** x_p **上的时间信号，仍然由整根弦的全部模态频率** $\omega_n$ **叠加而成。**
 
 
 
@@ -597,15 +747,15 @@ $$f(x)$$ 是一个固定形状的函数，而 $$ct$$ 则说明这个函数在向
 
 某个模态在一点上的位移通常能写为
 
-$$y(x_p,t)=\cos(\omega t)$$
+$y(x_p,t)=\cos(\omega t)$
 
 从物理的角度上来说，在最简线性辐射模型中，可将声压近似视为与弦局部加速度成正比：
 
-$$p(t)\approx K\,\frac{\partial^2 y}{\partial t^2}(x_p,t)$$
+$p(t)\approx K\,\frac{\partial^2 y}{\partial t^2}(x_p,t)$
 
 且我们能轻易地知道位移的二阶导数（加速度表达式）显然和原式子的频率相同：
 
-$$\frac{\partial^2 y}{\partial t^2}(x_p,t)=-\omega^2\cos(\omega t)$$
+$\frac{\partial^2 y}{\partial t^2}(x_p,t)=-\omega^2\cos(\omega t)$
 
 由于弦振动到声压之间可近似看作线性映射，而线性映射不会改变频率位置，故此处我们能得到如下的论述：
 
@@ -660,7 +810,9 @@ ___
 
 基于上文解释过的一维弦振动模型的通解，也就是从位移波开始：
 
-$$y(x,t) = f(x - ct) + g(x + ct)$$
+```math
+y(x,t) = f(x - ct) + g(x + ct)
+```
 
 对时间求导，就得到速度：
 
@@ -703,10 +855,10 @@ $v(x,t)=v^+(x-ct)+v^-(x+ct)$
 
 基于此，与**弦的振动 = 两个沿相反方向传播的波的叠加**，得到两个方向的速度行波容器的离散表示如下：
 
-``````cpp
+```cpp
     mutable std::vector<float> left;
     mutable std::vector<float> right;
-``````
+```
 
 
 
@@ -757,13 +909,13 @@ void StringModel::propagate() const {
 
 由于此处规定的数组大小不会是真正物理意义上的弦长，取而代之的是**波导长度(Delay)**，与 FDTD 精确考虑空间的每个点不同，这里采用的是时间上的长度，也就是这些 samples 整体到达另一侧所需要的延迟，而为了便利，这里的单位不用秒(s)而直接采用 samples 本身，只要我们知晓采样率，就很容易能做到这样的代换，如果还知晓波速，甚至也能对模拟的物理弦长做一个粗略的计算。而当我们需要知道某一点的具体横向速度时：
 
-``````cpp
+```cpp
 float StringModel::velocityAt(double p) const {
     p = std::clamp(p, 0.0, 1.0);
     int m = std::floor(p * Delay_Index);
     return left[m] + right[m];
 }
-``````
+```
 
 
 
@@ -786,57 +938,65 @@ Sound card started
 
 出现这样的结果是因为忽略了Delay_Frac，也就是说这里的 Delay_Exact 50.1136 的 Frac 部分 0.1136 没有参与延迟计算，最终波导使用的是整数延迟 `D = 50`，因此得到的频率并不是：
 
-### $
+```math
 f_0 = \frac{f_s}{2D}
 = \frac{44100}{2 \times 50.1136}
 \approx 440\ \mathrm{Hz}
-$
+```
 
 而是
 
-### $
+```math
 f_0 = \frac{f_s}{2D}
 = \frac{44100}{2 \times 50}
 = 441\ \mathrm{Hz}
-$
+```
+
 此时，Friture 测得的结果与理论值仍存在一定误差，也是可以理解的。因为 Friture 当前支持的最大 FFT size 只有 16384 points，在采样率为 44100 Hz 时，其频率分辨率约为：
 
-### $\Delta f = \frac{f_s}{N} = \frac{44100}{16384} \approx 2.69\ \mathrm{Hz}$
+```math
+\Delta f = \frac{f_s}{N} = \frac{44100}{16384} \approx 2.69\ \mathrm{Hz}
+```
 
 因此，Friture 显示的频率读数本身会受到 FFT bin 分辨率、窗函数和峰值估计算法的影响，不应将其视为完全精确的基频值，如果说这里因为过大的误差而不能说明问题，那我们再使用被 Frac 影响更大的更高频的 A6 再来做一次试验。
 
 <video src="./Doc/Vedio/录屏2026-05-07%2019.05.55.mov" controls width="640"></video>
 
-### $
+```math
 D = \frac{f_s}{2D}
 = \frac{44100}{2 \times 1760}
 \approx 12.5284\ \mathrm{Samples}
-$
+```
 
 只取整数部分：
 
-### $
+```math
 f_0
 = \frac{f_s}{2D_\mathrm{int}}
 = \frac{44100}{2 \times 12}
 = 1837.5\ \mathrm{Hz}
-$
+```
 
 这和以 440hz 为 reference_tune 的 A6 频率 
 
-### $f_0
+```math
+f_0
 = \frac{f_s}{2D_\mathrm{int}}
 = \frac{44100}{2 \times 12.5284}
 = 1760\ \mathrm{Hz}
-$
+```
 
 误差为：
 
-### $1837.5 - 1760 = 77.5\ \mathrm{Hz}$
+```math
+1837.5 - 1760 = 77.5\ \mathrm{Hz}
+```
 
 这个误差可比 Friture 的计算误差大得多，甚至导致 Friture 把没有考虑 frac 的 A6 认定成了 A#6
 
-### $A\#6 \approx 1864.66\ \mathrm{Hz}$
+```math
+A\#6 \approx 1864.66\ \mathrm{Hz}
+```
 
 很显然，这样的效果不是一个精确的系统所需要的，但是要解决这个问题并不简单，因为这个波导模型所简化的一个点就在于**“每次正好运动一个格点”**这件事本身
 
@@ -850,23 +1010,25 @@ ___
 
 ## **4 分数延迟波导**
 
-当然你可以尝试线性插值的做法，但是这会造成一个更大的问题：
+当然你可以尝试线性插值的做法，但是这会造成几个更大的问题：
 
 对于一个高频波段的两个相邻 sample 很可能是互为相反数的，这就意味着如果你使用线性插值的方式：
 
-### $y[n-frac] = (1-frac)y[n-1] + (frac)y[n]$
+```math
+y[n-frac] = (1-frac)y[n-1] + (frac)y[n]
+```
 
-在这样互为相反数的情形下很可能导致中间这个振幅本来会很大的值反而接近0，从而自动地减弱了部分高频的输出，这也是不理想的。
+在这样互为相反数的情形下很可能导致中间这个振幅本来会很大的值反而接近0，从而自动地减弱了部分高频的输出，而且在后文也会证明这样的方式振幅会被偷偷地修改，这也是不理想的。
 
 好在 Bank 提供了一些更好的思路：
 
-Bank 的做法其实很明确：他没有用 Lagrange 插值来“移动小数长度”，而是用一阶 **allpass fractional delay filter** 来补偿整数 delay line 不能表示的小数延迟。
-
-在 6.3.5 “Setting the fundamental frequency” 里，Bank 说：数字波导 loop 在基频 f_0 处的 **phase delay 必须非常准确**，否则音就会不准。
+Bank 的做法其实很明确：针对基频 fine tuning 他没有用 Lagrange 插值来“移动小数长度”，而是用一阶 **allpass fractional delay filter** 来补偿整数 delay line 不能表示的小数延迟，在 6.3.5 “Setting the fundamental frequency” 里，Bank 说：数字波导 loop 在基频 f_0 处的 **phase delay 必须非常准确**，否则音就会不准。
 
 他定义目标波导长度：
 
-### $D(f0)=Dwg+Dfd=f0fs−Dgk(f0)−Ddisp(f0)$
+```math
+D(f0)=Dwg+Dfd=\frac{f0}{fs}−Dgk(f0)−Ddisp(f0)
+```
 
 其中：
 
@@ -879,94 +1041,1281 @@ Bank 的做法其实很明确：他没有用 Lagrange 插值来“移动小数�
 
 而非简单地令：
 
-### $D=\frac{f_s}{f_0}$
+```math
+D=\frac{f_s}{f_0}
+```
 
 他的整数 delay line 长度取为：
 
-### $D_{wg} = \left\lfloor D(f_0)-0.5 \right\rfloor$
+```math
+D_{wg} = \left\lfloor D(f_0)-0.5 \right\rfloor
+```
 
 然后 fractional delay 为：
 
-### $D_{fd}(f_0)=D(f_0)-D_{wg}$
+```math
+D_{fd}(f_0)=D(f_0)-D_{wg}
+```
 
 这样做的结果是：
 
-### $0.5 \le D_{fd}(f_0) < 1.5$
+```math
+0.5 \le D_{fd}(f_0) < 1.5
+```
 
-Bank 特别指出，这个范围是 **一阶 allpass fractional delay filter 的 optimal range**。 
+Bank 特别指出，这个范围是 **一阶 allpass fractional delay filter 的 optimal range** (最佳范围)。 
 
 这点很重要：
  他不是让 fractional delay 只落在 [0,1)，而是故意让它落在 [0.5,1.5)。这是因为一阶 allpass 的群延迟近似在这个区间更合适。
 
 Bank 使用 **first-order allpass filter (一阶全通滤波器)**。
 
-形式通常可写为：
+Bank 明确说，这个方案来自 Smith / Jaffe / Välimäki 一系的 **fractional delay waveguide** 方法。
 
-### $$H_{fd}(z)=\frac{a_1+z^{-1}}{1+a_1z^{-1}}$$
+先暂时不管这个系统是如何帮助我们去合理近似 Delay_Frac 的部分的数值，而是先对这样的系统进行一个好的分析：
 
-这里我必须补充关于滤波器的一些基本约定的部分说明：
+**first-order allpass filter** 的用途十分广泛，一阶是因为它只包含一阶延迟项 $z^{-1}$，allpass 的定义是 $|H(e^{j\omega})|=1$，它不改变任何频率的强弱，只改变相位(后文会逐步解释)，所以用这样的特殊滤波器就已经能够保证振幅不被修改，而只修改频率的相位。
 
-### $y[n]=x[n-N]$
+它的形式通常可写为：
 
-以上是数字延迟的基本表示，意思是：当前输出 $y[n] = 往前数 N 个输入x[n - N]$
+```math
+H_{fd}(z)=\frac{a_1+z^{-1}}{1+a_1z^{-1}}
+```
+
+由于在数字滤波器里：
+
+```math
+H(z)=\frac{Y(z)}{X(z)}
+```
+
+**滤波器 = 输出的 z 表达 / 输入的 z 表达**
+
+也就是：
+
+```math
+Y(z)=H(z)X(z)
+```
+
+- $x[n]$：时域输入；
+- $y[n]$：时域输出；
+- $X(z)$：输入的 z-transform；
+- $Y(z)$：输出的 z-transform；
+- $H(z)$：系统函数，也就是滤波器本身。
+
+代入得到：
+
+```math
+H_{fd}(z)=\frac{Y(z)}{X(z)}=\frac{a_1+z^{-1}}{1+a_1z^{-1}}
+```
+
+两边交叉相乘，消去分母：
+
+```math
+Y(z)(1+a_1z^{-1})=X(z)(a_1+z^{-1})
+```
+
+展开：
+
+```math
+Y(z)+a_1z^{-1}Y(z)=a_1X(z)+z^{-1}X(z)
+```
 
 在数字信号处理中，我们约定：
+$
+z^{-1}
+$
+表示 delay by 1 sample，这并不是一个普通变量，而是一个延迟算术符号：
 
-### $z^{-1}$
+```math
+z^{-1}
+```
 
-表示 delay by 1 sample，
+表示 delay by 1 sample，这并不是一个普通变量，而是一个延迟算术符号：
 
-一般地：
+```math
+z^{-1}Y(z)\quad \Longleftrightarrow \quad y[n-1]
+```
 
-### $H(z)=z^{-N}$
+于是据此让 **[29]** 式**回到时域**，也就是代入延迟算子得到：
 
-表示：
+```math
+y[n]+a_1y[n-1]=a_1x[n]+x[n-1]
+```
 
-### $y[n]=x[n-N]$
+整理得到：
 
+```math
+y[n]=a_1x[n]+x[n-1]-a_1y[n-1]
+```
 
+这四项分别是：
 
+$Y(z)\quad \Longleftrightarrow \quad y[n]$
 
+$a_1z^{-1}Y(z)\quad \Longleftrightarrow \quad a_1y[n-1]$
 
+$a_1X(z)\quad \Longleftrightarrow \quad a_1x[n]$
 
+$z^{-1}X(z)\quad \Longleftrightarrow \quad x[n-1]$
 
-系数近似为：
-
-### $$a_1=\frac{1-D_{fd}}{1+D_{fd}}$$
-
-Bank 明确说，这个方案来自 Smith / Jaffe / Välimäki 一系的 fractional delay waveguide 方法。 
-
-所以他的逻辑是：
+得到了 **[28]** 式这样离散的、程序友好的形式之后，回到我们的需求，可以写出代码：
 
 ```cpp
 double D = sampleRate / f0 - lossPhaseDelay - dispersionPhaseDelay;
 
-int Dwg = floor(D - 0.5);
-double Dfd = D - Dwg;       // 0.5 <= Dfd < 1.5
-
-double a1 = (1.0 - Dfd) / (1.0 + Dfd);
+int D_Int = floor(D - 0.5);
+double D_Frac = D - D_Int;       // 0.5 <= D_Frac < 1.5
 ```
 
-然后 loop 里加入一阶 allpass：
+一阶 allpass (刚才算得的 **[28]**式)：
 
 ```cpp
-// H(z) = (a + z^-1) / (1 + a z^-1)
+// y[n] = a_1x[n] + x[n - 1] - a_1y[n - 1]  [2]
 float processAllpass(float x) {
-    float y = a * x + x1 - a * y1;
+    float y = a1 * x + x1 - a1 * y1;
     x1 = x;
     y1 = y;
     return y;
 }
 ```
 
+也就是说一帧通过这个加工函数，出来时就已经被近乎无损地多延迟了一些相位。
+
+换句话说，只要找到一个 Delay_Frac 和 常量 a1 之间的一个映射关系能使最后多延迟出来的一些相位正好接近 y[n-Frac] 的话
+
+就能在原来写好的 propagate() loop 中的某一处调用一次这个 processAllpass 即可在一次完整传播中恢复接近正确的延迟，从而纠正基频、把音调准。
+
+那剩下的问题就变成如何找到这个输入 Delay_Frac 输出 a1 的计算公式呢？
+
+也就是解如下的联立方程：
+
+```math
+\begin{aligned}
+H_{fd}(z) &= \frac{a_1+z^{-1}}{1+a_1z^{-1}} \\
+y[n-\mathrm{Frac}] &\approx \mathrm{Allpass}(y[n]) \\
+a_1 &= \mathrm{FuncToA1}(\mathrm{Delay}_{\mathrm{Frac}})
+\end{aligned}
+```
+
+要解出 FuncToA1 是什么，我最好还要再拿出一些数学工具：
+
+我会先从复数 $z$ 出发，阐述选择极坐标系对于声音处理工作的重要性：
+
+根据欧拉公式：
+
+```math
+r\cos\phi+jr\sin\phi=re^{j\phi}
+```
+
+更一般的形式：
+
+```math
+z=a+jb=re^{j\phi}
+```
+
+对于音频处理来说：
+
+在等号左侧的**平面坐标系**中，我们看到的是**横坐标a、纵坐标b**
+
+而在等号右侧的**极坐标系**中，我们看到的是**幅度 r、相位 φ**
+
+显然极坐标系更为整齐，语义更明确，在输入PCM样本时，选取实数部分即可。
+
+例如：
+
+对于一个**离散时间序列**来说
+
+不用极坐标大概长这样：
+
+```math
+r^n\left(B\cos(\omega n)+C\sin(\omega n)\right)
+```
+
+而在极坐标中表示为:
+
+```math
+A r^n e^{j(\omega n+\phi)}
+```
+
+这个看起来明显更友好。
+
+我们可以利用这一点尝试做一些练习，比如之前遗留的，线性插值方式对幅度的影响证明：
+
+线性插值：$y[n]=(1-\delta)x[n]+\delta x[n-1]$
+
+代入：
+
+$x[n]=e^{j\omega n}$
+
+$x[n-1]=e^{j\omega(n-1)}$
+
+所以：
+
+$y[n]=(1-\delta)e^{j\omega n}+\delta e^{j\omega(n-1)}$
+
+把共同项 $e^{j\omega n}$ 提出来：
+
+$y[n]=e^{j\omega n}\left[(1-\delta)+\delta e^{-j\omega}\right]$
+
+这说明线性插值对频率 $\omega$ 的作用是：
+
+$H(e^{j\omega})= \frac{Y[e^{j\omega}]}{X[e^{j\omega}]} = (1-\delta)+\delta e^{-j\omega}$
+
+这个 $H(e^{j\omega})$ 就是线性插值的频率响应。
+
+如果它是理想 fractional delay，它应该长这样：
+
+$H_{\text{ideal}}(e^{j\omega})=e^{-j\omega\delta}$
+
+理想 fractional delay 的幅度是：
+
+$|e^{-j\omega\delta}|=1$
+
+也就是说，理想 delay 不应该改变任何频率的幅度。
+
+但线性插值的幅度是：
+
+```math
+|H(e^{j\omega})|
+=
+\left|(1-\delta)+\delta e^{-j\omega}\right|
+```
+
+这个一般不等于 1，所以线形插值并不保证幅度不会被改变。
+
+那现在尝试证明 allpass 的特性，它是否会改变频率？：
+
+先代入 $z=e^{j \omega}$ 进一阶 allpass：
+
+```math
+H_{fd}(z)=\frac{a_1+z^{-1}}{1+a_1z^{-1}}
+```
+
+先计算 $z^{-1}$ 的等效乘数：
+
+$z$ 离散序列中一帧为：$x[n]=e^{j\omega n}$
+
+上一延迟为：$x[n-1]=e^{j\omega (n-1)}$
+
+由 **[27]** 式，$z^{-1}$ 是这样一个作用，乘上 $e^{j\omega n}$ 后，得到 $e^{j\omega (n-1)}$
+
+很容易的值 $z^{-1}$ 的等效乘数为 $e^{-j\omega}$
+
+代入 $z^{-1}$：
+
+```math
+H_{fd}(e^{j\omega})=\frac{a_1+e^{-j\omega}}{1+a_1e^{-j\omega}}
+```
+
+它满足：
+
+```math
+|H_{fd}(e^{j\omega})|=1
+```
+
+因此它不会改变任何频率的幅度， allpass 不会自己制造 loss，不会像线性插值那样偷偷削弱高频。
+
+所以它符合理想 delay 的第一条性质：
+
+```math
+|H(e^{j\omega})|=1
+```
+
+在运用这些数学工具的基础上，剩下的问题仍然是：**通过这个滤波器后的相位是如何与 Delay_Frac 近似的？**
+
+我们写：
+
+```math
+H_{fd}(e^{j\omega})=\frac{a_1+e^{-j\omega}}{1+a_1e^{-j\omega}}
+```
+
+它是一个复数。因为幅度为 1，所以能写成：
+
+```math
+H_{fd}(e^{j\omega})=e^{j\phi(\omega)}
+```
+
+由于我写这个滤波器是为了让波多延迟 D_Frac 个相位
+
+而我们想要的实际上就是
+
+```math
+H_{fd_{ideal}}(e^{j\omega})=z^{-D_{Frac}} = e^{-j\omega D_{Frac}}
+```
+
+这个近似希望：
+
+```math
+e^{-j\omega D_{Frac}} \approx e^{j\phi(\omega)}
+```
+
+因此希望：
+
+```math
+\phi(\omega)\approx -\omega D_{frac}
+```
+
+如果这条相位曲线的斜率接近：
+
+```math
+-D_{frac}
+```
+
+那它就表现得像一个 $D_{frac} sample delay$。
+
+这里要引入一个新的概念：**group delay**
+
+**group delay** 即为相位曲线的导数：
+
+```math
+\tau_g(\omega)=
+-\frac{d\phi(\omega)}{d\omega}
+```
+
+我要求出这个导数然后和 $D_{frac}$ 列方程把 a1 求出来：
+
+先回到原式：
+
+```math
+H_{fd}(e^{j\omega})=\frac{a_1+e^{-j\omega}}{1+a_1e^{-j\omega}}
+```
+
+为了看相位，先把分子稍微变形：
+
+```math
+a_1+e^{-j\omega}
+=
+e^{-j\omega}(1+a_1e^{j\omega})
+```
+
+所以：
+
+```math
+H_{fd}(e^{j\omega})
+=
+e^{-j\omega}
+\frac{1+a_1e^{j\omega}}{1+a_1e^{-j\omega}}
+```
+
+下一步我们巧妙地**利用共轭关系**：
+
+因为 $a_1$ 是实数：
+
+```math
+1+a_1e^{j\omega}
+```
+
+和：
+
+```math
+1+a_1e^{-j\omega}
+```
+
+互为共轭。
+
+令：
+
+```math
+1+a_1e^{j\omega}=R(\omega)e^{j\theta(\omega)}
+```
+
+那么：
+
+```math
+1+a_1e^{-j\omega}=R(\omega)e^{-j\theta(\omega)}
+```
+
+代入：
+
+```math
+H_{fd}(e^{j\omega})
+=
+e^{-j\omega}
+\frac{R(\omega)e^{j\theta(\omega)}}{R(\omega)e^{-j\theta(\omega)}}
+```
+
+约掉 $R(\omega)$：
+
+```math
+H_{fd}(e^{j\omega})
+=
+e^{-j\omega}e^{j2\theta(\omega)}
+```
+
+所以：
+
+```math
+H_{fd}(e^{j\omega})
+=
+e^{j(-\omega+2\theta(\omega))}
+```
+
+因此：
+
+```math
+\phi(\omega)=-\omega+2\theta(\omega)
+```
+
+下面计算 $\theta(\omega)$。
+
+因为
+
+```math
+1+a_1e^{j\omega}
+=
+1+a_1(\cos\omega+j\sin\omega)
+```
+
+所以
+
+```math
+1+a_1e^{j\omega}
+=
+(1+a_1\cos\omega)+j(a_1\sin\omega)
+```
+
+因此
+
+```math
+\theta(\omega)
+=
+\arctan\left(
+\frac{a_1\sin\omega}{1+a_1\cos\omega}
+\right)
+```
+
+更严谨地写是
+
+```math
+\theta(\omega)
+=
+\mathrm{atan2}
+\left(
+a_1\sin\omega,\,
+1+a_1\cos\omega
+\right)
+```
+
+于是
+
+```math
+\phi(\omega)
+=
+-\omega
++
+2\mathrm{atan2}
+\left(
+a_1\sin\omega,\,
+1+a_1\cos\omega
+\right)
+```
+
+然后对相位求导。
+
+group delay 定义为
+
+```math
+\tau_g(\omega)
+=
+-\frac{d\phi(\omega)}{d\omega}
+```
+
+因为
+
+```math
+\phi(\omega)
+=
+-\omega+2\theta(\omega)
+```
+
+所以
+
+```math
+\frac{d\phi(\omega)}{d\omega}
+=
+-1
++
+2\frac{d\theta(\omega)}{d\omega}
+```
+
+因此
+
+```math
+\tau_g(\omega)
+=
+1
+-
+2\frac{d\theta(\omega)}{d\omega}
+```
+
+现在只需要求
+
+```math
+\frac{d\theta(\omega)}{d\omega}
+```
+
+令
+
+```math
+u(\omega)=a_1\sin\omega
+```
+
+```math
+v(\omega)=1+a_1\cos\omega
+```
+
+则
+
+```math
+\theta(\omega)
+=
+\arctan\left(
+\frac{u(\omega)}{v(\omega)}
+\right)
+```
+
+对它求导，可以得到
+
+```math
+\frac{d\theta}{d\omega}
+=
+\frac{v u'-u v'}{u^2+v^2}
+```
+
+其中
+
+```math
+u'=a_1\cos\omega
+```
+
+```math
+v'=-a_1\sin\omega
+```
+
+所以分子为
+
+```math
+\begin{aligned}
+v u'-u v'
+&=
+(1+a_1\cos\omega)(a_1\cos\omega)
+-
+(a_1\sin\omega)(-a_1\sin\omega) \\[4pt]
+&=
+a_1\cos\omega
++
+a_1^2\cos^2\omega
++
+a_1^2\sin^2\omega
+\end{aligned}
+```
+
+因为
+
+```math
+\cos^2\omega+\sin^2\omega=1
+```
+
+所以
+
+```math
+v u'-u v'
+=
+a_1\cos\omega+a_1^2
+```
+
+分母为
+
+```math
+\begin{aligned}
+u^2+v^2
+&=
+(a_1\sin\omega)^2
++
+(1+a_1\cos\omega)^2 \\[4pt]
+&=
+a_1^2\sin^2\omega
++
+1
++
+2a_1\cos\omega
++
+a_1^2\cos^2\omega \\[4pt]
+&=
+1
++
+2a_1\cos\omega
++
+a_1^2
+\end{aligned}
+```
+
+所以
+
+```math
+\frac{d\theta}{d\omega}
+=
+\frac{
+a_1\cos\omega+a_1^2
+}{
+1+2a_1\cos\omega+a_1^2
+}
+```
+
+代回 group delay：
+
+```math
+\tau_g(\omega)
+=
+1
+-
+2
+\frac{
+a_1\cos\omega+a_1^2
+}{
+1+2a_1\cos\omega+a_1^2
+}
+```
+
+通分：
+
+```math
+\tau_g(\omega)
+=
+\frac{
+1+2a_1\cos\omega+a_1^2
+-
+2a_1\cos\omega
+-
+2a_1^2
+}{
+1+2a_1\cos\omega+a_1^2
+}
+```
+
+化简：
+
+```math
+\tau_g(\omega)
+=
+\frac{
+1-a_1^2
+}{
+1+2a_1\cos\omega+a_1^2
+}
+```
+
+这就是一阶 allpass 的 group delay：
+
+```math
+\tau_g(\omega)
+=
+\frac{
+1-a_1^2
+}{
+1+2a_1\cos\omega+a_1^2
+}
+```
+
+让低频处匹配 $D_{\mathrm{frac}}$。
+
+令
+
+```math
+\omega=0
+```
+
+所以
+
+```math
+\tau_g(0)
+=
+\frac{1-a_1^2}{1+2a_1+a_1^2}
+```
+
+也就是
+
+```math
+\tau_g(0)
+=
+\frac{(1-a_1)(1+a_1)}{(1+a_1)^2}
+```
+
+因此
+
+```math
+\tau_g(0)
+=
+\frac{1-a_1}{1+a_1}
+```
+
+Bank 希望低频 group delay 等于 $D_{\mathrm{frac}}$，所以
+
+```math
+D_{\mathrm{frac}}
+=
+\frac{1-a_1}{1+a_1}
+```
+
+解得
+
+```math
+a_1
+=
+\frac{1-D_{\mathrm{frac}}}{1+D_{\mathrm{frac}}}
+```
+
+据此补充：
+
+```cpp
+double a1 = double(1 - Delay_Frac) / double(1 + Delay_Frac);
+```
+
+<video src="./Doc/Vedio/录屏2026-05-08%2014.47.28.mov" controls width="640"></video>
+
+```math
+|R_{measure} - R_{ideal}| = 1761\mathrm{Hz} - 1760\mathrm{Hz} = 1\mathrm{Hz} < (\Delta f = 2.69\mathrm{Hz})
+```
+
+这样就处理完了波导长度的小数部分，基本校准了弦的基频。
+
+总得来说，Bank 的整体模型非常强调分工：
+
+```math
+H_r(z)=-H_l(z)H_d(z)H_{fd}(z)
+```
+
+根据欧拉公式：
+$
+r\cos\phi+jr\sin\phi=re^{j\phi}
+$
+更一般的形式：
+$
+z=a+jb=re^{j\phi}
+$
+对于音频处理来说：
+
+在等号左侧的**平面坐标系**中，我们看到的是**横坐标a、纵坐标b**
+
+而在等号右侧的**极坐标系**中，我们看到的是**幅度 r、相位 φ**
+
+显然极坐标系更为整齐，语义更明确，在输入PCM样本时，选取实数部分即可。
+
+例如：
+
+对于一个**离散时间序列**来说
+
+不用极坐标大概长这样：
+$
+r^n\left(B\cos(\omega n)+C\sin(\omega n)\right)
+$
+而在极坐标中表示为:
+$
+A r^n e^{j(\omega n+\phi)}
+$
+这个看起来明显更友好。
+
+我们可以利用这一点尝试做一些练习，比如之前遗留的，线性插值方式对幅度的影响证明：
+
+线性插值：$y[n]=(1-\delta)x[n]+\delta x[n-1]$
+
+代入：
+
+$x[n]=e^{j\omega n}$
+
+$x[n-1]=e^{j\omega(n-1)}$
+
+所以：
+
+$y[n]=(1-\delta)e^{j\omega n}+\delta e^{j\omega(n-1)}$
+
+把共同项 $e^{j\omega n}$ 提出来：
+
+$y[n]=e^{j\omega n}\left[(1-\delta)+\delta e^{-j\omega}\right]$
+
+这说明线性插值对频率 $\omega$ 的作用是：
+
+$H(e^{j\omega})= \frac{Y[e^{j\omega}]}{X[e^{j\omega}]} = (1-\delta)+\delta e^{-j\omega}$
+
+这个 $H(e^{j\omega}) $ 就是线性插值的频率响应。
+
+如果它是理想 fractional delay，它应该长这样：
+
+$H_{\text{ideal}}(e^{j\omega})=e^{-j\omega\delta}$
+
+理想 fractional delay 的幅度是：
+
+$|e^{-j\omega\delta}|=1$
+
+也就是说，理想 delay 不应该改变任何频率的幅度。
+
+但线性插值的幅度是：
+
+$
+|H(e^{j\omega})|
+=
+\left|(1-\delta)+\delta e^{-j\omega}\right|
+$
+
+这个一般不等于 1，所以线形插值并不保证幅度不会被改变。
+
+
+
+那现在尝试证明 allpass 的特性，它是否会改变频率？：
+
+先代入 $z=e^{j\omega}$ 进一阶 allpass：
+$
+H_{fd}(z)=\frac{a_1+z^{-1}}{1+a_1z^{-1}}
+$
+先计算 $z^{-1}$ 的等效乘数：
+
+$z$ 离散序列中一帧为：$x[n]=e^{j\omega n}$
+
+上一延迟为：$x[n-1]=e^{j\omega (n-1)}$
+
+由 **[30]** 式， $z^{-1}$ 是这样一个作用，乘上 $e^{j\omega n}$ 后，得到 $e^{j\omega (n-1)}$
+
+很容易的值 $z^{-1}$ 的等效乘数为 $ e^{-j\omega}$
+
+代入 $z^{-1}$ ：
+$
+H_{fd}(e^{j\omega})=\frac{a_1+e^{-j\omega}}{1+a_1e^{-j\omega}}
+$
+它满足：
+$
+|H_{fd}(e^{j\omega})|=1
+$
+因此它不会改变任何频率的幅度， allpass 不会自己制造 loss，不会像线性插值那样偷偷削弱高频。
+
+所以它符合理想 delay 的第一条性质：
+$
+|H(e^{j\omega})|=1
+$
+在运用这些数学工具的基础上，剩下的问题仍然是：**通过这个滤波器后的相位是如何与 Delay_Frac 近似的？**
+
+我们写：
+$
+H_{fd}(e^{j\omega})=\frac{a_1+e^{-j\omega}}{1+a_1e^{-j\omega}}
+$
+它是一个复数。因为幅度为 1，所以能写成：
+$
+H_{fd}(e^{j\omega})=e^{j\phi(\omega)}
+$
+由于我写这个滤波器是为了让波多延迟 D_Frac 个相位
+
+而我们想要的实际上就是
+$
+H_{fd_{ideal}}(e^{j\omega})=z^{-D_{Frac}} = e^{-j\omega D_{Frac}}
+$
+这个近似希望：
+$
+e^{-j\omega D_{Frac}} \approx e^{j\phi(\omega)}
+$
+因此希望：
+$
+\phi(\omega)\approx -\omega D_{frac}
+$
+如果这条相位曲线的斜率接近：
+$
+-D_{frac}
+$
+那它就表现得像一个 $D_{frac} sample delay$。
+
+这里要引入一个新的概念：**group delay**
+
+**group delay** 即为相位曲线的导数：
+$
+\tau_g(\omega)=
+-\frac{d\phi(\omega)}{d\omega}
+$
+我要求出这个导数然后和 $D_{frac}$ 列方程把 a1 求出来：
+
+先回到原式：
+```math
+H_{fd}(e^{j\omega})=\frac{a_1+e^{-j\omega}}{1+a_1e^{-j\omega}}
+```
+为了看相位，先把分子稍微变形：
+
+```math
+a_1+e^{-j\omega}
+=
+e^{-j\omega}(1+a_1e^{j\omega})
+```
+
+所以：
+
+```math
+H_{fd}(e^{j\omega})
+=
+e^{-j\omega}
+\frac{1+a_1e^{j\omega}}{1+a_1e^{-j\omega}}
+```
+
+下一步我们巧妙地**利用共轭关系**：
+
+因为 \(a_1\) 是实数：
+
+```math
+1+a_1e^{j\omega}
+```
+
+和：
+
+```math
+1+a_1e^{-j\omega}
+```
+
+互为共轭。
+
+令：
+
+```math
+1+a_1e^{j\omega}=R(\omega)e^{j\theta(\omega)}
+```
+
+那么：
+
+```math
+1+a_1e^{-j\omega}=R(\omega)e^{-j\theta(\omega)}
+```
+
+代入：
+
+```math
+H_{fd}(e^{j\omega})
+=
+e^{-j\omega}
+\frac{R(\omega)e^{j\theta(\omega)}}{R(\omega)e^{-j\theta(\omega)}}
+```
+
+约掉 \(R(\omega)\)：
+
+```math
+H_{fd}(e^{j\omega})
+=
+e^{-j\omega}e^{j2\theta(\omega)}
+```
+
+所以：
+
+```math
+H_{fd}(e^{j\omega})
+=
+e^{j(-\omega+2\theta(\omega))}
+```
+
+因此：
+
+```math
+\phi(\omega)=-\omega+2\theta(\omega)
+```
+
+
+下面计算 \(\theta(\omega)\)。
+
+因为
+```math
+1+a_1e^{j\omega}
+=
+1+a_1(\cos\omega+j\sin\omega)
+```
+
+所以
+```math
+1+a_1e^{j\omega}
+=
+(1+a_1\cos\omega)+j(a_1\sin\omega)
+```
+
+因此
+```math
+\theta(\omega)
+=
+\arctan\left(
+\frac{a_1\sin\omega}{1+a_1\cos\omega}
+\right)
+```
+
+更严谨地写是
+```math
+\theta(\omega)
+=
+\mathrm{atan2}
+\left(
+a_1\sin\omega,\,
+1+a_1\cos\omega
+\right)
+```
+
+于是
+```math
+\phi(\omega)
+=
+-\omega
++
+2\mathrm{atan2}
+\left(
+a_1\sin\omega,\,
+1+a_1\cos\omega
+\right)
+```
+
+然后对相位求导。
+
+group delay 定义为
+```math
+\tau_g(\omega)
+=
+-\frac{d\phi(\omega)}{d\omega}
+```
+
+因为
+```math
+\phi(\omega)
+=
+-\omega+2\theta(\omega)
+```
+
+所以
+```math
+\frac{d\phi(\omega)}{d\omega}
+=
+-1
++
+2\frac{d\theta(\omega)}{d\omega}
+```
+
+因此
+```math
+\tau_g(\omega)
+=
+1
+-
+2\frac{d\theta(\omega)}{d\omega}
+```
+
+现在只需要求
+```math
+\frac{d\theta(\omega)}{d\omega}
+```
+
+令
+```math
+u(\omega)=a_1\sin\omega
+```
+
+```math
+v(\omega)=1+a_1\cos\omega
+```
+
+则
+```math
+\theta(\omega)
+=
+\arctan\left(
+\frac{u(\omega)}{v(\omega)}
+\right)
+```
+
+对它求导，可以得到
+```math
+\frac{d\theta}{d\omega}
+=
+\frac{v u'-u v'}{u^2+v^2}
+```
+
+其中
+```math
+u'=a_1\cos\omega
+```
+
+```math
+v'=-a_1\sin\omega
+```
+
+所以分子为
+```math
+\begin{aligned}
+v u'-u v'
+&=
+(1+a_1\cos\omega)(a_1\cos\omega)
+-
+(a_1\sin\omega)(-a_1\sin\omega) \\[4pt]
+&=
+a_1\cos\omega
++
+a_1^2\cos^2\omega
++
+a_1^2\sin^2\omega
+\end{aligned}
+```
+
+因为
+```math
+\cos^2\omega+\sin^2\omega=1
+```
+
+所以
+```math
+v u'-u v'
+=
+a_1\cos\omega+a_1^2
+```
+
+分母为
+```math
+\begin{aligned}
+u^2+v^2
+&=
+(a_1\sin\omega)^2
++
+(1+a_1\cos\omega)^2 \\[4pt]
+&=
+a_1^2\sin^2\omega
++
+1
++
+2a_1\cos\omega
++
+a_1^2\cos^2\omega \\[4pt]
+&=
+1
++
+2a_1\cos\omega
++
+a_1^2
+\end{aligned}
+```
+
+所以
+```math
+\frac{d\theta}{d\omega}
+=
+\frac{
+a_1\cos\omega+a_1^2
+}{
+1+2a_1\cos\omega+a_1^2
+}
+```
+
+代回 group delay：
+```math
+\tau_g(\omega)
+=
+1
+-
+2
+\frac{
+a_1\cos\omega+a_1^2
+}{
+1+2a_1\cos\omega+a_1^2
+}
+```
+
+通分：
+```math
+\tau_g(\omega)
+=
+\frac{
+1+2a_1\cos\omega+a_1^2
+-
+2a_1\cos\omega
+-
+2a_1^2
+}{
+1+2a_1\cos\omega+a_1^2
+}
+```
+
+化简：
+```math
+\tau_g(\omega)
+=
+\frac{
+1-a_1^2
+}{
+1+2a_1\cos\omega+a_1^2
+}
+```
+
+这就是一阶 allpass 的 group delay：
+```math
+\tau_g(\omega)
+=
+\frac{
+1-a_1^2
+}{
+1+2a_1\cos\omega+a_1^2
+}
+```
+
+让低频处匹配 \(D_{\mathrm{frac}}\)。
+
+令
+```math
+\omega=0
+```
+
+所以
+```math
+\tau_g(0)
+=
+\frac{1-a_1^2}{1+2a_1+a_1^2}
+```
+
+也就是
+```math
+\tau_g(0)
+=
+\frac{(1-a_1)(1+a_1)}{(1+a_1)^2}
+```
+
+因此
+```math
+\tau_g(0)
+=
+\frac{1-a_1}{1+a_1}
+```
+
+Bank 希望低频 group delay 等于 \(D_{\mathrm{frac}}\)，所以
+```math
+D_{\mathrm{frac}}
+=
+\frac{1-a_1}{1+a_1}
+```
+
+解得
+```math
+a_1
+=
+\frac{1-D_{\mathrm{frac}}}{1+D_{\mathrm{frac}}}
+```
 
 
 
 
-Bank 的整体模型非常强调分工：
+据此补充：
 
-### $H_r(z)=-H_l(z)H_d(z)H_{fd}(z)$
+```cpp
+double a1 = double(1 - Delay_Frac) / double(1 + Delay_Frac);
+```
 
+<video src="./Doc/Vedio/录屏2026-05-08%2014.47.28.mov" controls width="640"></video>
+
+
+```math
+|R_{measure} - R_{ideal}| = 1761\mathrm{Hz} - 1760\mathrm{Hz} = 1\mathrm{Hz} < (\Delta f = 2.69\mathrm{Hz})
+```
+
+
+这样就处理完了波导长度的小数部分，基本校准了弦的基频。
+
+
+
+总得来说，Bank 的整体模型非常强调分工：
+$
+H_r(z)=-H_l(z)H_d(z)H_{fd}(z)
+$
 也就是：
 
 - $H_l(z)$：loss filter，负责衰减；
@@ -974,31 +2323,6 @@ Bank 的整体模型非常强调分工：
 - $H_{fd}(z)$：fractional delay，负责基频细调。
 
 这个拆分在 Bank 等人的 2003 综述里也有相同表述：reflection filter 通常被拆成 loss、dispersion 和 fine-tuning fractional delay 三部分；fine tuning 可以放在 dispersion filter 里，也可以用单独的 fractional delay filter。 
-
-
-
-
-
-
-
-
-如果输入是一个正弦波：
-
-$x[n] = \sin(\omega n)$
-
-经过 N 个 sample 延迟后：
-
-$y[n] = x[n-N] = \sin(\omega(n-N))$
-
-展开看：
-
-$y[n] = \sin(\omega n - \omega N)$
-
-也就是说，整数 delay 对这个频率造成的相位变化是：
-
-$-\omega N$
-
-所以 delay 本质上就是相位斜率。
 
 
 

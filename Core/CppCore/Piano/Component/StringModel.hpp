@@ -97,6 +97,11 @@ public:
     int Delay_Int = 0;
     int Delay_Index = 0;
     double Delay_Frac = 0.0;// 波导长度小数部分
+    double Allpass_A1 = 0.0;
+    mutable float Allpass_X1_r = 0.0; // 上一次传入 allpass 的值
+    mutable float Allpass_Y1_r = 0.0;
+    mutable float Allpass_X1_l = 0.0; // 上一次传入 allpass 的值
+    mutable float Allpass_Y1_l = 0.0;
 
     // 力 ↔ 速度 的比例常数
     double Z = 0.0;

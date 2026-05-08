@@ -28,10 +28,11 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
 //
     
 //    // 取不大于波导长度的最大整数作为数组长度
-    Delay_Int = std::floor(Delay);
+    Delay_Int = std::floor(Delay - 0.5);
     if(Delay_Int <= 0) Delay_Int = 2;
     Delay_Index = Delay_Int - 1;
     Delay_Frac = Delay - static_cast<double>(Delay_Int);
+    Allpass_A1 = double(1 - Delay_Frac) / double(1 + Delay_Frac);
     
 
     // 计算力和速度的比例常数
@@ -114,24 +115,31 @@ void StringModel::injectForce(int m, float F) const {
 void StringModel::propagate() const {
 
     // 内部传播
-    for (int i = 1; i <= Delay_Index; ++i) {
+    for (int i = 1; i <= Delay_Index; i++) {
         leftNext[i - 1] = left[i];
     }
 
-    for (int i = 0; i <= Delay_Index - 1; ++i) {
+    for (int i = 0; i < Delay_Index; i++) {
         rightNext[i + 1] = right[i];
     }
 
-    // 边界反射
-    rightNext[0] = -g * left[0];
-    leftNext[Delay_Index] = -g * right[Delay_Index];
-    
-
     // 当 N == 50.1136 时, 到边界时才规定它少移动了 frac 帧 （一秒几万帧，十几、百把帧的误差应该听不出来的）
     // 所以就要去用插值估计在这一帧的前 0.1136 帧的值是多少
-    // 使用线性插值
-    // y[N - frac] = (1 - frac) x [N - 1] + frac x [N]
+    // 使用 allpass
+    // float y = a1 * x + x1 - a1 * y1;
+    float x_r = right[Delay_Index];
+    float y_r = Allpass_A1 * x_r + Allpass_X1_r - Allpass_A1 * Allpass_Y1_r;
+    Allpass_X1_r = x_r;
+    Allpass_Y1_r = y_r;
     
+    float x_l = left[0];
+    float y_l = Allpass_A1 * x_l + Allpass_X1_l - Allpass_A1 * Allpass_Y1_l;
+    Allpass_X1_l = x_l;
+    Allpass_Y1_l = y_l;
+    
+    // 边界反射 + 边界衰减
+    rightNext[0] = -g * y_l;
+    leftNext[Delay_Index] = -g * y_r;
     
 
     std::swap(left, leftNext);
