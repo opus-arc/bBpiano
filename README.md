@@ -1851,11 +1851,7 @@ $|e^{-j\omega\delta}|=1$
 
 但线性插值的幅度是：
 
-$
-|H(e^{j\omega})|
-=
-\left|(1-\delta)+\delta e^{-j\omega}\right|
-$
+$|H(e^{j\omega})|=\left|(1-\delta)+\delta e^{-j\omega}\right|$
 
 这个一般不等于 1，所以线形插值并不保证幅度不会被改变。
 
@@ -1864,9 +1860,7 @@ $
 那现在尝试证明 allpass 的特性，它是否会改变频率？：
 
 先代入 $z=e^{j\omega}$ 进一阶 allpass：
-$
-H_{fd}(z)=\frac{a_1+z^{-1}}{1+a_1z^{-1}}
-$
+$H_{fd}(z)=\frac{a_1+z^{-1}}{1+a_1z^{-1}}$
 先计算 $z^{-1}$ 的等效乘数：
 
 $z$ 离散序列中一帧为：$x[n]=e^{j\omega n}$
@@ -1878,56 +1872,35 @@ $z$ 离散序列中一帧为：$x[n]=e^{j\omega n}$
 很容易的值 $z^{-1}$ 的等效乘数为 $ e^{-j\omega}$
 
 代入 $z^{-1}$ ：
-$
-H_{fd}(e^{j\omega})=\frac{a_1+e^{-j\omega}}{1+a_1e^{-j\omega}}
-$
+$H_{fd}(e^{j\omega})=\frac{a_1+e^{-j\omega}}{1+a_1e^{-j\omega}}$
 它满足：
-$
-|H_{fd}(e^{j\omega})|=1
-$
+$|H_{fd}(e^{j\omega})|=1$
 因此它不会改变任何频率的幅度， allpass 不会自己制造 loss，不会像线性插值那样偷偷削弱高频。
 
 所以它符合理想 delay 的第一条性质：
-$
-|H(e^{j\omega})|=1
-$
+$|H(e^{j\omega})|=1$
 在运用这些数学工具的基础上，剩下的问题仍然是：**通过这个滤波器后的相位是如何与 Delay_Frac 近似的？**
 
 我们写：
-$
-H_{fd}(e^{j\omega})=\frac{a_1+e^{-j\omega}}{1+a_1e^{-j\omega}}
-$
+$H_{fd}(e^{j\omega})=\frac{a_1+e^{-j\omega}}{1+a_1e^{-j\omega}}$
 它是一个复数。因为幅度为 1，所以能写成：
-$
-H_{fd}(e^{j\omega})=e^{j\phi(\omega)}
-$
+$H_{fd}(e^{j\omega})=e^{j\phi(\omega)}$
 由于我写这个滤波器是为了让波多延迟 D_Frac 个相位
 
 而我们想要的实际上就是
-$
-H_{fd_{ideal}}(e^{j\omega})=z^{-D_{Frac}} = e^{-j\omega D_{Frac}}
-$
+$H_{fd_{ideal}}(e^{j\omega})=z^{-D_{Frac}} = e^{-j\omega D_{Frac}}$
 这个近似希望：
-$
-e^{-j\omega D_{Frac}} \approx e^{j\phi(\omega)}
-$
+$e^{-j\omega D_{Frac}} \approx e^{j\phi(\omega)}$
 因此希望：
-$
-\phi(\omega)\approx -\omega D_{frac}
-$
+$\phi(\omega)\approx -\omega D_{frac}$
 如果这条相位曲线的斜率接近：
-$
--D_{frac}
-$
+$-D_{frac}$
 那它就表现得像一个 $D_{frac} sample delay$。
 
 这里要引入一个新的概念：**group delay**
 
 **group delay** 即为相位曲线的导数：
-$
-\tau_g(\omega)=
--\frac{d\phi(\omega)}{d\omega}
-$
+$\tau_g(\omega)=-\frac{d\phi(\omega)}{d\omega}$
 我要求出这个导数然后和 $D_{frac}$ 列方程把 a1 求出来：
 
 先回到原式：
