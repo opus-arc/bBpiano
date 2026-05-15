@@ -15,7 +15,10 @@ void PianoModel::note_on(int midi_n, double velocity) {
     // 这里太重要了
 //    pianoKeys[midi_n - 21].key_active = true;
     
-    pianoKeys[midi_n - 21].hammer->setVIn(velocity / 120.0);
+    // 还是封一个口吧
+    midi_n = std::clamp(midi_n, 21, 108);
+    
+    pianoKeys[midi_n - 21].hammer->setVIn(velocity * 2.0);
 }
 
 void PianoModel::note_off(int midi_n, double velocity) {
@@ -25,18 +28,6 @@ void PianoModel::note_off(int midi_n, double velocity) {
 void PianoModel::note_afterTouch(int midi_n, double pressure) {
     std::cout << "after_touch: " << midi_n << ", " << pressure << std::endl;
 }
-
-void PianoModel::updateActivity(){
-    if (++activityCounter >= 128) {
-        activityCounter = 0;
-        for(int i = 0; i < pianoKeys.size(); i++){
-            activePianoKeys[i] = pianoKeys[i].key_active;
-            
-//            std::cout<<"midi_n: "<<pianoKeys[i].midi_n<<", key_active: "<<pianoKeys[i].key_active<<std::endl;
-        }
-    }
-}
-
 
 PianoModel::PianoModel(){
     for(int i = 21; i <= 108; i++)

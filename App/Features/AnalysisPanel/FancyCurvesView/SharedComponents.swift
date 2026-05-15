@@ -17,7 +17,6 @@ enum CurveTab: String, CaseIterable {
 
 struct CurveHeaderView: View {
     @Binding var currentTab: CurveTab
-    @Binding var isDarkMode: Bool
     var theme: CurveTheme
     
     var body: some View {
@@ -40,20 +39,9 @@ struct CurveHeaderView: View {
                 .foregroundColor(theme.textColor.opacity(0.8))
                 .contentShape(Rectangle())
                 .onTapGesture { switchTab(direction: 1) }
-            
-            // 主题切换
-            ZStack {
-                Capsule().fill(theme.toggleBg).frame(width: 30, height: 16)
-                Circle().fill(theme.toggleThumb).frame(width: 12, height: 12)
-                    .offset(x: isDarkMode ? 7 : -7)
-            }
-            .padding(.leading, 15) // 微调右侧间距
-            .onTapGesture {
-                withAnimation(.spring()) { isDarkMode.toggle() }
-            }
         }
         .padding(.bottom, 12)
-        .padding(.leading, 52)
+        .padding(.leading, 0)
     }
     
     // 负责切换页面的底层逻辑
@@ -109,21 +97,7 @@ struct CurveTheme {
     let toggleBg: Color          // 主题开关的背景色
     let toggleThumb: Color       // 主题开关的圆点色
 
-    static let dark = CurveTheme(
-        mainBg: Color(white: 0.08),
-        editorBgView: AnyView(Color(white: 0.15)),
-        gridColor: Color.white.opacity(0.09),
-        curveStroke: Color.cyan.opacity(0.8),
-        curveFill: Color.cyan.opacity(0.1),
-        textColor: Color.white.opacity(0.5),
-        handleColor: Color.white,
-        handleStroke: Color.cyan.opacity(0.6),
-        borderColor: Color.white.opacity(0.10),
-        toggleBg: Color(white: 0.25),
-        toggleThumb: Color.white
-    )
-
-    static let light = CurveTheme(
+    static let standard = CurveTheme(
         mainBg: Color(white: 0.92),
         editorBgView: AnyView(KraftPaperTexture()),
         gridColor: Color(red: 0.5, green: 0.4, blue: 0.3).opacity(0.15), // 暖色格线
@@ -147,8 +121,58 @@ struct ControlPoint: Identifiable, Equatable {
 
 class CurveModel: ObservableObject {
     @Published var points: [ControlPoint] = [ControlPoint(x: 0, y: 0), ControlPoint(x: 1, y: 1)]
+    static var velocityCurvePoints: [ControlPoint] = [
+        ControlPoint(x: 0, y: 0),
+        ControlPoint(x: 1, y: 1)
+    ]
+
+    static func updateVelocityCurve(points: [ControlPoint]) {
+        velocityCurvePoints = points
+    }
+
+    static func velocityMapper(midiVelocity: Int) -> Double {
+        velocityMapper(midiVelocity: midiVelocity, points: velocityCurvePoints)
+    }
+
+    static func velocityMapper(midiVelocity: Int, points: [ControlPoint]) -> Double {
+        let clampedVelocity = max(0, min(127, midiVelocity))
+        let normalizedInput = Double(clampedVelocity) / 127.0
+        let sortedPoints = points.sorted { $0.x < $1.x }
+
+        guard let first = sortedPoints.first,
+              let last = sortedPoints.last else {
+            return normalizedInput
+        }
+
+        if normalizedInput <= first.x {
+            return first.y
+        }
+
+        if normalizedInput >= last.x {
+            return last.y
+        }
+
+        for i in 0..<(sortedPoints.count - 1) {
+            let p1 = sortedPoints[i]
+            let p2 = sortedPoints[i + 1]
+
+            guard p2.x != p1.x else {
+                continue
+            }
+
+            if normalizedInput >= p1.x && normalizedInput <= p2.x {
+                let t = (normalizedInput - p1.x) / (p2.x - p1.x)
+                return p1.y + t * (p2.y - p1.y)
+            }
+        }
+
+        return normalizedInput
+    }
     private var lut = [Float](repeating: 0, count: 128)
-    init() { updateLUT() }
+    init(points: [ControlPoint] = [ControlPoint(x: 0, y: 0), ControlPoint(x: 1, y: 1)]) {
+        self.points = points
+        updateLUT()
+    }
     func map(_ input: Double) -> Double {
         let sorted = points.sorted { $0.x < $1.x }; guard let first = sorted.first, let last = sorted.last else { return 0 }
         if input <= first.x { return first.y }; if input >= last.x { return last.y }
@@ -165,34 +189,18 @@ class CurveModel: ObservableObject {
     }
 }
 
-// MARK: - Button Style 
+// MARK: - Button Style
 struct ControlButtonStyle: ButtonStyle {
     var isToggled: Bool = false
     var theme: CurveTheme
-    var isDarkMode: Bool
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: 11, weight: .bold, design: .monospaced))
-            // 核心修正：显式指定白天黑夜的颜色，不完全依赖 theme.textColor
-            .foregroundColor(
-                isDarkMode ?
-                Color.white.opacity(configuration.isPressed ? 0.5 : 0.5) : // 黑夜：纯白高亮
-                Color.black.opacity(configuration.isPressed ? 0.4 : 0.7)   // 白天：深黑/棕色
-            )
+            .foregroundColor(Color.black.opacity(configuration.isPressed ? 0.4 : 0.7))
             .padding(.horizontal, 12)
             .padding(.vertical, 4)
-            .background(
-                ZStack {
-                    // 背景色
-                    Capsule()
-                        .fill(isToggled ? Color.cyan.opacity(0.3) : (isDarkMode ? Color.white.opacity(0.1) : Color.black.opacity(0.05)))
-                    
-                    // 边框线
-                    Capsule()
-                        .stroke(isToggled ? Color.cyan : (isDarkMode ? Color.white.opacity(0.2) : Color.black.opacity(0.15)), lineWidth: 1)
-                }
-            )
+            .background(Color.clear)
             .scaleEffect(configuration.isPressed ? 0.92 : 1.0)
             .opacity(configuration.isPressed ? 0.8 : 1.0)
             .animation(.spring(response: 0.2, dampingFraction: 0.6), value: configuration.isPressed)

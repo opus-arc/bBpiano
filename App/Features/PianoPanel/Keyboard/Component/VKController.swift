@@ -25,7 +25,10 @@
 
 public class VKController {
     static func NoteOn(note: Int, velocity: Double) {
-        note_on(Int32(note), Double(velocity))
+        let mappedVelocity = CurveModel.velocityMapper(
+            midiVelocity: Int(velocity)
+        )
+        note_on(Int32(note), Double(mappedVelocity))
     }
 
     static func NoteOff(note: Int, velocity: Double) {

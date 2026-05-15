@@ -771,7 +771,7 @@ $\frac{\partial^2 y}{\partial t^2}(x_p,t)=-\omega^2\cos(\omega t)$
 
 ___
 
-## **3 **From PDE to FDTD and Digital Waveguide Formulations
+## **3 From PDE to FDTD and Digital Waveguide Formulations**
 
 ## **3 从偏微分方程到 FDTD 与数字波导建模**
 

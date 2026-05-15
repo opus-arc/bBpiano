@@ -27,6 +27,18 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		144E33982FB7448C00DA9F38 /* Exceptions for "App" folder in "bBpiano" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Fancy's playground/Interaction View/AftertouchView.swift",
+				"Fancy's playground/Interaction View/MainEditorView.swift",
+				"Fancy's playground/Interaction View/NoteOffView.swift",
+				"Fancy's playground/Interaction View/PedalCurveView.swift",
+				"Fancy's playground/Interaction View/SharedComponents.swift",
+				"Fancy's playground/Interaction View/VelocityView.swift",
+			);
+			target = 14E708352F78BE0C005C806C /* bBpiano */;
+		};
 		146587D52FA42C9E009F5C08 /* Exceptions for "Doc" folder in "bBpiano" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -39,6 +51,9 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		14E708382F78BE0C005C806C /* App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				144E33982FB7448C00DA9F38 /* Exceptions for "App" folder in "bBpiano" target */,
+			);
 			path = App;
 			sourceTree = "<group>";
 		};

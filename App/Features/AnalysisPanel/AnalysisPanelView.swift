@@ -16,12 +16,10 @@ struct AnalysisPanelView: View {
         ZStack {
             Color("AccentColor")
             
-//            SoundWaveView()
-//                .position(x: 440, y: 100)
-//                .frame(width: 880, height: 300)
+            MainCurvesView()
+                .position(x: -50, y: 545)
+                .scaleEffect(0.6)
             
-//            PedalFrameView()
-//                .position(x: 455, y: 510)
             PedalView()
                 .position(x: 130, y: 340)
                 .frame(width: 260, height: 400)
@@ -35,6 +33,6 @@ struct AnalysisPanelView: View {
 
 
 #Preview {
-//    AnalysisPanelView()
-    ContentView()
+    AnalysisPanelView()
+//    ContentView()
 }

@@ -60,6 +60,7 @@ void get_next_buffer(float* out, int frameCount, double amplitudeLimiter) {
         
 //        int __midi_n = 93; // A6
         int __midi_n = 69; // A4
+//        int __midi_n = 25; // A2
         
 //        bBpiano.pianoKeys[69 - 21].hammer->hammerMovement();
         bBpiano.pianoKeys[__midi_n - 21].hammer->hammerMovement();
