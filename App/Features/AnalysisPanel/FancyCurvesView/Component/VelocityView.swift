@@ -39,8 +39,8 @@ struct VelocityView: View {
                 
                 VStack(alignment: .leading, spacing: 0) {
                     
-                    // 👇 替换为全局统一的 Header 组件 👇
                     CurveHeaderView(currentTab: $currentTab, theme: theme)
+                        .offset(x: 21, y: 0)
 
                     HStack(alignment: .top, spacing: 10) {
                         VStack {
@@ -131,15 +131,23 @@ struct VelocityView: View {
                         }
                         .buttonStyle(ControlButtonStyle(isToggled: false, theme: theme))
                         
-                        Text("G")
-                            .font(.system(size: 11, weight: .bold, design: .monospaced))
-                            .foregroundColor(Color.black.opacity(0.7))
-                            .frame(width: 22, height: 22)
-                            .background(Circle().stroke(Color.black.opacity(0.2), lineWidth: 1))
-                            .padding(.leading, 80)
+                        Button(action: {
+                            // TODO: Global / Graph / Gain
+                        }) {
+                            Text("G")
+                                .font(.system(size: 14, weight: .bold, design: .monospaced))
+                                .foregroundColor(Color.black.opacity(0.7))
+                                .frame(width: 30, height: 30)
+                                .background(
+                                    Circle()
+                                        .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.leading, 60)
                     }
                     .padding(.top, 25)
-                    .padding(.leading, 52)
+                    .padding(.leading, 18)
                 }
                 .padding(paddingValue)
                 

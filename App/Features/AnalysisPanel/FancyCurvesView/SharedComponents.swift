@@ -22,23 +22,27 @@ struct CurveHeaderView: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "arrowtriangle.left.fill")
-                .font(.system(size: 8))
+                .font(.system(size: 12))
                 .foregroundColor(theme.textColor.opacity(0.6))
-                .padding(.leading, 62)
-                .contentShape(Rectangle()) // 扩大点击区域，防止点不准
+                .padding(16)
+                .contentShape(Rectangle())
                 .onTapGesture { switchTab(direction: -1) }
+                .padding(-16)
+                .padding(.leading, 62)
             
             Text(currentTab.rawValue)
-                .font(.system(size: 14, weight: .bold, design: .monospaced))
+                .font(.system(size: 21, weight: .bold, design: .monospaced))
                 .foregroundColor(theme.textColor)
                 // 写死宽度并居中，这样左右的箭头和按钮绝对不会发生任何位移
-                .frame(width: 130, alignment: .center)
+                .frame(width: 195, alignment: .center)
             
             Image(systemName: "arrowtriangle.right.fill")
-                .font(.system(size: 8))
+                .font(.system(size: 12))
                 .foregroundColor(theme.textColor.opacity(0.8))
+                .padding(16)
                 .contentShape(Rectangle())
                 .onTapGesture { switchTab(direction: 1) }
+                .padding(-16)
         }
         .padding(.bottom, 12)
         .padding(.leading, 0)
@@ -98,8 +102,8 @@ struct CurveTheme {
     let toggleThumb: Color       // 主题开关的圆点色
 
     static let standard = CurveTheme(
-        mainBg: Color(white: 0.92),
-        editorBgView: AnyView(KraftPaperTexture()),
+        mainBg: Color.clear,
+        editorBgView: AnyView(Color.clear),
         gridColor: Color(red: 0.5, green: 0.4, blue: 0.3).opacity(0.15), // 暖色格线
         curveStroke: Color(red: 0.1, green: 0.3, blue: 0.6),
         curveFill: Color.blue.opacity(0.04),
@@ -126,12 +130,51 @@ class CurveModel: ObservableObject {
         ControlPoint(x: 1, y: 1)
     ]
 
+    static var noteOffCurvePoints: [ControlPoint] = [
+        ControlPoint(x: 0, y: 0.8),
+        ControlPoint(x: 1, y: 0.8)
+    ]
+
+    static var pedalCurvePoints: [ControlPoint] = [
+        ControlPoint(x: 0, y: 0),
+        ControlPoint(x: 1, y: 1)
+    ]
+
+    static var aftertouchCurvePoints: [ControlPoint] = [
+        ControlPoint(x: 0, y: 0.5),
+        ControlPoint(x: 1, y: 0.5)
+    ]
+
     static func updateVelocityCurve(points: [ControlPoint]) {
         velocityCurvePoints = points
     }
 
+    static func updateNoteOffCurve(points: [ControlPoint]) {
+        noteOffCurvePoints = points
+    }
+
+    static func updatePedalCurve(points: [ControlPoint]) {
+        pedalCurvePoints = points
+    }
+
+    static func updateAftertouchCurve(points: [ControlPoint]) {
+        aftertouchCurvePoints = points
+    }
+
     static func velocityMapper(midiVelocity: Int) -> Double {
         velocityMapper(midiVelocity: midiVelocity, points: velocityCurvePoints)
+    }
+
+    static func noteOffMapper(midiVelocity: Int) -> Double {
+        velocityMapper(midiVelocity: midiVelocity, points: noteOffCurvePoints)
+    }
+
+    static func pedalMapper(value: Int) -> Double {
+        velocityMapper(midiVelocity: value, points: pedalCurvePoints)
+    }
+
+    static func aftertouchMapper(pressure: Int) -> Double {
+        velocityMapper(midiVelocity: pressure, points: aftertouchCurvePoints)
     }
 
     static func velocityMapper(midiVelocity: Int, points: [ControlPoint]) -> Double {
@@ -196,10 +239,10 @@ struct ControlButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 11, weight: .bold, design: .monospaced))
+            .font(.system(size: 16.5, weight: .bold, design: .monospaced))
             .foregroundColor(Color.black.opacity(configuration.isPressed ? 0.4 : 0.7))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 4)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 6)
             .background(Color.clear)
             .scaleEffect(configuration.isPressed ? 0.92 : 1.0)
             .opacity(configuration.isPressed ? 0.8 : 1.0)

@@ -7,23 +7,15 @@
 import SwiftUI
 
 struct AftertouchView: View {
-    @StateObject var model = CurveModel()
+    @StateObject private var model: CurveModel
     @Binding var currentTab: CurveTab
     @State private var isCalibrating: Bool = false
 
     init(currentTab: Binding<CurveTab>) {
         _currentTab = currentTab
-        // 绝对居中的一条横线
-        let initialPoints = [
-            ControlPoint(x: 0, y: 0.5),
-            ControlPoint(x: 1, y: 0.5)
-        ]
-        _model = StateObject(wrappedValue: {
-            let m = CurveModel()
-            m.points = initialPoints
-            m.updateLUT()
-            return m
-        }())
+        _model = StateObject(
+            wrappedValue: CurveModel(points: CurveModel.aftertouchCurvePoints)
+        )
     }
 
     let theme: CurveTheme = .standard
@@ -40,6 +32,8 @@ struct AftertouchView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     
                     CurveHeaderView(currentTab: $currentTab, theme: theme)
+                        .offset(x: 21, y: 0)
+
 
                     HStack(alignment: .top, spacing: 10) {
                         VStack { ForEach(dynamics, id: \.self) { label in Text(label).font(.system(size: 15, design: .monospaced)).foregroundColor(theme.textColor).frame(maxHeight: .infinity, alignment: .center) } }.frame(height: frameHeight)
@@ -56,7 +50,22 @@ struct AftertouchView: View {
                                     }.stroke(Color.black.opacity(0.2), style: StrokeStyle(lineWidth: 1.2, dash: [4, 4]))
                                     CurvePath(points: model.points, size: size, isClosed: true).fill(theme.curveFill)
                                     CurvePath(points: model.points, size: size).stroke(theme.curveStroke, lineWidth: 2)
-                                    ForEach(model.points) { point in if let index = model.points.firstIndex(where: { $0.id == point.id }) { ControlPointView(point: point, size: size, handleColor: theme.handleColor, strokeColor: theme.handleStroke).gesture(DragGesture(minimumDistance: 0).onChanged { handleDrag(at: index, value: $0, size: size) }.onEnded { _ in model.updateLUT() }) } }
+                                    ForEach(model.points) { point in
+                                        if let index = model.points.firstIndex(where: { $0.id == point.id }) {
+                                            ControlPointView(point: point, size: size, handleColor: theme.handleColor, strokeColor: theme.handleStroke)
+                                                .gesture(
+                                                    DragGesture(minimumDistance: 0)
+                                                        .onChanged {
+                                                            handleDrag(at: index, value: $0, size: size)
+                                                            CurveModel.updateAftertouchCurve(points: model.points)
+                                                        }
+                                                        .onEnded { _ in
+                                                            model.updateLUT()
+                                                            CurveModel.updateAftertouchCurve(points: model.points)
+                                                        }
+                                                )
+                                        }
+                                    }
                                 }.contentShape(Rectangle()).onTapGesture { insertPoint(at: $0, in: size) }.overlay(RoundedRectangle(cornerRadius: 6).stroke(theme.borderColor, lineWidth: 1))
                             }.frame(width: frameWidth, height: frameHeight)
                             ZStack(alignment: .topLeading) {
@@ -66,20 +75,48 @@ struct AftertouchView: View {
                         }
                     }
                     HStack(spacing: 15) {
-                        Button(action: { withAnimation(.easeInOut(duration: 0.2)) { isCalibrating.toggle() } }) { Text("Calibration") }.buttonStyle(ControlButtonStyle(isToggled: isCalibrating, theme: theme))
-                        Button(action: { withAnimation(.interpolatingSpring(stiffness: 300, damping: 15)) {
-                            // 同步修改 Reset 行为
-                            model.points = [ControlPoint(x: 0, y: 0.5), ControlPoint(x: 1, y: 0.5)]
-                            model.updateLUT()
-                        } }) { Text("Reset") }.buttonStyle(ControlButtonStyle(isToggled: false, theme: theme))
-                        Text("G").font(.system(size: 11, weight: .bold, design: .monospaced)).foregroundColor(Color.black.opacity(0.7)).frame(width: 22, height: 22).background(Circle().stroke(Color.black.opacity(0.2), lineWidth: 1)).padding(.leading, 80)
-                    }.padding(.top, 25).padding(.leading, 52)
+                        Button(action: {
+                            withAnimation(.easeInOut(duration: 0.2)) { isCalibrating.toggle() }
+                        }) {
+                            Text("Calibration")
+                        }
+                        .buttonStyle(ControlButtonStyle(isToggled: isCalibrating, theme: theme))
+                        
+                        Button(action: {
+                            withAnimation(.interpolatingSpring(stiffness: 300, damping: 15)) {
+                                model.points = [ControlPoint(x: 0, y: 0), ControlPoint(x: 1, y: 1)]
+                                model.updateLUT()
+                                CurveModel.updateVelocityCurve(points: model.points)
+                            }
+                        }) {
+                            Text("Reset")
+                        }
+                        .buttonStyle(ControlButtonStyle(isToggled: false, theme: theme))
+                        
+                        Button(action: {
+                            // TODO: Global / Graph / Gain
+                        }) {
+                            Text("G")
+                                .font(.system(size: 14, weight: .bold, design: .monospaced))
+                                .foregroundColor(Color.black.opacity(0.7))
+                                .frame(width: 30, height: 30)
+                                .background(
+                                    Circle()
+                                        .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.leading, 60)
+                    }
+                    .padding(.top, 25)
+                    .padding(.leading, 18)
                 }.padding(paddingValue)
                 Spacer()
             }.offset(x: -12)
         }
     }
     private func handleDrag(at index: Int, value: DragGesture.Value, size: CGSize) {
+        guard model.points.indices.contains(index) else { return }
         let point = model.points[index]; let isEdgePoint = (point.x <= 0.001 || point.x >= 0.999); var newX: Double = point.x
         if !isEdgePoint {
             let requestedX = Double(value.location.x / size.width); let sorted = model.points.sorted { $0.x < $1.x }
@@ -92,6 +129,7 @@ struct AftertouchView: View {
     private func insertPoint(at location: CGPoint, in size: CGSize) {
         let newX = max(0.0, min(1.0, Double(location.x / size.width))); if !model.points.contains(where: { ($0.x - newX).magnitude < 0.04 }) {
             let currentY = model.map(newX); model.points.append(ControlPoint(x: newX, y: currentY)); model.points.sort { $0.x < $1.x }; model.updateLUT()
+            CurveModel.updateAftertouchCurve(points: model.points)
         }
     }
 }
