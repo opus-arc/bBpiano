@@ -123,6 +123,7 @@ void StringModel::propagate() const {
         rightNext[i + 1] = right[i];
     }
 
+    // MARK: fractional delay filter:
     // 当 N == 50.1136 时, 到边界时才规定它少移动了 frac 帧 （一秒几万帧，十几、百把帧的误差应该听不出来的）
     // 所以就要去用插值估计在这一帧的前 0.1136 帧的值是多少
     // 使用 allpass
@@ -137,6 +138,7 @@ void StringModel::propagate() const {
     Allpass_X1_l = x_l;
     Allpass_Y1_l = y_l;
     
+    // MARK: loss filter:
     // 边界反射 + 边界衰减
     rightNext[0] = -g * y_l;
     leftNext[Delay_Index] = -g * y_r;

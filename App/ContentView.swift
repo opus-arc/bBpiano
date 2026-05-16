@@ -22,11 +22,12 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         VStack(spacing: 0) {
+            TransportPanelView()
             AnalysisPanelView()
             PianoPanelView()
         }
-        .frame(width: 880, height: 660)
-        .background(Color.white)
+        .frame(width: 880, height: 695)
+        .background(Color.clear)
     }
 }
 

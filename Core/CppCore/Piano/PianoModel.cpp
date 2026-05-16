@@ -12,10 +12,10 @@
 void PianoModel::note_on(int midi_n, double velocity) {
     std::cout << "note_on: " << midi_n << ", " << velocity << std::endl;
     
-    // 这里太重要了
+//     这里太重要了
 //    pianoKeys[midi_n - 21].key_active = true;
-    
-    // 还是封一个口吧
+//    
+//     还是封一个口吧
     midi_n = std::clamp(midi_n, 21, 108);
     
     pianoKeys[midi_n - 21].hammer->setVIn(velocity * 2.0);

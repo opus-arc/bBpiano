@@ -19,6 +19,8 @@ void note_on(int midi_n, double velocity);
 void note_off(int midi_n, double velocity);
 void note_afterTouch(int midi_n, double pressure);
 
+double get_engineRate();
+
 
 #ifdef __cplusplus
 

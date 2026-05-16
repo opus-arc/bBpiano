@@ -14,11 +14,11 @@ import SwiftUI
 import simd
 
 struct PedalView: View {
-    var body: some View {
-        let scene = makeScene()
-        let cameraNode = makeCameraNode()
+    @State private var scene = makeScene()
+    @State private var cameraNode = makeCameraNode()
 
-        return ClickableSceneView(
+    var body: some View {
+        ClickableSceneView(
             scene: scene,
             pointOfView: cameraNode,
             onNodeClick: { hitResult in
@@ -42,7 +42,6 @@ struct PedalView: View {
             }
         )
         .background(Color.clear)
-
     }
 }
 
@@ -1108,7 +1107,8 @@ struct ClickableSceneView: NSViewRepresentable {
         scnView.allowsCameraControl = false
         scnView.backgroundColor = .clear
         scnView.autoenablesDefaultLighting = false
-        scnView.rendersContinuously = true
+        scnView.rendersContinuously = false
+        scnView.isPlaying = false
 
         let clickGesture = NSClickGestureRecognizer(
             target: context.coordinator,
@@ -1123,6 +1123,9 @@ struct ClickableSceneView: NSViewRepresentable {
     func updateNSView(_ nsView: SCNView, context: Context) {
         nsView.scene = scene
         nsView.pointOfView = pointOfView
+        if !nsView.isPlaying {
+            nsView.rendersContinuously = false
+        }
         context.coordinator.onNodeClick = onNodeClick
         context.coordinator.sceneView = nsView
     }
@@ -1142,7 +1145,16 @@ struct ClickableSceneView: NSViewRepresentable {
             let hitResults = sceneView.hitTest(location, options: nil)
 
             guard let firstHit = hitResults.first else { return }
+
+            sceneView.rendersContinuously = true
+            sceneView.isPlaying = true
+
             onNodeClick(firstHit)
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) { [weak sceneView] in
+                sceneView?.isPlaying = false
+                sceneView?.rendersContinuously = false
+            }
         }
     }
 }

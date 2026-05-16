@@ -14,10 +14,8 @@ struct AnalysisPanelView: View {
     
     var body: some View {
         ZStack {
-            Color("AccentColor")
-            
             MainCurvesView()
-                .position(x: -50, y: 545)
+                .position(x: -50, y: 540)
                 .scaleEffect(0.6)
             
             PedalView()
@@ -26,6 +24,7 @@ struct AnalysisPanelView: View {
 
         }
         .frame(width: 880, height: 560)
+        .background(Color.clear)
     }
 
 }

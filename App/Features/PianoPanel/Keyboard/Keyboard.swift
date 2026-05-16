@@ -24,6 +24,8 @@ struct Keyboard: View {
     private let pressedKeyDarkOverlay = Color(red: 140/255, green: 18/255, blue: 12/255)
     private let extraKeysEnabled = false
     private let releaseDelayNanoseconds: UInt64 = 35_000_000
+    private let aftertouchVelocityChangeThreshold = 2
+    private let aftertouchMinimumInterval: TimeInterval = 1.0 / 60.0
     
     private let whiteKeyColor = Color(red: 240 / 255, green: 240 / 255, blue: 240 / 255)
     private let blackKeyColor = Color(red: 25 / 255, green: 25 / 255, blue: 25 / 255)
@@ -54,6 +56,7 @@ struct Keyboard: View {
     @State private var highlightedMIDIVelocities: [Int: Int] = [:]
     @State private var pendingReleaseTokens: [Int: UUID] = [:]
     @State private var isPointerTracking = false
+    @State private var lastAftertouchSentAt: TimeInterval = 0
     
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -65,8 +68,7 @@ struct Keyboard: View {
                         height: whiteKeyHeight,
                         fill: whiteKeyColor,
                         border: whiteBorderColor,
-                        pressedOverlay: pressedOverlay(for: midi),
-                        isHighlighted: isHighlighted(midi)
+                        pressedVelocity: currentVelocity(for: midi)
                     )
                 }
                 ForEach(extraWhiteMIDINotes, id: \.self) { midi in
@@ -76,8 +78,7 @@ struct Keyboard: View {
                         height: whiteKeyHeight,
                         fill: whiteKeyColor,
                         border: whiteBorderColor,
-                        pressedOverlay: pressedOverlay(for: midi),
-                        isHighlighted: isHighlighted(midi)
+                        pressedVelocity: currentVelocity(for: midi)
                     )
                     .modifier(ExtraKeyAvailabilityModifier(
                         isEnabled: extraKeysEnabled,
@@ -92,8 +93,7 @@ struct Keyboard: View {
                     width: blackKeyWidth,
                     height: blackKeyHeight,
                     fill: blackKeyColor,
-                    pressedOverlay: pressedOverlay(for: item.midi),
-                    isHighlighted: isHighlighted(item.midi)
+                    pressedVelocity: currentVelocity(for: item.midi)
                 )
                 .modifier(ExtraKeyAvailabilityModifier(
                     isEnabled: isExtraKey(item.midi) ? extraKeysEnabled : true,
@@ -186,7 +186,7 @@ private extension Keyboard {
                     lastPointerLocation = value.location
 
                     if let midi {
-                        highlightedMIDIVelocities[midi] = pressure
+                        setHighlightedVelocity(pressure, for: midi)
                         VKController.NoteOn(note: midi, velocity: Double(pressure))
                     }
                     return
@@ -202,13 +202,17 @@ private extension Keyboard {
                     }
 
                     let horizontalMovement = previousLocation.map { abs(value.location.x - $0.x) } ?? 0
-                    _ = previousLocation
-                        .map { abs(value.location.y - $0.y) } ?? 0
+                    let velocityDelta = abs((activePointerVelocity ?? pressure) - pressure)
+                    let now = Date.timeIntervalSinceReferenceDate
 
-                    // 只有横向几乎没动，才认为是同键 pressure / aftertouch
-                    if horizontalMovement < 2, activePointerVelocity != pressure {
+                    // 只有横向几乎没动，且 pressure 变化足够明显，才发送同键 pressure / aftertouch。
+                    // 同时限制到约 60Hz，避免 DragGesture 的高频事件让整组琴键反复重绘。
+                    if horizontalMovement < 2,
+                       velocityDelta >= aftertouchVelocityChangeThreshold,
+                       now - lastAftertouchSentAt >= aftertouchMinimumInterval {
                         activePointerVelocity = pressure
-                        highlightedMIDIVelocities[midi] = pressure
+                        lastAftertouchSentAt = now
+                        setHighlightedVelocity(pressure, for: midi)
                         VKController.PolyAftertouch(
                             note: midi,
                             pressure: Double(pressure)
@@ -228,7 +232,8 @@ private extension Keyboard {
                 activePointerVelocity = midi == nil ? nil : pressure
 
                 if let midi {
-                    highlightedMIDIVelocities[midi] = pressure
+                    setHighlightedVelocity(pressure, for: midi)
+                    lastAftertouchSentAt = Date.timeIntervalSinceReferenceDate
                     VKController.NoteOn(note: midi, velocity: Double(pressure))
                 }
 
@@ -241,8 +246,17 @@ private extension Keyboard {
                 activePointerVelocity = nil
                 lastPointerLocation = nil
                 isPointerTracking = false
+                lastAftertouchSentAt = 0
                 scheduleDelayedRelease(for: releasedMIDINote)
             }
+    }
+
+    func setHighlightedVelocity(_ velocity: Int, for midi: Int) {
+        guard highlightedMIDIVelocities[midi] != velocity else {
+            return
+        }
+
+        highlightedMIDIVelocities[midi] = velocity
     }
     
     func cancelPendingReleaseIfNeeded(for midi: Int) {
@@ -268,7 +282,9 @@ private extension Keyboard {
             
             VKController.NoteOff(note: midi, velocity: 0)
 
-            highlightedMIDIVelocities[midi] = nil
+            if highlightedMIDIVelocities[midi] != nil {
+                highlightedMIDIVelocities[midi] = nil
+            }
             pendingReleaseTokens[midi] = nil
 
             if activePointerMIDINote == midi {
@@ -386,15 +402,38 @@ private extension Keyboard {
     }
 }
 
-private struct WhiteKeyView: View {
+private struct WhiteKeyView: View, Equatable {
     let midi: Int
     let width: CGFloat
     let height: CGFloat
     let fill: Color
     let border: Color
-    let pressedOverlay: Color
-    let isHighlighted: Bool
+    let pressedVelocity: Int?
     private let pressedOverlayOpacity: Double = 0.92
+
+    static func == (lhs: WhiteKeyView, rhs: WhiteKeyView) -> Bool {
+        lhs.midi == rhs.midi &&
+        lhs.width == rhs.width &&
+        lhs.height == rhs.height &&
+        lhs.pressedVelocity == rhs.pressedVelocity
+    }
+
+    private var isHighlighted: Bool {
+        pressedVelocity != nil
+    }
+
+    private var pressedOverlay: Color {
+        guard let pressedVelocity else {
+            return Color(red: 244 / 255, green: 160 / 255, blue: 160 / 255)
+        }
+
+        let normalized = Double(pressedVelocity - 12) / Double(127 - 12)
+        return Color(
+            red: 244 / 255 + (140 / 255 - 244 / 255) * normalized,
+            green: 160 / 255 + (18 / 255 - 160 / 255) * normalized,
+            blue: 160 / 255 + (12 / 255 - 160 / 255) * normalized
+        )
+    }
 
     private let leftBorder = Color(red: 200 / 255, green: 200 / 255, blue: 200 / 255)
     private let rightBorder = Color(red: 180 / 255, green: 180 / 255, blue: 180 / 255)
@@ -540,14 +579,37 @@ private struct WhiteKeyShape: Shape {
     }
 }
 
-private struct BlackKeyView: View {
+private struct BlackKeyView: View, Equatable {
     let midi: Int
     let width: CGFloat
     let height: CGFloat
     let fill: Color
-    let pressedOverlay: Color
-    let isHighlighted: Bool
+    let pressedVelocity: Int?
     private let pressedOverlayOpacity: Double = 0.88
+
+    static func == (lhs: BlackKeyView, rhs: BlackKeyView) -> Bool {
+        lhs.midi == rhs.midi &&
+        lhs.width == rhs.width &&
+        lhs.height == rhs.height &&
+        lhs.pressedVelocity == rhs.pressedVelocity
+    }
+
+    private var isHighlighted: Bool {
+        pressedVelocity != nil
+    }
+
+    private var pressedOverlay: Color {
+        guard let pressedVelocity else {
+            return Color(red: 244 / 255, green: 160 / 255, blue: 160 / 255)
+        }
+
+        let normalized = Double(pressedVelocity - 12) / Double(127 - 12)
+        return Color(
+            red: 244 / 255 + (140 / 255 - 244 / 255) * normalized,
+            green: 160 / 255 + (18 / 255 - 160 / 255) * normalized,
+            blue: 160 / 255 + (12 / 255 - 160 / 255) * normalized
+        )
+    }
 
     private let leftBorder = Color(red: 117 / 255, green: 117 / 255, blue: 117 / 255)
     private let rightBorder = Color(red: 124 / 255, green: 124 / 255, blue: 124 / 255)

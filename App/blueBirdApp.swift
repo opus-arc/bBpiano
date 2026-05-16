@@ -12,8 +12,30 @@ import SwiftUI
 struct blueBirdApp: App {
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .frame(width: 880, height: 660)
+            ZStack {
+//                Image("油画背景1")
+//                    .resizable()
+//                    .scaledToFill()
+//                    .frame(width: 880, height: 695)
+//                    .clipped()
+//                    .overlay(
+//                        LinearGradient(
+//                            gradient: Gradient(colors: [
+//                                Color.clear,
+//                                Color.clear,
+//
+//                                Color.white.opacity(0.15),
+//                                Color.white.opacity(0.45),
+//                                Color.white
+//                            ]),
+//                            startPoint: .center,
+//                            endPoint: .bottom
+//                        )
+//                    )
+
+                RootView()
+            }
+            .frame(width: 880, height: 695)
         }
         .windowResizability(.contentSize)
     }
