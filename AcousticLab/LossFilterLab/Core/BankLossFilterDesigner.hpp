@@ -15,6 +15,8 @@ extern "C" {
 
 
 void lossFilterDesinger();
+void designLossFilterConstantsFromMerged();
+
 
 
 #ifdef __cplusplus
