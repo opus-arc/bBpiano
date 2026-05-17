@@ -12,6 +12,13 @@
 #include "../KeyModel.hpp"
 #include "../../../ModelParameters/PrecomputedValue.hpp"
 
+#include "../../../../../AcousticLab/LossFilterLab/Utils/MyCSVReader.hpp"
+
+#include <array>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+
 StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum) :
 
     pairedHammer(_pairedHammer),
@@ -44,6 +51,20 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     rightNext.assign(Delay_Int, 0.0f);
     leftNext.assign(Delay_Int, 0.0f);
     
+    // loss init
+    lossConstants = MyCSVReader::getLossConstant();
+    for (const auto& c : lossConstants) {
+        if (c.midi_n == midi_n) {
+            loss_g = c.g;
+            loss_a1 = c.a_1;
+            break;
+        }
+    }
+    
+    if(midi_n == 69) {
+        std::cout << loss_g << ", " << loss_a1 << "\n";
+    }
+    
     if (midi_n == 69) {
         std::cout
             << "midi_n: " << midi_n
@@ -57,6 +78,8 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     }
 
 }
+
+
 
 // --------------------------------------------
 // MARK: 实时值函数
@@ -139,14 +162,29 @@ void StringModel::propagate() const {
     Allpass_Y1_l = y_l;
     
     // MARK: loss filter:
-    // 边界反射 + 边界衰减
-    rightNext[0] = -g * y_l;
-    leftNext[Delay_Index] = -g * y_r;
+    // y[n] = g * (1 + a1) * x[n] - a1 * y[n-1]
+    float reflectedRight = processLoss(y_l, Loss_Y1_l);
+    float reflectedLeft  = processLoss(y_r, Loss_Y1_r);
+    Loss_Y1_l = reflectedLeft;
+    Loss_Y1_r = reflectedRight;
+    
+    // 边界反射
+    rightNext[0] = -reflectedRight;
+    leftNext[Delay_Index] = -reflectedLeft;
+
     
 
     std::swap(left, leftNext);
     std::swap(right, rightNext);
 }
+
+float StringModel::processLoss(float x, float& y1) const {
+    float y = static_cast<float>(loss_g * (1.0 + loss_a1)) * x
+            - static_cast<float>(loss_a1) * y1;
+
+    y1 = y;
+    return y;
+}	
 
 float StringModel::velocityAt(double p) const {
     // 边界条件

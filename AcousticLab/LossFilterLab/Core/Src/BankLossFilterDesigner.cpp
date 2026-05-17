@@ -21,8 +21,18 @@
 #include <algorithm>
 #include <cmath>
 #include <map>
+#include <numeric>
+#include <sstream>
+#include <limits>
+
 
 namespace fs = std::filesystem;
+
+static const fs::path kProjectLossLabRoot =
+    "/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/LossFilterLab";
+
+static const fs::path kLossGeneratedDataRoot =
+    kProjectLossLabRoot / "Generated";
 
 struct AmplitudeEnvelope {
     int partialIndex = 0;
@@ -36,11 +46,26 @@ struct DecayResult {
     double sigma = 0.0;
     double intercept = 0.0;
     double r2 = 0.0;
+    int fittedFrameCount = 0;
 };
 
-struct LossPoint {
-    double frequency;
-    double sigma;
+struct MergedLossPoint {
+    int partialIndex = 0;
+    double f = 0.0;
+    double sigma = 0.0;
+    int count = 0;
+    double meanR2 = 0.0;
+    double meanFittedFrameCount = 0.0;
+};
+
+struct LossFilterFitResult {
+    int key = 0;
+    std::string pitch;
+    double f0 = 0.0;
+    double g = 1.0;
+    double a1 = 0.0;
+    int pointCount = 0;
+    double fitError = 0.0;
 };
 
 static double estimateInharmonicityCoefficient(double f0) {
@@ -49,12 +74,262 @@ static double estimateInharmonicityCoefficient(double f0) {
     if (f0 < 220.0)
         return 0.00025;
     if (f0 < 440.0)
-        return 0.00060;
+        return 0.00055;
     if (f0 < 880.0)
-        return 0.00120;
+        return 0.00090;
     if (f0 < 1760.0)
-        return 0.00250;
-    return 0.00450;
+        return 0.00160;
+    return 0.00240;
+}
+
+static float medianValue(std::vector<float> values) {
+    if (values.empty())
+        return 0.0f;
+
+    const size_t mid = values.size() / 2;
+    std::nth_element(values.begin(), values.begin() + mid, values.end());
+    return values[mid];
+}
+
+static float estimateLocalNoiseFloor(
+    const std::vector<float>& spectrum,
+    int centerBin,
+    int innerRadiusBins,
+    int outerRadiusBins
+) {
+    std::vector<float> sideAmps;
+    sideAmps.reserve(static_cast<size_t>(outerRadiusBins * 2));
+
+    const int leftStart = std::max(1, centerBin - outerRadiusBins);
+    const int leftEnd = std::max(1, centerBin - innerRadiusBins);
+    const int rightStart = std::min(static_cast<int>(spectrum.size()) - 2, centerBin + innerRadiusBins);
+    const int rightEnd = std::min(static_cast<int>(spectrum.size()) - 2, centerBin + outerRadiusBins);
+
+    for (int bin = leftStart; bin <= leftEnd; ++bin)
+        sideAmps.push_back(spectrum[bin]);
+
+    for (int bin = rightStart; bin <= rightEnd; ++bin)
+        sideAmps.push_back(spectrum[bin]);
+
+    return medianValue(std::move(sideAmps));
+}
+
+static double maxAllowedFrequencyErrorRatio(double f0, int partialIndex) {
+    if (f0 >= 440.0)
+        return 0.075;
+    if (partialIndex >= 32)
+        return 0.060;
+    return 0.040;
+}
+
+static bool isVeryHighRegister(double f0) {
+    return f0 >= 3000.0;
+}
+
+
+static double maxAllowedSigma(double frequency) {
+    if (frequency < 1000.0)
+        return 3.0;
+    if (frequency < 3000.0)
+        return 6.0;
+    if (frequency < 8000.0)
+        return 30.0;
+    return 40.0;
+}
+
+static double duplicateFrequencyToleranceHz(double frequency) {
+    return std::max(25.0, frequency * 0.006);
+}
+
+static bool hasDuplicateFrequency(
+    const std::vector<DecayResult>& results,
+    double frequency
+) {
+    const double toleranceHz = duplicateFrequencyToleranceHz(frequency);
+
+    for (const auto& existing : results) {
+        if (std::abs(existing.f - frequency) <= toleranceHz)
+            return true;
+    }
+
+    return false;
+}
+
+static std::vector<std::string> splitCsvLine(const std::string& line) {
+    std::vector<std::string> cells;
+    std::stringstream ss(line);
+    std::string cell;
+
+    while (std::getline(ss, cell, ','))
+        cells.push_back(cell);
+
+    return cells;
+}
+
+static int pitchNameToMidiKey(const std::string& pitchName) {
+    if (pitchName.empty())
+        return 0;
+
+    const char note = static_cast<char>(std::toupper(static_cast<unsigned char>(pitchName[0])));
+    int semitone = 0;
+
+    switch (note) {
+        case 'C': semitone = 0; break;
+        case 'D': semitone = 2; break;
+        case 'E': semitone = 4; break;
+        case 'F': semitone = 5; break;
+        case 'G': semitone = 7; break;
+        case 'A': semitone = 9; break;
+        case 'B': semitone = 11; break;
+        default: return 0;
+    }
+
+    size_t octaveStart = 1;
+    if (pitchName.size() >= 2) {
+        const char accidental = static_cast<char>(std::tolower(static_cast<unsigned char>(pitchName[1])));
+        if (accidental == 's' || accidental == '#') {
+            semitone += 1;
+            octaveStart = 2;
+        } else if (accidental == 'b') {
+            semitone -= 1;
+            octaveStart = 2;
+        }
+    }
+
+    if (octaveStart >= pitchName.size())
+        return 0;
+
+    int octave = 0;
+    try {
+        octave = std::stoi(pitchName.substr(octaveStart));
+    } catch (...) {
+        return 0;
+    }
+
+    return (octave + 1) * 12 + semitone;
+}
+
+static std::vector<MergedLossPoint> readMergedLossPoints(const fs::path& csvPath) {
+    std::vector<MergedLossPoint> points;
+    std::ifstream csv(csvPath);
+
+    if (!csv.is_open())
+        return points;
+
+    std::string line;
+    bool isHeader = true;
+
+    while (std::getline(csv, line)) {
+        if (line.empty())
+            continue;
+
+        if (isHeader) {
+            isHeader = false;
+            continue;
+        }
+
+        const std::vector<std::string> cells = splitCsvLine(line);
+        if (cells.size() < 6)
+            continue;
+
+        MergedLossPoint point;
+        try {
+            point.partialIndex = std::stoi(cells[0]);
+            point.f = std::stod(cells[1]);
+            point.sigma = std::stod(cells[2]);
+            point.count = std::stoi(cells[3]);
+            point.meanR2 = std::stod(cells[4]);
+            point.meanFittedFrameCount = std::stod(cells[5]);
+        } catch (...) {
+            continue;
+        }
+
+        if (point.f > 0.0 && point.sigma > 0.0 && point.count > 0)
+            points.push_back(point);
+    }
+
+    std::sort(points.begin(), points.end(), [](const MergedLossPoint& a, const MergedLossPoint& b) {
+        return a.f < b.f;
+    });
+
+    return points;
+}
+
+static double lossPointWeight(const MergedLossPoint& point) {
+    const double frameWeight = std::clamp(point.meanFittedFrameCount / 200.0, 0.10, 1.0);
+    const double r2Weight = std::clamp(point.meanR2, 0.0, 1.0);
+    const double countWeight = static_cast<double>(std::max(1, point.count));
+    return countWeight * r2Weight * frameWeight;
+}
+
+static double onePoleLossLogMagnitude(double frequency, double sampleRate, double a1) {
+    const double omega = 2.0 * M_PI * frequency / sampleRate;
+    const double numerator = std::max(1e-12, 1.0 + a1);
+    const double denominatorSquared = std::max(
+        1e-12,
+        1.0 + a1 * a1 + 2.0 * a1 * std::cos(omega)
+    );
+
+    return std::log(numerator) - 0.5 * std::log(denominatorSquared);
+}
+
+static float frameBandEnergy(
+    const std::vector<float>& spectrum,
+    const std::vector<float>& fMeta,
+    double minFreq,
+    double maxFreq
+) {
+    float energy = 0.0f;
+
+    const size_t binCount = std::min(spectrum.size(), fMeta.size());
+    for (size_t bin = 1; bin + 1 < binCount; ++bin) {
+        const double f = fMeta[bin];
+        if (f >= minFreq && f <= maxFreq)
+            energy += spectrum[bin] * spectrum[bin];
+    }
+
+    return energy;
+}
+
+static int findOnsetFrame(
+    const std::vector<std::vector<float>>& spectrogram,
+    const std::vector<float>& fMeta,
+    double f0
+) {
+    if (spectrogram.empty())
+        return 0;
+
+    std::vector<float> energies;
+    energies.reserve(spectrogram.size());
+
+    const double minFreq = std::max(20.0, f0 * 0.5);
+    const double maxFreq = std::min(16000.0, std::max(f0 * 12.0, 4000.0));
+
+    for (const auto& frame : spectrogram)
+        energies.push_back(frameBandEnergy(frame, fMeta, minFreq, maxFreq));
+
+    const size_t noiseFrameCount = std::min<size_t>(8, energies.size());
+    std::vector<float> noiseFrames(energies.begin(), energies.begin() + noiseFrameCount);
+    const float noiseFloor = medianValue(std::move(noiseFrames));
+
+    float peakEnergy = 0.0f;
+    for (float energy : energies)
+        peakEnergy = std::max(peakEnergy, energy);
+
+    if (peakEnergy <= 0.0f)
+        return 0;
+
+    const float onsetThreshold = std::max(noiseFloor * 8.0f, peakEnergy * 0.015f);
+
+    for (size_t frame = 0; frame < energies.size(); ++frame) {
+        if (energies[frame] >= onsetThreshold)
+            return static_cast<int>(frame);
+    }
+
+    return static_cast<int>(std::distance(
+        energies.begin(),
+        std::max_element(energies.begin(), energies.end())
+    ));
 }
 
 DecayResult fitDecaySigma(
@@ -66,18 +341,155 @@ DecayResult fitDecaySigma(
     float stopRatio = 0.001f
 );
 
+static LossFilterFitResult fitLossFilterForPitch(
+    const std::string& pitchName,
+    const std::vector<MergedLossPoint>& points,
+    double sampleRate,
+    bool useSymmetricDoubleSidedLoss
+) {
+    LossFilterFitResult result;
+    result.pitch = pitchName;
+    result.key = pitchNameToMidiKey(pitchName);
+    result.f0 = MyPitch::getFrequency(pitchName);
+    result.pointCount = static_cast<int>(points.size());
+
+    if (result.f0 <= 0.0 || points.empty()) {
+        result.g = 1.0;
+        result.a1 = 0.0;
+        result.fitError = 0.0;
+        return result;
+    }
+
+    const double sideLossDivisor = useSymmetricDoubleSidedLoss ? 2.0 : 1.0;
+
+    if (points.size() == 1) {
+        const double logTarget = -points.front().sigma / (sideLossDivisor * result.f0);
+        result.g = std::clamp(std::exp(logTarget), 0.0, 1.0);
+        result.a1 = 0.0;
+        result.fitError = 0.0;
+        return result;
+    }
+
+    double bestError = std::numeric_limits<double>::infinity();
+    double bestA1 = 0.0;
+    double bestLogG = 0.0;
+
+    for (double a1 = -0.98; a1 <= -0.001; a1 += 0.0005) {
+        double weightedResidualSum = 0.0;
+        double weightSum = 0.0;
+
+        for (const auto& point : points) {
+            const double weight = lossPointWeight(point);
+            const double logTarget = -point.sigma / (sideLossDivisor * result.f0);
+            const double shapeLogMagnitude = onePoleLossLogMagnitude(point.f, sampleRate, a1);
+
+            weightedResidualSum += weight * (logTarget - shapeLogMagnitude);
+            weightSum += weight;
+        }
+
+        if (weightSum <= 0.0)
+            continue;
+
+        const double unconstrainedLogG = weightedResidualSum / weightSum;
+        const double logG = std::min(0.0, unconstrainedLogG);
+        double error = 0.0;
+
+        for (const auto& point : points) {
+            const double weight = lossPointWeight(point);
+            const double logTarget = -point.sigma / (sideLossDivisor * result.f0);
+            const double shapeLogMagnitude = onePoleLossLogMagnitude(point.f, sampleRate, a1);
+            const double residual = logG + shapeLogMagnitude - logTarget;
+            error += weight * residual * residual;
+        }
+
+        error /= weightSum;
+
+        if (error < bestError) {
+            bestError = error;
+            bestA1 = a1;
+            bestLogG = logG;
+        }
+    }
+
+    result.g = std::clamp(std::exp(bestLogG), 1e-6, 1.0);
+    result.a1 = std::clamp(bestA1, -0.98, -0.001);
+    result.fitError = std::isfinite(bestError) ? bestError : 0.0;
+
+    return result;
+}
+
+void designLossFilterConstantsFromMerged(){
+    const double sampleRate = 44100.0;
+
+    // true = 双边反射各承担一半 loss。
+    // 如果你以后改成单边滤波，这里改成 false。
+    const bool useSymmetricDoubleSidedLoss = true;
+
+    const fs::path mergedFolder = kLossGeneratedDataRoot / "LossResults" / "Merged";
+    const fs::path outputPath = kLossGeneratedDataRoot / "loss_filter_constants.csv";
+    fs::create_directories(kLossGeneratedDataRoot);
+
+    std::vector<LossFilterFitResult> results;
+
+    if (!fs::exists(mergedFolder)) {
+        std::cerr << "Merged loss folder does not exist: " << mergedFolder << std::endl;
+        return;
+    }
+
+    for (const auto& entry : fs::directory_iterator(mergedFolder)) {
+        const fs::path path = entry.path();
+
+        if (!entry.is_regular_file() || path.extension() != ".csv")
+            continue;
+
+        const std::string pitchName = path.stem().string();
+        const std::vector<MergedLossPoint> points = readMergedLossPoints(path);
+
+        if (points.empty())
+            continue;
+
+        results.push_back(fitLossFilterForPitch(
+            pitchName,
+            points,
+            sampleRate,
+            useSymmetricDoubleSidedLoss
+        ));
+    }
+
+    std::sort(results.begin(), results.end(), [](const LossFilterFitResult& a, const LossFilterFitResult& b) {
+        return a.key < b.key;
+    });
+
+    std::ofstream output(outputPath);
+    output << "key,pitch,f0,g,a1,pointCount,fitError\n";
+
+    for (const auto& result : results) {
+        output
+            << result.key << ","
+            << result.pitch << ","
+            << result.f0 << ","
+            << result.g << ","
+            << result.a1 << ","
+            << result.pointCount << ","
+            << result.fitError
+            << "\n";
+    }
+
+    output.close();
+}
+
+
 void lossFilterDesinger(){
     
-    std::ofstream decay_csv(
-        "/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/LossFilterLab/decay_results.csv"
-    );
+    fs::create_directories(kLossGeneratedDataRoot);
+
+    std::ofstream decay_csv(kLossGeneratedDataRoot / "decay_results.csv");
     
     decay_csv << "velocity,pitch,f0,partial,partialFreq,sigma,intercept,r2\n";
     
-    const std::string lossOutputFolder =
-        "/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/LossFilterLab/LossResults";
+    const fs::path lossOutputFolder = kLossGeneratedDataRoot / "LossResults";
     fs::create_directories(lossOutputFolder);
-    fs::create_directories(fs::path(lossOutputFolder) / "Merged");
+    fs::create_directories(lossOutputFolder / "Merged");
     
     
     const double sampleRate = 44100.0;
@@ -89,19 +501,22 @@ void lossFilterDesinger(){
     const double maxAnalysisFreq = 16000.0;
     const float relativePeakThreshold = 0.001f;
     const float highFrequencyRelativePeakThreshold = 0.00008f;
-    const double highRegisterStartFreq = 880.0;
+    const double highRegisterStartFreq = 440.0;
+    const float minPeakProminenceRatio = 2.5f;
+    const float highRegisterMinPeakProminenceRatio = 1.6f;
     
-    std::string splitFolder =
-        "/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/LossFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Split";
+    const fs::path splitFolder = kProjectLossLabRoot / "Samples/Pianoteq 9/SingleNoteSamples/Split";
     
     std::map<std::string, std::map<int, std::pair<double, int>>> mergedSigmaByPitchAndPartial;
     std::map<std::string, std::map<int, std::pair<double, int>>> mergedFreqByPitchAndPartial;
+    std::map<std::string, std::map<int, std::pair<double, int>>> mergedR2ByPitchAndPartial;
+    std::map<std::string, std::map<int, std::pair<double, int>>> mergedFittedFrameCountByPitchAndPartial;
 
     for(int i = 50; i <= 110; i += 15) {
-        const fs::path velocityOutputFolder = fs::path(lossOutputFolder) / ("v" + std::to_string(i));
+        const fs::path velocityOutputFolder = lossOutputFolder / ("v" + std::to_string(i));
         fs::create_directories(velocityOutputFolder);
 
-        for (const auto& entry : fs::directory_iterator(splitFolder + "/v" + std::to_string(i))){
+        for (const auto& entry : fs::directory_iterator(splitFolder / ("v" + std::to_string(i)))){
 
             const fs::path path = entry.path();
             const std::string filename = path.filename();
@@ -130,14 +545,24 @@ void lossFilterDesinger(){
             std::vector<AmplitudeEnvelope> partials;
 
             const int baseSearchRadiusBins = 8;
-            const int referenceFrame = 5;
+            const int onsetFrame = findOnsetFrame(spectrogram, f_meta, f0);
+            const int referenceFrame = std::min(
+                static_cast<int>(spectrogram.size()) - 1,
+                onsetFrame + 1
+            );
 
-            if (spectrogram.empty() || referenceFrame >= static_cast<int>(spectrogram.size()))
+            if (spectrogram.empty() || referenceFrame < 0 || referenceFrame >= static_cast<int>(spectrogram.size()))
                 continue;
 
             float referenceMaxAmp = 0.0f;
-            for (float amp : spectrogram[referenceFrame]) {
-                referenceMaxAmp = std::max(referenceMaxAmp, amp);
+            const int referenceMaxEndFrame = std::min(
+                static_cast<int>(spectrogram.size()) - 1,
+                referenceFrame + 4
+            );
+            for (int frame = referenceFrame; frame <= referenceMaxEndFrame; ++frame) {
+                for (float amp : spectrogram[frame]) {
+                    referenceMaxAmp = std::max(referenceMaxAmp, amp);
+                }
             }
 
             if (referenceMaxAmp <= 0.0f)
@@ -148,16 +573,22 @@ void lossFilterDesinger(){
                 static_cast<int>(maxAnalysisFreq / f0)
             );
             const bool isHighRegister = f0 >= highRegisterStartFreq;
+            const bool isVeryHigh = isVeryHighRegister(f0);
             const double inharmonicityB = estimateInharmonicityCoefficient(f0);
 
             for (int p = 1; p <= maxPartial; ++p) {
                 const double harmonicTargetFreq = f0 * p;
                 const double targetFreq = harmonicTargetFreq * std::sqrt(1.0 + inharmonicityB * p * p);
-                const int centerBin = static_cast<int>(std::round(targetFreq / binHz));
+                const bool protectFundamentalCenter = isHighRegister && p == 1;
+                const double searchCenterFreq = protectFundamentalCenter ? harmonicTargetFreq : targetFreq;
+                const int centerBin = static_cast<int>(std::round(searchCenterFreq / binHz));
+                const bool isHighPartialBand = searchCenterFreq >= 3000.0 && p >= 2;
 
-                const int searchRadiusBins = isHighRegister
-                    ? baseSearchRadiusBins + static_cast<int>(std::round(targetFreq / 600.0))
-                    : baseSearchRadiusBins + static_cast<int>(std::round(targetFreq / 1500.0));
+                const int searchRadiusBins = isHighPartialBand
+                    ? static_cast<int>(std::round((searchCenterFreq * 0.15) / binHz))
+                    : (isHighRegister
+                        ? baseSearchRadiusBins + static_cast<int>(std::round(searchCenterFreq / 600.0))
+                        : baseSearchRadiusBins + static_cast<int>(std::round(searchCenterFreq / 1500.0)));
                 int startBin = std::max(1, centerBin - searchRadiusBins);
                 int endBin = std::min(
                     static_cast<int>(f_meta.size()) - 2,
@@ -167,10 +598,12 @@ void lossFilterDesinger(){
                 int peakBin = centerBin;
                 float peakAmp = 0.0f;
                 size_t peakSearchFrame = referenceFrame;
+                float peakNoiseFloor = 0.0f;
 
+                const int searchFrameSpan = isHighRegister ? 16 : 24;
                 const size_t lastSearchFrame = std::min(
                     spectrogram.size() - 1,
-                    static_cast<size_t>(referenceFrame + (isHighRegister ? 45 : 20))
+                    static_cast<size_t>(referenceFrame + searchFrameSpan)
                 );
 
                 for (size_t frame = referenceFrame; frame <= lastSearchFrame; ++frame) {
@@ -185,23 +618,46 @@ void lossFilterDesinger(){
                     }
                 }
 
-                const float partialThreshold = (targetFreq >= 3000.0 || isHighRegister)
+                const float partialThreshold = (searchCenterFreq >= 3000.0 || isHighRegister)
                     ? referenceMaxAmp * highFrequencyRelativePeakThreshold
                     : referenceMaxAmp * relativePeakThreshold;
 
                 if (peakAmp < partialThreshold)
                     continue;
 
+                peakNoiseFloor = estimateLocalNoiseFloor(
+                    spectrogram[peakSearchFrame],
+                    peakBin,
+                    isHighRegister ? 8 : 5,
+                    isHighRegister ? 48 : 32
+                );
+
+                const float requiredProminence = isHighPartialBand
+                    ? 1.05f
+                    : (isHighRegister ? highRegisterMinPeakProminenceRatio : minPeakProminenceRatio);
+
+                if (peakNoiseFloor > 0.0f && peakAmp < peakNoiseFloor * requiredProminence)
+                    continue;
+
+                const double measuredFreq = f_meta[peakBin];
+                const double expectedFreqForValidation = protectFundamentalCenter ? harmonicTargetFreq : targetFreq;
+                const double frequencyErrorRatio = std::abs(measuredFreq - expectedFreqForValidation) / std::max(expectedFreqForValidation, 1.0);
+                const double allowedFrequencyErrorRatio = isHighPartialBand
+                    ? 0.18
+                    : maxAllowedFrequencyErrorRatio(f0, p);
+                if (frequencyErrorRatio > allowedFrequencyErrorRatio)
+                    continue;
+
                 AmplitudeEnvelope ae;
                 ae.partialIndex = p;
-                ae.f = f_meta[peakBin];
+                ae.f = measuredFreq;
                 ae.A.reserve(spectrogram.size());
 
                 for (size_t frame = 0; frame < spectrogram.size(); ++frame) {
                     int localPeakBin = peakBin;
                     float localPeakAmp = 0.0f;
 
-                    const int localTrackRadiusBins = isHighRegister ? 5 : 2;
+                    const int localTrackRadiusBins = isHighPartialBand ? 20 : (isHighRegister ? 5 : 2);
                     const int localStartBin = std::max(1, peakBin - localTrackRadiusBins);
                     const int localEndBin = std::min(
                         static_cast<int>(f_meta.size()) - 2,
@@ -224,13 +680,15 @@ void lossFilterDesinger(){
             
             std::vector<DecayResult> decayResults;
             std::ofstream key_loss_csv(velocityOutputFolder / (pitchName + ".csv"));
-            key_loss_csv << "partial,f,sigma,r2\n";
+            key_loss_csv << "partial,f,sigma,r2,fittedFrameCount\n";
             
             for (const auto& ae : partials) {
                 const bool isHighFrequencyPartial = ae.f >= 3000.0 || f0 >= highRegisterStartFreq;
-                const int adaptiveSkipFrames = isHighFrequencyPartial ? 2 : 10;
-                const float adaptiveStopRatio = isHighFrequencyPartial ? 0.00003f : 0.001f;
-                const double minR2 = isHighFrequencyPartial ? 0.30 : 0.50;
+                const bool isHighPartialBand = ae.f >= 3000.0 && ae.partialIndex >= 2;
+                const int adaptiveSkipFrames = isHighPartialBand ? 1 : (isHighFrequencyPartial ? 3 : 10);
+                const float adaptiveStopRatio = isHighPartialBand ? 0.00002f : (isHighFrequencyPartial ? 0.00008f : 0.001f);
+                const double minR2 = isHighPartialBand ? 0.50 : (isHighFrequencyPartial ? 0.50 : 0.60);
+                const int minFittedFrames = isHighPartialBand ? 20 : (isHighFrequencyPartial ? 5 : 8);
 
                 DecayResult dr = fitDecaySigma(
                     ae,
@@ -241,7 +699,11 @@ void lossFilterDesinger(){
                     adaptiveStopRatio
                 );
 
-                if (dr.sigma > 0.0 && dr.r2 >= minR2) {
+                if (dr.sigma > 0.0 &&
+                    dr.sigma <= maxAllowedSigma(dr.f) &&
+                    dr.r2 >= minR2 &&
+                    dr.fittedFrameCount >= minFittedFrames &&
+                    !hasDuplicateFrequency(decayResults, dr.f)) {
                     decayResults.push_back(dr);
 
                     decay_csv
@@ -259,13 +721,18 @@ void lossFilterDesinger(){
                         << dr.partialIndex << ","
                         << dr.f << ","
                         << dr.sigma << ","
-                        << dr.r2
+                        << dr.r2 << ","
+                        << dr.fittedFrameCount
                         << "\n";
 
                     mergedSigmaByPitchAndPartial[pitchName][dr.partialIndex].first += dr.sigma;
                     mergedSigmaByPitchAndPartial[pitchName][dr.partialIndex].second += 1;
                     mergedFreqByPitchAndPartial[pitchName][dr.partialIndex].first += dr.f;
                     mergedFreqByPitchAndPartial[pitchName][dr.partialIndex].second += 1;
+                    mergedR2ByPitchAndPartial[pitchName][dr.partialIndex].first += dr.r2;
+                    mergedR2ByPitchAndPartial[pitchName][dr.partialIndex].second += 1;
+                    mergedFittedFrameCountByPitchAndPartial[pitchName][dr.partialIndex].first += dr.fittedFrameCount;
+                    mergedFittedFrameCountByPitchAndPartial[pitchName][dr.partialIndex].second += 1;
                 }
             }
         
@@ -274,14 +741,14 @@ void lossFilterDesinger(){
         }
     }
         
-    const fs::path mergedOutputFolder = fs::path(lossOutputFolder) / "Merged";
+    const fs::path mergedOutputFolder = lossOutputFolder / "Merged";
 
     for (const auto& pitchItem : mergedSigmaByPitchAndPartial) {
         const std::string& pitchName = pitchItem.first;
         const auto& sigmaByPartial = pitchItem.second;
 
         std::ofstream merged_key_csv(mergedOutputFolder / (pitchName + ".csv"));
-        merged_key_csv << "partial,f,sigma,count\n";
+        merged_key_csv << "partial,f,sigma,count,meanR2,meanFittedFrameCount\n";
 
         for (const auto& partialItem : sigmaByPartial) {
             const int partialIndex = partialItem.first;
@@ -302,7 +769,30 @@ void lossFilterDesinger(){
             const double meanFrequency = freqPartialIt->second.first / static_cast<double>(freqPartialIt->second.second);
             const double meanSigma = sigmaSum / static_cast<double>(count);
 
-            merged_key_csv << partialIndex << "," << meanFrequency << "," << meanSigma << "," << count << "\n";
+            double meanR2 = 0.0;
+            const auto r2PitchIt = mergedR2ByPitchAndPartial.find(pitchName);
+            if (r2PitchIt != mergedR2ByPitchAndPartial.end()) {
+                const auto r2PartialIt = r2PitchIt->second.find(partialIndex);
+                if (r2PartialIt != r2PitchIt->second.end() && r2PartialIt->second.second > 0)
+                    meanR2 = r2PartialIt->second.first / static_cast<double>(r2PartialIt->second.second);
+            }
+
+            double meanFittedFrameCount = 0.0;
+            const auto fittedPitchIt = mergedFittedFrameCountByPitchAndPartial.find(pitchName);
+            if (fittedPitchIt != mergedFittedFrameCountByPitchAndPartial.end()) {
+                const auto fittedPartialIt = fittedPitchIt->second.find(partialIndex);
+                if (fittedPartialIt != fittedPitchIt->second.end() && fittedPartialIt->second.second > 0)
+                    meanFittedFrameCount = fittedPartialIt->second.first / static_cast<double>(fittedPartialIt->second.second);
+            }
+
+            merged_key_csv
+                << partialIndex << ","
+                << meanFrequency << ","
+                << meanSigma << ","
+                << count << ","
+                << meanR2 << ","
+                << meanFittedFrameCount
+                << "\n";
         }
 
         merged_key_csv.close();
@@ -379,6 +869,7 @@ DecayResult fitDecaySigma(
     DecayResult result;
     result.partialIndex = ae.partialIndex;
     result.f = ae.f;
+    result.fittedFrameCount = n;
 
     if (n < 2) {
         result.sigma = 0.0;

@@ -19,6 +19,8 @@
 
 class HammerModel;
 
+struct LossConstant;
+
 class StringModel {
 
     // --------------------------------------------
@@ -102,6 +104,15 @@ public:
     mutable float Allpass_Y1_r = 0.0;
     mutable float Allpass_X1_l = 0.0; // 上一次传入 allpass 的值
     mutable float Allpass_Y1_l = 0.0;
+    
+    // loss filter
+    std::vector<LossConstant> lossConstants;
+    mutable float Loss_X1_r = 0.0; // 上一次传入 allpass 的值
+    mutable float Loss_Y1_r = 0.0;
+    mutable float Loss_X1_l = 0.0; // 上一次传入 allpass 的值
+    mutable float Loss_Y1_l = 0.0;
+    double loss_a1 = -0.01;
+    double loss_g = 0.999293;
 
     // 力 ↔ 速度 的比例常数
     double Z = 0.0;
@@ -120,6 +131,8 @@ public:
     //  将力变成波
     void injectForce(double p, float F) const ;
     void injectForce(int m, float F) const ;
+    
+    float processLoss(float x, float& y1) const;
     
     // 传播
     void propagate() const ;
