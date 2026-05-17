@@ -1167,7 +1167,7 @@ int D_Int = floor(D - 0.5);
 double D_Frac = D - D_Int;       // 0.5 <= D_Frac < 1.5
 ```
 
-一阶 allpass (刚才算得的 **[28]**式)：
+一阶 allpass (刚才算得的 **[28]** 式)：
 
 ```cpp
 // y[n] = a_1x[n] + x[n - 1] - a_1y[n - 1]  [2]

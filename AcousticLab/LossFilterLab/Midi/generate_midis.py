@@ -1,0 +1,150 @@
+from pathlib import Path
+from mido import Message, MidiFile, MidiTrack, MetaMessage, bpm2tempo
+
+OUTPUT_DIR = Path(
+    "/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/LossFilterLab/Samples/Pianoteq 9/SingleNoteSamples"
+)
+
+TAKES = [
+    ("loss_filter_take01_v50.mid", 50),
+    ("loss_filter_take02_v65.mid", 65),
+    ("loss_filter_take03_v80.mid", 80),
+    ("loss_filter_take04_v95.mid", 95),
+    ("loss_filter_take05_v110.mid", 110),
+]
+
+NOTE_START = 21   # A0
+NOTE_END = 108    # C8
+NOTE_COUNT = NOTE_END - NOTE_START + 1
+
+TEMPO_BPM = 120
+TICKS_PER_BEAT = 480
+CHANNEL = 0
+
+PRE_SILENCE_SEC = 2.0
+POST_SILENCE_SEC = 2.0
+HOLD_SEC = 1.0
+
+
+def seconds_to_ticks(seconds: float) -> int:
+    # 120 BPM = 0.5 seconds per beat
+    beats = seconds / (60.0 / TEMPO_BPM)
+    return round(beats * TICKS_PER_BEAT)
+
+
+def midi_note_to_name(midi_n: int) -> str:
+    """
+    MIDI note name conversion.
+
+    A0 = MIDI 21
+    C4 = MIDI 60
+    C8 = MIDI 108
+    """
+    names = ["C", "C#", "D", "D#", "E", "F",
+             "F#", "G", "G#", "A", "A#", "B"]
+    name = names[midi_n % 12]
+    octave = (midi_n // 12) - 1
+    return f"{name}{octave}"
+
+
+def tail_duration_for_note(midi_n: int) -> float:
+    if midi_n < 48:
+        return 29.0
+    if midi_n < 60:
+        return 20.0
+    if midi_n < 72:
+        return 14.0
+    if midi_n < 84:
+        return 10.0
+    return 7.0
+
+
+def format_duration(seconds: float) -> str:
+    total = round(seconds)
+    minutes = total // 60
+    secs = total % 60
+    return f"{minutes}:{secs:02d}"
+
+
+def expected_duration_seconds() -> float:
+    total = PRE_SILENCE_SEC + POST_SILENCE_SEC
+
+    for midi_n in range(NOTE_START, NOTE_END + 1):
+        total += HOLD_SEC
+        total += tail_duration_for_note(midi_n)
+
+    return total
+
+
+def create_midi_file(output_path: Path, velocity: int) -> None:
+    mid = MidiFile(ticks_per_beat=TICKS_PER_BEAT)
+    track = MidiTrack()
+    mid.tracks.append(track)
+
+    track.append(MetaMessage("set_tempo", tempo=bpm2tempo(TEMPO_BPM), time=0))
+
+    # Opening silence
+    pending_delta = seconds_to_ticks(PRE_SILENCE_SEC)
+
+    for midi_n in range(NOTE_START, NOTE_END + 1):
+        note_name = midi_note_to_name(midi_n)
+
+        track.append(Message(
+            "note_on",
+            note=midi_n,
+            velocity=velocity,
+            channel=CHANNEL,
+            time=pending_delta,
+        ))
+
+        track.append(Message(
+            "note_off",
+            note=midi_n,
+            velocity=0,
+            channel=CHANNEL,
+            time=seconds_to_ticks(HOLD_SEC),
+        ))
+
+        tail_sec = tail_duration_for_note(midi_n)
+        pending_delta = seconds_to_ticks(tail_sec)
+
+        print(
+            f"  note {midi_n:3d} {note_name:>3s} | "
+            f"hold={HOLD_SEC:.1f}s | tail={tail_sec:.1f}s"
+        )
+
+    # Final silence after last note tail
+    pending_delta += seconds_to_ticks(POST_SILENCE_SEC)
+    track.append(MetaMessage("end_of_track", time=pending_delta))
+
+    mid.save(output_path)
+
+
+def main() -> None:
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    per_file_duration = expected_duration_seconds()
+    total_duration = per_file_duration * len(TAKES)
+
+    print(f"Output directory: {OUTPUT_DIR}")
+    print()
+
+    for filename, velocity in TAKES:
+        output_path = OUTPUT_DIR / filename
+
+        print(f"Creating: {output_path}")
+        print(f"Velocity: {velocity}")
+
+        create_midi_file(output_path, velocity)
+
+        print(f"Output path: {output_path}")
+        print(f"Velocity: {velocity}")
+        print(f"Note count: {NOTE_COUNT}")
+        print(f"Estimated duration: {format_duration(per_file_duration)}")
+        print()
+
+    print(f"Total estimated recording time: {format_duration(total_duration)}")
+
+
+if __name__ == "__main__":
+    main()
