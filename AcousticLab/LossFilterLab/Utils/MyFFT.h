@@ -16,6 +16,14 @@ public:
         size_t fftSize,
         size_t hopSize);
     
+    static float getPartialAmplitude(
+        const std::vector<std::vector<float>>& spectrogram,
+        size_t frameIndex,
+        double targetFreq,
+        double sampleRate,
+        int fftSize,
+        int searchRadiusBins);
+    
     static double binToFreq(size_t bin, unsigned int sampleRate, size_t fftSize) {
         return static_cast<double>(bin) * static_cast<double>(sampleRate)
                / static_cast<double>(fftSize);

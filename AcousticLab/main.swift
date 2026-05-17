@@ -9,4 +9,4 @@ import Foundation
 
 lossFilterDesinger();
 
-print("真他妈地狱。")
+

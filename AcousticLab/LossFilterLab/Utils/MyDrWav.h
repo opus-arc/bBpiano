@@ -17,6 +17,8 @@ public:
         uint32_t targetSampleRate,
         uint32_t targetChannels
     );
+    
+    static std::vector<float> downmixStereoToMono(const std::vector<float>& stereo);
 };
 
 

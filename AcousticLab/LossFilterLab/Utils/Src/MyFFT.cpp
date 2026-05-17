@@ -7,6 +7,7 @@
 #include <vector>
 #include <cmath>
 #include <cstdlib>
+#include <algorithm>
 
 namespace {
     std::vector<float> makeHannWindowInternal(const size_t fftSize) {
@@ -56,6 +57,14 @@ std::vector<std::vector<float>> MyFFT::computeSpectrogram(const std::vector<floa
     const size_t spectrumSize = fftSize / 2 + 1;
     const size_t estimatedFrames = (audio.size() + hopSize - 1) / hopSize;
 
+    std::vector<float> binFrequencies(spectrumSize, 0.0f);
+    for (size_t k = 0; k < spectrumSize; ++k) {
+        binFrequencies[k] = static_cast<float>(
+            static_cast<double>(k) * static_cast<double>(sampleRate) /
+            static_cast<double>(fftSize)
+        );
+    }
+
     kiss_fftr_cfg cfg = kiss_fftr_alloc(static_cast<int>(fftSize), 0, nullptr, nullptr);
     if (cfg == nullptr) {
         return {};
@@ -87,6 +96,45 @@ std::vector<std::vector<float>> MyFFT::computeSpectrogram(const std::vector<floa
         }
     }
 
+    spectrogram.push_back(std::move(binFrequencies));
+
     free(cfg);
     return spectrogram;
+}
+
+float MyFFT::getPartialAmplitude(
+    const std::vector<std::vector<float>>& spectrogram,
+    size_t frameIndex,
+    double targetFreq,
+    double sampleRate,
+    int fftSize,
+    int searchRadiusBins
+)
+{
+    if (spectrogram.empty() || frameIndex >= spectrogram.size()) {
+        return 0.0f;
+    }
+
+    const std::vector<float>& frameMagnitude = spectrogram[frameIndex];
+    if (frameMagnitude.empty()) {
+        return 0.0f;
+    }
+
+    double binHz = sampleRate / fftSize;
+    int centerBin = static_cast<int>(std::round(targetFreq / binHz));
+
+    int startBin = std::max(0, centerBin - searchRadiusBins);
+    int endBin = std::min(
+        static_cast<int>(frameMagnitude.size()) - 1,
+        centerBin + searchRadiusBins
+    );
+
+    float maxAmp = 0.0f;
+
+    for (int k = startBin; k <= endBin; ++k)
+    {
+        maxAmp = std::max(maxAmp, frameMagnitude[k]);
+    }
+
+    return maxAmp;
 }
