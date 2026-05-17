@@ -3,3 +3,4 @@
 //
 
 #include "main.hpp"
+#include "../../AcousticLab/LossFilterLab/Core/BankLossFilterDesigner.hpp"
