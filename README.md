@@ -2351,6 +2351,117 @@ float processLoss(float x) {
 
 为了得到可解释的常数数值，最好的还是从钢琴录音中去反推。
 
+遗憾的是，我暂时无法实现 Bank 所述的理想情况：靠近音桥与音板的声音，而不是远场麦克风录音，bridge acceleration 位置的声音受到的改变最小，最为纯净。因为本章的目标校准的是弦—琴码—音板系统里的物理衰减，而不是房间、麦克风、辐射和后期效果混在一起的最终听感。
+
+但如果我们的输出链是 dry、线性、无混响、无动态处理的，那经过一个固定线性系统后，也只会多出一个频率相关常数 C_k，截距变了，但斜率没变，而 $\tau_k$ 正是由斜率得到的，那么从最终音频里估计 partial decay time 仍然是合理的。
+
+而为提取用于 Bank-style loss filter 拟合的 partial decay 数据，本文采用 NY D.274 作为 dry reference source，排除 Delay EQ Reverb 以及 Hammer Noise 的影响，并通过 MIDI 自动生成可复现的单音序列。
+
+每个 MIDI 文件包含钢琴完整 88 键范围： A0 → C8 / MIDI note 21 → 108
+
+```shell
+(base) opusarc@opuss-MacBook-Air SingleNoteSamples % python generate_loss_filter_midis.py
+Output directory: /SingleNoteSamples
+
+Creating: /loss_filter_take01_v50.mid
+Velocity: 50
+  note  21  A0 | hold=15.0s | tail=5.0s
+  note  22 A#0 | hold=15.0s | tail=5.0s
+  note  23  B0 | hold=15.0s | tail=5.0s
+  note  24  C1 | hold=15.0s | tail=5.0s
+  note  25 C#1 | hold=15.0s | tail=5.0s
+    ...
+  note  69  A4 | hold=9.0s | tail=3.0s
+  note  70 A#4 | hold=9.0s | tail=3.0s
+  note  71  B4 | hold=9.0s | tail=3.0s
+  note  72  C5 | hold=6.0s | tail=2.0s
+  note  73 C#5 | hold=6.0s | tail=2.0s
+  ...
+  note 104 G#7 | hold=4.5s | tail=1.5s
+  note 105  A7 | hold=4.5s | tail=1.5s
+  note 106 A#7 | hold=4.5s | tail=1.5s
+  note 107  B7 | hold=4.5s | tail=1.5s
+  note 108  C8 | hold=4.5s | tail=1.5s
+Output path: /loss_filter_take01_v50.mid
+Velocity: 50
+Note count: 88
+Estimated duration: 18:46
+
+.........
+
+Creating: /loss_filter_take05_v110.mid
+Velocity: 110
+  note  21  A0 | hold=15.0s | tail=5.0s
+  note  22 A#0 | hold=15.0s | tail=5.0s
+  note  23  B0 | hold=15.0s | tail=5.0s
+  note  24  C1 | hold=15.0s | tail=5.0s
+  note  25 C#1 | hold=15.0s | tail=5.0s
+    ...
+  note  69  A4 | hold=9.0s | tail=3.0s
+  note  70 A#4 | hold=9.0s | tail=3.0s
+  note  71  B4 | hold=9.0s | tail=3.0s
+  note  72  C5 | hold=6.0s | tail=2.0s
+  note  73 C#5 | hold=6.0s | tail=2.0s
+  ...
+  note 104 G#7 | hold=4.5s | tail=1.5s
+  note 105  A7 | hold=4.5s | tail=1.5s
+  note 106 A#7 | hold=4.5s | tail=1.5s
+  note 107  B7 | hold=4.5s | tail=1.5s
+  note 108  C8 | hold=4.5s | tail=1.5s
+Output path: /loss_filter_take05_v110.mid
+Velocity: 110
+Note count: 88
+Estimated duration: 18:46
+
+Total estimated recording time: 93:50
+```
+
+
+
+这些采样中真正有用的是 note_on 后、note_off 前的 hold 区间。这时该键的 damper 被抬起，弦可以自然衰减，在这个窗口中能更干净地提取每个 partial 的 decay time。`note_off` 之后 damper 已经回到弦上，所以 tail 只需要留一个短缓冲，记录 damper return/release，不再作为主要的 string loss 数据。
+
+我必须对这些数据进行裁切：
+
+
+
+```shell
+(base) opusarc@opuss-MacBook-Air SingleNoteSamples % python split.py \
+  --input "/SingleNoteSamples" \
+  --output "/Split"
+
+Input path: /take01_v50.wav
+Sample rate: 44100
+Channels: 2
+Total duration: 18:46 (1126.203s)
+Expected timetable duration: 18:46 (1126.000s)
+Split mode: hold region only; pre-silence, tail, and inter-note silence are excluded
+Length sufficient: yes
+Written files: 88
+Skipped existing files: 0
+Expected note count: 88
+
+......
+
+Input path: /take05_v110.wav
+Sample rate: 44100
+Channels: 2
+Total duration: 18:46 (1126.203s)
+Expected timetable duration: 18:46 (1126.000s)
+Split mode: hold region only; pre-silence, tail, and inter-note silence are excluded
+Length sufficient: yes
+Written files: 88
+Skipped existing files: 0
+Expected note count: 88
+
+Done. Total written files: 440
+Output directory: /Split
+```
+
+
+
+要从这 841.5s 的 hold time 32bit 采样 1.49GB  dry Pianoteq reference 中提取 observed partial decay times，
+并用这些 decay targets 拟合出完整的 Bank-style loss filter。
+
 
 
 
