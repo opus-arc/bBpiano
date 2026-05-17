@@ -65,3 +65,16 @@ std::vector<float> MyDrWav::loadWav(
         return {};
     }
 }
+
+
+std::vector<float> MyDrWav::downmixStereoToMono(const std::vector<float>& stereo)
+
+{
+    std::vector<float> mono;
+    mono.reserve(stereo.size() / 2);
+    for (size_t i = 0; i + 1 < stereo.size(); i += 2)
+    {
+        mono.push_back(0.5f * (stereo[i] + stereo[i + 1]));
+    }
+    return mono;
+}

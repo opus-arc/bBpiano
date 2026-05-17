@@ -168,7 +168,7 @@ ___
 
    那就会根据如下的公式
 
-   x_q[n] = round(x[n] / Δ) * Δ
+   $x_q[n] = round(x[n] / Δ) * Δ$
 
    “找最近的台阶”，量化后为 0.75 ，
 
@@ -2459,8 +2459,195 @@ Output directory: /Split
 
 
 
-要从这 841.5s 的 hold time 32bit 采样 1.49GB  dry Pianoteq reference 中提取 observed partial decay times，
+现在要从这 841.5s 的 hold time 32bit 采样 1.49GB  dry Pianoteq reference 中提取 observed partial decay times，
 并用这些 decay targets 拟合出完整的 Bank-style loss filter。
+
+为了拟合出 g 和 a_1，每一个 partial 的衰减速度是需要的，显然这是一个指数形状的衰减，也就是说要先排除异常值然后通过局部上下文找最大值得到 Amplitude[t] ，再对这个值取对数然后画横线
+
+由于我的采样是 stereo 音质，我需要在读取 wav 得到 pcm_stereo 之后 转换为 pcm_mono 单声道，避免 SFTF 出错
+
+接着做一个快速傅立叶变换：
+
+```shell
+channels: 2
+sampleRate: 44100
+frames: 396900
+
+......
+
+channels: 2
+sampleRate: 44100
+frames: 661500
+```
+
+
+
+```cpp
+					std::vector<AmplitudeEnvelope> partials;
+            const int searchRadiusBins = 3;
+            const int referenceFrame = 5;
+            if (spectrogram.empty() || referenceFrame >= static_cast<int>(spectrogram.size()))
+                continue;
+
+            float referenceMaxAmp = 0.0f;
+            for (float amp : spectrogram[referenceFrame]) {
+                referenceMaxAmp = std::max(referenceMaxAmp, amp);
+            }
+
+            if (referenceMaxAmp <= 0.0f)
+                continue;
+
+            const int maxPartial = std::min(
+                maxUsefulPartial,
+                static_cast<int>(maxAnalysisFreq / f0)
+            );
+
+            for (int p = 1; p <= maxPartial; ++p) {
+                const double targetFreq = f0 * p;
+                const int centerBin = static_cast<int>(std::round(targetFreq / binHz));
+
+                int startBin = std::max(1, centerBin - searchRadiusBins);
+                int endBin = std::min(
+                    static_cast<int>(f_meta.size()) - 2,
+                    centerBin + searchRadiusBins
+                );
+
+                int peakBin = centerBin;
+                float peakAmp = 0.0f;
+
+                for (int bin = startBin; bin <= endBin; ++bin) {
+                    const float amp = spectrogram[referenceFrame][bin];
+
+                    if (amp > peakAmp) {
+                        peakAmp = amp;
+                        peakBin = bin;
+                    }
+                }
+
+                if (peakAmp < referenceMaxAmp * relativePeakThreshold)
+                    continue;
+
+                AmplitudeEnvelope ae;
+                ae.f = f_meta[peakBin];
+                ae.A.reserve(spectrogram.size());
+
+                for (size_t frame = 0; frame < spectrogram.size(); ++frame) {
+                    ae.A.push_back(spectrogram[frame][peakBin]);
+                }
+
+                partials.push_back(std::move(ae));
+            }
+```
+
+
+
+接着做线性回归算斜率：
+
+```cpp
+DecayResult fitDecaySigma(
+    const AmplitudeEnvelope& ae,
+    double sampleRate,
+    int hopSize,
+    int skipFrames,
+    float minAmp,
+    float stopRatio
+) {
+    double sumT = 0.0;
+    double sumY = 0.0;
+    double sumTT = 0.0;
+    double sumTY = 0.0;
+    double sumYY = 0.0;
+    int n = 0;
+
+    if (ae.A.empty()) {
+        DecayResult result;
+        result.f = ae.f;
+        return result;
+    }
+
+    float peakAmp = 0.0f;
+    size_t peakFrame = 0;
+    for (size_t frame = 0; frame < ae.A.size(); ++frame) {
+        if (ae.A[frame] > peakAmp) {
+            peakAmp = ae.A[frame];
+            peakFrame = frame;
+        }
+    }
+
+    if (peakAmp <= minAmp) {
+        DecayResult result;
+        result.f = ae.f;
+        return result;
+    }
+
+    const float stopAmp = std::max(minAmp, peakAmp * stopRatio);
+    const size_t startFrame = std::max(
+        peakFrame + static_cast<size_t>(skipFrames),
+        peakFrame
+    );
+
+    for (size_t frame = startFrame; frame < ae.A.size(); ++frame) {
+        const float amp = ae.A[frame];
+        if (amp <= minAmp)
+            continue;
+        if (amp < stopAmp)
+            break;
+        const double t = static_cast<double>(frame * hopSize) / sampleRate;
+        const double y = std::log(static_cast<double>(amp));
+
+        sumT += t;
+        sumY += y;
+        sumTT += t * t;
+        sumTY += t * y;
+        sumYY += y * y;
+        ++n;
+    }
+
+    DecayResult result;
+    result.f = ae.f;
+
+    if (n < 2) {
+        result.sigma = 0.0;
+        result.intercept = 0.0;
+        return result;
+    }
+
+    const double denom = n * sumTT - sumT * sumT;
+
+    if (std::abs(denom) < 1e-12) {
+        result.sigma = 0.0;
+        result.intercept = 0.0;
+        return result;
+    }
+
+    const double numerator = n * sumTY - sumT * sumY;
+    const double slope = numerator / denom;
+    const double intercept = (sumY - slope * sumT) / n;
+
+    result.sigma = -slope;
+    result.intercept = intercept;
+
+    const double denomY = n * sumYY - sumY * sumY;
+    if (denomY > 1e-12) {
+        result.r2 = (numerator * numerator) / (denom * denomY);
+        result.r2 = std::clamp(result.r2, 0.0, 1.0);
+    }
+
+    return result;
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+Bank 直接用经典的 **complex demodulation（复数解调）**或者说 **heterodyne analysis（外差分析）**把
 
 
 
