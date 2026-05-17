@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 
 
@@ -17,9 +16,25 @@ NOTE_COUNT = 88
 
 PRE_SILENCE_SEC = 2.0
 POST_SILENCE_SEC = 2.0
-HOLD_SEC = 1.0
 
 INPUT_EXTENSIONS = [".wav", ".aiff", ".aif"]
+
+SAFETY_DURATION_MULTIPLIER = 1.5
+
+
+def hold_duration_for_note(midi_n: int) -> float:
+    if midi_n < 48:
+        base = 10.0
+    elif midi_n < 60:
+        base = 8.0
+    elif midi_n < 72:
+        base = 6.0
+    elif midi_n < 84:
+        base = 4.0
+    else:
+        base = 3.0
+
+    return base * SAFETY_DURATION_MULTIPLIER
 
 
 def note_number_to_name(midi_n: int) -> str:
@@ -30,15 +45,17 @@ def note_number_to_name(midi_n: int) -> str:
 
 
 def tail_duration_for_note(midi_n: int) -> float:
+    # The tail exists in the long recording only to separate notes after note_off.
+    # It is not included in the split files used for loss-filter analysis.
     if midi_n < 48:
-        return 29.0
+        return 5.0
     if midi_n < 60:
-        return 20.0
+        return 4.0
     if midi_n < 72:
-        return 14.0
+        return 3.0
     if midi_n < 84:
-        return 10.0
-    return 7.0
+        return 2.0
+    return 1.5
 
 
 def build_time_table():
@@ -47,17 +64,20 @@ def build_time_table():
 
     for midi_n in range(NOTE_START, NOTE_END + 1):
         start = t
-        duration = HOLD_SEC + tail_duration_for_note(midi_n)
-        end = start + duration
+        hold_duration = hold_duration_for_note(midi_n)
+        end = start + hold_duration
 
         items.append({
             "midi_n": midi_n,
             "name": note_number_to_name(midi_n),
             "start": start,
             "end": end,
+            "hold_duration": hold_duration,
+            "tail_duration": tail_duration_for_note(midi_n),
         })
 
-        t = end
+        # Advance the timetable by hold + tail, but only split out the hold region.
+        t = end + tail_duration_for_note(midi_n)
 
     expected_total = t + POST_SILENCE_SEC
     return items, expected_total
@@ -111,6 +131,7 @@ def split_one_file(
     print(f"Channels: {channels}")
     print(f"Total duration: {format_duration(audio_duration)} ({audio_duration:.3f}s)")
     print(f"Expected timetable duration: {format_duration(expected_total)} ({expected_total:.3f}s)")
+    print("Split mode: hold region only; pre-silence, tail, and inter-note silence are excluded")
 
     if audio_duration + 1e-6 < expected_total:
         raise RuntimeError(
@@ -127,6 +148,8 @@ def split_one_file(
         midi_n = item["midi_n"]
         note_name = item["name"]
 
+        # Split only the damper-lifted hold region: note_on -> note_off.
+        # Opening silence, note_off tail, and inter-note silence are excluded.
         start_sec = max(0.0, item["start"] - pre_margin)
         end_sec = min(audio_duration, item["end"] + post_margin)
 
@@ -190,15 +213,15 @@ def main() -> int:
     parser.add_argument(
         "--pre-margin",
         type=float,
-        default=0.05,
-        help="Seconds to include before each note_on.",
+        default=0.0,
+        help="Seconds to include before each note_on. Default is 0 because loss-filter analysis uses only the held note region.",
     )
 
     parser.add_argument(
         "--post-margin",
         type=float,
-        default=0.05,
-        help="Seconds to include after each note slice.",
+        default=0.0,
+        help="Seconds to include after each held note region. Default is 0 so the note_off tail is excluded.",
     )
 
     args = parser.parse_args()

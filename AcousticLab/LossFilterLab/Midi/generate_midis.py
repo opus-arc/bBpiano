@@ -23,7 +23,40 @@ CHANNEL = 0
 
 PRE_SILENCE_SEC = 2.0
 POST_SILENCE_SEC = 2.0
-HOLD_SEC = 1.0
+SAFETY_DURATION_MULTIPLIER = 1.5
+
+
+# Keep each key pressed long enough to observe the string's natural decay
+# while that note's damper is lifted. This hold section is the main region
+# used for partial decay / loss-filter fitting.
+def hold_duration_for_note(midi_n: int) -> float:
+    if midi_n < 48:
+        base = 10.0
+    elif midi_n < 60:
+        base = 8.0
+    elif midi_n < 72:
+        base = 6.0
+    elif midi_n < 84:
+        base = 4.0
+    else:
+        base = 3.0
+
+    return base * SAFETY_DURATION_MULTIPLIER
+
+
+def tail_duration_for_note(midi_n: int) -> float:
+    # After note_off, the damper returns. The tail is only a short buffer
+    # for recording the damper return/release behavior, not the main region
+    # used for string loss fitting.
+    if midi_n < 48:
+        return 5.0
+    if midi_n < 60:
+        return 4.0
+    if midi_n < 72:
+        return 3.0
+    if midi_n < 84:
+        return 2.0
+    return 1.5
 
 
 def seconds_to_ticks(seconds: float) -> int:
@@ -47,18 +80,6 @@ def midi_note_to_name(midi_n: int) -> str:
     return f"{name}{octave}"
 
 
-def tail_duration_for_note(midi_n: int) -> float:
-    if midi_n < 48:
-        return 29.0
-    if midi_n < 60:
-        return 20.0
-    if midi_n < 72:
-        return 14.0
-    if midi_n < 84:
-        return 10.0
-    return 7.0
-
-
 def format_duration(seconds: float) -> str:
     total = round(seconds)
     minutes = total // 60
@@ -70,7 +91,7 @@ def expected_duration_seconds() -> float:
     total = PRE_SILENCE_SEC + POST_SILENCE_SEC
 
     for midi_n in range(NOTE_START, NOTE_END + 1):
-        total += HOLD_SEC
+        total += hold_duration_for_note(midi_n)
         total += tail_duration_for_note(midi_n)
 
     return total
@@ -97,12 +118,14 @@ def create_midi_file(output_path: Path, velocity: int) -> None:
             time=pending_delta,
         ))
 
+        hold_sec = hold_duration_for_note(midi_n)
+
         track.append(Message(
             "note_off",
             note=midi_n,
             velocity=0,
             channel=CHANNEL,
-            time=seconds_to_ticks(HOLD_SEC),
+            time=seconds_to_ticks(hold_sec),
         ))
 
         tail_sec = tail_duration_for_note(midi_n)
@@ -110,7 +133,7 @@ def create_midi_file(output_path: Path, velocity: int) -> None:
 
         print(
             f"  note {midi_n:3d} {note_name:>3s} | "
-            f"hold={HOLD_SEC:.1f}s | tail={tail_sec:.1f}s"
+            f"hold={hold_sec:.1f}s | tail={tail_sec:.1f}s"
         )
 
     # Final silence after last note tail
