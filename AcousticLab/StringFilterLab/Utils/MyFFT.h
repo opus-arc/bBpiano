@@ -7,10 +7,14 @@
 #include <vector>
 #include <atomic>
 
+struct STFTResult {
+    std::vector<std::vector<float>> spectrogram;
+    std::vector<float> binFrequencies;
+};
 
 class MyFFT {
 public:
-    static std::vector<std::vector<float>> computeSpectrogram(
+    static STFTResult computeSpectrogram(
         const std::vector<float> &audio,
         unsigned int sampleRate,
         size_t fftSize,

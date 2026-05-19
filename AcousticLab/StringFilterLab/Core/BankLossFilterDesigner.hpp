@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 
-
+void test();
 void lossFilterDesinger();
 void designLossFilterConstantsFromMerged();
 

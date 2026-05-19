@@ -2467,9 +2467,9 @@ Output directory: /Split
 现在要从这 841.5s 的 hold time 32bit 采样 1.49GB  dry Pianoteq reference 中提取 observed partial decay times，
 并用这些 decay targets 拟合出完整的 Bank-style loss filter。
 
-为了拟合出 g 和 a_1，每一个 partial 的衰减速度是需要的，显然这是一个指数形状的衰减，也就是说要先排除异常值然后通过局部上下文找最大值得到 Amplitude[t] ，再对这个值取对数然后画横线
+为了拟合出 g 和 a_1，每一个 partial 的衰减速度是需要的，显然这是一个指数形状的衰减，也就是说要先排除异常值然后通过局部上下文找最大值得到 Amplitude[t] ，再对这个值取对数然后线形回归
 
-由于我的采样是 stereo 音质，我需要在读取 wav 得到 pcm_stereo 之后 转换为 pcm_mono 单声道，避免 SFTF 出错
+由于我的采样是 stereo 音质，我需要在读取 wav 得到 pcm_stereo 之后 转换为 pcm_mono 单声道，避免 STFT 出错
 
 接着做一个快速傅立叶变换：
 
@@ -2485,7 +2485,51 @@ sampleRate: 44100
 frames: 661500
 ```
 
+快速傅立叶变换函数通常包括这四个：
 
+```cpp
+vector<float> pcm_mono; // 单声道 pcm
+double sampleRate = 44100.0; // 采样率
+int fftSize = 32768;
+int hopSiz = 512;
+
+struct STFTResult {
+    std::vector<std::vector<float>> spectrogram;
+    std::vector<float> binFrequencies;
+};
+
+STFTResult stft_result = MyFFT::computeSpectrogram(pcm_mono, sampleRate, fftSize, hopSize);
+```
+
+STFT 的作用是把整段 PCM 按窗口切成一帧一帧的短时信号。每一帧包含 `fftSize` 个采样点，因此每帧实际分析的时间长度是 `fftSize / sampleRate`。以 `sampleRate = 44100`、`fftSize = 32768` 为例，每帧长度约为 `32768 / 44100 ≈ 0.743s`。
+
+这里不难看出： `fftSize` 同时决定了一帧信号的时间长度和频率 bin 的间隔。`fftSize` 越小，每帧覆盖的时间越短，因此更容易定位声音在什么时候发生，比如鼓点、瞬态、辅音、起音等短促事件；但频率 bin 间隔会变大，频率轴会更粗糙。
+
+相反，`fftSize` 越大，每帧覆盖的时间越长，因此能更细致地区分接近的频率；但代价是时间定位变差，短时间内发生的变化会被长窗口平均掉，频谱图上可能出现时间上的拖影。
+
+`hopSize` 决定相邻两帧之间的滑动距离。若 `hopSize = 512`，则相邻频谱帧之间的时间间隔是 `512 / 44100 ≈ 0.0116s`，也就是频谱图每 11.6 ms 生成一列，但每一列本身仍然分析了约 0.743 秒的音频。
+
+对每一帧做 FFT，就是把这一段时间域信号分解成一组不同频率的正弦/余弦成分。FFT 频率 bin 的间隔为 `sampleRate / fftSize`。这里是 `44100 / 32768 ≈ 1.3458 Hz`，也就是说频谱在频率轴上的离散采样间隔约为 1.35 Hz。
+
+因此，440 Hz 和 442 Hz 在普通频谱图上比 440 Hz 和 441 Hz 更容易区分；但能否真正稳定区分，不只取决于 bin 间隔，还取决于窗口函数、信噪比、信号长度、峰值插值和频率估计算法。真实频率如果不正好落在某个 bin 的中心，能量通常会分布到附近多个 bin，而不是完全归入单一 bin。
+
+我设计 SFTF 返回两个数据结构： spectrogram 与 binFrequencies
+
+```cpp
+spectrogram[frame][f_bin]
+```
+
+当 f_bin  = i 时，spectrogram[frame] 包含的离散幅度所示的频率为 binFrequencies[i]	
+
+根据前文脉冲编码调制提到的**奈奎斯特定理（Nyquist Theorem）**，为了避免**混叠（aliasing）**，**采样率（sampleRate）必须大于或等于信号最高频率的 2 倍**，**人耳上限约 20 kHz**
+
+但工程上不会贴着 Nyquist 边缘分析，因为那附近容易受滤波器、采样边界、频谱不稳定影响。
+
+
+
+
+
+找 Peak 并跳过 Attack:
 
 ```cpp
 					std::vector<AmplitudeEnvelope> partials;
@@ -2546,7 +2590,261 @@ frames: 661500
 
 
 
-接着做线性回归算斜率：
+接着取 log 做线性回归算斜率：
+
+
+
+
+
+
+
+
+
+我使用最小二乘法做线形回归，以下是该方法的解释：
+
+对于 vector<array<double, 2>> points
+
+每个点都有一个误差：
+
+```math
+e_i = \hat y_i - y_i
+```
+
+也就是：
+
+```math
+e_i = kx_i + b - y_i
+```
+
+如果只把误差加起来：
+
+```math
+\sum e_i
+```
+
+会有一个问题：正误差和负误差会互相抵消。
+
+所以我们把误差平方：
+
+```math
+e_i^2 = (kx_i + b - y_i)^2
+```
+
+所有点的平方误差总和是：
+
+```math
+S(k,b)=\sum_{i=1}^{n}(kx_i+b-y_i)^2
+```
+
+所谓**最小二乘法**，就是要找到一组 k,b，让这个平方误差总和最小：
+
+```math
+\min_{k,b} S(k,b)
+```
+
+“二乘”的“二”，就是平方；“最小”，就是让平方误差总和最小。
+
+现在 S(k,b) 是关于两个变量 k,b 的函数。
+
+```math
+S(k,b)=\sum_{i=1}^{n}(kx_i+b-y_i)^2
+```
+
+我们要找它的最低点。
+
+对于光滑函数，最低点处通常满足：
+
+```math
+\frac{\partial S}{\partial k}=0
+```
+
+```math
+\frac{\partial S}{\partial b}=0
+```
+
+这就是“斜率方向不再下降”和“截距方向不再下降”。
+
+于是对 b 和 k 分别求偏导：
+```math
+\frac{\partial S}{\partial b}
+=
+2\sum (kx_i+b-y_i)
+```
+
+```math
+\frac{\partial S}{\partial k}
+=
+2\sum x_i(kx_i+b-y_i)
+```
+
+分别令它们为 0 从而得到**正规方程**：
+
+```math
+k\sum x_i+nb=\sum y_i
+```
+
+```math
+k\sum x_i^2+b\sum x_i=\sum x_iy_i
+```
+
+将 
+
+```math
+  b=\frac{\sum y_i-k\sum x_i}{n}
+```
+
+带入第二个方程整理并得到：
+
+```math
+k=
+\frac{
+n\sum x_iy_i-\sum x_i\sum y_i
+}{
+n\sum x_i^2-(\sum x_i)^2
+}
+```
+
+也就是：
+
+```math
+k=
+\frac{
+\sum (x_i-\bar{x})(y_i-\bar{y})
+}{
+\sum (x_i-\bar{x})^2
+}
+```
+
+据此：
+
+```cpp
+LinearRegressionResult LinearRegression::fit(const std::vector<std::array<float, 2>> &points) {
+    double k = 0.0;
+    double b = 0.0;
+    double r2 = 0.0;
+    const std::size_t n = points.size();
+  
+    if (n < 2)
+        throw std::invalid_argument("线形回归至少需要两个点");
+  
+    double sum_x = 0.0;
+    double sum_y = 0.0;
+    double sum_xy = 0.0;
+    double sum_x2 = 0.0;
+    double sum_y2 = 0.0;
+    
+    // constants
+    for(const auto& p : points) {
+        // 使用 at 不越界
+        const double x = static_cast<double>(p[0]);
+        const double y = static_cast<double>(p[1]);
+      
+        sum_x += x;
+        sum_y += y;
+        sum_xy += x * y;
+        sum_x2 += x * x;
+        sum_y2 += y * y;
+    }
+    
+    double denom_x = static_cast<double>(n) * sum_x2 - sum_x * sum_x;
+    if (std::abs(denom_x) < 1e-12) {
+        throw std::runtime_error("不能回归出结果，因为 x 都太相似了，这会导致分母太接近 0");
+    }
+    const double numerator = static_cast<double>(n) * sum_xy - sum_x * sum_y;
+    
+    // k
+    // k=\frac{n\sum x_iy_i-\sum x_i\sum y_i}{n\sum x_i^2-(\sum x_i)^2}
+    k = numerator / denom_x;
+    
+    // b
+    // b=\frac{\sum y_i-k\sum x_i}{n}
+    b = (sum_y - k * sum_x) / static_cast<double>(n);
+    
+    // r2
+    // r^2=\frac{(n\sum xy-\sum x\sum y)^2}{(n\sum x^2-(\sum x)^2)(n\sum y^2-(\sum y)^2)}
+    const double denom_y = static_cast<double>(n) * sum_y2 - sum_y * sum_y;
+    if (std::abs(denom_y) > 1e-12) {
+        r2 = numerator * numerator / (denom_x * denom_y);
+        // 防止浮点数误差
+        r2 = std::clamp(r2, 0.0, 1.0);
+    } else {
+        r2 = 0.0;
+    }
+
+    return {k, b, r2, n};
+}
+```
+
+其中 r2 是**皮尔逊相关系数的平方**
+
+```math
+R^2 =
+\frac{
+(n\sum xy-\sum x\sum y)^2
+}{
+(n\sum x^2-(\sum x)^2)(n\sum y^2-(\sum y)^2)
+}
+```
+
+这个式子也可写作：
+
+```math
+R^2 = 1 - \frac{SSE}{SST}
+```
+
+其中 SST 为总平方和：
+
+```math
+SST = \sum (y_i - \bar y)^2
+```
+
+SSE 为残差平方和：
+
+```math
+SSE = \sum (y_i - \hat y_i)^2
+```
+
+这决定了 r2 的价值是：**总波动里，有多少比例被这条直线解释了**
+
+例如 r2 = 0.95 则这条直线解释了约 95% 的 y 变化
+
+于是 r2 和 n 共同组成 k 与 b 的可信度一起返回
+
+这就是一个基本的线性回归的数学与程序设计过程。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```cpp
 DecayResult fitDecaySigma(
@@ -2642,17 +2940,93 @@ DecayResult fitDecaySigma(
 }
 ```
 
+由于频率衰减速度与按下时的速度呈现弱相关，得到五个 velocity 级别的 decay_result 以后，
+
+分类到五个力度然后平均 merge 得到每一个键的每一个 partial 衰减速率
+
+如下是 A5 的计算结果：
+
+| partial | f       | sigma    | count | meanR2   | meanFittedFrameCount |
+| :------ | :------ | -------- | ----- | -------- | -------------------- |
+| 1       | 881.516 | 0.729756 | 5     | 0.825916 | 506.8                |
+| 2       | 1768.41 | 1.04076  | 5     | 0.947796 | 500.6                |
+| 3       | 2670.12 | 1.82176  | 5     | 0.968847 | 383                  |
+| 4       | 3590.66 | 3.67472  | 5     | 0.978983 | 240.2                |
+| 5       | 4619.41 | 5.13506  | 5     | 0.945881 | 180                  |
+| 6       | 4783.51 | 6.74013  | 5     | 0.939729 | 155.333              |
+| 7       | 5504.42 | 7.1001   | 4     | 0.956952 | 144.75               |
+| 8       | 6505.72 | 7.45809  | 3     | 0.980623 | 134                  |
+| 9       | 7572.96 | 10.3121  | 3     | 0.852519 | 107.333              |
+| 10      | 8671.15 | 9.87373  | 2     | 0.801675 | 126                  |
 
 
 
+然后将 sigma(f) 多点映射成 |H(e^jw)|  算出 a1 与 g，然后取结构体导入弦模型
+
+（TODO: 此处省略的计算过于繁杂，以后再慢慢补齐。）
+
+```cpp
+    // MARK: loss filter:
+    // y[n] = g * (1 + a1) * x[n] - a1 * y[n-1]
+    float reflectedRight = processLoss(y_l, Loss_Y1_l);
+    float reflectedLeft  = processLoss(y_r, Loss_Y1_r);
+    Loss_Y1_l = reflectedLeft;
+    Loss_Y1_r = reflectedRight;
+    
+    // 边界反射
+    rightNext[0] = -reflectedRight;
+    leftNext[Delay_Index] = -reflectedLeft;
+```
+
+```cpp
+float StringModel::processLoss(float x, float& y1) const {
+    float y = static_cast<float>(loss_g * (1.0 + loss_a1)) * x
+            - static_cast<float>(loss_a1) * y1;
+
+    y1 = y;
+    return y;
+}	
+```
 
 
 
+进行一次 Friture 测试：
 
 
 
+<video src="./Doc/Vedio/录屏2026-05-18%2009.16.51.mov" controls width="640"></video>
 
-Bank 直接用经典的 **complex demodulation（复数解调）**或者说 **heterodyne analysis（外差分析）**把
+
+
+<div style="display: flex; gap: 16px; align-items: flex-start;">
+  <img src="./Doc/graphics/截屏2026-05-18 09.19.13.png" style="width: 50%;">
+  <img src="./Doc/graphics/截屏2026-05-18 09.18.17.png" style="width: 50%;">
+</div>
+
+<div style="display: flex; gap: 16px; align-items: flex-start;">
+  <img src="./Doc/graphics/截屏2026-05-18 09.34.25.png" style="width: 50%;">
+  <img src="./Doc/graphics/截屏2026-05-18 09.26.15.png" style="width: 50%;">
+</div>
+
+我们能听到，无 damper 的单弦能量衰减对听感有着十足的影响，这样声音的衰减模式清晰地向真实钢琴更近了一步。
+
+远远地高于了原先的声响。
+
+
+
+Bank 直接用经典的 **complex demodulation（复数解调）**或者说 **heterodyne analysis（外差分析）**
+
+对目标频率使用复数解调放在 0hz 附近，然后低通滤波再取模长得到包络，之后的计算也就差不多了，
+
+我有能复用的 STFT 工作流，所以暂时采用了最显而易见的方式，或许以后会尝试 Bank 的方式吧。
+
+
+
+___
+
+## **6 Dispersion Filter Design**
+
+## **6 色散滤波器设计**
 
 
 
@@ -2664,9 +3038,9 @@ Bank 直接用经典的 **complex demodulation（复数解调）**或者说 **he
 
 ___
 
-## **6 Hammer**
+## **7 Hammer**
 
-## **6 **
+## **7 **
 
 
 

@@ -47,31 +47,45 @@ float HammerModel::getSample(){
 void HammerModel::hammerMovement() {
     if (!pairedString_a) return;
     
-    // 取一半的步长
-    double half_Ts = pairedString_a->Ts / 2.0;
-
-    // 读弦速度
-    double string_v1 = pairedString_a->velocityAt(strikePoint);
-    double string_v2 = pairedString_a->nextVelocityAt(strikePoint);
-
-    // 算接触力
-    double F1 = hammerHalfStepForce(string_v1, half_Ts); // 上半帧
-    double F2 = hammerHalfStepForce(string_v2, half_Ts); // 下半帧
-    F = 0.5 * (F1 + F2);
-//    std::cout << F << std::endl;
+//    // 取一半的步长
+//    double half_Ts = pairedString_a->Ts / 2.0;
+//
+//    // 读弦速度
+//    double string_v1 = pairedString_a->velocityAt(strikePoint);
+//    double string_v2 = pairedString_a->nextVelocityAt(strikePoint);
+//
+//    // 算接触力
+//    double F1 = hammerHalfStepForce(string_v1, half_Ts); // 上半帧
+//    double F2 = hammerHalfStepForce(string_v2, half_Ts); // 下半帧
+//    F = 0.5 * (F1 + F2);
+////    std::cout << F << std::endl;
+//    
+//    // 算高斯分布力
+//    int strikePoint_index = std::floor(strikePoint * pairedString_a->Delay_Index); // 将击弦点从比例转换为索引
+//    sigma = computeSigma();
+//    int sigma_int = std::max(1, int(std::ceil(sigma))); // 计算 sigma 的 int 值，向上取整
+//    int start = std::max(0, strikePoint_index - 3 * sigma_int);
+//    int end   = std::min(pairedString_a->Delay_Index, strikePoint_index + 3 * sigma_int);
+//    std::vector<float> string_F = computeGaussianForce(start, end);
+//
+//    // 把力注入弦
+//    injectForce(string_F, start, end);
     
-    // 算高斯分布力
-    int strikePoint_index = std::floor(strikePoint * pairedString_a->Delay_Index); // 将击弦点从比例转换为索引
-    sigma = computeSigma();
-    int sigma_int = std::max(1, int(std::ceil(sigma))); // 计算 sigma 的 int 值，向上取整
-    int start = std::max(0, strikePoint_index - 3 * sigma_int);
-    int end   = std::min(pairedString_a->Delay_Index, strikePoint_index + 3 * sigma_int);
-    std::vector<float> string_F = computeGaussianForce(start, end);
-
-    // 把力注入弦
-    injectForce(string_F, start, end);
+    double F_____ = 10.0;
+    if(string_count == 2) {
+        
+            pairedString_a->injectForce(1, static_cast<float>(F_____ / 2));
+            pairedString_b->injectForce(2, static_cast<float>(F_____ / 2));
+        
+    } else if(string_count == 3) {
+        
+            pairedString_a->injectForce(1, static_cast<float>(F_____ / 3));
+            pairedString_b->injectForce(2, static_cast<float>(F_____ / 3));
+            pairedString_c->injectForce(3, static_cast<float>(F_____ / 3));
+        
+    }
     
-
+    
     
     // 弦移动帧
     if(string_count == 2) {

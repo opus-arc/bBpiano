@@ -10,6 +10,7 @@
 #include "../../Utils/MyFFT.h"
 #include "../../Utils/MyDrWav.h"
 #include "../../Utils/MyPitch.hpp"
+#include "../../Utils/PartialSpectrumAnalyzer.hpp"
 
 #include <fstream>
 #include <atomic>
@@ -26,10 +27,14 @@
 #include <limits>
 
 
+void test() {
+    PartialSpectrumAnalyzer::analyzer();
+}
+
 namespace fs = std::filesystem;
 
 static const fs::path kProjectLossLabRoot =
-    "/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/LossFilterLab";
+    "/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/StringFilterLab";
 
 static const fs::path kLossGeneratedDataRoot =
     kProjectLossLabRoot / "Generated";
@@ -422,7 +427,7 @@ void designLossFilterConstantsFromMerged(){
     const double sampleRate = 44100.0;
 
     // true = 双边反射各承担一半 loss。
-    // 如果你以后改成单边滤波，这里改成 false。
+    // 如果以后改成单边滤波，这里改成 false。
     const bool useSymmetricDoubleSidedLoss = true;
 
     const fs::path mergedFolder = kLossGeneratedDataRoot / "LossResults" / "Merged";
@@ -534,13 +539,12 @@ void lossFilterDesinger(){
             // pcm 双声道变 单声道 好做 SFTF
             const std::vector<float> pcm_mono = MyDrWav::downmixStereoToMono(pcm_stereo);
             
-            std::vector<std::vector<float>> spectrogram_hasMeta = MyFFT::computeSpectrogram(pcm_mono, sampleRate, fftSize,hopSize);
+            STFTResult stft_result = MyFFT::computeSpectrogram(pcm_mono, sampleRate, fftSize, hopSize);
             
-            const std::vector<float> f_meta = spectrogram_hasMeta.back();
+            const std::vector<float> f_meta = stft_result.binFrequencies;
             
-            spectrogram_hasMeta.pop_back();
             // spectrogram[frame][f_bin]
-            const std::vector<std::vector<float>> spectrogram = spectrogram_hasMeta;
+            const std::vector<std::vector<float>> spectrogram = stft_result.spectrogram;
             
             std::vector<AmplitudeEnvelope> partials;
 
