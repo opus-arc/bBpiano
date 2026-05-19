@@ -14,6 +14,9 @@
 extern "C" {
 #endif
 
+void bBpiano_init();
+void bBpiano_shutdown();
+
 void get_next_buffer(float* out, int frameCount, double amplitudeLimiter);
 void note_on(int midi_n, double velocity);
 void note_off(int midi_n, double velocity);

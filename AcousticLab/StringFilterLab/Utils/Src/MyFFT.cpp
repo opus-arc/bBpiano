@@ -44,7 +44,7 @@ namespace {
     }
 }
 
-std::vector<std::vector<float>> MyFFT::computeSpectrogram(const std::vector<float> &audio,
+STFTResult MyFFT::computeSpectrogram(const std::vector<float> &audio,
                                                           const unsigned int sampleRate,
                                                           const size_t fftSize,
                                                           const size_t hopSize) {
@@ -70,8 +70,8 @@ std::vector<std::vector<float>> MyFFT::computeSpectrogram(const std::vector<floa
         return {};
     }
 
-    std::vector<std::vector<float>> spectrogram;
-    spectrogram.reserve(estimatedFrames);
+    STFTResult stft_result;
+    stft_result.spectrogram.reserve(estimatedFrames);
 
     std::vector<float> frame(fftSize, 0.0f);
     std::vector<kiss_fft_cpx> spectrum(spectrumSize);
@@ -89,17 +89,18 @@ std::vector<std::vector<float>> MyFFT::computeSpectrogram(const std::vector<floa
             continue;
         }
 
-        spectrogram.push_back(magnitude);
+        stft_result.spectrogram.push_back(magnitude);
 
         if (frameStart + hopSize >= audio.size()) {
             break;
         }
     }
 
-    spectrogram.push_back(std::move(binFrequencies));
+    stft_result.binFrequencies = std::move(binFrequencies);
 
     free(cfg);
-    return spectrogram;
+    
+    return stft_result;
 }
 
 float MyFFT::getPartialAmplitude(

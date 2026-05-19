@@ -100,10 +100,10 @@ public:
     int Delay_Index = 0;
     double Delay_Frac = 0.0;// 波导长度小数部分
     double Allpass_A1 = 0.0;
-    mutable float Allpass_X1_r = 0.0; // 上一次传入 allpass 的值
-    mutable float Allpass_Y1_r = 0.0;
-    mutable float Allpass_X1_l = 0.0; // 上一次传入 allpass 的值
-    mutable float Allpass_Y1_l = 0.0;
+    mutable float FractionalAllpass_X1_r = 0.0; // 上一次传入 allpass 的值
+    mutable float FractionalAllpass_Y1_r = 0.0;
+    mutable float FractionalAllpass_X1_l = 0.0; // 上一次传入 allpass 的值
+    mutable float FractionalAllpass_Y1_l = 0.0;
     
     // loss filter
     std::vector<LossConstant> lossConstants;
@@ -149,6 +149,7 @@ public:
     float velocityAt(double p) const ;
     float nextVelocityAt(double p) const ;
     
+    float activityProbe() const;
 };
 
 
