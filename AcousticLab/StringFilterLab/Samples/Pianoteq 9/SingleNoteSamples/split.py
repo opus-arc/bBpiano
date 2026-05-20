@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-
 from pathlib import Path
 import argparse
 import re
 import sys
 
-import numpy as np
 import soundfile as sf
 
 
@@ -14,27 +12,58 @@ NOTE_START = 21
 NOTE_END = 108
 NOTE_COUNT = 88
 
-PRE_SILENCE_SEC = 2.0
-POST_SILENCE_SEC = 2.0
+PRE_SILENCE_SEC = 3.0
+POST_SILENCE_SEC = 3.0
 
 INPUT_EXTENSIONS = [".wav", ".aiff", ".aif"]
 
-SAFETY_DURATION_MULTIPLIER = 1.5
+PEDAL_LEAD_IN_SEC = 0.25
+DAMPER_SETTLE_SEC = 1.0
+INTER_NOTE_SILENCE_SEC = 0.50
+
+KEY_HOLD_SEC_LOW = 12.0
+KEY_HOLD_SEC_MID_LOW = 9.0
+KEY_HOLD_SEC_MID = 6.0
+KEY_HOLD_SEC_MID_HIGH = 4.0
+KEY_HOLD_SEC_HIGH = 3.0
+
+POST_NOTE_SUSTAIN_SEC_LOW = 8.0
+POST_NOTE_SUSTAIN_SEC_MID_LOW = 6.0
+POST_NOTE_SUSTAIN_SEC_MID = 4.0
+POST_NOTE_SUSTAIN_SEC_MID_HIGH = 2.5
+POST_NOTE_SUSTAIN_SEC_HIGH = 1.5
+
+# The first part of the note contains hammer-string collision and is useful to keep
+# in the split file, but downstream B-fitting should usually skip it.
+RECOMMENDED_ANALYSIS_SKIP_SEC = 0.12
 
 
-def hold_duration_for_note(midi_n: int) -> float:
+# Keep each key pressed long enough to observe a stable sustain region while the
+# damper is lifted by the sustain pedal.
+def key_hold_duration_for_note(midi_n: int) -> float:
     if midi_n < 48:
-        base = 10.0
-    elif midi_n < 60:
-        base = 8.0
-    elif midi_n < 72:
-        base = 6.0
-    elif midi_n < 84:
-        base = 4.0
-    else:
-        base = 3.0
+        return KEY_HOLD_SEC_LOW
+    if midi_n < 60:
+        return KEY_HOLD_SEC_MID_LOW
+    if midi_n < 72:
+        return KEY_HOLD_SEC_MID
+    if midi_n < 84:
+        return KEY_HOLD_SEC_MID_HIGH
+    return KEY_HOLD_SEC_HIGH
 
-    return base * SAFETY_DURATION_MULTIPLIER
+
+# After note_off, keep the sustain pedal down so the string continues freely
+# without the damper immediately touching it.
+def post_note_sustain_duration_for_note(midi_n: int) -> float:
+    if midi_n < 48:
+        return POST_NOTE_SUSTAIN_SEC_LOW
+    if midi_n < 60:
+        return POST_NOTE_SUSTAIN_SEC_MID_LOW
+    if midi_n < 72:
+        return POST_NOTE_SUSTAIN_SEC_MID
+    if midi_n < 84:
+        return POST_NOTE_SUSTAIN_SEC_MID_HIGH
+    return POST_NOTE_SUSTAIN_SEC_HIGH
 
 
 def note_number_to_name(midi_n: int) -> str:
@@ -44,42 +73,37 @@ def note_number_to_name(midi_n: int) -> str:
     return f"{note}{octave}"
 
 
-def tail_duration_for_note(midi_n: int) -> float:
-    # The tail exists in the long recording only to separate notes after note_off.
-    # It is not included in the split files used for loss-filter analysis.
-    if midi_n < 48:
-        return 5.0
-    if midi_n < 60:
-        return 4.0
-    if midi_n < 72:
-        return 3.0
-    if midi_n < 84:
-        return 2.0
-    return 1.5
-
-
 def build_time_table():
     items = []
-    t = PRE_SILENCE_SEC
+    block_start = PRE_SILENCE_SEC
 
     for midi_n in range(NOTE_START, NOTE_END + 1):
-        start = t
-        hold_duration = hold_duration_for_note(midi_n)
-        end = start + hold_duration
+        hold_duration = key_hold_duration_for_note(midi_n)
+        sustain_duration = post_note_sustain_duration_for_note(midi_n)
+
+        pedal_down_time = block_start
+        note_on_time = pedal_down_time + PEDAL_LEAD_IN_SEC
+        note_off_time = note_on_time + hold_duration
+        pedal_up_time = note_off_time + sustain_duration
+        block_end_time = pedal_up_time + DAMPER_SETTLE_SEC + INTER_NOTE_SILENCE_SEC
 
         items.append({
             "midi_n": midi_n,
             "name": note_number_to_name(midi_n),
-            "start": start,
-            "end": end,
+            "pedal_down": pedal_down_time,
+            "note_on": note_on_time,
+            "note_off": note_off_time,
+            "pedal_up": pedal_up_time,
+            "block_end": block_end_time,
             "hold_duration": hold_duration,
-            "tail_duration": tail_duration_for_note(midi_n),
+            "sustain_duration": sustain_duration,
+            "analysis_start_offset": RECOMMENDED_ANALYSIS_SKIP_SEC,
+            "analysis_end_offset": min(hold_duration, 1.5),
         })
 
-        # Advance the timetable by hold + tail, but only split out the hold region.
-        t = end + tail_duration_for_note(midi_n)
+        block_start = block_end_time
 
-    expected_total = t + POST_SILENCE_SEC
+    expected_total = block_start + POST_SILENCE_SEC
     return items, expected_total
 
 
@@ -109,6 +133,8 @@ def split_one_file(
     overwrite: bool,
     pre_margin: float,
     post_margin: float,
+    include_pedal_lead: bool,
+    include_damper_settle: bool,
 ) -> int:
     parsed = parse_take_and_velocity(input_path)
 
@@ -131,7 +157,7 @@ def split_one_file(
     print(f"Channels: {channels}")
     print(f"Total duration: {format_duration(audio_duration)} ({audio_duration:.3f}s)")
     print(f"Expected timetable duration: {format_duration(expected_total)} ({expected_total:.3f}s)")
-    print("Split mode: hold region only; pre-silence, tail, and inter-note silence are excluded")
+    print("Split mode: note_on -> pedal_up by default; pedal lead and damper-settle are excluded unless requested")
 
     if audio_duration + 1e-6 < expected_total:
         raise RuntimeError(
@@ -148,10 +174,15 @@ def split_one_file(
         midi_n = item["midi_n"]
         note_name = item["name"]
 
-        # Split only the damper-lifted hold region: note_on -> note_off.
-        # Opening silence, note_off tail, and inter-note silence are excluded.
-        start_sec = max(0.0, item["start"] - pre_margin)
-        end_sec = min(audio_duration, item["end"] + post_margin)
+        # Main split region:
+        #   default: note_on -> pedal_up
+        # This keeps both the key-down sustain and the pedal-held free-decay region.
+        # The pedal lead-in and damper-settle/reset region are excluded by default.
+        start_anchor = item["pedal_down"] if include_pedal_lead else item["note_on"]
+        end_anchor = item["block_end"] if include_damper_settle else item["pedal_up"]
+
+        start_sec = max(0.0, start_anchor - pre_margin)
+        end_sec = min(audio_duration, end_anchor + post_margin)
 
         start_frame = int(round(start_sec * sample_rate))
         end_frame = int(round(end_sec * sample_rate))
@@ -187,20 +218,20 @@ def split_one_file(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Split Pianoteq 88-key long recordings by fixed MIDI timetable."
+        description="Split Pianoteq 88-key string-analysis long recordings by fixed MIDI timetable."
     )
 
     parser.add_argument(
         "--input",
         type=Path,
-        default=Path("AcousticLab/LossFilterLab/SingleNoteSamples/RawLong"),
+        default=Path("/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples"),
         help="Directory containing long recordings.",
     )
 
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("AcousticLab/LossFilterLab/SingleNoteSamples/Split"),
+        default=Path("/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Split"),
         help="Directory for split note WAV files.",
     )
 
@@ -214,14 +245,26 @@ def main() -> int:
         "--pre-margin",
         type=float,
         default=0.0,
-        help="Seconds to include before each note_on. Default is 0 because loss-filter analysis uses only the held note region.",
+        help="Seconds to include before the selected split region.",
     )
 
     parser.add_argument(
         "--post-margin",
         type=float,
         default=0.0,
-        help="Seconds to include after each held note region. Default is 0 so the note_off tail is excluded.",
+        help="Seconds to include after the selected split region.",
+    )
+
+    parser.add_argument(
+        "--include-pedal-lead",
+        action="store_true",
+        help="Include the pedal-down lead-in before note_on.",
+    )
+
+    parser.add_argument(
+        "--include-damper-settle",
+        action="store_true",
+        help="Include pedal-up damper-settle and inter-note isolation silence.",
     )
 
     args = parser.parse_args()
@@ -246,6 +289,8 @@ def main() -> int:
             overwrite=args.overwrite,
             pre_margin=args.pre_margin,
             post_margin=args.post_margin,
+            include_pedal_lead=args.include_pedal_lead,
+            include_damper_settle=args.include_damper_settle,
         )
 
     print()

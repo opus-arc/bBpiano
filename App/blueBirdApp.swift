@@ -55,7 +55,7 @@
 //        }
 //
 //        didShutdownBPiano = true
-//        bBpiano_shutdown()
+////        bBpiano_shutdown()
 //        print("bBpiano shut down")
 //
 //        return .terminateNow
@@ -74,7 +74,7 @@
 //                do {
 //                    try SoundCard.shared.start()
 //                    print("Sound card started")
-//                    bBpiano_init()
+////                    bBpiano_init()
 //                    print("bBpiano inited")
 //                } catch {
 //                    print("Failed to start sound card or bBpiano")

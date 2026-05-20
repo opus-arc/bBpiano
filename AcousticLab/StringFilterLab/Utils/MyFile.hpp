@@ -23,7 +23,7 @@ public:
     static std::string findVelocity(const std::string& fileName) {
         size_t pos = fileName.find('v');
         if (pos != std::string::npos)
-            return fileName.substr(pos, fileName.size());
+            return fileName.substr(pos + 1, fileName.size());
         return "80";
     }
     

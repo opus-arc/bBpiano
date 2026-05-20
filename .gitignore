@@ -2,3 +2,7 @@
 *.mp3
 *.m4a
 
+!/Doc/
+!/Doc/**
+
+/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples

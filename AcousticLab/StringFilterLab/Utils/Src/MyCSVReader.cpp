@@ -28,7 +28,7 @@ namespace {
 
 std::vector<LossConstant> MyCSVReader::getLossConstant() {
     const std::string tablePath =
-        "/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/LossFilterLab/Generated/loss_filter_constants.csv";
+        "/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Generated/loss_filter_constants.csv";
     
     std::vector<LossConstant> constants;
     std::ifstream csv(tablePath);

@@ -136,64 +136,64 @@ void StringModel::injectForce(int m, float F) const {
 }
 
 
-//int frameCount = 0;
+int frameCount = 0;
 
 void StringModel::propagate() const {
 
-//    // 内部传播
-//    for (int i = 1; i <= Delay_Index; i++) {
-//        leftNext[i - 1] = left[i];
-//    }
-//
-//    for (int i = 0; i < Delay_Index; i++) {
-//        rightNext[i + 1] = right[i];
-//    }
-//
-//    // MARK: fractional delay filter:
-//    // 当 N == 50.1136 时, 到边界时才规定它少移动了 frac 帧 （一秒几万帧，十几、百把帧的误差应该听不出来的）
-//    // 所以就要去用插值估计在这一帧的前 0.1136 帧的值是多少
-//    // 使用 allpass
-//    // float y = a1 * x + x1 - a1 * y1;
-//    float x_r = right[Delay_Index];
-//    float y_r = Allpass_A1 * x_r + FractionalAllpass_X1_r - Allpass_A1 * FractionalAllpass_Y1_r;
-//    FractionalAllpass_X1_r = x_r;
-//    FractionalAllpass_Y1_r = y_r;
-//    
-//    float x_l = left[0];
-//    float y_l = Allpass_A1 * x_l + FractionalAllpass_X1_l - Allpass_A1 * FractionalAllpass_Y1_l;
-//    FractionalAllpass_X1_l = x_l;
-//    FractionalAllpass_Y1_l = y_l;
-//    
-//    // MARK: loss filter:
-//    // y[n] = g * (1 + a1) * x[n] - a1 * y[n-1]
-//    float reflectedRight = processLoss(y_l, Loss_Y1_l);
-//    float reflectedLeft  = processLoss(y_r, Loss_Y1_r);
-//    // TODO: 这下面的已经被 process 引用方式赋值了 但是以后要改 这里还是得写上这一段
-////    Loss_Y1_l = reflectedLeft;
-////    Loss_Y1_r = reflectedRight;
-//    
-//    // MARK: dispersion filter
-//    
-//    
-//    // 边界反射
-//    rightNext[0] = -reflectedRight;
-//    leftNext[Delay_Index] = -reflectedLeft;
-//    
-//    
-//
-////    rightNext[0] = -0.996 * leftNext[0];
-////        leftNext[Delay_Index] = -0.996 * rightNext[Delay_Index];
-//
-//    std::swap(left, leftNext);
-//    std::swap(right, rightNext);
+    // 内部传播
+    for (int i = 1; i <= Delay_Index; i++) {
+        leftNext[i - 1] = left[i];
+    }
+
+    for (int i = 0; i < Delay_Index; i++) {
+        rightNext[i + 1] = right[i];
+    }
+
+    // MARK: fractional delay filter:
+    // 当 N == 50.1136 时, 到边界时才规定它少移动了 frac 帧 （一秒几万帧，十几、百把帧的误差应该听不出来的）
+    // 所以就要去用插值估计在这一帧的前 0.1136 帧的值是多少
+    // 使用 allpass
+    // float y = a1 * x + x1 - a1 * y1;
+    float x_r = right[Delay_Index];
+    float y_r = Allpass_A1 * x_r + FractionalAllpass_X1_r - Allpass_A1 * FractionalAllpass_Y1_r;
+    FractionalAllpass_X1_r = x_r;
+    FractionalAllpass_Y1_r = y_r;
     
-//    frameCount++;
-//    
-//    
-//    if(frameCount < 10000) {
-////        std::cout << activityProbe() << "\n";
-//        frameCount = 0;
-//    }
+    float x_l = left[0];
+    float y_l = Allpass_A1 * x_l + FractionalAllpass_X1_l - Allpass_A1 * FractionalAllpass_Y1_l;
+    FractionalAllpass_X1_l = x_l;
+    FractionalAllpass_Y1_l = y_l;
+    
+    // MARK: loss filter:
+    // y[n] = g * (1 + a1) * x[n] - a1 * y[n-1]
+    float reflectedRight = processLoss(y_l, Loss_Y1_l);
+    float reflectedLeft  = processLoss(y_r, Loss_Y1_r);
+    // TODO: 这下面的已经被 process 引用方式赋值了 但是以后要改 这里还是得写上这一段
+//    Loss_Y1_l = reflectedLeft;
+//    Loss_Y1_r = reflectedRight;
+    
+    // MARK: dispersion filter
+    
+    
+    // 边界反射
+    rightNext[0] = -reflectedRight;
+    leftNext[Delay_Index] = -reflectedLeft;
+    
+    
+
+//    rightNext[0] = -0.996 * leftNext[0];
+//        leftNext[Delay_Index] = -0.996 * rightNext[Delay_Index];
+
+    std::swap(left, leftNext);
+    std::swap(right, rightNext);
+    
+    frameCount++;
+    
+    
+    if(frameCount < 10000) {
+//        std::cout << activityProbe() << "\n";
+        frameCount = 0;
+    }
 
 }
 

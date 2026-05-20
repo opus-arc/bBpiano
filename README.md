@@ -3028,6 +3028,36 @@ ___
 
 ## **6 色散滤波器设计**
 
+```math
+f_p = p f_0 \sqrt{1 + Bp^2}
+```
+
+```math
+B_p =
+\frac{
+\left(\frac{f_p}{p f_0}\right)^2 - 1
+}{
+p^2
+}
+```
+
+```math
+\left(\frac{f_p}{p f_0}\right)^2 - 1 = Bp^2
+```
+
+
+
+```math
+B =
+\frac{
+\sum_p w_p x_p y_p
+}{
+\sum_p w_p x_p^2
+}
+```
+
+
+
 
 
 
