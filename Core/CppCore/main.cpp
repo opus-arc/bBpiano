@@ -14,6 +14,7 @@
 #define PI 3.1415926535897932384
 
 static std::unique_ptr<PianoModel> bBpiano;
+//static PianoModel *bBpiano = new PianoModel();
 
 void bBpiano_init() {
     if (!bBpiano) {
@@ -44,7 +45,7 @@ void get_next_buffer(float* out, int frameCount, double amplitudeLimiter) {
         int __midi_n = 69; // A4
 //        int __midi_n = 25; // A2
         
-        bBpiano->pianoKeys[69 - 21].hammer->hammerMovement();
+        
         if(bBpiano->pianoKeys.size() < 87) return;
         bBpiano->pianoKeys[__midi_n - 21].hammer->hammerMovement();
         out[i] = tanh(bBpiano->pianoKeys[__midi_n - 21].hammer->getSample());

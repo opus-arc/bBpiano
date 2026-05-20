@@ -10,11 +10,13 @@
 
 #include <iostream>
 
-struct Partial {
-    int partialIndex = 0;
-    double f = 440.0;
-    std::vector<float> envelope;
-    
+
+struct PartialBeforeMerge {
+    std::string pitchName = "A4";
+    double f0 = 440.0;
+    int midi_n = 69;
+    std::string velocity;
+    std::vector<double> partials_part;
 };
 
 class PartialSpectrumAnalyzer {
