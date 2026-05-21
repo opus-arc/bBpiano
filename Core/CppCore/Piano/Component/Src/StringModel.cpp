@@ -182,7 +182,7 @@ void StringModel::propagate() const {
     
 
 //    rightNext[0] = -0.996 * leftNext[0];
-//        leftNext[Delay_Index] = -0.996 * rightNext[Delay_Index];
+//    leftNext[Delay_Index] = -0.996 * rightNext[Delay_Index];
 
     std::swap(left, leftNext);
     std::swap(right, rightNext);

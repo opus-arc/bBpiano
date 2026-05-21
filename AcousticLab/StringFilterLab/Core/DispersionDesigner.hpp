@@ -8,6 +8,6 @@
 #ifndef DispersionDesigner_hpp
 #define DispersionDesigner_hpp
 
-#include <stdio.h>
+#include <iostream>
 
 #endif /* DispersionDesigner_hpp */

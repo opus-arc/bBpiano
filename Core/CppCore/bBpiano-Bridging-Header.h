@@ -3,4 +3,5 @@
 //
 
 #include "main.hpp"
-#include "../../AcousticLab/StringFilterLab/Core/BankLossFilterDesigner.hpp"
+#include "../../AcousticLab/StringFilterLab/Core/BankStringFilterDesigner.hpp"
+

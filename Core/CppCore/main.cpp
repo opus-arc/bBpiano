@@ -13,18 +13,18 @@
 
 #define PI 3.1415926535897932384
 
-static std::unique_ptr<PianoModel> bBpiano;
-//static PianoModel *bBpiano = new PianoModel();
+//static std::unique_ptr<PianoModel> bBpiano;
+static PianoModel *bBpiano = new PianoModel();
 
-void bBpiano_init() {
-    if (!bBpiano) {
-        bBpiano = std::make_unique<PianoModel>();
-    }
-}
-
-void bBpiano_shutdown() {
-    bBpiano.reset();
-}
+//void bBpiano_init() {
+//    if (!bBpiano) {
+//        bBpiano = std::make_unique<PianoModel>();
+//    }
+//}
+//
+//void bBpiano_shutdown() {
+//    bBpiano.reset();
+//}
 
 float sampleRate = 44100.0;
 float frequency = 440.0;

@@ -54,22 +54,22 @@ std::vector<LossConstant> MyCSVReader::getLossConstant() {
         const std::vector<std::string> cells = splitCsvLine(line);
         
         // expected:
-        // key,pitch,f0,g,a1,pointCount,fitError
-        if (cells.size() < 5)
+        // key,f0,g,a1,pointCount,fitError
+        if (cells.size() < 4)
             continue;
         
         LossConstant loss;
         
         try {
             loss.midi_n = std::stoi(cells[0]);
-            loss.g = std::stod(cells[3]);
-            loss.a_1 = std::stod(cells[4]);
+            loss.g = std::stod(cells[2]);
+            loss.a_1 = std::stod(cells[3]);
         } catch (...) {
             continue;
         }
         
         loss.g = std::clamp(loss.g, 0.0, 1.0);
-        loss.a_1 = std::clamp(loss.a_1, -0.98, -0.001);
+        loss.a_1 = std::clamp(loss.a_1, -0.98, 0.98);
         
         constants.push_back(loss);
     }
