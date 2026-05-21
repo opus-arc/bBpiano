@@ -1,0 +1,129 @@
+#include "../../Core/CppCore/Piano/Component/HammerModel.hpp"
+
+#include <algorithm>
+#include <cmath>
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <string>
+
+namespace {
+
+struct Config {
+    int midi = 69;
+    double velocity = 80.0;
+    double seconds = 0.08;
+    double probePosition = 0.7;
+    std::string output = "AcousticLab/HammerLab/Generated/hammer_trace.csv";
+};
+
+int parseInt(const char* value, int fallback) {
+    try {
+        return std::stoi(value);
+    } catch (...) {
+        return fallback;
+    }
+}
+
+double parseDouble(const char* value, double fallback) {
+    try {
+        return std::stod(value);
+    } catch (...) {
+        return fallback;
+    }
+}
+
+Config parseArgs(int argc, char** argv) {
+    Config config;
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
+        if (arg == "--midi" && i + 1 < argc) {
+            config.midi = parseInt(argv[++i], config.midi);
+        } else if (arg == "--velocity" && i + 1 < argc) {
+            config.velocity = parseDouble(argv[++i], config.velocity);
+        } else if (arg == "--seconds" && i + 1 < argc) {
+            config.seconds = parseDouble(argv[++i], config.seconds);
+        } else if (arg == "--probe" && i + 1 < argc) {
+            config.probePosition = parseDouble(argv[++i], config.probePosition);
+        } else if (arg == "--output" && i + 1 < argc) {
+            config.output = argv[++i];
+        } else if (arg == "--help") {
+            std::cout
+                << "HammerLab\n"
+                << "  --midi <21..108>        default 69\n"
+                << "  --velocity <0..127>     default 80\n"
+                << "  --seconds <duration>    default 0.08\n"
+                << "  --probe <0..1>          string observation position, default 0.7\n"
+                << "  --output <csv path>     default AcousticLab/HammerLab/Generated/hammer_trace.csv\n";
+            std::exit(0);
+        }
+    }
+    config.midi = std::clamp(config.midi, 21, 108);
+    config.velocity = std::clamp(config.velocity, 0.0, 127.0);
+    config.seconds = std::max(0.001, config.seconds);
+    config.probePosition = std::clamp(config.probePosition, 0.0, 1.0);
+    return config;
+}
+
+} // namespace
+
+int main(int argc, char** argv) {
+    const Config config = parseArgs(argc, argv);
+    const double sampleRate = 44100.0;
+    const int frameCount = static_cast<int>(std::ceil(config.seconds * sampleRate));
+
+    std::filesystem::path outputPath(config.output);
+    if (!outputPath.parent_path().empty()) {
+        std::filesystem::create_directories(outputPath.parent_path());
+    }
+
+    HammerModel hammer(nullptr, config.midi);
+
+    // Match the current app path: PianoModel::note_on maps velocity to v_in by velocity * 2.0.
+    hammer.setVIn(config.velocity * 2.0);
+
+    std::ofstream csv(outputPath);
+    if (!csv.is_open()) {
+        std::cerr << "Could not open output CSV: " << outputPath << "\n";
+        return 1;
+    }
+
+    csv << "frame,time_sec,midi,velocity,probe_position,F,dy,v_in,dv,sigma,sample,sample_a,sample_b,sample_c\n";
+    csv << std::fixed << std::setprecision(12);
+
+    for (int n = 0; n < frameCount; n++) {
+        hammer.hammerMovement();
+
+        const double sampleA = hammer.pairedString_a ? hammer.pairedString_a->velocityAt(config.probePosition) : 0.0;
+        const double sampleB = hammer.pairedString_b ? hammer.pairedString_b->velocityAt(config.probePosition) : 0.0;
+        const double sampleC = hammer.pairedString_c ? hammer.pairedString_c->velocityAt(config.probePosition) : 0.0;
+        const double sampleSum = hammer.string_count == 2 ? sampleA + sampleB : sampleA + sampleB + sampleC;
+
+        csv
+            << n << ","
+            << (static_cast<double>(n) / sampleRate) << ","
+            << config.midi << ","
+            << config.velocity << ","
+            << config.probePosition << ","
+            << hammer.F << ","
+            << hammer.dy << ","
+            << hammer.v_in << ","
+            << hammer.dv << ","
+            << hammer.sigma << ","
+            << sampleSum << ","
+            << sampleA << ","
+            << sampleB << ","
+            << sampleC
+            << "\n";
+    }
+
+    std::cout
+        << "HammerLab wrote " << frameCount << " frames to " << outputPath << "\n"
+        << "midi=" << config.midi
+        << ", velocity=" << config.velocity
+        << ", seconds=" << config.seconds
+        << ", probe=" << config.probePosition << "\n";
+
+    return 0;
+}
