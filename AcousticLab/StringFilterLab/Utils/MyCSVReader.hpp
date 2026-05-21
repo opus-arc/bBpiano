@@ -20,9 +20,21 @@ struct LossConstant {
     LossConstant() = default;
 };
 
+struct DispersionConstant {
+    int midi_n = 69;
+    
+    double B = 0.0;
+    int order = 1;
+    
+    double a = 0.0;
+    
+    DispersionConstant() = default;
+};
+
 class MyCSVReader {
 public:
     static std::vector<LossConstant> getLossConstant();
+    static DispersionConstant getDispersionConstantByMidi(int midi_n);
     
 };
 

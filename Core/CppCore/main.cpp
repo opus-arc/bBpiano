@@ -42,13 +42,26 @@ void get_next_buffer(float* out, int frameCount, double amplitudeLimiter) {
     for (int i = 0; i < frameCount; ++i) {
         
 //        int __midi_n = 93; // A6
-        int __midi_n = 69; // A4
+//        int __midi_n = 69; // A4
+//        int _midi_n = 71; // B4
 //        int __midi_n = 25; // A2
         
         
         if(bBpiano->pianoKeys.size() < 87) return;
-        bBpiano->pianoKeys[__midi_n - 21].hammer->hammerMovement();
-        out[i] = tanh(bBpiano->pianoKeys[__midi_n - 21].hammer->getSample());
+        
+        double sum = 0.0;
+        for(int midi_n = 63; midi_n < 71; midi_n++) {
+            bBpiano->pianoKeys[midi_n - 21].hammer->hammerMovement();
+            sum += bBpiano->pianoKeys[midi_n - 21].hammer->getSample();
+        }
+        
+//        bBpiano->pianoKeys[__midi_n - 21].hammer->hammerMovement();
+//        bBpiano->pianoKeys[_midi_n - 21].hammer->hammerMovement();
+        
+//        out[i] = tanh(bBpiano->pianoKeys[__midi_n - 21].hammer->getSample());
+        out[i] = sum;
+        
+        
         
  
 //        if(out[i] > 0.0001) switch____ = true;
