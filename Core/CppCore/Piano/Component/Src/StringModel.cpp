@@ -61,6 +61,15 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
         }
     }
     
+    // dispersion init
+    auto dispersion = MyCSVReader::getDispersionConstantByMidi(midi_n);
+    Dispersion_A1 = static_cast<float>(dispersion.a);
+    
+    Dispersion_A1 *= 1.2f;
+    Dispersion_A1 = std::clamp(float(Dispersion_A1), -0.95f, 0.95f);
+    
+    
+    
     if(midi_n == 69) {
         std::cout << loss_g << ", " << loss_a1 << "\n";
     }
@@ -174,10 +183,24 @@ void StringModel::propagate() const {
     
     // MARK: dispersion filter
     
+    float dispersedRight =
+        Dispersion_A1 * reflectedRight
+        + Dispersion_X1_r
+        - Dispersion_A1 * Dispersion_Y1_r;
+    Dispersion_X1_r = reflectedRight;
+    Dispersion_Y1_r = dispersedRight;
+    
+    float dispersedLeft =
+        Dispersion_A1 * reflectedLeft
+        + Dispersion_X1_l
+        - Dispersion_A1 * Dispersion_Y1_l;
+    Dispersion_X1_l = reflectedLeft;
+    Dispersion_Y1_l = dispersedLeft;
+    
     
     // 边界反射
-    rightNext[0] = -reflectedRight;
-    leftNext[Delay_Index] = -reflectedLeft;
+    rightNext[0] = -dispersedRight * 0.9999f;
+    leftNext[Delay_Index] = -dispersedLeft * 0.9999f;
     
     
 
@@ -256,6 +279,8 @@ float StringModel::activityProbe() const {
     p = std::max(p, std::abs(Loss_Y1_r));
     p = std::max(p, std::abs(FractionalAllpass_Y1_l));
     p = std::max(p, std::abs(FractionalAllpass_Y1_r));
+    p = std::max(p, std::abs(Dispersion_Y1_l));
+    p = std::max(p, std::abs(Dispersion_Y1_r));
 
     return p;
 }

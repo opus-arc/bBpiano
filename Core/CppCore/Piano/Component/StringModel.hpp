@@ -114,6 +114,14 @@ public:
     double loss_a1 = -0.01;
     double loss_g = 0.999293;
 
+    // loss filter
+    mutable float Dispersion_X1_r = 0.0; // 上一次传入 allpass 的值
+    mutable float Dispersion_Y1_r = 0.0;
+    mutable float Dispersion_X1_l = 0.0; // 上一次传入 allpass 的值
+    mutable float Dispersion_Y1_l = 0.0;
+    double Dispersion_A1 = 0.0;
+
+    
     // 力 ↔ 速度 的比例常数
     double Z = 0.0;
     

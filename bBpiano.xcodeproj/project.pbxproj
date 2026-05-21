@@ -2001,6 +2001,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				assets/bBpiano.png,
+				"Vedio/录屏2026-05-21 22.04.52.mov",
+				"Vedio/录屏2026-05-21 22.33.12 .mov",
 			);
 			target = 14E708352F78BE0C005C806C /* bBpiano */;
 		};

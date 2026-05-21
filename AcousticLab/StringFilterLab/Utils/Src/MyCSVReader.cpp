@@ -80,3 +80,65 @@ std::vector<LossConstant> MyCSVReader::getLossConstant() {
     
     return constants;
 }
+
+
+DispersionConstant MyCSVReader::getDispersionConstantByMidi(int midi_n) {
+    
+    const std::string tablePath =
+        "/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Generated/dispersion_filter_constants.csv";
+    
+    std::ifstream csv(tablePath);
+    
+    if (!csv.is_open()) {
+        std::cerr << "Cannot open dispersion filter constants table: "
+                  << tablePath << std::endl;
+        return {};
+    }
+    
+    std::string line;
+    bool isHeader = true;
+    
+    while (std::getline(csv, line)) {
+        
+        if (line.empty())
+            continue;
+        
+        if (isHeader) {
+            isHeader = false;
+            continue;
+        }
+        
+        const std::vector<std::string> cells = splitCsvLine(line);
+        
+        // expected:
+        // key,f0,B,order,a,fitError,pointCount
+        
+        if (cells.size() < 5)
+            continue;
+        
+        try {
+            
+            const int currentMidi = std::stoi(cells[0]);
+            
+            if (currentMidi != midi_n)
+                continue;
+            
+            DispersionConstant dispersion;
+            
+            dispersion.midi_n = currentMidi;
+            dispersion.B = std::stod(cells[2]);
+            dispersion.order = std::stoi(cells[3]);
+            dispersion.a = std::stod(cells[4]);
+            
+            dispersion.a =
+                std::clamp(dispersion.a, -0.999, 0.999);
+            
+            return dispersion;
+            
+        } catch (...) {
+            continue;
+        }
+    }
+    
+    return {};
+}
