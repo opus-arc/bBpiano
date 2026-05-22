@@ -7,8 +7,28 @@
 //  AI-assisted.
 //
 
+
 import SwiftUI
 import CoreGraphics
+import Combine
+
+@MainActor
+final class KeyboardUIState: ObservableObject {
+    static let shared = KeyboardUIState()
+
+    @Published var highlightedMIDIVelocities: [Int: Int] = [:]
+
+    private init() {}
+
+    func setKeyHighlight(velocity: Int?, for midi: Int) {
+        guard let velocity else {
+            highlightedMIDIVelocities[midi] = nil
+            return
+        }
+
+        highlightedMIDIVelocities[midi] = min(max(velocity, 12), 127)
+    }
+}
 
 struct Keyboard: View {
     
@@ -53,7 +73,7 @@ struct Keyboard: View {
 
     @State private var activePointerMIDINote: Int?
     @State private var activePointerVelocity: Int?
-    @State private var highlightedMIDIVelocities: [Int: Int] = [:]
+    @ObservedObject private var uiState = KeyboardUIState.shared
     @State private var pendingReleaseTokens: [Int: UUID] = [:]
     @State private var isPointerTracking = false
     @State private var lastAftertouchSentAt: TimeInterval = 0
@@ -126,7 +146,7 @@ private extension Keyboard {
     }
 
     func isHighlighted(_ midi: Int) -> Bool {
-        highlightedMIDIVelocities[midi] != nil
+        uiState.highlightedMIDIVelocities[midi] != nil
     }
 
     func velocity(at location: CGPoint) -> Int {
@@ -146,7 +166,7 @@ private extension Keyboard {
     }
 
     func currentVelocity(for midi: Int) -> Int? {
-        highlightedMIDIVelocities[midi]
+        uiState.highlightedMIDIVelocities[midi]
     }
 
     func pressedOverlay(for midi: Int) -> Color {
@@ -252,11 +272,11 @@ private extension Keyboard {
     }
 
     func setHighlightedVelocity(_ velocity: Int, for midi: Int) {
-        guard highlightedMIDIVelocities[midi] != velocity else {
+        guard uiState.highlightedMIDIVelocities[midi] != velocity else {
             return
         }
 
-        highlightedMIDIVelocities[midi] = velocity
+        uiState.setKeyHighlight(velocity: velocity, for: midi)
     }
     
     func cancelPendingReleaseIfNeeded(for midi: Int) {
@@ -282,8 +302,8 @@ private extension Keyboard {
             
             VKController.NoteOff(note: midi, velocity: 0)
 
-            if highlightedMIDIVelocities[midi] != nil {
-                highlightedMIDIVelocities[midi] = nil
+            if uiState.highlightedMIDIVelocities[midi] != nil {
+                uiState.setKeyHighlight(velocity: nil, for: midi)
             }
             pendingReleaseTokens[midi] = nil
 

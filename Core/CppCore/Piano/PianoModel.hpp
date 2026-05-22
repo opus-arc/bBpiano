@@ -28,7 +28,7 @@ public:
     PianoModel();
     
     // 88个键
-    std::vector<KeyModel> pianoKeys;
+    std::vector<std::unique_ptr<KeyModel>> pianoKeys;
     
     // Soft pedal
     PedalModel *softPedal;

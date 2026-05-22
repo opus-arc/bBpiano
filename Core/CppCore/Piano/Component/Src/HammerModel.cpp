@@ -9,17 +9,19 @@
 
 
 #include "HammerModel.hpp"
+#include "../KeyModel.hpp"
+
+
 
 // ------------------------------------------------------------------------------------------
 // MARK: 初始化
 HammerModel::HammerModel(KeyModel *_pairedKey, int _midi_n) :
-
     pairedKey(_pairedKey),
     midi_n(_midi_n),
     string_count(midi_n <= 52 ? 2 : 3)
 
 {
-    
+    pairedKey = _pairedKey;
     
     pairedString_a = new StringModel(this, midi_n, 1);
     pairedString_b = new StringModel(this, midi_n, 2);
@@ -203,3 +205,7 @@ void HammerModel::setVIn(double _v_in){
 }
 
 
+
+void HammerModel::setInactive(){
+    pairedKey->key_active = false;
+}

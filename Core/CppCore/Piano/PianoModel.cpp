@@ -14,13 +14,12 @@
 void PianoModel::note_on(int midi_n, double velocity) {
     std::cout << "note_on: " << midi_n << ", " << velocity << std::endl;
     
-//     这里太重要了
-//    pianoKeys[midi_n - 21].key_active = true;
-//    
-//     还是封一个口吧
-    midi_n = std::clamp(midi_n, 21, 108);
-    
-    pianoKeys[midi_n - 21].hammer->setVIn(velocity * 2.0);
+    //     还是封一个口吧
+        midi_n = std::clamp(midi_n, 21, 108);
+    //     这里太重要了
+    pianoKeys[midi_n - 21]->key_active = true;
+    std::cout << "pianoKeys[" << midi_n << "].key_active: " << pianoKeys[midi_n - 21]->key_active << "\n";
+    pianoKeys[midi_n - 21]->hammer->setVIn(velocity * 2.0);
 }
 
 void PianoModel::note_off(int midi_n, double velocity) {
@@ -32,8 +31,11 @@ void PianoModel::note_afterTouch(int midi_n, double pressure) {
 }
 
 PianoModel::PianoModel(){
-    for(int i = 21; i <= 108; i++)
-        pianoKeys.push_back(KeyModel(this, i));
+    pianoKeys.reserve(88);
+
+    for (int midi_n = 21; midi_n <= 108; ++midi_n) {
+        pianoKeys.push_back(std::make_unique<KeyModel>(this, midi_n));
+    }
     
     activePianoKeys.assign(88, false);
 }
@@ -41,15 +43,19 @@ PianoModel::PianoModel(){
 
 void PianoModel::pianoMovement(){
     
-    
-    for(auto key : pianoKeys){
-//        if(key.key_active)
-            key.keyMovement();
+    for(auto& key : pianoKeys){
+        if(key->key_active)
+            key->keyMovement();
     }
     
-//    updateActivity();
 }
 
 float PianoModel::getSample(){
-    return pianoKeys[69 - 21].hammer->pairedString_a->velocityAt(0.7);
+    float sum = 0.0f;
+    for(auto& key : pianoKeys) {
+        if(key->key_active) {
+            sum += key->getSample();
+        }
+    }
+    return sum;
 }

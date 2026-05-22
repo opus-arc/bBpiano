@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  VKController.swift
 //  blueBird
 //
 //  Created by opus arc on 2026/3/30.
@@ -29,10 +29,18 @@ public class VKController {
             midiVelocity: Int(velocity)
         )
         note_on(Int32(note), Double(mappedVelocity))
+        
+        Task { @MainActor in
+            KeyboardUIState.shared.setKeyHighlight(velocity: Int(velocity), for: note)
+        }
     }
 
     static func NoteOff(note: Int, velocity: Double) {
         note_off(Int32(note), Double(velocity))
+        
+        Task { @MainActor in
+            KeyboardUIState.shared.setKeyHighlight(velocity: nil, for: note)
+        }
     }
 
     static func PolyAftertouch(note: Int, pressure: Double) {

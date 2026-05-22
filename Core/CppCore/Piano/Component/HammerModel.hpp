@@ -48,7 +48,7 @@ public:
     // explicit 禁止隐式转换带来的语义污染
     explicit HammerModel(KeyModel *_pairedKey, int _midi_n) ;
     
-    const KeyModel *pairedKey;
+    const KeyModel *pairedKey = nullptr;
     
     // midi 号码
     const int midi_n;
@@ -57,9 +57,9 @@ public:
     const int string_count;
     
     // Strings
-    const StringModel* pairedString_a;
-    const StringModel* pairedString_b;
-    const StringModel* pairedString_c;
+    StringModel* pairedString_a;
+    StringModel* pairedString_b;
+    StringModel* pairedString_c;
 
     
     // --------------------------------------------
@@ -103,7 +103,6 @@ public:
     double sigma = 0.0;
 
     
-    
     // --------------------------------------------
     // MARK: 计算函数
     
@@ -130,6 +129,9 @@ public:
     void hammerMovement();
     
     float getSample();
+    
+
+    void setInactive();
     
     
 };
