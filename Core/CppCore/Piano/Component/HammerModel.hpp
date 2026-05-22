@@ -24,13 +24,13 @@ public:
     // MARK: 常量
     
     // 锤毡刚度系数
-    static constexpr double K = 1e9;
+    static constexpr double K = 1.5e9;
     
     // 非线性指数
-    static constexpr double P = 2.3;
+    static constexpr double P = 2.75;
     
     // 锤子质量
-    static constexpr double m = 0.003; // kg
+    static constexpr double m = 0.007; // kg
     
     // 击弦点
     // 这个不能和采样点完全一样

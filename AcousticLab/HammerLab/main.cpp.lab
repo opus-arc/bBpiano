@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <string>
 
 namespace {
@@ -13,9 +14,10 @@ namespace {
 struct Config {
     int midi = 69;
     double velocity = 80.0;
+    double vin = std::numeric_limits<double>::quiet_NaN();
     double seconds = 0.08;
     double probePosition = 0.7;
-    std::string output = "AcousticLab/HammerLab/Generated/hammer_trace.csv";
+    std::string output = "AcousticLab/HammerLab/.Generated/hammer_trace.csv";
 };
 
 int parseInt(const char* value, int fallback) {
@@ -42,6 +44,8 @@ Config parseArgs(int argc, char** argv) {
             config.midi = parseInt(argv[++i], config.midi);
         } else if (arg == "--velocity" && i + 1 < argc) {
             config.velocity = parseDouble(argv[++i], config.velocity);
+        } else if (arg == "--vin" && i + 1 < argc) {
+            config.vin = parseDouble(argv[++i], config.vin);
         } else if (arg == "--seconds" && i + 1 < argc) {
             config.seconds = parseDouble(argv[++i], config.seconds);
         } else if (arg == "--probe" && i + 1 < argc) {
@@ -53,9 +57,10 @@ Config parseArgs(int argc, char** argv) {
                 << "HammerLab\n"
                 << "  --midi <21..108>        default 69\n"
                 << "  --velocity <0..127>     default 80\n"
+                << "  --vin <m/s>             override hammer velocity directly\n"
                 << "  --seconds <duration>    default 0.08\n"
                 << "  --probe <0..1>          string observation position, default 0.7\n"
-                << "  --output <csv path>     default AcousticLab/HammerLab/Generated/hammer_trace.csv\n";
+                << "  --output <csv path>     default AcousticLab/HammerLab/.Generated/hammer_trace.csv\n";
             std::exit(0);
         }
     }
@@ -80,8 +85,8 @@ int main(int argc, char** argv) {
 
     HammerModel hammer(nullptr, config.midi);
 
-    // Match the current app path: PianoModel::note_on maps velocity to v_in by velocity * 2.0.
-    hammer.setVIn(config.velocity * 2.0);
+    const double initialVin = std::isfinite(config.vin) ? config.vin : config.velocity * 2.0;
+    hammer.setVIn(initialVin);
 
     std::ofstream csv(outputPath);
     if (!csv.is_open()) {
@@ -89,7 +94,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    csv << "frame,time_sec,midi,velocity,probe_position,F,dy,v_in,dv,sigma,sample,sample_a,sample_b,sample_c\n";
+    csv << "frame,time_sec,midi,velocity,initial_vin,probe_position,F,dy,v_in,dv,sigma,sample,sample_a,sample_b,sample_c\n";
     csv << std::fixed << std::setprecision(12);
 
     for (int n = 0; n < frameCount; n++) {
@@ -105,6 +110,7 @@ int main(int argc, char** argv) {
             << (static_cast<double>(n) / sampleRate) << ","
             << config.midi << ","
             << config.velocity << ","
+            << initialVin << ","
             << config.probePosition << ","
             << hammer.F << ","
             << hammer.dy << ","
@@ -122,6 +128,7 @@ int main(int argc, char** argv) {
         << "HammerLab wrote " << frameCount << " frames to " << outputPath << "\n"
         << "midi=" << config.midi
         << ", velocity=" << config.velocity
+        << ", vin=" << initialVin
         << ", seconds=" << config.seconds
         << ", probe=" << config.probePosition << "\n";
 

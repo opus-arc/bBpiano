@@ -1,6 +1,11 @@
 *.wav
 *.mp3
 *.m4a
+.DS_Store
+.DerivedData/
+**/xcuserdata/
+AcousticLab/HammerLab/Build/
+AcousticLab/HammerLab/.Generated/
 
 !/Doc/
 !/Doc/**
