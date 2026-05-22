@@ -4,6 +4,8 @@ HammerLab is a small offline observer for the current C++ `HammerModel`.
 
 It does not change the hammer/string connection. It instantiates the current model, runs it frame by frame, and records the hammer state into CSV. The SVG plot is generated from that CSV.
 
+The C++ lab entry files use the `.cpp.lab` suffix so Xcode does not auto-compile them into the app target. Generated files and paper screenshots live in hidden `.Generated` / `.References` folders, and the temporary HammerLab binary is built under `/private/tmp/bBpiano_HammerLab_Build`, so Xcode does not copy lab-only files into the app bundle.
+
 ## Run One Case
 
 From the project root:
@@ -27,8 +29,8 @@ AcousticLab/HammerLab/run_case.sh 69 80 0.08 0.2
 
 Outputs:
 
-- `AcousticLab/HammerLab/Generated/midi69_v80_p0.7.csv`
-- `AcousticLab/HammerLab/Generated/midi69_v80_p0.7.svg`
+- `AcousticLab/HammerLab/.Generated/midi69_v80_p0.7.csv`
+- `AcousticLab/HammerLab/.Generated/midi69_v80_p0.7.svg`
 
 ## What The CSV Means
 
@@ -72,7 +74,31 @@ AcousticLab/HammerLab/run_case.sh 69 80 0.08 0.7
 ## Bank References
 Most useful pages:
 
-- `bank_hammer_page_07.png`: Bank Fig. 5.4, force curve reference for C4.
-- `bank_hammer_page_08.png`: Bank Fig. 5.5, core hammer model.
-- `bank_hammer_page_09.png`: Bank Fig. 5.6 and Eq. 5.1, multi-rate hammer-waveguide connection.
-- `bank_hammer_page_11.png`: Bank Fig. 5.7, single-rate vs multi-rate force comparison.
+- `.References/figure 5.4.png`: force curve reference for C4.
+- `.References/figure 5.7.png`: single-rate vs multi-rate force comparison.
+
+## Bank Fig. 5.4 Scale
+
+Bank Fig. 5.4 uses a 0-2 ms time window and 0-25 N force axis. To draw the current model on that same scale:
+
+```bash
+AcousticLab/HammerLab/run_bank_force_case.sh 60 2 0.002
+```
+
+In this project, A4 is MIDI 69, so C4 is MIDI 60. MIDI 72 is C5. The app maps the HammerLab velocity argument to hammer velocity by `v_in = velocity * 2.0`, so `velocity=2` corresponds to about 4 m/s, matching the impact velocity described near Bank Fig. 5.4.
+
+This command does not change the model. It only rerenders the observed `F(t)` in the same coordinate window as the paper.
+
+To look at a longer decay window while keeping the same force scale:
+
+```bash
+AcousticLab/HammerLab/run_bank_force_case.sh 60 2 0.004 0.7 25
+```
+
+Argument order:
+
+```text
+midi velocity seconds probe yMax
+```
+
+The current simplified HammerLab does not override `K/P/m`. It observes whatever constants are currently compiled into `HammerModel`.
