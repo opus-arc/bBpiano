@@ -1,337 +1,381 @@
-////
-////  MidiService.swift
-////  bBpiano
-////
-////  Created by opus arc on 2026/4/8.
-////
-////  AI Assisted
-////
 //
-//import Foundation
-//import CoreMIDI
-//
-//public final class MidiService {
-//
-//    // MARK: - Public
-//
-//    public init() {}
-//
-//    deinit {
-//        stop()
-//    }
-//
-//    public func start() {
-//        guard !isStarted else { return }
-//
-//        createClientIfNeeded()
-//        createInputPortIfNeeded()
-//        connectAllSources()
-//
-//        isStarted = true
-//        print("[MidiService] Started.")
-//    }
-//
-//    public func stop() {
-//        guard isStarted else { return }
-//
-//        disconnectAllSources()
-//
-//        if inputPort != 0 {
-//            MIDIPortDispose(inputPort)
-//            inputPort = 0
-//        }
-//
-//        if client != 0 {
-//            MIDIClientDispose(client)
-//            client = 0
-//        }
-//
-//        connectedSourceIDs.removeAll()
-//        isStarted = false
-//        print("[MidiService] Stopped.")
-//    }
-//
-//    public func refreshConnections() {
-//        guard isStarted else { return }
-//        disconnectAllSources()
-//        connectAllSources()
-//        print("[MidiService] Connections refreshed.")
-//    }
-//
-//    public func printAvailableSources() {
-//        let count = MIDIGetNumberOfSources()
-//        print("[MidiService] Available MIDI Sources: \(count)")
-//
-//        for index in 0..<count {
-//            let source = MIDIGetSource(index)
-//            let name = endpointName(for: source) ?? "Unknown Source"
-//            print("  [\(index)] \(name)")
-//        }
-//    }
-//
-//    // MARK: - Private
-//
-//    private var client: MIDIClientRef = 0
-//    private var inputPort: MIDIPortRef = 0
-//    private var isStarted = false
-//    private var connectedSourceIDs: Set<MIDIUniqueID> = []
-//
-//    private func createClientIfNeeded() {
-//        guard client == 0 else { return }
-//
-//        let status = MIDIClientCreateWithBlock("bBpiano.MidiClient" as CFString, &client) { [weak self] notificationPtr in
-//            guard let self else { return }
-//            self.handleMIDINotification(notificationPtr.pointee)
-//        }
-//
-//        guard status == noErr else {
-//            print("[MidiService] Failed to create MIDI client. OSStatus: \(status)")
-//            return
-//        }
-//    }
-//
-//    private func createInputPortIfNeeded() {
-//        guard inputPort == 0 else { return }
-//        guard client != 0 else { return }
-//
-//        let status = MIDIInputPortCreate(
-//            client,
-//            "bBpiano.InputPort" as CFString,
-//            { packetList, _, _ in
-//                let packets = packetList.pointee
-//                var packet = packets.packet
-//
-//                for _ in 0..<packets.numPackets {
-//                    let status = packet.data.0
-//                    let data1 = packet.data.1
-//                    let data2 = packet.data.2
-//
-//                    self.parseChannelVoiceMessage(
-//                        status: status,
-//                        data1: data1,
-//                        data2: data2
-//                    )
-//
-//                    packet = MIDIPacketNext(&packet).pointee
-//                }
-//            },
-//            nil,
-//            &inputPort
-//        )
-//
-//        if status != noErr {
-//            print("[MidiService] Failed to create MIDI input port. OSStatus: \(status)")
-//        }
-//    }
-//
-//    private func connectAllSources() {
-//        guard inputPort != 0 else { return }
-//
-//        let count = MIDIGetNumberOfSources()
-//        for index in 0..<count {
-//            let source = MIDIGetSource(index)
-//
-//            var uniqueID: MIDIUniqueID = 0
-//            MIDIObjectGetIntegerProperty(source, kMIDIPropertyUniqueID, &uniqueID)
-//
-//            if connectedSourceIDs.contains(uniqueID) {
-//                continue
-//            }
-//
-//            let status = MIDIPortConnectSource(inputPort, source, nil)
-//            if status == noErr {
-//                connectedSourceIDs.insert(uniqueID)
-//                let name = endpointName(for: source) ?? "Unknown Source"
-//                print("[MidiService] Connected source: \(name)")
-//            } else {
-//                print("[MidiService] Failed to connect source[\(index)]. OSStatus: \(status)")
-//            }
-//        }
-//    }
-//
-//    private func disconnectAllSources() {
-//        guard inputPort != 0 else { return }
-//
-//        let count = MIDIGetNumberOfSources()
-//        for index in 0..<count {
-//            let source = MIDIGetSource(index)
-//            MIDIPortDisconnectSource(inputPort, source)
-//        }
-//
-//        connectedSourceIDs.removeAll()
-//    }
-//
-//    private func endpointName(for endpoint: MIDIEndpointRef) -> String? {
-//        var unmanagedName: Unmanaged<CFString>?
-//        let status = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyDisplayName, &unmanagedName)
-//
-//        if status == noErr, let cfName = unmanagedName?.takeRetainedValue() {
-//            return cfName as String
-//        }
-//
-//        return nil
-//    }
-//
-//    private func handleMIDINotification(_ notification: MIDINotification) {
-//        switch notification.messageID {
-//        case .msgObjectAdded, .msgObjectRemoved, .msgSetupChanged:
-//            if isStarted {
-//                refreshConnections()
-//            }
-//        default:
-//            break
-//        }
-//    }
-//
-//    // MARK: - MIDI 1.0 Event Parsing
-//
-//    private func handleEventList(_ eventListPtr: UnsafePointer<MIDIEventList>) {
-//        let eventList = eventListPtr.pointee
-//        var packetPtr = UnsafeMutablePointer<MIDIEventPacket>(mutating: &eventList.packet)
-//
-//        for _ in 0..<eventList.numPackets {
-//            let packet = packetPtr.pointee
-//            parseWords(packet.words.0, packet.wordCount: Int(packet.wordCount))
-//            packetPtr = MIDIEventPacketNext(packetPtr)
-//        }
-//    }
-//
-//    private func parseWords(_ firstWord: UInt32, packet.wordCount: Int) {
-//        // 这里只取每个 word 的低 3 byte，当作传统 MIDI 1.0 消息处理。
-//        // 对多数键盘/控制器足够了；System Exclusive 等复杂消息你后面可自行扩展。
-//        var words: [UInt32] = [firstWord]
-//
-//        if packet.wordCount > 1 {
-//            // 当前只先处理首 word 的常见消息。
-//            // 如需更完整支持，可把 packet 的全部 words 拿出来继续展开。
-//        }
-//
-//        for word in words {
-//            let status = UInt8(word & 0xFF)
-//            let data1  = UInt8((word >> 8) & 0xFF)
-//            let data2  = UInt8((word >> 16) & 0xFF)
-//
-//            guard status >= 0x80 else { continue }
-//            parseChannelVoiceMessage(status: status, data1: data1, data2: data2)
-//        }
-//    }
-//
-//    private func parseChannelVoiceMessage(status: UInt8, data1: UInt8, data2: UInt8) {
-//        let messageType = status & 0xF0
-//        let channel = Int(status & 0x0F) + 1
-//
-//        switch messageType {
-//
-//        case 0x80: // Note Off
-//            let note = Int(data1)
-//            let velocity = midi7bitToUnitDouble(data2)
-//            VKController.NoteOff(note: note, velocity: velocity)
-//
-//        case 0x90: // Note On (velocity 0 == Note Off)
-//            let note = Int(data1)
-//            let velocity = midi7bitToUnitDouble(data2)
-//
-//            if data2 == 0 {
-//                VKController.NoteOff(note: note, velocity: 0)
-//            } else {
-//                VKController.NoteOn(note: note, velocity: velocity)
-//            }
-//
-//        case 0xA0: // Poly Aftertouch
-//            let note = Int(data1)
-//            let pressure = midi7bitToUnitDouble(data2)
-//            VKController.PolyAftertouch(note: note, pressure: pressure)
-//
-//        case 0xB0: // Control Change
-//            let cc = Int(data1)
-//            let value = Int(data2)
-//            handleControlChange(channel: channel, cc: cc, value: value)
-//
-//        case 0xC0: // Program Change
-//            let program = Int(data1)
-//            print("Program Change    (ch: \(channel), program: \(program))")
-//
-//        case 0xD0: // Channel Aftertouch
-//            let pressure = midi7bitToUnitDouble(data1)
-//            print("Channel Aftertouch    (ch: \(channel), pressure: \(pressure))")
-//
-//        case 0xE0: // Pitch Bend
-//            let lsb = Int(data1)
-//            let msb = Int(data2)
-//            let rawValue = (msb << 7) | lsb
-//            let centeredValue = rawValue - 8192
-//            print("Pitch Bend    (ch: \(channel), value: \(centeredValue))")
-//
-//        default:
-//            break
-//        }
-//    }
-//
-//    private func handleControlChange(channel: Int, cc: Int, value: Int) {
-//        let depth = midi7bitToUnitDouble(UInt8(value))
-//        let pressed = value >= 64
-//
-//        switch cc {
-//        case 67: // Soft pedal (una corda)
-//            VKController.ControlChange_pedal(
-//                pedal: 1,
-//                targetStatus: pressed,
-//                depth: depth
-//            )
-//
-//        case 69: // Hold 2 / often reused by some devices, here treated as harmonic pedal slot
-//            VKController.ControlChange_pedal(
-//                pedal: 2,
-//                targetStatus: pressed,
-//                depth: depth
-//            )
-//
-//        case 66: // Sostenuto
-//            VKController.ControlChange_pedal(
-//                pedal: 3,
-//                targetStatus: pressed,
-//                depth: depth
-//            )
-//
-//        case 64: // Sustain / Damper
-//            VKController.ControlChange_pedal(
-//                pedal: 4,
-//                targetStatus: pressed,
-//                depth: depth
-//            )
-//
-//        default:
-//            // 不是预定义名称的踏板，不送进 VKController，避免触发 fatalError
-//            // 但仍然按你要的风格打印出来。
-//            if isPedalLikeCC(cc) {
-//                let pedalLabel = genericPedalLabel(for: cc)
-//                if pressed {
-//                    print("PedalPressed: \(pedalLabel) has been pressed.")
-//                    print("Pedal depth: \(depth)\n")
-//                } else {
-//                    print("PedalReleased: \(pedalLabel) has been released.\n")
-//                }
-//            } else {
-//                print("Control Change    (ch: \(channel), cc: \(cc), value: \(value))")
-//            }
-//        }
-//    }
-//
-//    private func isPedalLikeCC(_ cc: Int) -> Bool {
-//        // 常见踏板 / 脚控相关控制器区间
-//        // 64 sustain, 65 portamento, 66 sostenuto, 67 soft, 68 legato, 69 hold2
-//        return (64...69).contains(cc)
-//    }
-//
-//    private func genericPedalLabel(for cc: Int) -> String {
-//        switch cc {
-//        case 65: return "Pedal1"
-//        case 68: return "Pedal2"
-//        default: return "Pedal\(cc)"
-//        }
-//    }
-//
-//    private func midi7bitToUnitDouble(_ value: UInt8) -> Double {
-//        Double(value) / 127.0
-//    }
-//}
+//  MidiService.swift
+//  bBpiano
+//
+//  Created by opus arc on 2026/4/8.
+//
+//  AI Assisted
+//
+
+import Foundation
+import CoreMIDI
+
+fileprivate enum MidiParseError: Error, LocalizedError {
+    case invalidFile
+    case unsupportedFormat(UInt16)
+    case missingHeader
+    case corruptTrack
+    case unsupportedTimeDivision
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidFile:
+            return "Invalid MIDI file."
+        case .unsupportedFormat(let format):
+            return "Unsupported MIDI format: \(format)."
+        case .missingHeader:
+            return "Missing MIDI header chunk."
+        case .corruptTrack:
+            return "Corrupt MIDI track chunk."
+        case .unsupportedTimeDivision:
+            return "SMPTE time division is not supported."
+        }
+    }
+}
+
+private final class MidiPlaybackState {
+    private let lock = NSLock()
+    private var cancelled = false
+    private(set) var activeNotes = Set<Int>()
+
+    func cancel() {
+        lock.lock()
+        cancelled = true
+        let notes = activeNotes
+        activeNotes.removeAll()
+        lock.unlock()
+
+        for note in notes {
+            VKController.NoteOff(note: note, velocity: 0)
+        }
+    }
+
+    func isCancelled() -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return cancelled
+    }
+
+    func noteOn(_ note: Int) {
+        lock.lock()
+        activeNotes.insert(note)
+        lock.unlock()
+    }
+
+    func noteOff(_ note: Int) {
+        lock.lock()
+        activeNotes.remove(note)
+        lock.unlock()
+    }
+}
+
+public enum MidiService {
+    private struct MidiEvent {
+        let timeInSeconds: TimeInterval
+        let status: UInt8
+        let data1: UInt8
+        let data2: UInt8
+        let trackName: String?
+
+        var channel: Int {
+            Int(status & 0x0F)
+        }
+
+        var statusType: UInt8 {
+            status & 0xF0
+        }
+
+        var isNoteOn: Bool {
+            statusType == 0x90 && data2 > 0
+        }
+
+        var isNoteOff: Bool {
+            statusType == 0x80 || (statusType == 0x90 && data2 == 0)
+        }
+    }
+
+    private static var playbackState: MidiPlaybackState?
+    private static let playbackQueue = DispatchQueue(label: "MidiService.playbackQueue", qos: .userInitiated)
+
+    /// Plays the piano part of a Standard MIDI File.
+    ///
+    /// - Parameters:
+    ///   - playbackRate: Playback multiplier. `1.0` is original speed, `2.0` is twice as fast.
+    ///   - startTime: Start offset in seconds from the beginning of the MIDI performance.
+    ///   - midiFileURL: Local MIDI file URL.
+    public static func play(
+        playbackRate: Double,
+        startTime: TimeInterval,
+        midiFileURL: URL
+    ) throws {
+        guard playbackRate > 0 else {
+            throw NSError(
+                domain: "MidiService",
+                code: 1,
+                userInfo: [NSLocalizedDescriptionKey: "playbackRate must be greater than 0."]
+            )
+        }
+
+        Self.stop()
+
+        let data = try Data(contentsOf: midiFileURL)
+        let allEvents = try Self.parseMidiFile(data)
+        let pianoEvents = Self.selectPianoEvents(from: allEvents)
+            .filter { $0.timeInSeconds >= max(0, startTime) }
+            .sorted { $0.timeInSeconds < $1.timeInSeconds }
+
+        let state = MidiPlaybackState()
+        Self.playbackState = state
+
+        Self.playbackQueue.async {
+            Self.playEvents(
+                pianoEvents,
+                playbackRate: playbackRate,
+                startTime: max(0, startTime),
+                state: state
+            )
+        }
+    }
+
+    public static func stop() {
+        playbackState?.cancel()
+        playbackState = nil
+    }
+
+    private static func playEvents(
+        _ events: [MidiEvent],
+        playbackRate: Double,
+        startTime: TimeInterval,
+        state: MidiPlaybackState
+    ) {
+        var lastScheduledTime = startTime
+
+        for event in events {
+            if state.isCancelled() {
+                return
+            }
+
+            let delta = max(0, event.timeInSeconds - lastScheduledTime) / playbackRate
+            if delta > 0 {
+                Thread.sleep(forTimeInterval: delta)
+            }
+            lastScheduledTime = event.timeInSeconds
+
+            if state.isCancelled() {
+                return
+            }
+
+            let note = Int(event.data1)
+            let velocity = Double(event.data2)
+
+            if event.isNoteOn {
+                state.noteOn(note)
+                VKController.NoteOn(note: note, velocity: velocity)
+            } else if event.isNoteOff {
+                state.noteOff(note)
+                VKController.NoteOff(note: note, velocity: velocity)
+            }
+        }
+    }
+
+    private static func selectPianoEvents(from events: [MidiEvent]) -> [MidiEvent] {
+        let noteEvents = events.filter { $0.isNoteOn || $0.isNoteOff }
+
+        let explicitlyNamedPianoEvents = noteEvents.filter { event in
+            guard let name = event.trackName?.lowercased() else { return false }
+            return name.contains("piano") || name.contains("keyboard") || name.contains("grand")
+        }
+
+        if !explicitlyNamedPianoEvents.isEmpty {
+            return explicitlyNamedPianoEvents
+        }
+
+        let channelZeroEvents = noteEvents.filter { $0.channel == 0 }
+        if !channelZeroEvents.isEmpty {
+            return channelZeroEvents
+        }
+
+        return noteEvents
+    }
+
+    private static func parseMidiFile(_ data: Data) throws -> [MidiEvent] {
+        var reader = MidiReader(data: data)
+
+        guard reader.readString(length: 4) == "MThd" else {
+            throw MidiParseError.missingHeader
+        }
+
+        let headerLength = try reader.readUInt32()
+        let format = try reader.readUInt16()
+        let trackCount = try reader.readUInt16()
+        let division = try reader.readUInt16()
+
+        guard format == 0 || format == 1 else {
+            throw MidiParseError.unsupportedFormat(format)
+        }
+
+        guard (division & 0x8000) == 0 else {
+            throw MidiParseError.unsupportedTimeDivision
+        }
+
+        let ticksPerQuarterNote = Double(division)
+        if headerLength > 6 {
+            try reader.skip(Int(headerLength - 6))
+        }
+
+        var events: [MidiEvent] = []
+
+        for _ in 0..<trackCount {
+            guard reader.readString(length: 4) == "MTrk" else {
+                throw MidiParseError.corruptTrack
+            }
+
+            let trackLength = Int(try reader.readUInt32())
+            let trackEndIndex = reader.index + trackLength
+            var tempoMicrosecondsPerQuarter = 500_000.0
+            var seconds = 0.0
+            var runningStatus: UInt8?
+            var trackName: String?
+
+            while reader.index < trackEndIndex {
+                let deltaTicks = try reader.readVariableLengthQuantity()
+                seconds += (Double(deltaTicks) * tempoMicrosecondsPerQuarter / 1_000_000.0) / ticksPerQuarterNote
+
+                let firstByte = try reader.readByte()
+                var status: UInt8
+                var data1: UInt8?
+
+                if firstByte < 0x80 {
+                    guard let previousStatus = runningStatus else {
+                        throw MidiParseError.corruptTrack
+                    }
+                    status = previousStatus
+                    data1 = firstByte
+                } else {
+                    status = firstByte
+                }
+
+                if status == 0xFF {
+                    let metaType = try reader.readByte()
+                    let length = Int(try reader.readVariableLengthQuantity())
+                    let metaData = try reader.readData(length: length)
+
+                    if metaType == 0x03, let name = String(data: metaData, encoding: .utf8) {
+                        trackName = name
+                    } else if metaType == 0x51, metaData.count == 3 {
+                        tempoMicrosecondsPerQuarter = Double(metaData[0]) * 65_536
+                            + Double(metaData[1]) * 256
+                            + Double(metaData[2])
+                    }
+
+                    runningStatus = nil
+                    continue
+                }
+
+                if status == 0xF0 || status == 0xF7 {
+                    let length = Int(try reader.readVariableLengthQuantity())
+                    try reader.skip(length)
+                    runningStatus = nil
+                    continue
+                }
+
+                runningStatus = status
+
+                let statusType = status & 0xF0
+                let firstDataByte = try data1 ?? reader.readByte()
+
+                switch statusType {
+                case 0x80, 0x90:
+                    let velocity = try reader.readByte()
+                    events.append(
+                        MidiEvent(
+                            timeInSeconds: seconds,
+                            status: status,
+                            data1: firstDataByte,
+                            data2: velocity,
+                            trackName: trackName
+                        )
+                    )
+
+                case 0xA0, 0xB0, 0xE0:
+                    _ = try reader.readByte()
+
+                case 0xC0, 0xD0:
+                    break
+
+                default:
+                    throw MidiParseError.corruptTrack
+                }
+            }
+
+            if reader.index != trackEndIndex {
+                reader.index = trackEndIndex
+            }
+        }
+
+        return events.sorted { $0.timeInSeconds < $1.timeInSeconds }
+    }
+}
+
+private struct MidiReader {
+    let data: Data
+    var index: Int = 0
+
+    mutating func readByte() throws -> UInt8 {
+        guard index < data.count else { throw MidiParseError.invalidFile }
+        let byte = data[index]
+        index += 1
+        return byte
+    }
+
+    mutating func readData(length: Int) throws -> Data {
+        guard length >= 0, index + length <= data.count else {
+            throw MidiParseError.invalidFile
+        }
+        let subdata = data[index..<(index + length)]
+        index += length
+        return Data(subdata)
+    }
+
+    mutating func readString(length: Int) -> String? {
+        guard length >= 0, index + length <= data.count else { return nil }
+        let subdata = data[index..<(index + length)]
+        index += length
+        return String(data: Data(subdata), encoding: .ascii)
+    }
+
+    mutating func readUInt16() throws -> UInt16 {
+        let high = UInt16(try readByte())
+        let low = UInt16(try readByte())
+        return (high << 8) | low
+    }
+
+    mutating func readUInt32() throws -> UInt32 {
+        let byte1 = UInt32(try readByte())
+        let byte2 = UInt32(try readByte())
+        let byte3 = UInt32(try readByte())
+        let byte4 = UInt32(try readByte())
+        return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4
+    }
+
+    mutating func readVariableLengthQuantity() throws -> UInt32 {
+        var value: UInt32 = 0
+
+        for _ in 0..<4 {
+            let byte = try readByte()
+            value = (value << 7) | UInt32(byte & 0x7F)
+            if (byte & 0x80) == 0 {
+                return value
+            }
+        }
+
+        throw MidiParseError.invalidFile
+    }
+
+    mutating func skip(_ count: Int) throws {
+        guard count >= 0, index + count <= data.count else {
+            throw MidiParseError.invalidFile
+        }
+        index += count
+    }
+}

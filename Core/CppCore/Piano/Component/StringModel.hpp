@@ -47,6 +47,8 @@ private:
     static constexpr double g = 0.996;
     
     
+    mutable int activityCounter = 0;
+    
     // --------------------------------------------
     // MARK: 组件与基本信息
     //  初始化后固定的内容
@@ -58,7 +60,7 @@ public:
     explicit StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum);
     
     // 配对的击锤
-    const HammerModel *pairedHammer = nullptr;
+    HammerModel *pairedHammer = nullptr;
     
     // midi 号码
     const int midi_n;
@@ -143,7 +145,7 @@ public:
     float processLoss(float x, float& y1) const;
     
     // 传播
-    void propagate() const ;
+    void propagate();
     
     // --------------------------------------------
     // MARK: 运动帧
@@ -151,7 +153,7 @@ public:
 public:
     
     // 弦的运动回合，每帧的调用接口
-    void stringMovement() const ;
+    void stringMovement() ;
     
     // 获取速度的方式
     float velocityAt(double p) const ;

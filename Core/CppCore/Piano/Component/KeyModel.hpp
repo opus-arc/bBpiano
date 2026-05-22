@@ -42,6 +42,7 @@ public:
     // MARK: 状态值
     
     mutable bool key_active = false;
+    mutable bool lastStatus = false;
     
     // active 弦检测剪枝计数器
     mutable int activityCounter = 0;

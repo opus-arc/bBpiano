@@ -49,25 +49,19 @@ void get_next_buffer(float* out, int frameCount, double amplitudeLimiter) {
         
         if(bBpiano->pianoKeys.size() < 87) return;
         
-        double sum = 0.0;
-        for(int midi_n = 63; midi_n < 71; midi_n++) {
-            bBpiano->pianoKeys[midi_n - 21].hammer->hammerMovement();
-            sum += bBpiano->pianoKeys[midi_n - 21].hammer->getSample();
-        }
+//        double sum = 0.0;
+//        for(int midi_n = 43; midi_n < 45; midi_n++) { // 63 71
+//            bBpiano->pianoKeys[midi_n - 21]->keyMovement();
+//            sum += bBpiano->pianoKeys[midi_n - 21]->getSample();
+//            
+//        }
         
-//        bBpiano->pianoKeys[__midi_n - 21].hammer->hammerMovement();
-//        bBpiano->pianoKeys[_midi_n - 21].hammer->hammerMovement();
+        bBpiano->pianoMovement();
+    
         
 //        out[i] = tanh(bBpiano->pianoKeys[__midi_n - 21].hammer->getSample());
-        out[i] = sum;
-        
-        
-        
- 
-//        if(out[i] > 0.0001) switch____ = true;
-//        if(out[i] > 0.0001) frameCount___++;
-//        if(frameCount___ < 10000 && switch____)
-//            std::cout<< out[i] << "\n";
+        out[i] = bBpiano->getSample();
+
         
     }
     

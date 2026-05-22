@@ -104,7 +104,7 @@ float StringModel::get_f0() const {
 // MARK: 计算函数
 
 
-void StringModel::stringMovement() const {
+void StringModel::stringMovement() {
     
     propagate();
     
@@ -144,10 +144,7 @@ void StringModel::injectForce(int m, float F) const {
     left[m] += delta;
 }
 
-
-int frameCount = 0;
-
-void StringModel::propagate() const {
+void StringModel::propagate() {
 
     // 内部传播
     for (int i = 1; i <= Delay_Index; i++) {
@@ -199,8 +196,8 @@ void StringModel::propagate() const {
     
     
     // 边界反射
-    rightNext[0] = -dispersedRight * 0.9999f;
-    leftNext[Delay_Index] = -dispersedLeft * 0.9999f;
+    rightNext[0] = -dispersedRight * 0.999f;
+    leftNext[Delay_Index] = -dispersedLeft * 0.999f;
     
     
 
@@ -210,12 +207,18 @@ void StringModel::propagate() const {
     std::swap(left, leftNext);
     std::swap(right, rightNext);
     
-    frameCount++;
+    activityCounter++;
     
     
-    if(frameCount < 10000) {
+    if(activityCounter >= 10000) {
 //        std::cout << activityProbe() << "\n";
-        frameCount = 0;
+//        std::cout << "pairedHammer->pairedKey->key_active: " << pairedHammer->pairedKey->key_active << "\n";
+//        std::cout << "&pairedHammer->pairedKey->key_active: " << &pairedHammer->pairedKey->key_active << "\n";
+        if((activityProbe() < 0.02) && pairedHammer->pairedKey->key_active) {
+            pairedHammer->setInactive();
+            std::cout<<"!!!!!!!"<<"\n";
+        }
+        activityCounter = 0;
     }
 
 }
