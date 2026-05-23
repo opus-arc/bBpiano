@@ -1996,6 +1996,14 @@
 			);
 			target = 14E708352F78BE0C005C806C /* bBpiano */;
 		};
+		1435B4532FC1D5C10080FFA3 /* Exceptions for "Test" folder in "bBpiano" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				HammerStringEvaluationTests/HammerStringEvaluationTests.swift,
+				HammerStringEvaluationTests/HammerStringTest.cpp,
+			);
+			target = 14E708352F78BE0C005C806C /* bBpiano */;
+		};
 		144E33982FB7448C00DA9F38 /* Exceptions for "App" folder in "bBpiano" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -2008,17 +2016,11 @@
 			);
 			target = 14E708352F78BE0C005C806C /* bBpiano */;
 		};
-		14553D132FC14D80008E3CD7 /* Exceptions for "Test" folder in "bBpiano" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				HammerStringEvaluationTests/HammerStringEvaluationTests.swift,
-			);
-			target = 14E708352F78BE0C005C806C /* bBpiano */;
-		};
 		14553D142FC14D80008E3CD7 /* Exceptions for "Test" folder in "HammerStringEvaluationTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				HammerStringEvaluationTests/HammerStringEvaluationTests.swift,
+				HammerStringEvaluationTests/HammerStringTest.cpp,
 			);
 			target = 14553D062FC14D60008E3CD7 /* HammerStringEvaluationTests */;
 		};
@@ -2037,7 +2039,7 @@
 		14553D002FC14B24008E3CD7 /* Test */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				14553D132FC14D80008E3CD7 /* Exceptions for "Test" folder in "bBpiano" target */,
+				1435B4532FC1D5C10080FFA3 /* Exceptions for "Test" folder in "bBpiano" target */,
 				14553D142FC14D80008E3CD7 /* Exceptions for "Test" folder in "HammerStringEvaluationTests" target */,
 			);
 			path = Test;
@@ -2172,6 +2174,7 @@
 				TargetAttributes = {
 					14553D062FC14D60008E3CD7 = {
 						CreatedOnToolsVersion = 26.2;
+						LastSwiftMigration = 2620;
 						TestTargetID = 14E708352F78BE0C005C806C;
 					};
 					14E708352F78BE0C005C806C = {
@@ -2239,6 +2242,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L746W9JTR3;
@@ -2250,6 +2254,8 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "Test/HammerStringEvaluationTests/HammerStringEvaluationTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/bBpiano.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/bBpiano";
@@ -2260,6 +2266,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L746W9JTR3;
@@ -2271,6 +2278,7 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "Test/HammerStringEvaluationTests/HammerStringEvaluationTests-Bridging-Header.h";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/bBpiano.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/bBpiano";

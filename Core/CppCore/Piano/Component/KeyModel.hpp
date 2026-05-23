@@ -55,6 +55,8 @@ public:
     
     // 获取这一帧的振幅数据
     float getSample();
+    
+    void silence();
 
 };
 

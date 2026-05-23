@@ -24,6 +24,8 @@ void note_afterTouch(int midi_n, double pressure);
 
 double get_engineRate();
 
+void all_silence();
+
 
 #ifdef __cplusplus
 

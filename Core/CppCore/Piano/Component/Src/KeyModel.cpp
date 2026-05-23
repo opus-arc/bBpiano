@@ -48,3 +48,14 @@ float KeyModel::getSample(){
     
 }
 
+
+void KeyModel::silence() {
+    auto clearString = [](auto* s) {
+        if(!s) return;
+        std::fill(s->left.begin(),  s->left.end(),  0.0);
+        std::fill(s->right.begin(), s->right.end(), 0.0);
+    };
+    clearString(hammer->pairedString_a);
+    clearString(hammer->pairedString_b);
+    clearString(hammer->pairedString_c);
+}

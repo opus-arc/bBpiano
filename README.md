@@ -4,7 +4,9 @@
 
 
 
- [![Build macOS App](https://github.com/opus-arc/bBpiano/actions/workflows/swift.yml/badge.svg)](https://github.com/opus-arc/bBpiano/actions/workflows/swift.yml)	
+ [![Build macOS App](https://github.com/opus-arc/bBpiano/actions/workflows/swift.yml/badge.svg)](https://github.com/opus-arc/bBpiano/actions/workflows/swift.yml)
+
+[![bBpiano Engine Evaluation](https://github.com/opus-arc/bBpiano/actions/workflows/engine-evaluation.yml/badge.svg)](https://github.com/opus-arc/bBpiano/actions/workflows/engine-evaluation.yml)
 
 [![Foundational Research Progress](https://img.shields.io/github/milestones/progress-percent/opus-arc/bBpiano/1?label=foundational%20research)](https://github.com/opus-arc/bBpiano/milestone/1)
 
