@@ -39,7 +39,7 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     if(Delay_Int <= 0) Delay_Int = 2;
     Delay_Index = Delay_Int - 1;
     Delay_Frac = Delay - static_cast<double>(Delay_Int);
-    Allpass_A1 = double(1 - Delay_Frac) / double(1 + Delay_Frac);
+    fractional_a1 = double(1 - Delay_Frac) / double(1 + Delay_Frac);
     
 
     // 计算力和速度的比例常数
@@ -48,8 +48,8 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     // 初始化 N_int 个 0.0f 的离散位置
     right.assign(Delay_Int, 0.0f);
     left.assign(Delay_Int, 0.0f);
-    rightNext.assign(Delay_Int, 0.0f);
-    leftNext.assign(Delay_Int, 0.0f);
+    leftHead = 0;
+    rightHead = 0;
     
     // loss init
     lossConstants = MyCSVReader::getLossConstant();
@@ -63,10 +63,10 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     
     // dispersion init
     auto dispersion = MyCSVReader::getDispersionConstantByMidi(midi_n);
-    Dispersion_A1 = static_cast<float>(dispersion.a);
+    dispersion_a1 = static_cast<float>(dispersion.a);
     
-    Dispersion_A1 *= 1.2f;
-    Dispersion_A1 = std::clamp(float(Dispersion_A1), -0.95f, 0.95f);
+    dispersion_a1 *= 1.2f;
+    dispersion_a1 = std::clamp(float(dispersion_a1), -0.95f, 0.95f);
     
     
     
@@ -108,156 +108,122 @@ void StringModel::stringMovement() {
     
     propagate();
     
-}
-
-void StringModel::injectForce(double p, float F) const {
-//    if (std::abs(F) > 0.0f) active = true;
-    
-    // 边界条件
-    p = std::clamp(p, 0.0, 1.0);
-
-    int m = std::floor(p * Delay_Index);
-    
-    // 不允许端点
-    m = std::clamp(m, 1, Delay_Index - 1);
-
-    // 增量计算公式
-    float delta = F / (2.0f * static_cast<float>(Z));
-
-    // 注入弦
-    right[m] += delta;
-    left[m] += delta;
-}
-
-void StringModel::injectForce(int m, float F) const {
-//    if (std::abs(F) > 0.0f) active = true;
-    
-    // 边界条件
-    if (m > Delay_Index) m = Delay_Index - 1;
-    if (m < 0) m = 1;
-
-    // 增量计算公式
-    float delta = F / (2.0f * static_cast<float>(Z));
-
-    // 注入弦
-    right[m] += delta;
-    left[m] += delta;
-}
-
-void StringModel::propagate() {
-    
-    // 清理残留值
-    std::fill(leftNext.begin(), leftNext.end(), 0.0f);
-    std::fill(rightNext.begin(), rightNext.end(), 0.0f);
-
-    // 内部传播
-    for (int i = 1; i <= Delay_Index; i++) {
-        leftNext[i - 1] = left[i];
-    }
-
-    for (int i = 0; i < Delay_Index; i++) {
-        rightNext[i + 1] = right[i];
-    }
-
-    // MARK: fractional delay filter:
-    // 当 N == 50.1136 时, 到边界时才规定它少移动了 frac 帧 （一秒几万帧，十几、百把帧的误差应该听不出来的）
-    // 所以就要去用插值估计在这一帧的前 0.1136 帧的值是多少
-    // 使用 allpass
-    // float y = a1 * x + x1 - a1 * y1;
-    float x_r = right[Delay_Index];
-    float y_r = Allpass_A1 * x_r + FractionalAllpass_X1_r - Allpass_A1 * FractionalAllpass_Y1_r;
-    FractionalAllpass_X1_r = x_r;
-    FractionalAllpass_Y1_r = y_r;
-    
-    float x_l = left[0];
-    float y_l = Allpass_A1 * x_l + FractionalAllpass_X1_l - Allpass_A1 * FractionalAllpass_Y1_l;
-    FractionalAllpass_X1_l = x_l;
-    FractionalAllpass_Y1_l = y_l;
-    
-    // MARK: loss filter:
-    // y[n] = g * (1 + a1) * x[n] - a1 * y[n-1]
-    float reflectedRight = processLoss(y_l, Loss_Y1_l);
-    float reflectedLeft  = processLoss(y_r, Loss_Y1_r);
-    // TODO: 这下面的已经被 process 引用方式赋值了 但是以后要改 这里还是得写上这一段
-//    Loss_Y1_l = reflectedLeft;
-//    Loss_Y1_r = reflectedRight;
-    
-    // MARK: dispersion filter
-    
-    float dispersedRight =
-        Dispersion_A1 * reflectedRight
-        + Dispersion_X1_r
-        - Dispersion_A1 * Dispersion_Y1_r;
-    Dispersion_X1_r = reflectedRight;
-    Dispersion_Y1_r = dispersedRight;
-    
-    float dispersedLeft =
-        Dispersion_A1 * reflectedLeft
-        + Dispersion_X1_l
-        - Dispersion_A1 * Dispersion_Y1_l;
-    Dispersion_X1_l = reflectedLeft;
-    Dispersion_Y1_l = dispersedLeft;
-    
-    
-    // 边界反射
-    rightNext[0] = -dispersedRight * 0.999f;
-    leftNext[Delay_Index] = -dispersedLeft * 0.999f;
-    
-    
-
-//    rightNext[0] = -0.996 * leftNext[0];
-//    leftNext[Delay_Index] = -0.996 * rightNext[Delay_Index];
-
-    std::swap(left, leftNext);
-    std::swap(right, rightNext);
-    
     activityCounter++;
-    
-    
     if(activityCounter >= 10000) {
 //        std::cout << activityProbe() << "\n";
 //        std::cout << "pairedHammer->pairedKey->key_active: " << pairedHammer->pairedKey->key_active << "\n";
 //        std::cout << "&pairedHammer->pairedKey->key_active: " << &pairedHammer->pairedKey->key_active << "\n";
-        if((activityProbe() < 0.02) && pairedHammer->pairedKey->key_active) {
+        if((activityProbe() < 0.01) && pairedHammer->pairedKey->key_active) {
             pairedHammer->setInactive();
             std::cout<<"!!!!!!!"<<"\n";
         }
         activityCounter = 0;
     }
+}
+
+void StringModel::injectForce(double p, float F) const {
+    // 边界条件
+    p = std::clamp(p, 0.0, 1.0);
+
+    int relative_i = std::floor(p * Delay_Index);
+    
+    injectForce(relative_i, F);
+    
+}
+
+void StringModel::injectForce(int relative_i, float F) const {
+    
+    // 边界条件
+    relative_i = std::clamp(relative_i, 1, Delay_Index - 1);
+    int absolute_i_l = rToAIndex_l(relative_i);
+    int absolute_i_r = rToAIndex_r(relative_i);
+
+    // 增量计算公式
+    // TODO: 这里应该还能凹
+    float delta = F / (2.0f * static_cast<float>(Z));
+
+    // 注入弦
+    right[absolute_i_r] += delta;
+    left[absolute_i_l] += delta;
+}
+
+void StringModel::propagate() {
+    
+    // 先读边界
+    float r_r_boundary_value = right[rToAIndex_r(Delay_Index)];
+    float l_l_boundary_value = left[rToAIndex_l(0)];
+    
+    // 边界与滤波器
+    float reflectedRight = BoundaryFilter(l_l_boundary_value, true);
+    float reflectedLeft  = BoundaryFilter(r_r_boundary_value, false);
+    
+    // 边界传播
+    rightHead = (rightHead - 1 + Delay_Int) % Delay_Int; // 右边界向左移动 则波向右传播
+    leftHead  = (leftHead + 1) % Delay_Int; // 左边界向右移动 则波向左传播
+    
+    // 写入新边界
+    right[rToAIndex_r(0)] = reflectedRight;
+    left[rToAIndex_l(Delay_Index)] = reflectedLeft;
 
 }
 
-float StringModel::processLoss(float x, float& y1) const {
-    float y = static_cast<float>(loss_g * (1.0 + loss_a1)) * x
-            - static_cast<float>(loss_a1) * y1;
+float StringModel::BoundaryFilter(double boundary_value, bool isLeft) {
+    if(isLeft) {
+        float afterFractionalFilter = fractionalFilter(boundary_value,
+                                                       fractional_x1_l,
+                                                       fractional_y1_l);
+        float afterLossFilter = lossFilter(afterFractionalFilter,
+                                           loss_y1_l);
+        float afterDispersionFilter = dispersionFilter(afterLossFilter,
+                                                       dispersion_x1_l,
+                                                       dispersion_y1_l);
+        // 边界反射
+        return -afterDispersionFilter;
+    } else {
+        float afterFractionalFilter = fractionalFilter(boundary_value,
+                                                       fractional_x1_r,
+                                                       fractional_y1_r);
+        float afterLossFilter = lossFilter(afterFractionalFilter,
+                                           loss_y1_r);
+        float afterDispersionFilter = dispersionFilter(afterLossFilter,
+                                                       dispersion_x1_r,
+                                                       dispersion_y1_r);
+        // 边界反射
+        return -afterDispersionFilter;
+    }
+}
 
-    y1 = y;
-    return y;
-}	
+
+
 
 float StringModel::velocityAt(double p) const {
     // 边界条件
     p = std::clamp(p, 0.0, 1.0);
 
-    int m = std::floor(p * Delay_Index);
+    int relative_i = std::floor(p * Delay_Index);
+    
+    int absolute_i_l = (relative_i + Delay_Int + leftHead) % Delay_Int;
+    int absolute_i_r = (relative_i + Delay_Int + rightHead) % Delay_Int;
+    
+    
 
-    return left[m] + right[m];
+    // 拾音点以数据为参考系位置不发生改变
+    return left[absolute_i_l] + right[absolute_i_r];
 }
 
-float StringModel::nextVelocityAt(double p) const {
+float StringModel::nextVelocityAt(double p) {
     // 边界条件
     p = std::clamp(p, 0.0, 1.0);
 
-    int m = std::floor(p * Delay_Index);
+    int relative_i = std::floor(p * Delay_Index);
+    relative_i = std::clamp(relative_i, 0, Delay_Index);
+    
+    int relative_i_l_next = std::clamp(relative_i + 1, 0, Delay_Index); // 左波拾音点右侧的点下一帧就在拾音点上
+    int relative_i_r_next = std::clamp(relative_i - 1, 0, Delay_Index); // 右波拾音点左侧的点下一帧就在拾音点上
 
-    // 左边的右边那一帧下回就到拾音点
-    int ml = m + 1;
-    int mr = m - 1;
-
-    if (ml > Delay_Index) ml = Delay_Index;
-    if (mr < 0) mr = 0;
-
-    return left[ml] + right[mr];
+    return left[rToAIndex_l(relative_i_l_next)]
+         + right[rToAIndex_r(relative_i_r_next)];
+    
 }
     
 float StringModel::activityProbe() const {
@@ -271,24 +237,86 @@ float StringModel::activityProbe() const {
 
     float p = 0.0f;
 
-    for (int idx : points) {
-        idx = std::clamp(idx, 0, Delay_Index);
+    for (int relative_idx : points) {
+        relative_idx = std::clamp(relative_idx, 0, Delay_Index);
+        
+        int absolute_idx_l = rToAIndex_l(relative_idx);
+        int absolute_idx_r = rToAIndex_r(relative_idx);
+        
 
-        float l = left[idx];
-        float r = right[idx];
+        float l = left[absolute_idx_l];
+        float r = right[absolute_idx_r];
 
         p = std::max(p, std::abs(l + r)); // physical velocity proxy
         p = std::max(p, std::abs(l));     // travelling wave proxy
         p = std::max(p, std::abs(r));
     }
 
-    p = std::max(p, std::abs(Loss_Y1_l));
-    p = std::max(p, std::abs(Loss_Y1_r));
-    p = std::max(p, std::abs(FractionalAllpass_Y1_l));
-    p = std::max(p, std::abs(FractionalAllpass_Y1_r));
-    p = std::max(p, std::abs(Dispersion_Y1_l));
-    p = std::max(p, std::abs(Dispersion_Y1_r));
+    p = std::max(p, std::abs(loss_y1_l));
+    p = std::max(p, std::abs(loss_y1_r));
+    p = std::max(p, std::abs(fractional_y1_l));
+    p = std::max(p, std::abs(fractional_y1_r));
+    p = std::max(p, std::abs(dispersion_y1_l));
+    p = std::max(p, std::abs(dispersion_y1_r));
 
     return p;
 }
+
+
+
+
+float StringModel::BoundaryFilter_virtual(double boundary_value, bool isLeft) {
+    if (isLeft) {
+        float fx1 = fractional_x1_l;
+        float fy1 = fractional_y1_l;
+        float ly1 = loss_y1_l;
+        float dx1 = dispersion_x1_l;
+        float dy1 = dispersion_y1_l;
+
+        float afterFractionalFilter = fractionalFilter(
+            static_cast<float>(boundary_value),
+            fx1,
+            fy1
+        );
+
+        float afterLossFilter = lossFilter(
+            afterFractionalFilter,
+            ly1
+        );
+
+        float afterDispersionFilter = dispersionFilter(
+            afterLossFilter,
+            dx1,
+            dy1
+        );
+
+        return -afterDispersionFilter;
+    } else {
+        float fx1 = fractional_x1_r;
+        float fy1 = fractional_y1_r;
+        float ly1 = loss_y1_r;
+        float dx1 = dispersion_x1_r;
+        float dy1 = dispersion_y1_r;
+
+        float afterFractionalFilter = fractionalFilter(
+            static_cast<float>(boundary_value),
+            fx1,
+            fy1
+        );
+
+        float afterLossFilter = lossFilter(
+            afterFractionalFilter,
+            ly1
+        );
+
+        float afterDispersionFilter = dispersionFilter(
+            afterLossFilter,
+            dx1,
+            dy1
+        );
+
+        return -afterDispersionFilter;
+    }
+}
+
 
