@@ -6,6 +6,16 @@
 	objectVersion = 90;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		14553D0B2FC14D61008E3CD7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14E7082E2F78BE0C005C806C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 14E708352F78BE0C005C806C;
+			remoteInfo = bBpiano;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		141655472F80105700935D9E /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -18,6 +28,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		14553D072FC14D60008E3CD7 /* HammerStringEvaluationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HammerStringEvaluationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		146587D62FA42DAF009F5C08 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		14E708362F78BE0C005C806C /* bBpiano.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bBpiano.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -1997,6 +2008,20 @@
 			);
 			target = 14E708352F78BE0C005C806C /* bBpiano */;
 		};
+		14553D132FC14D80008E3CD7 /* Exceptions for "Test" folder in "bBpiano" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				HammerStringEvaluationTests/HammerStringEvaluationTests.swift,
+			);
+			target = 14E708352F78BE0C005C806C /* bBpiano */;
+		};
+		14553D142FC14D80008E3CD7 /* Exceptions for "Test" folder in "HammerStringEvaluationTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				HammerStringEvaluationTests/HammerStringEvaluationTests.swift,
+			);
+			target = 14553D062FC14D60008E3CD7 /* HammerStringEvaluationTests */;
+		};
 		146587D52FA42C9E009F5C08 /* Exceptions for "Doc" folder in "bBpiano" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -2009,6 +2034,15 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		14553D002FC14B24008E3CD7 /* Test */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				14553D132FC14D80008E3CD7 /* Exceptions for "Test" folder in "bBpiano" target */,
+				14553D142FC14D80008E3CD7 /* Exceptions for "Test" folder in "HammerStringEvaluationTests" target */,
+			);
+			path = Test;
+			sourceTree = "<group>";
+		};
 		14E708382F78BE0C005C806C /* App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -2046,6 +2080,11 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		14553D042FC14D60008E3CD7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
 		14E708332F78BE0C005C806C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
@@ -2057,6 +2096,7 @@
 		14E7082D2F78BE0C005C806C = {
 			isa = PBXGroup;
 			children = (
+				14553D002FC14B24008E3CD7 /* Test */,
 				14FD022F2FB88D2E000D46DC /* External */,
 				14FD02262FB889F3000D46DC /* AcousticLab */,
 				146587D62FA42DAF009F5C08 /* README.md */,
@@ -2071,6 +2111,7 @@
 			isa = PBXGroup;
 			children = (
 				14E708362F78BE0C005C806C /* bBpiano.app */,
+				14553D072FC14D60008E3CD7 /* HammerStringEvaluationTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2078,6 +2119,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		14553D062FC14D60008E3CD7 /* HammerStringEvaluationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 14553D0D2FC14D61008E3CD7 /* Build configuration list for PBXNativeTarget "HammerStringEvaluationTests" */;
+			buildPhases = (
+				14553D032FC14D60008E3CD7 /* Sources */,
+				14553D042FC14D60008E3CD7 /* Frameworks */,
+				14553D052FC14D60008E3CD7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				14553D0C2FC14D61008E3CD7 /* PBXTargetDependency */,
+			);
+			name = HammerStringEvaluationTests;
+			productName = HammerStringEvaluationTests;
+			productReference = 14553D072FC14D60008E3CD7 /* HammerStringEvaluationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		14E708352F78BE0C005C806C /* bBpiano */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 14E7085C2F78BE0D005C806C /* Build configuration list for PBXNativeTarget "bBpiano" */;
@@ -2090,6 +2149,7 @@
 			buildRules = (
 			);
 			fileSystemSynchronizedGroups = (
+				14553D002FC14B24008E3CD7 /* Test */,
 				14E708382F78BE0C005C806C /* App */,
 				14E709AA2F7E3F01005C806C /* Core */,
 				14FD02262FB889F3000D46DC /* AcousticLab */,
@@ -2110,6 +2170,10 @@
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					14553D062FC14D60008E3CD7 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 14E708352F78BE0C005C806C;
+					};
 					14E708352F78BE0C005C806C = {
 						CreatedOnToolsVersion = 26.2;
 						LastSwiftMigration = 2620;
@@ -2131,11 +2195,17 @@
 			projectRoot = "";
 			targets = (
 				14E708352F78BE0C005C806C /* bBpiano */,
+				14553D062FC14D60008E3CD7 /* HammerStringEvaluationTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		14553D052FC14D60008E3CD7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
 		14E708342F78BE0C005C806C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
@@ -2144,6 +2214,11 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		14553D032FC14D60008E3CD7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 		14E708322F78BE0C005C806C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
@@ -2151,7 +2226,57 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		14553D0C2FC14D61008E3CD7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 14E708352F78BE0C005C806C /* bBpiano */;
+			targetProxy = 14553D0B2FC14D61008E3CD7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		14553D0E2FC14D61008E3CD7 /* Debug configuration for PBXNativeTarget "HammerStringEvaluationTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L746W9JTR3;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.opusarc.HammerStringEvaluationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/bBpiano.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/bBpiano";
+			};
+			name = Debug;
+		};
+		14553D0F2FC14D61008E3CD7 /* Release configuration for PBXNativeTarget "HammerStringEvaluationTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L746W9JTR3;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.opusarc.HammerStringEvaluationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/bBpiano.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/bBpiano";
+			};
+			name = Release;
+		};
 		14E7085A2F78BE0D005C806C /* Debug configuration for PBXProject "bBpiano" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2358,6 +2483,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		14553D0D2FC14D61008E3CD7 /* Build configuration list for PBXNativeTarget "HammerStringEvaluationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				14553D0E2FC14D61008E3CD7 /* Debug configuration for PBXNativeTarget "HammerStringEvaluationTests" */,
+				14553D0F2FC14D61008E3CD7 /* Release configuration for PBXNativeTarget "HammerStringEvaluationTests" */,
+			);
+			defaultConfigurationName = Release;
+		};
 		14E708312F78BE0C005C806C /* Build configuration list for PBXProject "bBpiano" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -145,6 +145,10 @@ void StringModel::injectForce(int m, float F) const {
 }
 
 void StringModel::propagate() {
+    
+    // 清理残留值
+    std::fill(leftNext.begin(), leftNext.end(), 0.0f);
+    std::fill(rightNext.begin(), rightNext.end(), 0.0f);
 
     // 内部传播
     for (int i = 1; i <= Delay_Index; i++) {
