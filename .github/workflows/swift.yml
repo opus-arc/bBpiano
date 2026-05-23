@@ -1,6 +1,3 @@
-# This workflow will build a Swift project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-swift
-
 name: Build macOS App
 
 on:
@@ -26,4 +23,5 @@ jobs:
             -scheme bBpiano \
             -configuration Debug \
             -destination 'platform=macOS,arch=arm64' \
+            CODE_SIGNING_ALLOWED=NO \
             build
