@@ -1,0 +1,73 @@
+name: bBpiano Engine Evaluation
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  performance:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run engine performance tests
+        shell: bash
+        run: |
+          set -o pipefail
+
+          xcodebuild test \
+            -scheme bBpiano \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee engine-evaluation.log
+
+      - name: Locate EngineTestResult.json
+        shell: bash
+        run: |
+          RESULT_PATH=$(find . -name "EngineTestResult.json" | head -n 1)
+
+          if [ -z "$RESULT_PATH" ]; then
+            echo "EngineTestResult.json not found"
+            exit 1
+          fi
+
+          echo "RESULT_PATH=$RESULT_PATH" >> $GITHUB_ENV
+
+      - name: Write engine evaluation summary
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+
+          path = os.environ["RESULT_PATH"]
+
+          with open(path, "r") as f:
+              data = json.load(f)
+
+          lines = [
+              "# bBpiano Engine Evaluation",
+              "",
+              "| Metric | Value |",
+              "|---|---:|",
+              f"| Estimated Polyphony Under 90% Load | {data['estimatedPolyphonyUnder90PercentLoad']} |",
+              f"| All-note Average | {data['allNoteAverage']} |",
+              f"| Low Average | {data['lowAverage']} |",
+              f"| Middle Average | {data['middleAverage']} |",
+              f"| High Average | {data['highAverage']} |",
+              "",
+          ]
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f:
+              f.write("\n".join(lines))
+          PY
+
+      - name: Upload engine evaluation log
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-evaluation-log
+          path: |
+            engine-evaluation.log
+            ${{ env.RESULT_PATH }}
