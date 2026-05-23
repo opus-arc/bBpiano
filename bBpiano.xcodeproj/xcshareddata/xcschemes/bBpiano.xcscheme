@@ -41,6 +41,17 @@
                ReferencedContainer = "container:bBpiano.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "14553D062FC14D60008E3CD7"
+               BuildableName = "HammerStringEvaluationTests.xctest"
+               BlueprintName = "HammerStringEvaluationTests"
+               ReferencedContainer = "container:bBpiano.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

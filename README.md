@@ -2,7 +2,16 @@
 
 # 从波动方程到物理建模
 
-**Author:** Ziyang Tan  
+
+
+ [![Build macOS App](https://github.com/opus-arc/bBpiano/actions/workflows/swift.yml/badge.svg)](https://github.com/opus-arc/bBpiano/actions/workflows/swift.yml)	
+
+[![Foundational Research Progress](https://img.shields.io/github/milestones/progress-percent/opus-arc/bBpiano/1?label=foundational%20research)](https://github.com/opus-arc/bBpiano/milestone/1)
+
+[![Milestone Issues](https://img.shields.io/github/milestones/progress/opus-arc/bBpiano/1?label=issues)](https://github.com/opus-arc/bBpiano/milestone/1)
+
+**Authors:** Ziyang Tan, Zhuoran Chen  
+*(hereinafter referred to as Z. Tan and Z. Chen)*
 
 ---
 
@@ -97,6 +106,8 @@ ___
 ## 1 Pulse Code Modulation
 
 ## **1 脉冲编码调制**
+
+<sup>This chapter was developed based on the research and implementation work of Z. Tan.</sup>
 
 在物理层面中**声音的本质是介质中的压力扰动传播**，可对于现代人来说，我接触到的声音通常都不是由一个物理声源发出，而是通过声卡，尽管我很想顺便研究声卡的工作原理，但作为一般情况下的最终输出，还是决定从PCM入手，所有的发声引擎都遵循：
 
@@ -403,6 +414,8 @@ ___
 ## 2 The One-Dimensional String Model
 
 ## 2 一维弦振动模型
+
+<sup>This chapter was developed based on the research and implementation work of Z. Tan.</sup>
 
 检验一个建模的好坏，最好的方式就是倾听它所发出的声响，上一章节我已经搭建了让我们聆听到音频函数的装置，这里我会尝试编写相对进阶一些的音频函数，我聚焦钢琴最核心的部分，尽管我明白击弦锤和音板都同等重要，但钢琴的主要储能部分仍然是弦，作为工程最开始的最简模型，为了简易地描述钢琴声响的由来，我需要检验这种扰动的根源: 弦的振动方程
 
@@ -775,6 +788,8 @@ ___
 
 ## **3 从偏微分方程到 FDTD 与数字波导建模**
 
+<sup>This chapter was developed based on the research and implementation work of Z. Tan.</sup>
+
 > ![Piano Structure](./Doc/assets/Piano%20Structure.png)
 
 **FDTD（Finite-Difference Time-Domain）** 是一种用于求解电磁场的**数值仿真算法**，基于 **Maxwell** 方程组，尽管本文提到，但实在是不想做出任何解释，这对工程极不友好，经典论文 **Numerical simulations of piano strings. I. A physical model for a struck string using finite difference methods**  中写道：
@@ -1009,6 +1024,8 @@ ___
 ## **4 Fractional Delay Waveguide**
 
 ## **4 分数延迟波导**
+
+<sup>This chapter was developed based on the research and implementation work of Z. Tan.</sup>
 
 当然你可以尝试线性插值的做法，但是这会造成几个更大的问题：
 
@@ -2307,6 +2324,8 @@ ___
 
 ## **5 损耗滤波器设计**
 
+<sup>This chapter was developed based on the research and implementation work of Z. Tan.</sup>
+
 是时候换掉前文一直使用的，边界反射处的、固定百分比能量衰减了。
 
 在前文的测试视频中不难观察到这样的现象：
@@ -3028,6 +3047,8 @@ ___
 
 ## **6 色散滤波器设计**
 
+<sup>This chapter was developed based on the research and implementation work of Z. Tan.</sup>
+
 ```math
 f_p = p f_0 \sqrt{1 + Bp^2}
 ```
@@ -3071,6 +3092,8 @@ ___
 ## **7 Hammer**
 
 ## **7 **
+
+<sup>This chapter was developed based on the research and implementation work of Z. Chen.</sup>
 
 
 
