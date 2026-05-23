@@ -13,7 +13,7 @@ struct TransportPanelView: View {
             PerformanceMeterPanel()
                 .position(x: 30, y: 17.5)
             Spacer(minLength: 0)
-            TransportControls()
+//            TransportControls()
         }
         .frame(height: 35)
         .padding(.horizontal, 6)

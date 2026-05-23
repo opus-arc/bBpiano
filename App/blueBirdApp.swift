@@ -11,6 +11,7 @@ import SwiftUI
 import AppKit
 internal import System
 
+
 @main
 struct blueBirdApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
@@ -66,24 +67,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 struct RootView: View {
     @State private var didStartAudio = false
 
+    private var isRunningTests: Bool {
+        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+    }
+    
     var body: some View {
         ContentView()
             .task {
+                // XCTest 环境下不启动声卡
+                if isRunningTests {
+                    print("Running under XCTest, audio engine disabled")
+                    return
+                }
+                
                 guard !didStartAudio else { return }
                 didStartAudio = true
 
                 do {
+                    
                     try SoundCard.shared.start()
                     print("Sound card started")
                     
                     
-                    try MidiService.play(
-                        playbackRate: 1,
-                        startTime: 1480,
-                        midiFileURL: URL(
-                            filePath: "/Users/opusarc/XCodeProjects/bBpiano/Doc/midi/Piano E-Competition MIDI-2018-Yixiang Hou-Beethoven - Sonata No. 32 in C minor, Op. 111.mid"
-                        )!
-                    )
+//                    try MidiService.play(
+//                        playbackRate: 1,
+//                        startTime: 1480,
+//                        midiFileURL: URL(
+//                            filePath: "/Users/opusarc/XCodeProjects/bBpiano/Doc/midi/Piano E-Competition MIDI-2018-Yixiang Hou-Beethoven - Sonata No. 32 in C minor, Op. 111.mid"
+//                        )!
+//                    )
 
 //                    MidiService.stop()
                     

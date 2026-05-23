@@ -106,35 +106,69 @@ void HammerModel::hammerMovement() {
 }
 
 double HammerModel::hammerHalfStepForce(double _string_v, double dt) {
-    
-    // 锤子向着击弦点的相对速度
+
+    if (!std::isfinite(v_in) || !std::isfinite(dy) || !std::isfinite(F_Last)) {
+        dy = 0.0;
+        dv = 0.0;
+        F_Last = 0.0;
+        v_in = 0.0;
+        return 0.0;
+    }
+
+    if (!std::isfinite(_string_v) || !std::isfinite(dt) || dt <= 0.0) {
+        return 0.0;
+    }
+
+    double Z = pairedString_a->Z;
+    if (!std::isfinite(Z) || std::abs(Z) < 1e-12) {
+        F_Last = 0.0;
+        return 0.0;
+    }
+
     double delta_v = v_in - _string_v;
-    
-    // 上一次力对锤子的反作用力
-    double last_impact = F_Last / (2 * pairedString_a->Z);
+    double last_impact = F_Last / (2.0 * Z);
+
+    if (!std::isfinite(delta_v) || !std::isfinite(last_impact)) {
+        dy = 0.0;
+        dv = 0.0;
+        F_Last = 0.0;
+        return 0.0;
+    }
 
     dv = delta_v - last_impact;
-    
-    // 计算压缩速度
-    dy += dv * dt; // 此处用了一半的时间步长
+    dy += dv * dt;
 
-    if (dy < 0.0) {
+    if (!std::isfinite(dy) || dy < 0.0) {
         dy = 0.0;
+        dv = 0.0;
+        F_Last = 0.0;
+        return 0.0;
     }
-    
-    // 用上面算好的参数合成力
-    if (dy < 0.0) dy = 0.0;
 
     double F_new = 0.0;
-    
-    if (dy > 0.0) F_new = K * std::pow(dy, P);
-    
-    // 反作用力减慢锤子
+
+    if (dy > 0.0) {
+        F_new = K * std::pow(dy, P);
+    }
+
+    if (!std::isfinite(F_new) || F_new < 0.0) {
+        dy = 0.0;
+        dv = 0.0;
+        F_Last = 0.0;
+        return 0.0;
+    }
+
     v_in -= (F_new / m) * dt;
-    
-    // 历史力更新成这一个 half-step 的输出
+
+    if (!std::isfinite(v_in)) {
+        v_in = 0.0;
+        dy = 0.0;
+        dv = 0.0;
+        F_Last = 0.0;
+        return 0.0;
+    }
+
     F_Last = F_new;
-    
     return F_new;
 }
 	

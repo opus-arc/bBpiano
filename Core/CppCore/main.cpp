@@ -96,6 +96,12 @@ double get_engineRate() {
 }
 
 
+void all_silence() {
+    for(auto& key : bBpiano->pianoKeys) {
+        key->silence();
+    }
+}
+
 
 
 
