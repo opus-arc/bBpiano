@@ -31,23 +31,23 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     
 
 //    // 计算波导长度
-    Delay = double(sampleRate) / double(2 * get_f0());
+    delay = double(sampleRate) / double(2 * get_f0());
 //
     
 //    // 取不大于波导长度的最大整数作为数组长度
-    Delay_Int = std::floor(Delay - 0.5);
-    if(Delay_Int <= 0) Delay_Int = 2;
-    Delay_Index = Delay_Int - 1;
-    Delay_Frac = Delay - static_cast<double>(Delay_Int);
-    fractional_a1 = double(1 - Delay_Frac) / double(1 + Delay_Frac);
+    delay_int = std::floor(delay - 0.5);
+    if(delay_int <= 0) delay_int = 2;
+    delay_index = delay_int - 1;
+    delay_frac = delay - static_cast<double>(delay_int);
+    fractional_a1 = double(1 - delay_frac) / double(1 + delay_frac);
     
 
     // 计算力和速度的比例常数
     Z = std::sqrt(T * rho);
 
     // 初始化 N_int 个 0.0f 的离散位置
-    right.assign(Delay_Int, 0.0f);
-    left.assign(Delay_Int, 0.0f);
+    right.assign(delay_int, 0.0f);
+    left.assign(delay_int, 0.0f);
     leftHead = 0;
     rightHead = 0;
     
@@ -63,11 +63,8 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     
     // dispersion init
     auto dispersion = MyCSVReader::getDispersionConstantByMidi(midi_n);
-    dispersion_a1 = static_cast<float>(dispersion.a);
-    
-    dispersion_a1 *= 1.2f;
-    dispersion_a1 = std::clamp(float(dispersion_a1), -0.95f, 0.95f);
-    
+    dispersion_a1 = static_cast<float>(dispersion.a1);
+    dispersion_order = static_cast<float>(dispersion.order);
     
     
     if(midi_n == 69) {
@@ -81,7 +78,7 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
             << ", f0: " << get_f0()
 //            << ", loopDelayTarget: " << loopDelayTarget
 //            << ", halfDelayTarget: " << halfDelayTarget
-            << ", Delay: " << Delay
+            << ", Delay: " << delay
 //            << ", halfDelayFractional: " << halfDelayFractional
             << "\n";
     }
@@ -125,7 +122,7 @@ void StringModel::injectForce(double p, float F) const {
     // 边界条件
     p = std::clamp(p, 0.0, 1.0);
 
-    int relative_i = std::floor(p * Delay_Index);
+    int relative_i = std::floor(p * delay_index);
     
     injectForce(relative_i, F);
     
@@ -134,7 +131,7 @@ void StringModel::injectForce(double p, float F) const {
 void StringModel::injectForce(int relative_i, float F) const {
     
     // 边界条件
-    relative_i = std::clamp(relative_i, 1, Delay_Index - 1);
+    relative_i = std::clamp(relative_i, 1, delay_index - 1);
     int absolute_i_l = rToAIndex_l(relative_i);
     int absolute_i_r = rToAIndex_r(relative_i);
 
@@ -150,7 +147,7 @@ void StringModel::injectForce(int relative_i, float F) const {
 void StringModel::propagate() {
     
     // 先读边界
-    float r_r_boundary_value = right[rToAIndex_r(Delay_Index)];
+    float r_r_boundary_value = right[rToAIndex_r(delay_index)];
     float l_l_boundary_value = left[rToAIndex_l(0)];
     
     // 边界与滤波器
@@ -158,12 +155,12 @@ void StringModel::propagate() {
     BoundaryFilter(r_r_boundary_value, false);
     
     // 边界传播
-    rightHead = (rightHead - 1 + Delay_Int) % Delay_Int; // 右边界向左移动 则波向右传播
-    leftHead  = (leftHead + 1) % Delay_Int; // 左边界向右移动 则波向左传播
+    rightHead = (rightHead - 1 + delay_int) % delay_int; // 右边界向左移动 则波向右传播
+    leftHead  = (leftHead + 1) % delay_int; // 左边界向右移动 则波向左传播
     
     // 写入新边界
     right[rToAIndex_r(0)] = -l_l_boundary_value;
-    left[rToAIndex_l(Delay_Index)] = -r_r_boundary_value;
+    left[rToAIndex_l(delay_index)] = -r_r_boundary_value;
 
 }
 
@@ -176,10 +173,10 @@ float StringModel::velocityAt(double p) const {
     // 边界条件
     p = std::clamp(p, 0.0, 1.0);
 
-    int relative_i = std::floor(p * Delay_Index);
+    int relative_i = std::floor(p * delay_index);
     
-    int absolute_i_l = (relative_i + Delay_Int + leftHead) % Delay_Int;
-    int absolute_i_r = (relative_i + Delay_Int + rightHead) % Delay_Int;
+    int absolute_i_l = (relative_i + delay_int + leftHead) % delay_int;
+    int absolute_i_r = (relative_i + delay_int + rightHead) % delay_int;
     
     
 
@@ -191,11 +188,11 @@ float StringModel::nextVelocityAt(double p) {
     // 边界条件
     p = std::clamp(p, 0.0, 1.0);
 
-    int relative_i = std::floor(p * Delay_Index);
-    relative_i = std::clamp(relative_i, 0, Delay_Index);
+    int relative_i = std::floor(p * delay_index);
+    relative_i = std::clamp(relative_i, 0, delay_index);
     
-    int relative_i_l_next = std::clamp(relative_i + 1, 0, Delay_Index); // 左波拾音点右侧的点下一帧就在拾音点上
-    int relative_i_r_next = std::clamp(relative_i - 1, 0, Delay_Index); // 右波拾音点左侧的点下一帧就在拾音点上
+    int relative_i_l_next = std::clamp(relative_i + 1, 0, delay_index); // 左波拾音点右侧的点下一帧就在拾音点上
+    int relative_i_r_next = std::clamp(relative_i - 1, 0, delay_index); // 右波拾音点左侧的点下一帧就在拾音点上
 
     return left[rToAIndex_l(relative_i_l_next)]
          + right[rToAIndex_r(relative_i_r_next)];
@@ -204,17 +201,17 @@ float StringModel::nextVelocityAt(double p) {
     
 float StringModel::activityProbe() const {
     int points[5] = {
-        Delay_Int / 5,
-        Delay_Int / 3,
-        Delay_Int / 2,
-        (Delay_Int * 2) / 3,
-        (Delay_Int * 4) / 5
+        delay_int / 5,
+        delay_int / 3,
+        delay_int / 2,
+        (delay_int * 2) / 3,
+        (delay_int * 4) / 5
     };
 
     float p = 0.0f;
 
     for (int relative_idx : points) {
-        relative_idx = std::clamp(relative_idx, 0, Delay_Index);
+        relative_idx = std::clamp(relative_idx, 0, delay_index);
         
         int absolute_idx_l = rToAIndex_l(relative_idx);
         int absolute_idx_r = rToAIndex_r(relative_idx);
@@ -232,8 +229,8 @@ float StringModel::activityProbe() const {
     p = std::max(p, std::abs(loss_y1_r));
     p = std::max(p, std::abs(fractional_y1_l));
     p = std::max(p, std::abs(fractional_y1_r));
-    p = std::max(p, std::abs(dispersion_y1_l));
-    p = std::max(p, std::abs(dispersion_y1_r));
+//    p = std::max(p, std::abs(dispersion_y1_l));
+//    p = std::max(p, std::abs(dispersion_y1_r));
 
     return p;
 }
@@ -246,11 +243,11 @@ float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
         float fx1 = fractional_x1_l;
         float fy1 = fractional_y1_l;
         float ly1 = loss_y1_l;
-        float dx1 = dispersion_x1_l;
-        float dy1 = dispersion_y1_l;
+        std::array<float, 20> dx1 = dispersion_x1_l;
+        std::array<float, 20> dy1 = dispersion_y1_l;
 
         fractionalFilter(boundary_value, fx1, fy1);
-//        dispersionFilter(boundary_value, dx1, dy1);
+        dispersionFilter(boundary_value, dx1, dy1);
         lossFilter(boundary_value, ly1);
 
         return -boundary_value;
@@ -258,11 +255,11 @@ float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
         float fx1 = fractional_x1_r;
         float fy1 = fractional_y1_r;
         float ly1 = loss_y1_r;
-        float dx1 = dispersion_x1_r;
-        float dy1 = dispersion_y1_r;
+        std::array<float, 20> dx1 = dispersion_x1_r;
+        std::array<float, 20> dy1 = dispersion_y1_r;
         
         fractionalFilter(boundary_value, fx1, fy1);
-//        dispersionFilter(boundary_value, dx1, dy1);
+        dispersionFilter(boundary_value, dx1, dy1);
         lossFilter(boundary_value, ly1);
 
         return -boundary_value;

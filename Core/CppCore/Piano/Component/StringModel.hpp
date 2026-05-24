@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <vector>
 #include <cmath>
+#include <array>
 
 class HammerModel;
 
@@ -92,10 +93,10 @@ public:
     double Ts = 0;
     
     // 波导长度
-    double Delay = 0.0;
-    int Delay_Int = 0;
-    int Delay_Index = 0;
-    double Delay_Frac = 0.0;// 波导长度小数部分
+    double delay = 0.0;
+    int delay_int = 0;
+    int delay_index = 0;
+    double delay_frac = 0.0;// 波导长度小数部分
     double fractional_a1 = 0.0;
     mutable float fractional_x1_r = 0.0; // 上一次传入 allpass 的值
     mutable float fractional_y1_r = 0.0;
@@ -111,12 +112,13 @@ public:
     double loss_a1 = -0.01;
     double loss_g = 0.999293;
 
-    // loss filter
-    mutable float dispersion_x1_r = 0.0; // 上一次传入 allpass 的值
-    mutable float dispersion_y1_r = 0.0;
-    mutable float dispersion_x1_l = 0.0; // 上一次传入 allpass 的值
-    mutable float dispersion_y1_l = 0.0;
+    // dispersion filter
+    mutable std::array<float, 20> dispersion_x1_r = {}; // 上一次传入 allpass 的值
+    mutable std::array<float, 20> dispersion_y1_r = {};
+    mutable std::array<float, 20> dispersion_x1_l = {}; // 上一次传入 allpass 的值
+    mutable std::array<float, 20> dispersion_y1_l = {};
     double dispersion_a1 = 0.0;
+    int dispersion_order = 0;
 
     
     // 力 ↔ 速度 的比例常数
@@ -177,15 +179,15 @@ public:
     // 0 <= i < Delay_Int !!!
     inline int rToAIndex_l(int i) const {
         int x = leftHead + i;
-        if (x >= Delay_Int)
-            x -= Delay_Int;
+        if (x >= delay_int)
+            x -= delay_int;
         return x;
     }
 
     inline int rToAIndex_r(int i) const {
         int x = rightHead + i;
-        if (x >= Delay_Int)
-            x -= Delay_Int;
+        if (x >= delay_int)
+            x -= delay_int;
         return x;
     }
     
@@ -208,24 +210,27 @@ public:
         x = y;
     }
 
-    inline void dispersionFilter(float &x, float &x1, float &y1) const {
-        // y = a1 * x + x1 - a1 * y1;
-        float y = static_cast<float>(dispersion_a1 * x)
-            + static_cast<float>(x1)
-            - static_cast<float>(dispersion_a1 * y1);
-        y1 = y;
-        x1 = x;
-        x = y;
+    inline void dispersionFilter(float &x, std::array<float, 20>& x1, std::array<float, 20>& y1) const {
+        for(int i = 0; i < dispersion_order; i++) {
+            // y = a1 * x + x1 - a1 * y1;
+            float y = static_cast<float>(dispersion_a1 * x)
+                + x1[i]
+                - static_cast<float>(dispersion_a1 * y1[i]);
+
+            y1[i] = y;
+            x1[i] = x;
+            x = y;
+        }
     }
     
     inline void BoundaryFilter(float& boundary_value, bool isLeft) {
         if(isLeft) {
             fractionalFilter(boundary_value, fractional_x1_l, fractional_y1_l);
-//            dispersionFilter(boundary_value, dispersion_x1_l, dispersion_y1_l);
+            dispersionFilter(boundary_value, dispersion_x1_l, dispersion_y1_l);
             lossFilter(boundary_value, loss_y1_l);
         } else {
             fractionalFilter(boundary_value, fractional_x1_r, fractional_y1_r);
-//            dispersionFilter(boundary_value, dispersion_x1_r, dispersion_y1_r);
+            dispersionFilter(boundary_value, dispersion_x1_r, dispersion_y1_r);
             lossFilter(boundary_value, loss_y1_r);
         }
     }

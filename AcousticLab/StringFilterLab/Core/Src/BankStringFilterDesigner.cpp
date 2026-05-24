@@ -31,8 +31,8 @@
 
 
 void test() {
-    PartialSpectrumAnalyzer::analyzer();
-//    writeDispersionFilterConstantsCSV();
+//    PartialSpectrumAnalyzer::analyzer();
+    writeDispersionFilterConstantsCSV();
 }
 
 //namespace fs = std::filesystem;
