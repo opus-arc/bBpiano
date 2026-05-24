@@ -257,7 +257,9 @@ private func render(
     }
 ```
 
-<audio src="./Doc/audio/440Hz正弦波.wav"></audio>
+<audio controls>
+  <source src="./Doc/audio/440Hz%E6%AD%A3%E5%BC%A6%E6%B3%A2.wav" type="audio/wav">
+</audio>
 
 这是桥接 PCM 数据和声卡的 swift 最核心的部分代码，**AVAudioSourceNode **是一个“源节点”，我们可以写入自己的数据，这也是 Apple 提供的实时合成音频的关键工具。
 
@@ -346,8 +348,9 @@ void say_hello() {
 于是我们在同一个 target 下的任意 swift 文件中都可以调用 say_hello() 这个函数：
 
 <p align="center">  
-  <img src="./Doc/assets/Hello%20World%20Form%20C++.png" width="200" style="float:left; margin-left:10px;">
+  <img src="./Doc/assets/Hello%20World%20Form%20C++.png" width="200" style="float:left; margin-left:10px; margin-right:10px;">
 </p>
+
 
 
 
@@ -405,7 +408,9 @@ private func render(
     }
 ```
 
-<audio src="./Doc/audio/440Hz50%duty方波.wav"></audio>
+<audio controls>
+  <source src="./Doc/audio/440Hz50%25duty%E6%96%B9%E6%B3%A2.wav" type="audio/wav">
+</audio>
 
 通过上述的实践，我搭建了一个非常简易的 **DSP, Digital Signal Processing（数字信号处理）**模型
 
