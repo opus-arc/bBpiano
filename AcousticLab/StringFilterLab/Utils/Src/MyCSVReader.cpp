@@ -111,7 +111,7 @@ DispersionConstant MyCSVReader::getDispersionConstantByMidi(int midi_n) {
         const std::vector<std::string> cells = splitCsvLine(line);
         
         // expected:
-        // key,f0,B,order,a,fitError,pointCount
+        // key,f0,a1,order,usedPartialCount,error
         
         if (cells.size() < 5)
             continue;
@@ -126,12 +126,11 @@ DispersionConstant MyCSVReader::getDispersionConstantByMidi(int midi_n) {
             DispersionConstant dispersion;
             
             dispersion.midi_n = currentMidi;
-            dispersion.B = std::stod(cells[2]);
+            dispersion.a1 = std::stod(cells[2]);
             dispersion.order = std::stoi(cells[3]);
-            dispersion.a = std::stod(cells[4]);
             
-            dispersion.a =
-                std::clamp(dispersion.a, -0.999, 0.999);
+            dispersion.a1 =
+                std::clamp(dispersion.a1, -0.999, 0.999);
             
             return dispersion;
             

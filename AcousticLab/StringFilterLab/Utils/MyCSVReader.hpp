@@ -21,12 +21,9 @@ struct LossConstant {
 };
 
 struct DispersionConstant {
-    int midi_n = 69;
-    
-    double B = 0.0;
+    int midi_n = 0;
+    double a1 = 0.0;
     int order = 1;
-    
-    double a = 0.0;
     
     DispersionConstant() = default;
 };
