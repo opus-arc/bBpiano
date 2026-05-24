@@ -89,13 +89,22 @@ struct RootView: View {
                     print("Sound card started")
                     
                     
+//                    try MidiService.play(
+//                        playbackRate: 1,
+//                        startTime: 1480,
+//                        midiFileURL: URL(
+//                            filePath: "/Users/opusarc/XCodeProjects/bBpiano/Doc/midi/Piano E-Competition MIDI-2018-Yixiang Hou-Beethoven - Sonata No. 32 in C minor, Op. 111.mid"
+//                        )!
+//                    )
+                    
                     try MidiService.play(
                         playbackRate: 1,
-                        startTime: 1480,
+                        startTime: 0,
                         midiFileURL: URL(
-                            filePath: "/Users/opusarc/XCodeProjects/bBpiano/Doc/midi/Piano E-Competition MIDI-2018-Yixiang Hou-Beethoven - Sonata No. 32 in C minor, Op. 111.mid"
+                            filePath: "/Users/opusarc/XCodeProjects/bBpiano/Doc/midi/Piano E-Competition MIDI-2017-Wenhao Zhang-Schubert - Impromptu Op. 90 No. 3 in G-flat Major, D. 899.mid"
                         )!
                     )
+                    
 
 //                    MidiService.stop()
                     
