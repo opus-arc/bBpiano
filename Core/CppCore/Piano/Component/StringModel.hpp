@@ -142,9 +142,7 @@ public:
     // 传播
     void propagate();
     
-    // 边界滤波器
-    float BoundaryFilter(double boundary_value, bool isLeft);
-    float BoundaryFilter_virtual(double boundary_value, bool isLeft);
+
     
     // --------------------------------------------
     // MARK: 运动帧
@@ -165,6 +163,9 @@ public:
     // 调用函数也是有成本的 能尽量 inline 就尽量这样做
     // 大函数就不用 inline 了
     
+    // 边界滤波器
+    float BoundaryFilter_virtual(float boundary_value, bool isLeft);
+    
     inline int rToAIndex_l(int i) const {
         return (leftHead + i + Delay_Int) % Delay_Int;
     }
@@ -173,32 +174,44 @@ public:
         return (rightHead + i + Delay_Int) % Delay_Int;
     }
     
-    inline float fractionalFilter(float x, float &x1, float &y1) const {
+    inline void fractionalFilter(float &x, float &x1, float &y1) const {
         // y = a1 * x + x1 - a1 * y1;
         float y = static_cast<float>(fractional_a1 * x)
             + static_cast<float>(x1)
             - static_cast<float>(fractional_a1 * y1);
         y1 = y;
         x1 = x;
-        return y;
+        x = y;
     }
 
-    inline float lossFilter(float x, float &y1) const {
+    inline void lossFilter(float &x, float &y1) const {
         // y = g * (1 + a1) * x - a1 * y1
         float y = static_cast<float>(loss_g * (1.0 + loss_a1)) * x
                 - static_cast<float>(loss_a1) * y1;
         y1 = y;
-        return y;
+        x = y;
     }
 
-    inline float dispersionFilter(float x, float &x1, float &y1) const {
+    inline void dispersionFilter(float &x, float &x1, float &y1) const {
         // y = a1 * x + x1 - a1 * y1;
         float y = static_cast<float>(dispersion_a1 * x)
             + static_cast<float>(x1)
             - static_cast<float>(dispersion_a1 * y1);
         y1 = y;
         x1 = x;
-        return y;
+        x = y;
+    }
+    
+    inline void BoundaryFilter(float& boundary_value, bool isLeft) {
+        if(isLeft) {
+            fractionalFilter(boundary_value, fractional_x1_l, fractional_y1_l);
+            dispersionFilter(boundary_value, dispersion_x1_l, dispersion_y1_l);
+            lossFilter(boundary_value, loss_y1_l);
+        } else {
+            fractionalFilter(boundary_value, fractional_x1_r, fractional_y1_r);
+            dispersionFilter(boundary_value, dispersion_x1_r, dispersion_y1_r);
+            lossFilter(boundary_value, loss_y1_r);
+        }
     }
 
 };

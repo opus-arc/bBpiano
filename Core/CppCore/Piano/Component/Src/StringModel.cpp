@@ -154,44 +154,20 @@ void StringModel::propagate() {
     float l_l_boundary_value = left[rToAIndex_l(0)];
     
     // 边界与滤波器
-    float reflectedRight = BoundaryFilter(l_l_boundary_value, true);
-    float reflectedLeft  = BoundaryFilter(r_r_boundary_value, false);
+    BoundaryFilter(l_l_boundary_value, true);
+    BoundaryFilter(r_r_boundary_value, false);
     
     // 边界传播
     rightHead = (rightHead - 1 + Delay_Int) % Delay_Int; // 右边界向左移动 则波向右传播
     leftHead  = (leftHead + 1) % Delay_Int; // 左边界向右移动 则波向左传播
     
     // 写入新边界
-    right[rToAIndex_r(0)] = reflectedRight;
-    left[rToAIndex_l(Delay_Index)] = reflectedLeft;
+    right[rToAIndex_r(0)] = -l_l_boundary_value;
+    left[rToAIndex_l(Delay_Index)] = -r_r_boundary_value;
 
 }
 
-float StringModel::BoundaryFilter(double boundary_value, bool isLeft) {
-    if(isLeft) {
-        float afterFractionalFilter = fractionalFilter(boundary_value,
-                                                       fractional_x1_l,
-                                                       fractional_y1_l);
-        float afterLossFilter = lossFilter(afterFractionalFilter,
-                                           loss_y1_l);
-        float afterDispersionFilter = dispersionFilter(afterLossFilter,
-                                                       dispersion_x1_l,
-                                                       dispersion_y1_l);
-        // 边界反射
-        return -afterDispersionFilter;
-    } else {
-        float afterFractionalFilter = fractionalFilter(boundary_value,
-                                                       fractional_x1_r,
-                                                       fractional_y1_r);
-        float afterLossFilter = lossFilter(afterFractionalFilter,
-                                           loss_y1_r);
-        float afterDispersionFilter = dispersionFilter(afterLossFilter,
-                                                       dispersion_x1_r,
-                                                       dispersion_y1_r);
-        // 边界反射
-        return -afterDispersionFilter;
-    }
-}
+
 
 
 
@@ -265,7 +241,7 @@ float StringModel::activityProbe() const {
 
 
 
-float StringModel::BoundaryFilter_virtual(double boundary_value, bool isLeft) {
+float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
     if (isLeft) {
         float fx1 = fractional_x1_l;
         float fy1 = fractional_y1_l;
@@ -273,49 +249,23 @@ float StringModel::BoundaryFilter_virtual(double boundary_value, bool isLeft) {
         float dx1 = dispersion_x1_l;
         float dy1 = dispersion_y1_l;
 
-        float afterFractionalFilter = fractionalFilter(
-            static_cast<float>(boundary_value),
-            fx1,
-            fy1
-        );
+        fractionalFilter(boundary_value, fx1, fy1);
+        lossFilter(boundary_value, ly1);
+        dispersionFilter(boundary_value, dx1, dy1);
 
-        float afterLossFilter = lossFilter(
-            afterFractionalFilter,
-            ly1
-        );
-
-        float afterDispersionFilter = dispersionFilter(
-            afterLossFilter,
-            dx1,
-            dy1
-        );
-
-        return -afterDispersionFilter;
+        return -boundary_value;
     } else {
         float fx1 = fractional_x1_r;
         float fy1 = fractional_y1_r;
         float ly1 = loss_y1_r;
         float dx1 = dispersion_x1_r;
         float dy1 = dispersion_y1_r;
+        
+        fractionalFilter(boundary_value, fx1, fy1);
+        lossFilter(boundary_value, ly1);
+        dispersionFilter(boundary_value, dx1, dy1);
 
-        float afterFractionalFilter = fractionalFilter(
-            static_cast<float>(boundary_value),
-            fx1,
-            fy1
-        );
-
-        float afterLossFilter = lossFilter(
-            afterFractionalFilter,
-            ly1
-        );
-
-        float afterDispersionFilter = dispersionFilter(
-            afterLossFilter,
-            dx1,
-            dy1
-        );
-
-        return -afterDispersionFilter;
+        return -boundary_value;
     }
 }
 
