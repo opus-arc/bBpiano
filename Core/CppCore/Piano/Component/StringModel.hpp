@@ -166,13 +166,29 @@ public:
     // 边界滤波器
     float BoundaryFilter_virtual(float boundary_value, bool isLeft);
     
+
+//    inline int rToAIndex_l(int i) const {
+//        return (leftHead + i + Delay_Int) % Delay_Int;
+//    }
+//
+//    inline int rToAIndex_r(int i) const {
+//        return (rightHead + i + Delay_Int) % Delay_Int;
+//    }
+    // 0 <= i < Delay_Int !!!
     inline int rToAIndex_l(int i) const {
-        return (leftHead + i + Delay_Int) % Delay_Int;
+        int x = leftHead + i;
+        if (x >= Delay_Int)
+            x -= Delay_Int;
+        return x;
     }
 
     inline int rToAIndex_r(int i) const {
-        return (rightHead + i + Delay_Int) % Delay_Int;
+        int x = rightHead + i;
+        if (x >= Delay_Int)
+            x -= Delay_Int;
+        return x;
     }
+    
     
     inline void fractionalFilter(float &x, float &x1, float &y1) const {
         // y = a1 * x + x1 - a1 * y1;
@@ -205,11 +221,11 @@ public:
     inline void BoundaryFilter(float& boundary_value, bool isLeft) {
         if(isLeft) {
             fractionalFilter(boundary_value, fractional_x1_l, fractional_y1_l);
-            dispersionFilter(boundary_value, dispersion_x1_l, dispersion_y1_l);
+//            dispersionFilter(boundary_value, dispersion_x1_l, dispersion_y1_l);
             lossFilter(boundary_value, loss_y1_l);
         } else {
             fractionalFilter(boundary_value, fractional_x1_r, fractional_y1_r);
-            dispersionFilter(boundary_value, dispersion_x1_r, dispersion_y1_r);
+//            dispersionFilter(boundary_value, dispersion_x1_r, dispersion_y1_r);
             lossFilter(boundary_value, loss_y1_r);
         }
     }
