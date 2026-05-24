@@ -12,6 +12,8 @@
 
 [![Milestone Issues](https://img.shields.io/github/milestones/progress/opus-arc/bBpiano/1?label=issues)](https://github.com/opus-arc/bBpiano/milestone/1)
 
+[![ci](https://github.com/opus-arc/bBpiano/actions/workflows/ci.yml/badge.svg)](https://github.com/opus-arc/bBpiano/actions/workflows/ci.yml)
+
 **Authors:** Ziyang Tan, Zhuoran Chen  
 *(hereinafter referred to as Z. Tan and Z. Chen)*
 
@@ -910,6 +912,32 @@ void StringModel::propagate() const {
 
 
 
+当然，在熟悉了之后就能考虑算法，将 delay line 复杂度从 O(Delay_Int) 改成 O(1)：
+
+```cpp
+void StringModel::propagate() {
+    
+    // 先读边界
+    float r_r_boundary_value = right[rToAIndex_r(Delay_Index)];
+    float l_l_boundary_value = left[rToAIndex_l(0)];
+    
+    // 边界与滤波器
+    BoundaryFilter(l_l_boundary_value, true);
+    BoundaryFilter(r_r_boundary_value, false);
+    
+    // 边界传播
+    rightHead = (rightHead - 1 + Delay_Int) % Delay_Int; // 右边界向左移动 则波向右传播
+    leftHead  = (leftHead + 1) % Delay_Int; // 左边界向右移动 则波向左传播
+    
+    // 写入新边界
+    right[rToAIndex_r(0)] = -l_l_boundary_value;
+    left[rToAIndex_l(Delay_Index)] = -r_r_boundary_value;
+
+}
+```
+
+
+
 用于模拟物理弦的两个数组的大小并非是真实物理意义上的弦长，区别于 FDTD 对空间中每一个点的精确把控，取而代之的是考虑时间上的“弦长”，即这些 samples 从一段传播到另一端的**延迟(Delay)**是多少，而这个延迟本身就是**波导长度(Delay)**，而且不以**秒(s)**作为单位，直接采用从 A 端 到 B 端 所需要的 **采样点 samples** 的数量，这看起来是一个更为工程风格的值，因为它不完全属于时间和空间的任何一个部分，但是又能在知晓采样率的的时候计算出时间，在知晓波速的情况能反推这个数组所模拟的真实物理琴弦的弦长。
 
 ```cpp
@@ -1792,527 +1820,38 @@ a_1
 据此补充：
 
 ```cpp
-double a1 = double(1 - Delay_Frac) / double(1 + Delay_Frac);
+double fractional_a1 = double(1 - Delay_Frac) / double(1 + Delay_Frac);
 ```
 
-<video src="./Doc/Vedio/录屏2026-05-08%2014.47.28.mov" controls width="640"></video>
-
-```math
-|R_{measure} - R_{ideal}| = 1761\mathrm{Hz} - 1760\mathrm{Hz} = 1\mathrm{Hz} < (\Delta f = 2.69\mathrm{Hz})
-```
-
-这样就处理完了波导长度的小数部分，基本校准了弦的基频。
-
-总得来说，Bank 的整体模型非常强调分工：
-
-```math
-H_r(z)=-H_l(z)H_d(z)H_{fd}(z)
-```
-
-根据欧拉公式：
-$
-r\cos\phi+jr\sin\phi=re^{j\phi}
-$
-更一般的形式：
-$
-z=a+jb=re^{j\phi}
-$
-对于音频处理来说：
-
-在等号左侧的**平面坐标系**中，我们看到的是**横坐标a、纵坐标b**
-
-而在等号右侧的**极坐标系**中，我们看到的是**幅度 r、相位 φ**
-
-显然极坐标系更为整齐，语义更明确，在输入PCM样本时，选取实数部分即可。
-
-例如：
-
-对于一个**离散时间序列**来说
-
-不用极坐标大概长这样：
-$
-r^n\left(B\cos(\omega n)+C\sin(\omega n)\right)
-$
-而在极坐标中表示为:
-$
-A r^n e^{j(\omega n+\phi)}
-$
-这个看起来明显更友好。
-
-我们可以利用这一点尝试做一些练习，比如之前遗留的，线性插值方式对幅度的影响证明：
-
-线性插值：$y[n]=(1-\delta)x[n]+\delta x[n-1]$
-
-代入：
-
-$x[n]=e^{j\omega n}$
-
-$x[n-1]=e^{j\omega(n-1)}$
-
-所以：
-
-$y[n]=(1-\delta)e^{j\omega n}+\delta e^{j\omega(n-1)}$
-
-把共同项 $e^{j\omega n}$ 提出来：
-
-$y[n]=e^{j\omega n}\left[(1-\delta)+\delta e^{-j\omega}\right]$
-
-这说明线性插值对频率 $\omega$ 的作用是：
-
-$H(e^{j\omega})= \frac{Y[e^{j\omega}]}{X[e^{j\omega}]} = (1-\delta)+\delta e^{-j\omega}$
-
-这个 $H(e^{j\omega}) $ 就是线性插值的频率响应。
-
-如果它是理想 fractional delay，它应该长这样：
-
-$H_{\text{ideal}}(e^{j\omega})=e^{-j\omega\delta}$
-
-理想 fractional delay 的幅度是：
-
-$|e^{-j\omega\delta}|=1$
-
-也就是说，理想 delay 不应该改变任何频率的幅度。
-
-但线性插值的幅度是：
-
-$|H(e^{j\omega})|=\left|(1-\delta)+\delta e^{-j\omega}\right|$
-
-这个一般不等于 1，所以线形插值并不保证幅度不会被改变。
-
-
-
-那现在尝试证明 allpass 的特性，它是否会改变频率？：
-
-先代入 $z=e^{j\omega}$ 进一阶 allpass：
-$H_{fd}(z)=\frac{a_1+z^{-1}}{1+a_1z^{-1}}$
-先计算 $z^{-1}$ 的等效乘数：
-
-$z$ 离散序列中一帧为：$x[n]=e^{j\omega n}$
-
-上一延迟为：$x[n-1]=e^{j\omega (n-1)}$
-
-由 **[30]** 式， $z^{-1}$ 是这样一个作用，乘上 $e^{j\omega n}$ 后，得到 $e^{j\omega (n-1)}$
-
-很容易的值 $z^{-1}$ 的等效乘数为 $ e^{-j\omega}$
-
-代入 $z^{-1}$ ：
-$H_{fd}(e^{j\omega})=\frac{a_1+e^{-j\omega}}{1+a_1e^{-j\omega}}$
-它满足：
-$|H_{fd}(e^{j\omega})|=1$
-因此它不会改变任何频率的幅度， allpass 不会自己制造 loss，不会像线性插值那样偷偷削弱高频。
-
-所以它符合理想 delay 的第一条性质：
-$|H(e^{j\omega})|=1$
-在运用这些数学工具的基础上，剩下的问题仍然是：**通过这个滤波器后的相位是如何与 Delay_Frac 近似的？**
-
-我们写：
-$H_{fd}(e^{j\omega})=\frac{a_1+e^{-j\omega}}{1+a_1e^{-j\omega}}$
-它是一个复数。因为幅度为 1，所以能写成：
-$H_{fd}(e^{j\omega})=e^{j\phi(\omega)}$
-由于我写这个滤波器是为了让波多延迟 D_Frac 个相位
-
-而我们想要的实际上就是
-$H_{fd_{ideal}}(e^{j\omega})=z^{-D_{Frac}} = e^{-j\omega D_{Frac}}$
-这个近似希望：
-$e^{-j\omega D_{Frac}} \approx e^{j\phi(\omega)}$
-因此希望：
-$\phi(\omega)\approx -\omega D_{frac}$
-如果这条相位曲线的斜率接近：
-$-D_{frac}$
-那它就表现得像一个 $D_{frac} sample delay$。
-
-这里要引入一个新的概念：**group delay**
-
-**group delay** 即为相位曲线的导数：
-$\tau_g(\omega)=-\frac{d\phi(\omega)}{d\omega}$
-我要求出这个导数然后和 $D_{frac}$ 列方程把 a1 求出来：
-
-先回到原式：
-```math
-H_{fd}(e^{j\omega})=\frac{a_1+e^{-j\omega}}{1+a_1e^{-j\omega}}
-```
-为了看相位，先把分子稍微变形：
-
-```math
-a_1+e^{-j\omega}
-=
-e^{-j\omega}(1+a_1e^{j\omega})
-```
-
-所以：
-
-```math
-H_{fd}(e^{j\omega})
-=
-e^{-j\omega}
-\frac{1+a_1e^{j\omega}}{1+a_1e^{-j\omega}}
-```
-
-下一步我们巧妙地**利用共轭关系**：
-
-因为 \(a_1\) 是实数：
-
-```math
-1+a_1e^{j\omega}
-```
-
-和：
-
-```math
-1+a_1e^{-j\omega}
-```
-
-互为共轭。
-
-令：
-
-```math
-1+a_1e^{j\omega}=R(\omega)e^{j\theta(\omega)}
-```
-
-那么：
-
-```math
-1+a_1e^{-j\omega}=R(\omega)e^{-j\theta(\omega)}
-```
-
-代入：
-
-```math
-H_{fd}(e^{j\omega})
-=
-e^{-j\omega}
-\frac{R(\omega)e^{j\theta(\omega)}}{R(\omega)e^{-j\theta(\omega)}}
-```
-
-约掉 \(R(\omega)\)：
-
-```math
-H_{fd}(e^{j\omega})
-=
-e^{-j\omega}e^{j2\theta(\omega)}
-```
-
-所以：
-
-```math
-H_{fd}(e^{j\omega})
-=
-e^{j(-\omega+2\theta(\omega))}
-```
-
-因此：
-
-```math
-\phi(\omega)=-\omega+2\theta(\omega)
-```
-
-
-下面计算 \(\theta(\omega)\)。
-
-因为
-```math
-1+a_1e^{j\omega}
-=
-1+a_1(\cos\omega+j\sin\omega)
-```
-
-所以
-```math
-1+a_1e^{j\omega}
-=
-(1+a_1\cos\omega)+j(a_1\sin\omega)
-```
-
-因此
-```math
-\theta(\omega)
-=
-\arctan\left(
-\frac{a_1\sin\omega}{1+a_1\cos\omega}
-\right)
-```
-
-更严谨地写是
-```math
-\theta(\omega)
-=
-\mathrm{atan2}
-\left(
-a_1\sin\omega,\,
-1+a_1\cos\omega
-\right)
-```
-
-于是
-```math
-\phi(\omega)
-=
--\omega
-+
-2\mathrm{atan2}
-\left(
-a_1\sin\omega,\,
-1+a_1\cos\omega
-\right)
-```
-
-然后对相位求导。
-
-group delay 定义为
-```math
-\tau_g(\omega)
-=
--\frac{d\phi(\omega)}{d\omega}
-```
-
-因为
-```math
-\phi(\omega)
-=
--\omega+2\theta(\omega)
-```
-
-所以
-```math
-\frac{d\phi(\omega)}{d\omega}
-=
--1
-+
-2\frac{d\theta(\omega)}{d\omega}
-```
-
-因此
-```math
-\tau_g(\omega)
-=
-1
--
-2\frac{d\theta(\omega)}{d\omega}
-```
-
-现在只需要求
-```math
-\frac{d\theta(\omega)}{d\omega}
-```
-
-令
-```math
-u(\omega)=a_1\sin\omega
-```
-
-```math
-v(\omega)=1+a_1\cos\omega
-```
-
-则
-```math
-\theta(\omega)
-=
-\arctan\left(
-\frac{u(\omega)}{v(\omega)}
-\right)
-```
-
-对它求导，可以得到
-```math
-\frac{d\theta}{d\omega}
-=
-\frac{v u'-u v'}{u^2+v^2}
-```
-
-其中
-```math
-u'=a_1\cos\omega
-```
-
-```math
-v'=-a_1\sin\omega
-```
-
-所以分子为
-```math
-\begin{aligned}
-v u'-u v'
-&=
-(1+a_1\cos\omega)(a_1\cos\omega)
--
-(a_1\sin\omega)(-a_1\sin\omega) \\[4pt]
-&=
-a_1\cos\omega
-+
-a_1^2\cos^2\omega
-+
-a_1^2\sin^2\omega
-\end{aligned}
-```
-
-因为
-```math
-\cos^2\omega+\sin^2\omega=1
-```
-
-所以
-```math
-v u'-u v'
-=
-a_1\cos\omega+a_1^2
-```
-
-分母为
-```math
-\begin{aligned}
-u^2+v^2
-&=
-(a_1\sin\omega)^2
-+
-(1+a_1\cos\omega)^2 \\[4pt]
-&=
-a_1^2\sin^2\omega
-+
-1
-+
-2a_1\cos\omega
-+
-a_1^2\cos^2\omega \\[4pt]
-&=
-1
-+
-2a_1\cos\omega
-+
-a_1^2
-\end{aligned}
-```
-
-所以
-```math
-\frac{d\theta}{d\omega}
-=
-\frac{
-a_1\cos\omega+a_1^2
-}{
-1+2a_1\cos\omega+a_1^2
-}
-```
-
-代回 group delay：
-```math
-\tau_g(\omega)
-=
-1
--
-2
-\frac{
-a_1\cos\omega+a_1^2
-}{
-1+2a_1\cos\omega+a_1^2
-}
-```
-
-通分：
-```math
-\tau_g(\omega)
-=
-\frac{
-1+2a_1\cos\omega+a_1^2
--
-2a_1\cos\omega
--
-2a_1^2
-}{
-1+2a_1\cos\omega+a_1^2
-}
-```
-
-化简：
-```math
-\tau_g(\omega)
-=
-\frac{
-1-a_1^2
-}{
-1+2a_1\cos\omega+a_1^2
-}
-```
-
-这就是一阶 allpass 的 group delay：
-```math
-\tau_g(\omega)
-=
-\frac{
-1-a_1^2
-}{
-1+2a_1\cos\omega+a_1^2
-}
-```
-
-让低频处匹配 \(D_{\mathrm{frac}}\)。
-
-令
-```math
-\omega=0
-```
-
-所以
-```math
-\tau_g(0)
-=
-\frac{1-a_1^2}{1+2a_1+a_1^2}
-```
-
-也就是
-```math
-\tau_g(0)
-=
-\frac{(1-a_1)(1+a_1)}{(1+a_1)^2}
-```
-
-因此
-```math
-\tau_g(0)
-=
-\frac{1-a_1}{1+a_1}
-```
-
-Bank 希望低频 group delay 等于 \(D_{\mathrm{frac}}\)，所以
-```math
-D_{\mathrm{frac}}
-=
-\frac{1-a_1}{1+a_1}
-```
-
-解得
-```math
-a_1
-=
-\frac{1-D_{\mathrm{frac}}}{1+D_{\mathrm{frac}}}
-```
-
-
-
-
-据此补充：
+也就是：(对于那些使用频率高的小函数，尽量放在头文件中使用 inline)
 
 ```cpp
-double a1 = double(1 - Delay_Frac) / double(1 + Delay_Frac);
+ inline void fractionalFilter(float &x, float &x1, float &y1) const {
+      // y = a1 * x + x1 - a1 * y1;
+      float y = static_cast<float>(fractional_a1 * x)
+          + static_cast<float>(x1)
+          - static_cast<float>(fractional_a1 * y1);
+      y1 = y;
+      x1 = x;
+      x = y;
+  }
 ```
 
 <video src="./Doc/Vedio/录屏2026-05-08%2014.47.28.mov" controls width="640"></video>
-
 
 ```math
 |R_{measure} - R_{ideal}| = 1761\mathrm{Hz} - 1760\mathrm{Hz} = 1\mathrm{Hz} < (\Delta f = 2.69\mathrm{Hz})
 ```
 
-
 这样就处理完了波导长度的小数部分，基本校准了弦的基频。
 
-
-
 总得来说，Bank 的整体模型非常强调分工：
-$
+
+```math
 H_r(z)=-H_l(z)H_d(z)H_{fd}(z)
-$
+```
+
+
 也就是：
 
 - $H_l(z)$：loss filter，负责衰减；
@@ -2323,68 +1862,29 @@ $
 
 
 
-
-
 ___
 
-## **5 Loss Filter Design**
+## **5 Partial Spectrum Analyze**
 
-## **5 损耗滤波器设计**
+## **5 模态光谱分析**
 
 <sup>This chapter was developed based on the research and implementation work of Z. Tan.</sup>
 
-是时候换掉前文一直使用的，边界反射处的、固定百分比能量衰减了。
-
-在前文的测试视频中不难观察到这样的现象：
-
-中频的 A4 有更长的发声时间，而接近高频的 A6 却像是被 damper 按住一样地快速静默了，这并不是一台健康钢琴的发声逻辑，本章就要尽可能通过一个更合理的衰减设计来克服这样的不快。
-
-但需要注意的是：**这样设计的本意并非让高频和低频“完全一样快地衰减”，而是把现在那种异常的、像被 damper 按住一样的高频快速死亡，修正到一个更合理、更可控的钢琴弦自然衰减。**
-
-**而loss filter 主要用于处理“各频率衰减速度不同”，也就是 frequency-dependent damping / decay；**
-
-Bank / Välimäki 的一阶 loss filter 原型是：
+loss filter 与 dispersion filter 没法像 fractional filter 有一个朴素而固定的目标：
 
 ```math
-H_l(z) = \frac{g(1+a_1)}{1+a_1z^{-1}}
+y[n-\mathrm{Frac}] \approx \mathrm{Allpass}(y[n])
 ```
 
-稳定条件：
+色散和不同模态的能量衰减都是以接近某一台钢琴为最终目标，而没有一个通用的标准
 
-```text
-a1 < 0
-0 < g < 1
-```
+为了计算这些滤波器，以及为了得到可解释的常数数值，最好的还是从钢琴录音中去反推。
 
-这里不再对差分方程进行计算：
 
-```math
-y[n] = g * (1 + a1) * x[n] - a1 * y[n-1]
-```
 
-写出代码：
+根据 Bank 所述的理想录音：靠近音桥与音板的声音，而非远场麦克风录音，bridge acceleration 位置的声音受到的改变最小，最为纯净。这样的声音听感会失去饱满与丰腴，但本章的目标校准的是弦—琴码—音板系统里的物理衰减，而不是房间、麦克风、辐射和后期效果混在一起的最终听感。
 
-```cpp
-// y[n] = g * (1 + a1) * x[n] - a1 * y[n-1]
-float processLoss(float x) {
-    float y = g * (1 + a1) * x - a1 * y1;
-    y1 = y;
-    return y;
-}
-```
-
-且因为高频通常衰减的比低频快，所以有如下约束：
-
-```text
--0.98 < a1 < 0.0
-0.0 < g < 1.0
-```
-
-为了得到可解释的常数数值，最好的还是从钢琴录音中去反推。
-
-遗憾的是，我暂时无法实现 Bank 所述的理想情况：靠近音桥与音板的声音，而不是远场麦克风录音，bridge acceleration 位置的声音受到的改变最小，最为纯净。因为本章的目标校准的是弦—琴码—音板系统里的物理衰减，而不是房间、麦克风、辐射和后期效果混在一起的最终听感。
-
-但如果我们的输出链是 dry、线性、无混响、无动态处理的，那经过一个固定线性系统后，也只会多出一个频率相关常数 C_k，截距变了，但斜率没变，而 $\tau_k$ 正是由斜率得到的，那么从最终音频里估计 partial decay time 仍然是合理的。
+我们的输出链是 dry、线性、无混响、无动态处理的，经过一个固定线性系统后，会多出一个频率相关常数 C_k，截距变了，但斜率没变，而 $\tau_k$ 正是由斜率得到的，故估计 partial decay time 仍然是合理的。
 
 而为提取用于 Bank-style loss filter 拟合的 partial decay 数据，本文采用 NY D.274 作为 dry reference source，排除 Delay EQ Reverb 以及 Hammer Noise 的影响，并通过 MIDI 自动生成可复现的单音序列。
 
@@ -2524,7 +2024,10 @@ struct STFTResult {
     std::vector<float> binFrequencies;
 };
 
-STFTResult stft_result = MyFFT::computeSpectrogram(pcm_mono, sampleRate, fftSize, hopSize);
+std::unique_ptr<STFTResult> stft_result = 
+    std::make_unique<STFTResult>(
+        MyFFT::computeSpectrogram(pcm_mono, sampleRate, fftSize, hopSize)
+    );
 ```
 
 STFT 的作用是把整段 PCM 按窗口切成一帧一帧的短时信号。每一帧包含 `fftSize` 个采样点，因此每帧实际分析的时间长度是 `fftSize / sampleRate`。以 `sampleRate = 44100`、`fftSize = 32768` 为例，每帧长度约为 `32768 / 44100 ≈ 0.743s`。
@@ -2547,84 +2050,256 @@ spectrogram[frame][f_bin]
 
 当 f_bin  = i 时，spectrogram[frame] 包含的离散幅度所示的频率为 binFrequencies[i]	
 
-根据前文脉冲编码调制提到的**奈奎斯特定理（Nyquist Theorem）**，为了避免**混叠（aliasing）**，**采样率（sampleRate）必须大于或等于信号最高频率的 2 倍**，**人耳上限约 20 kHz**
-
-但工程上不会贴着 Nyquist 边缘分析，因为那附近容易受滤波器、采样边界、频谱不稳定影响。
+由于 stft_result 能占用非常大的内存，最好使用 unique 指针来防止复制的错误操作。
 
 
 
+我不会在已经基于大数 frames 的情况下去研究数以万计的 bin ，
 
+第一步我需要知道哪些 bin 是可能真正有用的，
 
-找 Peak 并跳过 Attack:
+由于我们自己撰写了脚本，自行规定了所有行为的时间节点，
+
+所以很清楚每段采样的那一个短区间是绝对有峰或者有值的：
 
 ```cpp
-					std::vector<AmplitudeEnvelope> partials;
-            const int searchRadiusBins = 3;
-            const int referenceFrame = 5;
-            if (spectrogram.empty() || referenceFrame >= static_cast<int>(spectrogram.size()))
-                continue;
-
-            float referenceMaxAmp = 0.0f;
-            for (float amp : spectrogram[referenceFrame]) {
-                referenceMaxAmp = std::max(referenceMaxAmp, amp);
-            }
-
-            if (referenceMaxAmp <= 0.0f)
-                continue;
-
-            const int maxPartial = std::min(
-                maxUsefulPartial,
-                static_cast<int>(maxAnalysisFreq / f0)
+struct BeginFrameAndEndFrame {
+    std::vector<std::array<const int, 2>> startFrameAndEndFrame;
+    BeginFrameAndEndFrame(double framesPerSecond, std::size_t spectrogram_size){
+        std::vector<std::array<const double, 2>> skipSecAndWindowSec;
+        skipSecAndWindowSec.push_back({0.18, 0.78});
+        skipSecAndWindowSec.push_back({0.05, 0.35});
+        skipSecAndWindowSec.push_back({0.017, 0.1});
+        for(auto& sw : skipSecAndWindowSec) {
+            const int startFrame = std::clamp(
+                static_cast<int>(std::round(sw[0] * framesPerSecond)),
+                0,
+                static_cast<int>(spectrogram_size) - 1
             );
-
-            for (int p = 1; p <= maxPartial; ++p) {
-                const double targetFreq = f0 * p;
-                const int centerBin = static_cast<int>(std::round(targetFreq / binHz));
-
-                int startBin = std::max(1, centerBin - searchRadiusBins);
-                int endBin = std::min(
-                    static_cast<int>(f_meta.size()) - 2,
-                    centerBin + searchRadiusBins
-                );
-
-                int peakBin = centerBin;
-                float peakAmp = 0.0f;
-
-                for (int bin = startBin; bin <= endBin; ++bin) {
-                    const float amp = spectrogram[referenceFrame][bin];
-
-                    if (amp > peakAmp) {
-                        peakAmp = amp;
-                        peakBin = bin;
-                    }
-                }
-
-                if (peakAmp < referenceMaxAmp * relativePeakThreshold)
-                    continue;
-
-                AmplitudeEnvelope ae;
-                ae.f = f_meta[peakBin];
-                ae.A.reserve(spectrogram.size());
-
-                for (size_t frame = 0; frame < spectrogram.size(); ++frame) {
-                    ae.A.push_back(spectrogram[frame][peakBin]);
-                }
-
-                partials.push_back(std::move(ae));
-            }
+            const int endFrame = std::clamp(
+                startFrame + static_cast<int>(std::round(sw[1] * framesPerSecond)),
+                startFrame,
+                static_cast<int>(spectrogram_size) - 1
+            );
+            startFrameAndEndFrame.push_back({startFrame, endFrame});
+        }
+    }
+    int get(const std::string& beginOrEnd, const std::string& mod) {
+        int row = 1; // default: mid
+        if (mod == "low") {
+            row = 0;
+        }
+        else if (mod == "mid") {
+            row = 1;
+        }
+        else if (mod == "high") {
+            row = 2;
+        }
+        int col = (beginOrEnd == "begin") ? 0 : 1;
+        return startFrameAndEndFrame[row][col];
+    }
+};
 ```
 
+这些数值异常关键：
+
+```cpp
+        skipSecAndWindowSec.push_back({0.18, 0.78});
+        skipSecAndWindowSec.push_back({0.05, 0.35});
+        skipSecAndWindowSec.push_back({0.017, 0.1});
+```
+
+任何轻微的改动都会造成结果的巨大差异。
+
+不难注意到的是我对低中高三个频段使用了不同的截取办法，
+
+对于低频，如果太靠近 note_on 时刻那就太错了，
+
+这里面有击锤与弦在猛烈碰撞之后发出的任何不属于 partial 的杂音
 
 
-接着取 log 做线性回归算斜率：
+
+这里顺便解释一下我对于 partial 的理解：
+
+**partial (模态)** 即是从基频 f0 开始逐渐变大的成整数倍泛音索引，对于钢琴来说还包括一些非谐性的因子。
+
+我这里极力想做的就是给每个采样做 frames 剪枝减少计算量（谁也不想被 signal 9 报错莫名其妙的终止运算）
+
+然后遍历每一个 bin 的 frames_cut 片段找最大值峰，即 amp_max，
+
+只要该 max 值大于全局最大主峰与一个较小的 epsilon 的乘积 threshold （边界值）
+
+就说明包含这个 max 的 bin 大概率是临近一个 partial 的：
+
+```cpp
+// spectrogram[frame][f_bin] -> amp
+const auto& spectrogram = stft_result->spectrogram;
+if(binFrequencies.size() == 0)
+    binFrequencies = stft_result->binFrequencies;
+if (spectrogram.empty() || binFrequencies.empty())
+    continue;
+
+cout << "pitchName:" << pitchName << "\n";
+cout << "f0:" << f0 << "\n";
+cout << "spectrogram.size():" << spectrogram.size() << "\n";
+Partial_Scan partialBeforeMerge;
+partialBeforeMerge.f0 = f0;
+partialBeforeMerge.pitchName = pitchName;
+partialBeforeMerge.midi_n = midi_n;
+partialBeforeMerge.velocity = velocity;
+
+BeginFrameAndEndFrame B_E(double(framesPerSecond), spectrogram.size());
+
+float globalPeak = 0.0f; // 全局主峰强度 
+
+for (int frame = B_E.get("begin", "mid"); frame <= B_E.get("end", "mid"); ++frame) {
+    for (float amp : spectrogram[frame]) {
+        globalPeak = std::max(globalPeak, amp);
+    }
+}
+
+const float threshold = globalPeak * 0.001f;
+
+double last_bin = 0.0;
+
+std::vector<std::array<double, 2>> partial_candidate;
+
+for (int b = 0; b < static_cast<int>(spectrogram[0].size()); ++b) {
+    const double f_bin = binFrequencies[b];
+    if (f_bin < f0 * 0.5)
+        continue;
+    float peak = 0.0f;
+  
+    if(f0 < 261.0) {
+        // 低音
+        for (int frame = B_E.get("begin", "low"); frame <= B_E.get("end", "low"); ++frame) {
+            peak = std::max(peak, spectrogram[frame][b]);
+        }
+    } else if(f0 < 1047) {
+        // 中音
+        for (int frame = B_E.get("begin", "mid"); frame <= B_E.get("end", "mid"); ++frame) {
+            peak = std::max(peak, spectrogram[frame][b]);
+        }
+    } else {
+        // 高音
+        for (int frame = B_E.get("begin", "high"); frame <= B_E.get("end", "high"); ++frame) {
+            peak = std::max(peak, spectrogram[frame][b]);
+        }
+    }
+
+    if (peak > threshold) {
+        // C0 最小的 partial 间距就是 20 左右
+        if (std::abs(f_bin - last_bin) > 20.0 && partial_candidate.size()) { 
+            double maxPeak = 0.0f;
+            double partial_f = 0.0f;
+            for(auto& p : partial_candidate) {
+                if(p[1] > maxPeak) {
+                    maxPeak = p[1];
+                    partial_f = p[0];
+                }
+            }
+            if(partial_f >= f0 - 20)
+                partialBeforeMerge.partials_part.push_back(partial_f);
+
+            partial_candidate.clear();
+        }
+        partial_candidate.push_back({f_bin, peak});
+        last_bin = f_bin;
+    }
+}
+
+```
+
+我这里说临近的原因是 stft_result 有泄漏的性质，
+
+不过好在这样的泄漏在 bin 上大致呈现正态分布，
+
+最后只要算取平均值 bin 索引即可。
+
+另外我这里使用了 partialBeforeMerge 这样的命名，是因为这个循环中计算的是五个不同力度的采样，
+
+从一般理论上说，无论是不同模态的能量逸散速度还是刚性弦的色散规则都和初始条件弱相关
+
+但是由于不可避免的 hammer attack 造成的不稳定区间，很多 sigma (逸散速度) 较大的 partial 就没法捕捉到
+
+故只能通过慢慢调整区间和剪枝做到一种噪点和有效数据体积间的权衡
 
 
 
+但这种权衡与先前 peak 搜索上取用的相对草率的 threshold 都不是精确实验想要的，
+
+所以我需要先保证数据质量取到一定数量的点，然后取对数回归出钢性系数 b 来，
+
+我就能有目标地接近最小误差(stft 泄漏正态分布区间)的去预测 partial 的准确位置，
+
+再做对应背景的局部主峰和 epsilon 的乘积作为 threshold 
+
+精确定位泄漏源 bin 的 spectrogram[frames_cut] 作为 loss filter 的计算包络
+
+由于能量衰减通常遵循指数规律，对包络取对数之后就能做线性回归找到。
+
+而色散滤波器需要正是 accurate_b[midi_n]
 
 
 
+至此，我将 NY D.274  dry reference source 单音序列拆解成了弦滤波器需要的元素。
 
+___
 
+## **6 Loss Filter Design**
+
+## **6 损耗滤波器设计**
+
+<sup>This chapter was developed based on the research and implementation work of Z. Tan.</sup>
+
+是时候换掉前文一直使用的，边界反射处的、固定百分比能量衰减了。
+
+在前文的测试视频中不难观察到这样的现象：
+
+中频的 A4 有更长的发声时间，而接近高频的 A6 却像是被 damper 按住一样地快速静默了，这并不是一台健康钢琴的发声逻辑，本章就要尽可能通过一个更合理的衰减设计来克服这样的不快。
+
+但需要注意的是：**这样设计的本意并非让高频和低频“完全一样快地衰减”，而是把现在那种异常的、像被 damper 按住一样的高频快速死亡，修正到一个更合理、更可控的钢琴弦自然衰减。**
+
+**而loss filter 主要用于处理“各频率衰减速度不同”，也就是 frequency-dependent damping / decay；**
+
+Bank / Välimäki 的一阶 loss filter 原型是：
+
+```math
+H_l(z) = \frac{g(1+a_1)}{1+a_1z^{-1}}
+```
+
+稳定条件：
+
+```text
+a1 < 0
+0 < g < 1
+```
+
+这里不再对差分方程进行计算：
+
+```math
+y[n] = g * (1 + a1) * x[n] - a1 * y[n-1]
+```
+
+写出代码：
+
+```cpp
+// y[n] = g * (1 + a1) * x[n] - a1 * y[n-1]
+float processLoss(float x) {
+    float y = g * (1 + a1) * x - a1 * y1;
+    y1 = y;
+    return y;
+}
+```
+
+且因为高频通常衰减的比低频快，所以有如下约束：
+
+```text
+-0.98 < a1 < 0.0
+0.0 < g < 1.0
+```
+
+根据模态光谱分析得到的 partials 包络数据，
 
 我使用最小二乘法做线形回归，以下是该方法的解释：
 
@@ -2691,6 +2366,7 @@ S(k,b)=\sum_{i=1}^{n}(kx_i+b-y_i)^2
 这就是“斜率方向不再下降”和“截距方向不再下降”。
 
 于是对 b 和 k 分别求偏导：
+
 ```math
 \frac{\partial S}{\partial b}
 =
@@ -2840,137 +2516,208 @@ SSE = \sum (y_i - \hat y_i)^2
 
 
 
+接着就能利用 LinearRegression::fit 计算包络的衰减速率了：
+
+```cpp
+// 融合正态分布
+    std::vector<std::array<double, 2>> Bpoints;
+
+    for(int midi_n_i = 21; midi_n_i <= 108; midi_n_i++) {
+        if(isTestSpecificMidi && (midi_n_i <= test_midi_n_begin || midi_n_i >= test_midi_n_end)) continue;
+        std::vector<std::vector<double>> same_midiN_candidate;
+        std::vector<double> biggestVector;
+        int biggestVector_index = -1;
+        
+        for(int v_i = 0; v_i < all_partialBeforeMerge.size(); v_i++) {
+            for(int j = 0; j < all_partialBeforeMerge[v_i].size(); j++) {
+                if(static_cast<int>(std::round(all_partialBeforeMerge[v_i][j].midi_n)) == midi_n_i) {
+                    same_midiN_candidate
+                        .push_back(all_partialBeforeMerge[v_i][j].partials_part);
+                    if(all_partialBeforeMerge[v_i][j].partials_part.size() > biggestVector.size()) {
+                        biggestVector = all_partialBeforeMerge[v_i][j].partials_part;
+                        biggestVector_index = static_cast<int>(same_midiN_candidate.size()) - 1;
+                    }
+                    break;
+                }
+            }
+        }
+        
+        if(biggestVector_index >= 0 && biggestVector_index < same_midiN_candidate.size()) {
+            same_midiN_candidate.erase(std::next(same_midiN_candidate.begin(), biggestVector_index));
+        }
+        
+        for(int i = 0; i < biggestVector.size(); i++) {
+            for(int j = 0; j < same_midiN_candidate.size(); j++) {
+                for(int k = 0; k < same_midiN_candidate[j].size(); k++) {
+                    if(abs(biggestVector[i] - same_midiN_candidate[j][k]) < 20.0) { 
+                        biggestVector[i] = (biggestVector[i] + same_midiN_candidate[j][k]) / 2.0f;
+                    }
+                }
+            }
+        }
+        cout << "midi_n_i: " << midi_n_i << "\n";
+      
+        double B = estimateBFromPartials(MyPitch::midiToFrequency(midi_n_i),
+                                         biggestVector);
+        
+        // 取对数 线性回归 但只用 MIDI 53–96 因为因为这一段最容易拟合准确
+        if (std::isfinite(B) && B > 0.0 && midi_n_i >= 53 && midi_n_i <= 96) {
+            Bpoints.push_back({
+                static_cast<double>(midi_n_i),
+                std::log(B)
+            });
+        }
+    }
+    
+    LinearRegressionResult lrr = LinearRegression::fit(Bpoints);
+    
+    cout << "b: " << lrr.b << ", k: " << lrr.k << ", n: " << lrr.n << ", r2: " << lrr.r2;
+    
+    std::vector<double> accurateB(109);
+
+    for (int midi = 21; midi <= 108; ++midi) {
+        accurateB[midi] = std::exp(lrr.k * midi + lrr.b);
+        cout << "midi: " << midi << ", accurateB[midi]: " << accurateB[midi] << "\n";
+    }
+```
 
 
 
+如此得到了一个相对准确的钢性系数，
 
+于是我不会再以 bin 为索引，而是以 p (partial) 为索引去找 partial 准确的泄漏区间：
 
+为了确定 partial 索引的上界，能够用上前文脉冲编码调制提到的**奈奎斯特定理 (Nyquist Theorem)**:
 
+为了避免混叠（aliasing），采样率（sampleRate）必须大于或等于信号最高频率的 2 倍，人耳上限约 20 kHz
 
+但工程上不会贴着 Nyquist 边缘分析，因为那附近容易受滤波器、采样边界、频谱不稳定影响。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+接着基于索引 p 和 Nyquist 重新对光谱图做一次 partials 扫描：
 
 
 
 ```cpp
-DecayResult fitDecaySigma(
-    const AmplitudeEnvelope& ae,
-    double sampleRate,
-    int hopSize,
-    int skipFrames,
-    float minAmp,
-    float stopRatio
-) {
-    double sumT = 0.0;
-    double sumY = 0.0;
-    double sumTT = 0.0;
-    double sumTY = 0.0;
-    double sumYY = 0.0;
-    int n = 0;
+    for(int midi = 21; midi <= 108; ++midi) {
+        if(isTestSpecificMidi && (midi <= test_midi_n_begin || midi >= test_midi_n_end)) continue;
+        double f0 = MyPitch::midiToFrequency(midi);
+        
+        // Nyquist 限制
+        int nyquistLimit = static_cast<int>(std::floor((sampleRate * 0.5) / f0));
+        
+        // partial 至少占 3 个 FFT bin
+        double binResolution = sampleRate / fftSize;
+        int resolutionLimit = static_cast<int>(std::floor(f0 / (3.0 * binResolution)));
+        int maxPartial = std::min(nyquistLimit, resolutionLimit);
+        
+        // 先把每一个力度上的 sigma 都算一遍打印出来看下 然后再想咋聚合
+        std::vector<double> sigmas;
+        std::vector<std::array<double, 2>> SigmaPoints;
+        for(int p = 1; p <= maxPartial; p++) {
+            double f_predict = p * f0 * std::sqrt(1.0 + accurateB[midi] * p * p);
+            cout << "midi: " << midi << ", partial: " << p << ", f_predict: " << f_predict << "\n";
+            int radiusBin = 20;
+            int centerBin = static_cast<int>(std::round(f_predict / binResolution));
+            for(int v = 0; v < all_piano_spectrogram.aps.size(); v++) {
+                KeySpectrum* targetKeySpectrum = nullptr;
+                for(auto& ks : all_piano_spectrogram.aps[v].ks) {
+                    if(static_cast<int>(std::round(ks.midi_n)) == midi) {
+                        targetKeySpectrum = &ks;
+                        break;
+                    }
+                }
+                if(targetKeySpectrum == nullptr) continue;
+                
+                auto& spectrogram = targetKeySpectrum->spectrogram;
+                if(spectrogram.empty() || spectrogram[0].empty()) continue;
+                
+                int bin_begin = std::max(0, centerBin - radiusBin);
+                int bin_end = std::min(static_cast<int>(spectrogram[0].size()) - 1,
+                                       centerBin + radiusBin
+                                       );
+                if(bin_begin > bin_end) continue;
+                
+                BeginFrameAndEndFrame B_E(double(framesPerSecond), spectrogram.size());
+                // 先计算全局主峰强度
+                float globalPeak = 0.0f;
+                for(int frame = B_E.get("begin", "mid"); frame <= B_E.get("end", "mid"); frame++) {
+                    for (auto& amp : spectrogram[frame]) {
+                        globalPeak = std::max(globalPeak, amp);
+                    }
+                }
+                const float threshold = globalPeak * 0.001f;
+                // 找最可能的位置
+                double maxPeak = 0.0f;
+                int partial_bin_index = 0;
+                double partial_bin_f = 0.0;
+                for(int bin = bin_begin; bin <= bin_end; bin++) {
+                    const double f_bin = binFrequencies[bin];
 
-    if (ae.A.empty()) {
-        DecayResult result;
-        result.f = ae.f;
-        return result;
-    }
+                    if (f_bin < f0 * 0.5)
+                        continue;
 
-    float peakAmp = 0.0f;
-    size_t peakFrame = 0;
-    for (size_t frame = 0; frame < ae.A.size(); ++frame) {
-        if (ae.A[frame] > peakAmp) {
-            peakAmp = ae.A[frame];
-            peakFrame = frame;
+                    float peak = 0.0f;
+                    if(f0 < 261.0) {
+                        for (int frame = B_E.get("begin", "low"); frame <= B_E.get("end", "low"); ++frame) {
+                            peak = std::max(peak, spectrogram[frame][bin]);
+                        }
+                    } else if(f0 < 1047) {
+                        for (int frame = B_E.get("begin", "mid"); frame <= B_E.get("end", "mid"); ++frame) {
+                            peak = std::max(peak, spectrogram[frame][bin]);
+                        }
+                    } else {
+                        for (int frame = B_E.get("begin", "high"); frame <= B_E.get("end", "high"); ++frame) {
+                            peak = std::max(peak, spectrogram[frame][bin]);
+                        }
+                    }
+                    if(peak > maxPeak) {
+                        maxPeak = peak;
+                        partial_bin_index = bin;
+                        partial_bin_f = f_bin;
+                    }
+                }
+                
+                double sigma = estimateSigmaFromPartials(
+                    spectrogram,
+                    binFrequencies,
+                    f_predict,
+                    f0,
+                    sampleRate,
+                    fftSize,
+                    hopSize,
+                    framesPerSecond
+                );
+                if(sigma <= 0.0 || !std::isfinite(sigma)) continue;
+                cout << sigma << "\n";
+                sigmas.push_back(sigma);
+            }
+            std::sort(sigmas.begin(), sigmas.end());
+            double median = (sigmas[std::ceil(sigmas.size() / 2)] + sigmas[std::floor(sigmas.size() / 2)]) / 2.0;
+            double mean_sigma = median;
+            for(auto& s : sigmas) {
+                if(std::abs(s - median) <= 2.0) {
+                    mean_sigma += s;
+                    mean_sigma /= 2.0;
+                }
+            }
+            cout << "mean_sigma: " << mean_sigma << "\n";
+            SigmaPoints.push_back({static_cast<double>(p), mean_sigma});
         }
+        
+        if(SigmaPoints.size() < 2) continue;
+        
+        QuadraticRegressionResult qlrr = LinearRegression::fit2(SigmaPoints);
+        cout << "r2: " << qlrr.r2 << ", a: " << qlrr.a << ", b: " << qlrr.b << ", c: " << qlrr.c << ", n: " << qlrr.n<< "\n";
     }
-
-    if (peakAmp <= minAmp) {
-        DecayResult result;
-        result.f = ae.f;
-        return result;
-    }
-
-    const float stopAmp = std::max(minAmp, peakAmp * stopRatio);
-    const size_t startFrame = std::max(
-        peakFrame + static_cast<size_t>(skipFrames),
-        peakFrame
-    );
-
-    for (size_t frame = startFrame; frame < ae.A.size(); ++frame) {
-        const float amp = ae.A[frame];
-        if (amp <= minAmp)
-            continue;
-        if (amp < stopAmp)
-            break;
-        const double t = static_cast<double>(frame * hopSize) / sampleRate;
-        const double y = std::log(static_cast<double>(amp));
-
-        sumT += t;
-        sumY += y;
-        sumTT += t * t;
-        sumTY += t * y;
-        sumYY += y * y;
-        ++n;
-    }
-
-    DecayResult result;
-    result.f = ae.f;
-
-    if (n < 2) {
-        result.sigma = 0.0;
-        result.intercept = 0.0;
-        return result;
-    }
-
-    const double denom = n * sumTT - sumT * sumT;
-
-    if (std::abs(denom) < 1e-12) {
-        result.sigma = 0.0;
-        result.intercept = 0.0;
-        return result;
-    }
-
-    const double numerator = n * sumTY - sumT * sumY;
-    const double slope = numerator / denom;
-    const double intercept = (sumY - slope * sumT) / n;
-
-    result.sigma = -slope;
-    result.intercept = intercept;
-
-    const double denomY = n * sumYY - sumY * sumY;
-    if (denomY > 1e-12) {
-        result.r2 = (numerator * numerator) / (denom * denomY);
-        result.r2 = std::clamp(result.r2, 0.0, 1.0);
-    }
-
-    return result;
+    all_piano_spectrogram.aps.clear();
+    all_piano_spectrogram.aps.shrink_to_fit();
+    
 }
 ```
 
-由于频率衰减速度与按下时的速度呈现弱相关，得到五个 velocity 级别的 decay_result 以后，
+这里用到了一个函数 estimateSigmaFromPartials，它是如下工作的：
 
-分类到五个力度然后平均 merge 得到每一个键的每一个 partial 衰减速率
-
-如下是 A5 的计算结果：
+例如：A5 的计算结果：
 
 | partial | f       | sigma    | count | meanR2   | meanFittedFrameCount |
 | :------ | :------ | -------- | ----- | -------- | -------------------- |
@@ -2989,29 +2736,26 @@ DecayResult fitDecaySigma(
 
 然后将 sigma(f) 多点映射成 |H(e^jw)|  算出 a1 与 g，然后取结构体导入弦模型
 
-（TODO: 此处省略的计算过于繁杂，以后再慢慢补齐。）
-
 ```cpp
-    // MARK: loss filter:
-    // y[n] = g * (1 + a1) * x[n] - a1 * y[n-1]
-    float reflectedRight = processLoss(y_l, Loss_Y1_l);
-    float reflectedLeft  = processLoss(y_r, Loss_Y1_r);
-    Loss_Y1_l = reflectedLeft;
-    Loss_Y1_r = reflectedRight;
-    
-    // 边界反射
-    rightNext[0] = -reflectedRight;
-    leftNext[Delay_Index] = -reflectedLeft;
+    inline void BoundaryFilter(float& boundary_value, bool isLeft) {
+        if(isLeft) {
+            fractionalFilter(boundary_value, fractional_x1_l, fractional_y1_l);
+            lossFilter(boundary_value, loss_y1_l);
+        } else {
+            fractionalFilter(boundary_value, fractional_x1_r, fractional_y1_r);
+            lossFilter(boundary_value, loss_y1_r);
+        }
+    }
 ```
 
 ```cpp
-float StringModel::processLoss(float x, float& y1) const {
-    float y = static_cast<float>(loss_g * (1.0 + loss_a1)) * x
-            - static_cast<float>(loss_a1) * y1;
-
-    y1 = y;
-    return y;
-}	
+    inline void lossFilter(float &x, float &y1) const {
+        // y = g * (1 + a1) * x - a1 * y1
+        float y = static_cast<float>(loss_g * (1.0 + loss_a1)) * x
+                - static_cast<float>(loss_a1) * y1;
+        y1 = y;
+        x = y;
+    }
 ```
 
 
@@ -3029,10 +2773,12 @@ float StringModel::processLoss(float x, float& y1) const {
   <img src="./Doc/graphics/截屏2026-05-18 09.18.17.png" style="width: 50%;">
 </div>
 
+
 <div style="display: flex; gap: 16px; align-items: flex-start;">
   <img src="./Doc/graphics/截屏2026-05-18 09.34.25.png" style="width: 50%;">
   <img src="./Doc/graphics/截屏2026-05-18 09.26.15.png" style="width: 50%;">
 </div>
+
 
 我们能听到，无 damper 的单弦能量衰减对听感有着十足的影响，这样声音的衰减模式清晰地向真实钢琴更近了一步。
 
@@ -3046,13 +2792,11 @@ Bank 直接用经典的 **complex demodulation（复数解调）**或者说 **he
 
 我有能复用的 STFT 工作流，所以暂时采用了最显而易见的方式，或许以后会尝试 Bank 的方式吧。
 
-
-
 ___
 
-## **6 Dispersion Filter Design**
+## **7 Dispersion Filter Design**
 
-## **6 色散滤波器设计**
+## **7 色散滤波器设计**
 
 <sup>This chapter was developed based on the research and implementation work of Z. Tan.</sup>
 
@@ -3092,13 +2836,11 @@ B =
 
 
 
-
-
 ___
 
-## **7 Hammer**
+## **8 Hammer**
 
-## **7 **
+## **8 **
 
 <sup>This chapter was developed based on the research and implementation work of Z. Chen.</sup>
 

@@ -8,6 +8,6 @@
 #ifndef DispersionDesigner_hpp
 #define DispersionDesigner_hpp
 
-#include <iostream>
+void writeDispersionFilterConstantsCSV();
 
 #endif /* DispersionDesigner_hpp */

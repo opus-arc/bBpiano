@@ -8,6 +8,7 @@
 #ifndef LossDesigner_hpp
 #define LossDesigner_hpp
 
-#include <stdio.h>
+
+void writeLossFilterConstantsCSV();
 
 #endif /* LossDesigner_hpp */
