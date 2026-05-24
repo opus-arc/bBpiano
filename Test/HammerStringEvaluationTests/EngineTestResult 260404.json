@@ -1,5 +1,13 @@
 
 {
+  "allNoteAverage" : "8.85%",
+  "estimatedPolyphonyUnder90PercentLoad" : "11.27",
+  "middleAverage" : "6.80%",
+  "lowAverage" : "14.84%",
+  "highAverage" : "4.71%"
+}
+
+{
   "allNoteAverage" : "9.28%",
   "estimatedPolyphonyUnder90PercentLoad" : "10.01",
   "lowAverage" : "16.15%",

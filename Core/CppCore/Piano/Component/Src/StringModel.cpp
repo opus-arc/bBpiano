@@ -250,8 +250,8 @@ float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
         float dy1 = dispersion_y1_l;
 
         fractionalFilter(boundary_value, fx1, fy1);
+//        dispersionFilter(boundary_value, dx1, dy1);
         lossFilter(boundary_value, ly1);
-        dispersionFilter(boundary_value, dx1, dy1);
 
         return -boundary_value;
     } else {
@@ -262,8 +262,8 @@ float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
         float dy1 = dispersion_y1_r;
         
         fractionalFilter(boundary_value, fx1, fy1);
+//        dispersionFilter(boundary_value, dx1, dy1);
         lossFilter(boundary_value, ly1);
-        dispersionFilter(boundary_value, dx1, dy1);
 
         return -boundary_value;
     }

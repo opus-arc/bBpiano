@@ -22,6 +22,8 @@
 #include <cmath>
 #include <limits>
 #include <vector>
+#include <iostream>
+#include <system_error>
 
 bool isTestSpecificMidi = true;
 bool isTestSpecificVelocity = false;
@@ -56,6 +58,19 @@ std::array<QuadraticRegressionResult, 109> smoothLossABCByMidi(
         int midiEnd = 108
 );
 
+struct LossFilterFitResult {
+    double g = 0.0;
+    double a1 = 0.0;
+    int pointCount = 0;
+    double fitError = 0.0;
+};
+
+LossFilterFitResult fitOnePoleLossFilterFromSigmaPoints(
+    int midi,
+    const std::vector<std::array<double, 2>>& sigmaPoints,
+    double sampleRate
+);
+
 void testABC();
 
 
@@ -66,9 +81,23 @@ void PartialSpectrumAnalyzer::analyzer() {
     
     
     using std::cout;
-    if(!fs::exists(generatedDataRoot)) return ;
-    if(!fs::exists(splitFolder)) return ;
-    fs::create_directories(spectrogramFolderPath);
+    using std::cerr;
+    std::error_code ec;
+    if(!fs::exists(generatedDataRoot, ec)) {
+        cerr << "[PartialSpectrumAnalyzer][missing] " << generatedDataRoot << ", ec = " << ec.message() << "\n";
+        return ;
+    }
+    ec.clear();
+    if(!fs::exists(splitFolder, ec)) {
+        cerr << "[PartialSpectrumAnalyzer][missing] " << splitFolder << ", ec = " << ec.message() << "\n";
+        return ;
+    }
+    ec.clear();
+    fs::create_directories(spectrogramFolderPath, ec);
+    if(ec) {
+        cerr << "[PartialSpectrumAnalyzer][missing] " << spectrogramFolderPath << ", ec = " << ec.message() << "\n";
+        return ;
+    }
     
     double sampleRate = 44100.0;
     int channel = 2;
@@ -83,7 +112,21 @@ void PartialSpectrumAnalyzer::analyzer() {
     
     std::vector<float> binFrequencies;
     
-    for (const auto& split_entry : fs::directory_iterator(splitFolder)) {
+    std::error_code splitIterEc;
+    fs::directory_iterator splitIterator(splitFolder, splitIterEc);
+    if(splitIterEc) {
+        cerr << "[PartialSpectrumAnalyzer][missing] " << splitFolder << ", ec = " << splitIterEc.message() << "\n";
+        return ;
+    }
+    
+    for (const auto& split_entry : splitIterator) {
+        std::error_code splitEntryEc;
+        if(!split_entry.is_directory(splitEntryEc)) {
+            if(splitEntryEc) {
+                cerr << "[PartialSpectrumAnalyzer][missing] " << split_entry.path() << ", ec = " << splitEntryEc.message() << "\n";
+            }
+            continue;
+        }
         
         const std::string velocity = MyFile::findVelocity(split_entry.path().filename());
         std::vector<Partial_Scan> velocity_partialBeforeMerge;
@@ -93,11 +136,23 @@ void PartialSpectrumAnalyzer::analyzer() {
         
         if((velocity != test_velocity) && isTestSpecificVelocity) continue;
         
-        for (const auto& entry : fs::directory_iterator(split_entry)) {
+        std::error_code wavIterEc;
+        fs::directory_iterator wavIterator(split_entry.path(), wavIterEc);
+        if(wavIterEc) {
+            cerr << "[PartialSpectrumAnalyzer][missing] " << split_entry.path() << ", ec = " << wavIterEc.message() << "\n";
+            continue;
+        }
+        
+        for (const auto& entry : wavIterator) {
             
             const fs::path path = entry.path();
-            if (!entry.is_regular_file() || path.extension() != ".wav")
+            std::error_code entryEc;
+            if (!entry.is_regular_file(entryEc) || path.extension() != ".wav") {
+                if(entryEc) {
+                    cerr << "[PartialSpectrumAnalyzer][missing] " << path << ", ec = " << entryEc.message() << "\n";
+                }
                 continue;
+            }
             
             const std::string filename = path.filename();
             const std::string pitchName = MyFile::findPitchName(filename);
@@ -417,8 +472,20 @@ void PartialSpectrumAnalyzer::analyzer() {
         
         if(SigmaPoints.size() < 2) continue;
         
-        QuadraticRegressionResult qlrr = LinearRegression::fit2(SigmaPoints);
-        cout << "r2: " << qlrr.r2 << ", a: " << qlrr.a << ", b: " << qlrr.b << ", c: " << qlrr.c << ", n: " << qlrr.n<< "\n";
+//        QuadraticRegressionResult qlrr = LinearRegression::fit2(SigmaPoints);
+//        cout << "r2: " << qlrr.r2 << ", a: " << qlrr.a << ", b: " << qlrr.b << ", c: " << qlrr.c << ", n: " << qlrr.n<< "\n";
+        
+        LossFilterFitResult fit =
+            fitOnePoleLossFilterFromSigmaPoints(midi, SigmaPoints, sampleRate);
+        cout
+            << "fit: "
+            << midi << ","
+            << MyPitch::midiToFrequency(midi) << ","
+            << fit.g << ","
+            << fit.a1 << ","
+            << fit.pointCount << ","
+            << fit.fitError
+            << "\n";
     }
     all_piano_spectrogram.aps.clear();
     all_piano_spectrogram.aps.shrink_to_fit();
@@ -437,6 +504,71 @@ void PartialSpectrumAnalyzer::analyzer() {
 
 
 // MARK: AI Mixed
+LossFilterFitResult fitOnePoleLossFilterFromSigmaPoints(
+    int midi,
+    const std::vector<std::array<double, 2>>& sigmaPoints,
+    double sampleRate
+) {
+    LossFilterFitResult best;
+    best.fitError = std::numeric_limits<double>::infinity();
+
+    const double f0 = MyPitch::midiToFrequency(midi);
+    if (f0 <= 0.0 || sampleRate <= 0.0 || sigmaPoints.size() < 2) {
+        return best;
+    }
+
+    auto predictedSigma = [&](double g, double a1, double partial) {
+        const double f = f0 * partial;
+        const double omega = 2.0 * M_PI * f / sampleRate;
+
+        const double numerator = g * (1.0 + a1);
+        const double realDen = 1.0 + a1 * std::cos(omega);
+        const double imagDen = -a1 * std::sin(omega);
+
+        const double denMag = std::sqrt(realDen * realDen + imagDen * imagDen);
+        if (denMag <= 0.0) return 0.0;
+
+        double mag = std::abs(numerator) / denMag;
+        mag = std::clamp(mag, 1e-8, 0.999999);
+
+        return -f0 * std::log(mag);
+    };
+
+    for (double g = 0.970; g <= 0.99995; g += 0.00005) {
+        for (double a1 = -0.95; a1 <= -0.001; a1 += 0.0005) {
+            double error = 0.0;
+            int count = 0;
+
+            for (const auto& point : sigmaPoints) {
+                const double partial = point[0];
+                const double measuredSigma = point[1];
+
+                if (partial <= 0.0 || measuredSigma <= 0.0 || !std::isfinite(measuredSigma)) {
+                    continue;
+                }
+
+                const double pred = predictedSigma(g, a1, partial);
+                const double e = pred - measuredSigma;
+
+                error += e * e;
+                count++;
+            }
+
+            if (count < 2) continue;
+
+            error /= static_cast<double>(count);
+
+            if (error < best.fitError) {
+                best.g = g;
+                best.a1 = a1;
+                best.pointCount = count;
+                best.fitError = error;
+            }
+        }
+    }
+
+    return best;
+}
 
 
 

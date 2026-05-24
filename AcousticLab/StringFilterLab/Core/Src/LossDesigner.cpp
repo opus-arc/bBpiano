@@ -287,7 +287,6 @@ std::array<QuadraticRegressionResult, 109> smoothLossABCByMidi(
 
     return result;
 
-    return result;
 }
 
 

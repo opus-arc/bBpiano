@@ -2764,7 +2764,7 @@ SSE = \sum (y_i - \hat y_i)^2
 
 
 
-<video src="./Doc/Vedio/录屏2026-05-18%2009.16.51.mov" controls width="640"></video>
+<video src="./Doc/Vedio/录屏2026-05-24%2012.57.42.mov" controls width="640"></video>
 
 
 
@@ -2774,19 +2774,122 @@ SSE = \sum (y_i - \hat y_i)^2
 </div>
 
 
-<div style="display: flex; gap: 16px; align-items: flex-start;">
-  <img src="./Doc/graphics/截屏2026-05-18 09.34.25.png" style="width: 50%;">
-  <img src="./Doc/graphics/截屏2026-05-18 09.26.15.png" style="width: 50%;">
-</div>
 
+由于是音桥采样，这里的能量没有经过音板的放大，也没有 symp. 的共振效果和 duplx 极高频补偿，
 
-我们能听到，无 damper 的单弦能量衰减对听感有着十足的影响，这样声音的衰减模式清晰地向真实钢琴更近了一步。
+但声音听着太干了，再听一下 A6：
 
-远远地高于了原先的声响。
+<video src="./Doc/Vedio/录屏2026-05-24%2018.33.18.mov" controls width="640"></video>
 
 
 
-Bank 直接用经典的 **complex demodulation（复数解调）**或者说 **heterodyne analysis（外差分析）**
+高频图像已经呈现清晰的三个 partial ，这非常好 ，但从包络上来看说明先二次回归再平滑的方式处理 loss
+
+让高频的 partial sigma 值过大，导致声音太干，而且不难猜测低频的 sigma 会比测量值小，
+
+因为平滑会加剧回归模型的特征，从而导致以中频为支点的倾斜：
+
+<video src="./Doc/Vedio/录屏2026-05-24%2018.45.07.mov" controls width="640"></video>
+
+
+
+可以看到 A3 包络波动下降，说明斜率为正不减反增，但截距为负，总体仍然衰减，
+
+这个会加大低频的杂音，不是预计的效果。
+
+
+
+根据这样的觉察：
+
+```cpp
+LossFilterFitResult fitOnePoleLossFilterFromSigmaPoints(
+    int midi,
+    const std::vector<std::array<double, 2>>& sigmaPoints,
+    double sampleRate
+) {
+    LossFilterFitResult best;
+    best.fitError = std::numeric_limits<double>::infinity();
+
+    const double f0 = MyPitch::midiToFrequency(midi);
+    if (f0 <= 0.0 || sampleRate <= 0.0 || sigmaPoints.size() < 2) {
+        return best;
+    }
+
+    auto predictedSigma = [&](double g, double a1, double partial) {
+        const double f = f0 * partial;
+        const double omega = 2.0 * M_PI * f / sampleRate;
+
+        const double numerator = g * (1.0 + a1);
+        const double realDen = 1.0 + a1 * std::cos(omega);
+        const double imagDen = -a1 * std::sin(omega);
+
+        const double denMag = std::sqrt(realDen * realDen + imagDen * imagDen);
+        if (denMag <= 0.0) return 0.0;
+
+        double mag = std::abs(numerator) / denMag;
+        mag = std::clamp(mag, 1e-8, 0.999999);
+
+        return -f0 * std::log(mag);
+    };
+
+    for (double g = 0.970; g <= 0.99995; g += 0.00005) {
+        for (double a1 = -0.95; a1 <= -0.001; a1 += 0.0005) {
+            double error = 0.0;
+            int count = 0;
+
+            for (const auto& point : sigmaPoints) {
+                const double partial = point[0];
+                const double measuredSigma = point[1];
+
+                if (partial <= 0.0 || measuredSigma <= 0.0 || !std::isfinite(measuredSigma)) {
+                    continue;
+                }
+
+                const double pred = predictedSigma(g, a1, partial);
+                const double e = pred - measuredSigma;
+
+                error += e * e;
+                count++;
+            }
+
+            if (count < 2) continue;
+
+            error /= static_cast<double>(count);
+
+            if (error < best.fitError) {
+                best.g = g;
+                best.a1 = a1;
+                best.pointCount = count;
+                best.fitError = error;
+            }
+        }
+    }
+
+    return best;
+}
+```
+
+也就是去掉二次回归，直接先拿含有错误数据的模态能量逸散速度计算 a 和 g
+
+然后再平滑 a 与 g 即可，
+
+
+
+于是得到这样的效果：
+
+<video src="./Doc/Vedio/录屏2026-05-24%2018.49.55.mov" controls width="640"></video>
+
+
+
+因为我设置了active 剪枝，所以低频的尾巴被稍稍截断了一点，但能明显的听和看到：
+虽然从声响效果上来说不如波动下降好，但这更接近没有越过音桥处的声音效果
+
+
+至此，无 damper 的单弦能量衰减对听感有着十足的影响，这样声音的衰减模式清晰地向真实钢琴更近了一步。
+
+
+
+Bank 则直接用了经典的 **complex demodulation（复数解调）**或者说 **heterodyne analysis（外差分析）**
 
 对目标频率使用复数解调放在 0hz 附近，然后低通滤波再取模长得到包络，之后的计算也就差不多了，
 
