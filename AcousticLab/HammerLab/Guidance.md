@@ -1,36 +1,88 @@
 # HammerLab
 
-HammerLab is a small offline observer for the current C++ `HammerModel`.
+HammerLab is a small offline observer for the C++ hammer/string experiments.
 
-It does not change the hammer/string connection. It instantiates the current model, runs it frame by frame, and records the hammer state into CSV. The SVG plot is generated from that CSV.
+It instantiates a model, runs it frame by frame, records the hammer state into CSV, and renders the force trace as SVG.
 
 The C++ lab entry files use the `.cpp.lab` suffix so Xcode does not auto-compile them into the app target. Generated files and paper screenshots live in hidden `.Generated` / `.References` folders, and the temporary HammerLab binary is built under `/private/tmp/bBpiano_HammerLab_Build`, so Xcode does not copy lab-only files into the app bundle.
 
-## Run One Case
+## Current Scripts
 
-From the project root:
+There are two main force-trace scripts. Both use direct hammer velocity `vin` in m/s-like units.
+
+Fresh-pull note: this repository currently still instantiates `HammerModel` in `main.cpp.lab`. The `--model baseline|bank` flag is already accepted so the scripts and generated filenames match the previous experiment, but the two modes will only diverge after the new Bank mode is added to `HammerModel`.
+
+Argument order:
+
+```text
+midi vin duration probe yMax
+```
+
+Run the baseline-labelled path:
 
 ```bash
-AcousticLab/HammerLab/run_case.sh 69 80 0.08
+AcousticLab/HammerLab/run_baseline_force_case.sh 60 4 0.002 0.7 25
+```
+
+Run the Bank-labelled path:
+
+```bash
+AcousticLab/HammerLab/run_bank_force_case.sh 60 4 0.002 0.7 25
+```
+
+Overlay a generated C4 CSV on top of Bank Fig. 5.4:
+
+```bash
+AcousticLab/HammerLab/run_fig54_overlay.sh AcousticLab/HammerLab/.Generated/bank_force_midi60_vin4_s0.002_p0.7.csv
+```
+
+The overlay script assumes the Fig. 5.4 axes are `0-2 ms` and `0-25 N`, and writes:
+
+```text
+AcousticLab/HammerLab/.Generated/bank_force_midi60_vin4_s0.002_p0.7_over_fig54.svg
+```
+
+If you want a custom output name:
+
+```bash
+AcousticLab/HammerLab/run_fig54_overlay.sh input.csv output.svg
 ```
 
 Arguments:
 
-- `69`: MIDI note number. Change this to look at another note/string set.
-- `80`: MIDI velocity.
-- `0.08`: duration in seconds.
-- optional `0.7`: probe position on the string, from bridge-side `0.0` to far end `1.0`.
+- `60`: MIDI note number. In this project, C4 is MIDI 60 and C5 is MIDI 72.
+- `4`: initial hammer velocity `vin`. For Bank Fig. 5.4-style C4 tests, use `vin=4`.
+- `0.002`: duration in seconds.
+- `0.7`: probe position on the string for the `sample` columns. The force plot itself uses `F`.
+- `25`: SVG y-axis maximum in Newtons.
 
-Example with explicit probe position:
+### `vin` vs `velocity`
+
+The current force-trace scripts use `vin`, not MIDI-style `velocity`.
+
+- `vin`: direct initial hammer velocity assigned to the hammer model's `v_in`. For example, `vin=4` means the hammer starts with `v_in = 4`.
+- `velocity`: the older MIDI-style argument used by legacy HammerLab scripts such as `run_case.sh`. In that old path, HammerLab converted it with `v_in = velocity * 2.0`, so `velocity=2` produced `v_in=4`.
+
+Do not mix the two when comparing plots. For Bank Fig. 5.4-style tests, use:
 
 ```bash
-AcousticLab/HammerLab/run_case.sh 69 80 0.08 0.2
+AcousticLab/HammerLab/run_bank_force_case.sh 60 4 0.002 0.7 25
+```
+
+not `60 2 ...`, because the second argument is now `vin` directly.
+
+For a Bank Fig. 5.7-style C5 test with `v_h0 = 6 m/s`:
+
+```bash
+AcousticLab/HammerLab/run_bank_force_case.sh 72 6 0.0022 0.7 50
 ```
 
 Outputs:
 
-- `AcousticLab/HammerLab/.Generated/midi69_v80_p0.7.csv`
-- `AcousticLab/HammerLab/.Generated/midi69_v80_p0.7.svg`
+- `AcousticLab/HammerLab/.Generated/baseline_force_midi60_vin4_s0.002_p0.7.csv`
+- `AcousticLab/HammerLab/.Generated/baseline_force_midi60_vin4_s0.002_p0.7.svg`
+- `AcousticLab/HammerLab/.Generated/bank_force_midi60_vin4_s0.002_p0.7.csv`
+- `AcousticLab/HammerLab/.Generated/bank_force_midi60_vin4_s0.002_p0.7.svg`
 
 ## What The CSV Means
 
@@ -38,38 +90,28 @@ Outputs:
 - `dy`: hammer felt compression.
 - `v_in`: hammer velocity state.
 - `dv`: relative velocity term used by the current force update.
-- `sigma`: Gaussian force-spreading width.
+- `sigma`: Gaussian width in the current HammerModel path; expected to become unused or zero in the isolated Bank single-point path.
 - `sample`: summed velocity at the selected probe position.
-- `sample_a`, `sample_b`, `sample_c`: individual unison-string probe values.
+- `sample_a`, `sample_b`, `sample_c`: individual string probe values. In the future single-string Bank mode, `sample_b` and `sample_c` should be zero.
 
-The CSV/SVG show the current HammerModel plus its local string interaction path: the hammer computes force, distributes that force to its paired strings, advances those strings, and records the state. It is not the final app audio after all voices, realtime scheduling, mixing, damping, and output processing.
+The CSV/SVG show a local hammer/string lab path. They are not the final app audio after all voices, realtime scheduling, damping, mixing, and output processing.
 
-## How To Play With It
+## Baseline vs Bank
 
-Try notes:
+Both current scripts instantiate `HammerModel` in this fresh pull. The mode names are reserved for the next implementation step:
 
-```bash
-AcousticLab/HammerLab/run_case.sh 45 80 0.12
-AcousticLab/HammerLab/run_case.sh 63 80 0.08
-AcousticLab/HammerLab/run_case.sh 69 80 0.08
-AcousticLab/HammerLab/run_case.sh 84 80 0.05
-```
+- `baseline`: should preserve the current/original Gaussian multi-string HammerModel behavior.
+- `bank`: should become the isolated Bank-style path with velocity upsampling, hammer substeps at `Ts / 2`, force downsampling, and staggered single-point injection at `left[M_int]` / `right[M_int + 1]`.
 
-Try velocities:
+Important time-scale note:
 
-```bash
-AcousticLab/HammerLab/run_case.sh 69 30 0.08
-AcousticLab/HammerLab/run_case.sh 69 80 0.08
-AcousticLab/HammerLab/run_case.sh 69 120 0.08
-```
+- `StringModel::Ts = 1 / 44100` is the DWG/string sample period.
+- `Ts / 2 = 1 / 88200` is the Bank hammer substep period.
+- Neither is the acoustic period of the string. The acoustic frequency is represented through the delay-line length.
 
-Try string positions:
+Target Bank string mode: integer-grid lossless/nondispersive DWG for the C4 reference experiment. It should bypass boundary fractional delay, loss, and dispersion filters.
 
-```bash
-AcousticLab/HammerLab/run_case.sh 69 80 0.08 0.2
-AcousticLab/HammerLab/run_case.sh 69 80 0.08 0.5
-AcousticLab/HammerLab/run_case.sh 69 80 0.08 0.7
-```
+The older `run_case.sh` still exists for the original `HammerModel` observer, but it is not the main Bank experiment path.
 
 ## Bank References
 Most useful pages:
@@ -79,26 +121,16 @@ Most useful pages:
 
 ## Bank Fig. 5.4 Scale
 
-Bank Fig. 5.4 uses a 0-2 ms time window and 0-25 N force axis. To draw the current model on that same scale:
+Bank Fig. 5.4 uses a 0-2 ms time window and 0-25 N force axis. To draw the current Bank path on that same scale:
 
 ```bash
-AcousticLab/HammerLab/run_bank_force_case.sh 60 2 0.002
+AcousticLab/HammerLab/run_bank_force_case.sh 60 4 0.002 0.7 25
 ```
 
-In this project, A4 is MIDI 69, so C4 is MIDI 60. MIDI 72 is C5. The app maps the HammerLab velocity argument to hammer velocity by `v_in = velocity * 2.0`, so `velocity=2` corresponds to about 4 m/s, matching the impact velocity described near Bank Fig. 5.4.
-
-This command does not change the model. It only rerenders the observed `F(t)` in the same coordinate window as the paper.
+In this project, A4 is MIDI 69, C4 is MIDI 60, and C5 is MIDI 72. The current script takes direct `vin`, so `vin=4` means the hammer is initialized with `v_in = 4`.
 
 To look at a longer decay window while keeping the same force scale:
 
 ```bash
-AcousticLab/HammerLab/run_bank_force_case.sh 60 2 0.004 0.7 25
+AcousticLab/HammerLab/run_bank_force_case.sh 60 4 0.004 0.7 25
 ```
-
-Argument order:
-
-```text
-midi velocity seconds probe yMax
-```
-
-The current simplified HammerLab does not override `K/P/m`. It observes whatever constants are currently compiled into `HammerModel`.
