@@ -51,6 +51,8 @@ float HammerModel::getSample(){
 void HammerModel::hammerMovement() {
     if(mode == HammerMode::HammerF) {
         hammerMovementHammerF();
+    } else if(mode == HammerMode::HammerFPerform) {
+        hammerMovementHammerFPerform();
     } else {
         hammerMovementNormal();
     }
@@ -147,6 +149,64 @@ void HammerModel::hammerMovementHammerF() {
     injectHammerFForce(M, forceAtStringRate);
     
     pairedString_a->stringMovement();
+}
+
+void HammerModel::hammerMovementHammerFPerform() {
+    if (!pairedString_a) return;
+    
+    // Hammer-F 演奏模式：
+    //
+    // 这里不是论文复现实验用的 HammerMode::HammerF：
+    // - HammerF      ：单弦 + HammerFTest 弦，用来对齐 Bank 的理想实验图。
+    // - HammerFPerform：Hammer-F 锤子算法 + 完整 Normal 弦，用来在 app 里实际演奏。
+    //
+    // 多弦关系要特别小心：真实 hammer 是一个接触点，同时压在 2/3 根弦上。
+    // 所以 hammer 的 felt 压缩速度要看“所有参与弦的总反馈速度”。
+    // 算出总接触力 F_total 后，再把这个总力平均注入到每根弦。
+    //
+    // 错误写法是：只读 a 弦速度，却把 F_total / string_count 注入到多根弦。
+    // 那样 hammer 看到的反作用少了一截，Normal 和 Hammer-F Perform 的力包络会异常接近。
+    double hammer_Ts = pairedString_a->Ts / 2.0;
+    
+    // M 是 Bank 论文里的 M_in。
+    // 读速度和注入力必须共用同一个相对波导格点 M，避免一边读 M 一边打到别的格点。
+    int M = std::floor(strikePoint * pairedString_a->delay_index);
+    
+    // 第一个 hammer 子步：时间 nTs。
+    // Bank 的 v_in,h(nTs)：当前格点速度。
+    // 多弦版本取所有弦在 M 的速度总和，作为 hammer 看到的总弦反馈。
+    double string_v1 = pairedString_a->velocityAtGrid(M);
+    if(string_count >= 2 && pairedString_b) string_v1 += pairedString_b->velocityAtGrid(M);
+    if(string_count >= 3 && pairedString_c) string_v1 += pairedString_c->velocityAtGrid(M);
+    double F1 = hammerFHalfStepForce(string_v1, hammer_Ts);
+    
+    // 第二个 hammer 子步：时间 nTs + Ts/2。
+    // Bank 的速度上采样：用当前行波和半个采样周期后会到达 M 的相邻行波取平均。
+    // 多弦时同样先各自上采样，再把反馈速度相加给 hammer。
+    double string_v2 = pairedString_a->velocityAtHalfSample(M);
+    if(string_count >= 2 && pairedString_b) string_v2 += pairedString_b->velocityAtHalfSample(M);
+    if(string_count >= 3 && pairedString_c) string_v2 += pairedString_c->velocityAtHalfSample(M);
+    double F2 = hammerFHalfStepForce(string_v2, hammer_Ts);
+    
+    // 力下采样：
+    // hammer 以 2 倍采样率产生 F1/F2；string 仍以原采样率接收一个总力。
+    double forceAtStringRate = 0.5 * (F1 + F2);
+    
+    F = forceAtStringRate;
+    
+    // Hammer-F Perform 是单点错位注入，不走 Normal 的 Gaussian 空间分布。
+    sigma = 0.0;
+    
+    injectHammerFForce(M, forceAtStringRate);
+    
+    if(string_count == 2) {
+        pairedString_a->stringMovement();
+        pairedString_b->stringMovement();
+    } else if (string_count == 3) {
+        pairedString_a->stringMovement();
+        pairedString_b->stringMovement();
+        pairedString_c->stringMovement();
+    }
 }
 
 double HammerModel::hammerHalfStepForce(double _string_v, double dt) {
@@ -313,9 +373,22 @@ void HammerModel::injectForce(std::vector<float>& string_F, int start, int end){
 
 void HammerModel::injectHammerFForce(int M, double _F) {
     
-    // M 是 Bank 论文里的 M_in，也就是击弦点对应的相对波导格点。
-    
-    pairedString_a->injectHammerFStaggeredForce(M, static_cast<float>(_F));
+    // _F 是 hammer 在当前 string-rate 帧看到的“总接触力”。
+    // 单弦论文实验模式直接把总力打到 a 弦。
+    // 演奏模式有 2/3 根弦时，把总力平均分到每根弦；
+    // 这必须和 hammerMovementHammerFPerform() 里“读总反馈速度”配对。
+    if(mode == HammerMode::HammerFPerform) {
+        if(string_count == 2) {
+            pairedString_a->injectHammerFStaggeredForce(M, static_cast<float>(_F / 2.0));
+            pairedString_b->injectHammerFStaggeredForce(M, static_cast<float>(_F / 2.0));
+        } else if(string_count == 3) {
+            pairedString_a->injectHammerFStaggeredForce(M, static_cast<float>(_F / 3.0));
+            pairedString_b->injectHammerFStaggeredForce(M, static_cast<float>(_F / 3.0));
+            pairedString_c->injectHammerFStaggeredForce(M, static_cast<float>(_F / 3.0));
+        }
+    } else {
+        pairedString_a->injectHammerFStaggeredForce(M, static_cast<float>(_F));
+    }
 }
     
 
@@ -324,7 +397,15 @@ double HammerModel::computeSigma(){
 }
 
 void HammerModel::setVIn(double _v_in){
+    // 每次新的 note_on 都是一轮新的 hammer-string 接触。
+    // 弦本身不清空，保留正在振动的能量；这里只重置锤子的接触状态，
+    // 避免切换 Normal / Hammer-F 后被上一次 dy 或 F_Last 污染。
     v_in = _v_in;
+    dy = 0.0;
+    dv = 0.0;
+    F = 0.0;
+    F_Last = 0.0;
+    sigma = 0.0;
 }
 
 //为了复现Bank的测试在HammerF里先用单弦

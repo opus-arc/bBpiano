@@ -58,7 +58,7 @@ Config parseArgs(int argc, char** argv) {
                 << "  --vin <m/s>             direct initial hammer velocity\n"
                 << "  --seconds <duration>    default 0.08\n"
                 << "  --probe <0..1>          string observation position, default 0.7\n"
-                << "  --mode <normal|hammerf> default normal\n"
+                << "  --mode <normal|hammerf|perform> default normal\n"
                 << "  --output <csv path>     default AcousticLab/HammerLab/.Generated/hammer_trace.csv\n";
             std::exit(0);
         }
@@ -67,7 +67,7 @@ Config parseArgs(int argc, char** argv) {
     config.vin = std::max(0.0, config.vin);
     config.seconds = std::max(0.001, config.seconds);
     config.probePosition = std::clamp(config.probePosition, 0.0, 1.0);
-    if (config.mode != "normal" && config.mode != "hammerf") {
+    if (config.mode != "normal" && config.mode != "hammerf" && config.mode != "perform") {
         config.mode = "normal";
     }
     return config;
@@ -88,10 +88,15 @@ int main(int argc, char** argv) {
     HammerModel hammer(nullptr, config.midi);
     
     if (config.mode == "hammerf") {
-    hammer.setMode(HammerMode::HammerF);
-} else {
-    hammer.setMode(HammerMode::Normal);
-}
+        // 论文复现实验模式：单弦 + HammerFTest 弦，接近 Bank 图里的理想实验场。
+        hammer.setMode(HammerMode::HammerF);
+    } else if (config.mode == "perform") {
+        // app 演奏接入模式：Hammer-F 锤子逻辑 + 完整 Normal 弦。
+        hammer.setMode(HammerMode::HammerFPerform);
+    } else {
+        // 原始演奏模式：原有 Gaussian hammer + 完整 Normal 弦。
+        hammer.setMode(HammerMode::Normal);
+    }
     hammer.setVIn(config.vin);
 
     std::ofstream csv(outputPath);

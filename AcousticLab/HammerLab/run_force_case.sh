@@ -11,8 +11,8 @@ ymax="${5:-25}"
 probe="${6:-0.7}"
 xmax_ms="$(python3 -c 'import sys; print(float(sys.argv[1]) * 1000.0)' "$seconds")"
 
-if [[ "$mode" != "normal" && "$mode" != "hammerf" ]]; then
-  echo "mode must be normal or hammerf" >&2
+if [[ "$mode" != "normal" && "$mode" != "hammerf" && "$mode" != "perform" ]]; then
+  echo "mode must be normal, hammerf, or perform" >&2
   exit 1
 fi
 

@@ -19,7 +19,8 @@ class KeyModel;
 
 enum class HammerMode {
     Normal,
-    HammerF
+    HammerF,
+    HammerFPerform
 };
 
 class HammerModel {
@@ -146,6 +147,7 @@ public:
     // 为了测试和撰写md先不直接修改调用接口，用mode去隔离
     void hammerMovementNormal();
     void hammerMovementHammerF();
+    void hammerMovementHammerFPerform();
     
     float getSample();
     
