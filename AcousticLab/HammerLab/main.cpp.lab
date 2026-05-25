@@ -6,17 +6,16 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <limits>
 #include <string>
 
 namespace {
 
 struct Config {
     int midi = 69;
-    double velocity = 80.0;
-    double vin = std::numeric_limits<double>::quiet_NaN();
+    double vin = 4.0;
     double seconds = 0.08;
     double probePosition = 0.7;
+    std::string model = "bank";
     std::string output = "AcousticLab/HammerLab/.Generated/hammer_trace.csv";
 };
 
@@ -42,32 +41,35 @@ Config parseArgs(int argc, char** argv) {
         std::string arg = argv[i];
         if (arg == "--midi" && i + 1 < argc) {
             config.midi = parseInt(argv[++i], config.midi);
-        } else if (arg == "--velocity" && i + 1 < argc) {
-            config.velocity = parseDouble(argv[++i], config.velocity);
         } else if (arg == "--vin" && i + 1 < argc) {
             config.vin = parseDouble(argv[++i], config.vin);
         } else if (arg == "--seconds" && i + 1 < argc) {
             config.seconds = parseDouble(argv[++i], config.seconds);
         } else if (arg == "--probe" && i + 1 < argc) {
             config.probePosition = parseDouble(argv[++i], config.probePosition);
+        } else if (arg == "--model" && i + 1 < argc) {
+            config.model = argv[++i];
         } else if (arg == "--output" && i + 1 < argc) {
             config.output = argv[++i];
         } else if (arg == "--help") {
             std::cout
                 << "HammerLab\n"
                 << "  --midi <21..108>        default 69\n"
-                << "  --velocity <0..127>     default 80\n"
-                << "  --vin <m/s>             override hammer velocity directly\n"
+                << "  --vin <m/s>             direct initial hammer velocity\n"
                 << "  --seconds <duration>    default 0.08\n"
                 << "  --probe <0..1>          string observation position, default 0.7\n"
+                << "  --model <baseline|bank> default bank\n"
                 << "  --output <csv path>     default AcousticLab/HammerLab/.Generated/hammer_trace.csv\n";
             std::exit(0);
         }
     }
     config.midi = std::clamp(config.midi, 21, 108);
-    config.velocity = std::clamp(config.velocity, 0.0, 127.0);
+    config.vin = std::max(0.0, config.vin);
     config.seconds = std::max(0.001, config.seconds);
     config.probePosition = std::clamp(config.probePosition, 0.0, 1.0);
+    if (config.model != "baseline" && config.model != "bank") {
+        config.model = "bank";
+    }
     return config;
 }
 
@@ -85,8 +87,7 @@ int main(int argc, char** argv) {
 
     HammerModel hammer(nullptr, config.midi);
 
-    const double initialVin = std::isfinite(config.vin) ? config.vin : config.velocity * 2.0;
-    hammer.setVIn(initialVin);
+    hammer.setVIn(config.vin);
 
     std::ofstream csv(outputPath);
     if (!csv.is_open()) {
@@ -94,7 +95,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    csv << "frame,time_sec,midi,velocity,initial_vin,probe_position,F,dy,v_in,dv,sigma,sample,sample_a,sample_b,sample_c\n";
+    csv << "frame,time_sec,midi,initial_vin,probe_position,F,dy,v_in,dv,sigma,sample,sample_a,sample_b,sample_c\n";
     csv << std::fixed << std::setprecision(12);
 
     for (int n = 0; n < frameCount; n++) {
@@ -109,8 +110,7 @@ int main(int argc, char** argv) {
             << n << ","
             << (static_cast<double>(n) / sampleRate) << ","
             << config.midi << ","
-            << config.velocity << ","
-            << initialVin << ","
+            << config.vin << ","
             << config.probePosition << ","
             << hammer.F << ","
             << hammer.dy << ","
@@ -126,9 +126,9 @@ int main(int argc, char** argv) {
 
     std::cout
         << "HammerLab wrote " << frameCount << " frames to " << outputPath << "\n"
-        << "midi=" << config.midi
-        << ", velocity=" << config.velocity
-        << ", vin=" << initialVin
+        << "model=" << config.model
+        << ", midi=" << config.midi
+        << ", vin=" << config.vin
         << ", seconds=" << config.seconds
         << ", probe=" << config.probePosition << "\n";
 
