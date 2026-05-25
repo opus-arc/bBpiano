@@ -15,6 +15,23 @@ internal import System
 @main
 struct blueBirdApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    
+
+    init() {
+        #if DEBUG
+        if let path = Bundle.main.path(forResource: "macOSInjection", ofType: "bundle") {
+            if Bundle(path: path)?.load() == true {
+                print("InjectionIII macOS bundle loaded from app bundle")
+            } else {
+                print("Failed to load bundled macOSInjection.bundle")
+            }
+        } else {
+            print("macOSInjection.bundle not found in app bundle")
+        }
+        #endif
+    }
+    
+    
     var body: some Scene {
         WindowGroup {
             ZStack {
@@ -40,7 +57,7 @@ struct blueBirdApp: App {
 
                 RootView()
             }
-            .frame(width: 880, height: 695)
+            .frame(width: 88, height: 695)
             .preferredColorScheme(.light)
         }
         .windowResizability(.contentSize)
@@ -88,14 +105,14 @@ struct RootView: View {
                     try SoundCard.shared.start()
                     print("Sound card started")
                     
-                    // 
-                    try MidiService.play(
-                        playbackRate: 1,
-                        startTime: 1480,
-                        midiFileURL: URL(
-                            filePath: "/Users/opusarc/XCodeProjects/bBpiano/Doc/midi/Piano E-Competition MIDI-2018-Yixiang Hou-Beethoven - Sonata No. 32 in C minor, Op. 111.mid"
-                        )!
-                    )
+//                    // 
+//                    try MidiService.play(
+//                        playbackRate: 1,
+//                        startTime: 325,
+//                        midiFileURL: URL(
+//                            filePath: "/Users/opusarc/XCodeProjects/bBpiano/Doc/midi/Chopin - Scherzo No. 3 in C-sharp Minor, Op. 39.mid"
+//                        )!
+//                    )
                     
 //                    try MidiService.play(
 //                        playbackRate: 1,

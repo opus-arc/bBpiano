@@ -176,6 +176,7 @@ public:
 //    inline int rToAIndex_r(int i) const {
 //        return (rightHead + i + Delay_Int) % Delay_Int;
 //    }
+    
     // 0 <= i < Delay_Int !!!
     inline int rToAIndex_l(int i) const {
         int x = leftHead + i;
