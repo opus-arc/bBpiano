@@ -42,12 +42,12 @@ private:
     // 弦的张力
     // 单位 牛顿
     // 这里暂时用一个固定值
-    static constexpr double T = 850.0;
+    static constexpr double T = 670; // 850.0
     
     // 弦的线密度
     // 单位 kg / m
     // 这里暂时用一个固定值
-    static constexpr double rho = 0.006;
+    static constexpr double rho = 0.0063387; // 0.006
     
     
     mutable int activityCounter = 0;
