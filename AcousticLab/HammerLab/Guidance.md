@@ -1,104 +1,102 @@
-# HammerLab
+# HammerLab 命令说明
 
-HammerLab is a small offline observer for the current C++ `HammerModel`.
+HammerLab 用来离线跑锤子/弦模型，输出 CSV 和 SVG，方便检查接触力 `F`、锤毡压缩量 `dy`、锤子速度 `v_in` 和弦输出 `sample`。
 
-It does not change the hammer/string connection. It instantiates the current model, runs it frame by frame, and records the hammer state into CSV. The SVG plot is generated from that CSV.
-
-The C++ lab entry files use the `.cpp.lab` suffix so Xcode does not auto-compile them into the app target. Generated files and paper screenshots live in hidden `.Generated` / `.References` folders, and the temporary HammerLab binary is built under `/private/tmp/bBpiano_HammerLab_Build`, so Xcode does not copy lab-only files into the app bundle.
-
-## Run One Case
-
-From the project root:
+## 单条力曲线
 
 ```bash
-AcousticLab/HammerLab/run_case.sh 69 80 0.08
+AcousticLab/HammerLab/run_force_case.sh normal 60 4 0.002 25
 ```
 
-Arguments:
-
-- `69`: MIDI note number. Change this to look at another note/string set.
-- `80`: MIDI velocity.
-- `0.08`: duration in seconds.
-- optional `0.7`: probe position on the string, from bridge-side `0.0` to far end `1.0`.
-
-Example with explicit probe position:
+运行原始演奏模式：原有 Gaussian hammer + 完整 `StringModel::Normal` 弦。
 
 ```bash
-AcousticLab/HammerLab/run_case.sh 69 80 0.08 0.2
+AcousticLab/HammerLab/run_force_case.sh hammerf 60 4 0.002 25
 ```
 
-Outputs:
-
-- `AcousticLab/HammerLab/.Generated/midi69_v80_p0.7.csv`
-- `AcousticLab/HammerLab/.Generated/midi69_v80_p0.7.svg`
-
-## What The CSV Means
-
-- `F`: hammer/string contact force.
-- `dy`: hammer felt compression.
-- `v_in`: hammer velocity state.
-- `dv`: relative velocity term used by the current force update.
-- `sigma`: Gaussian force-spreading width.
-- `sample`: summed velocity at the selected probe position.
-- `sample_a`, `sample_b`, `sample_c`: individual unison-string probe values.
-
-The CSV/SVG show the current HammerModel plus its local string interaction path: the hammer computes force, distributes that force to its paired strings, advances those strings, and records the state. It is not the final app audio after all voices, realtime scheduling, mixing, damping, and output processing.
-
-## How To Play With It
-
-Try notes:
+运行 Hammer-F 论文实验模式：`HammerModel::HammerF` + 单弦 `StringModel::HammerFTest`。这个模式用于复现 Bank 的理想单弦图，不是 app 里听到的演奏模式。
 
 ```bash
-AcousticLab/HammerLab/run_case.sh 45 80 0.12
-AcousticLab/HammerLab/run_case.sh 63 80 0.08
-AcousticLab/HammerLab/run_case.sh 69 80 0.08
-AcousticLab/HammerLab/run_case.sh 84 80 0.05
+AcousticLab/HammerLab/run_force_case.sh perform 60 4 0.002 25
 ```
 
-Try velocities:
+运行 Hammer-F 演奏模式：`HammerModel::HammerFPerform` + 完整 `StringModel::Normal` 弦。这个模式对应 app 里切到 Hammer-F 后的新击键。
 
-```bash
-AcousticLab/HammerLab/run_case.sh 69 30 0.08
-AcousticLab/HammerLab/run_case.sh 69 80 0.08
-AcousticLab/HammerLab/run_case.sh 69 120 0.08
-```
-
-Try string positions:
-
-```bash
-AcousticLab/HammerLab/run_case.sh 69 80 0.08 0.2
-AcousticLab/HammerLab/run_case.sh 69 80 0.08 0.5
-AcousticLab/HammerLab/run_case.sh 69 80 0.08 0.7
-```
-
-## Bank References
-Most useful pages:
-
-- `.References/figure 5.4.png`: force curve reference for C4.
-- `.References/figure 5.7.png`: single-rate vs multi-rate force comparison.
-
-## Bank Fig. 5.4 Scale
-
-Bank Fig. 5.4 uses a 0-2 ms time window and 0-25 N force axis. To draw the current model on that same scale:
-
-```bash
-AcousticLab/HammerLab/run_bank_force_case.sh 60 2 0.002
-```
-
-In this project, A4 is MIDI 69, so C4 is MIDI 60. MIDI 72 is C5. The app maps the HammerLab velocity argument to hammer velocity by `v_in = velocity * 2.0`, so `velocity=2` corresponds to about 4 m/s, matching the impact velocity described near Bank Fig. 5.4.
-
-This command does not change the model. It only rerenders the observed `F(t)` in the same coordinate window as the paper.
-
-To look at a longer decay window while keeping the same force scale:
-
-```bash
-AcousticLab/HammerLab/run_bank_force_case.sh 60 2 0.004 0.7 25
-```
-
-Argument order:
+参数顺序：
 
 ```text
-midi velocity seconds probe yMax
+mode midi vin duration forceYMax [probe]
 ```
 
-The current simplified HammerLab does not override `K/P/m`. It observes whatever constants are currently compiled into `HammerModel`.
+参数含义：
+
+- `mode`: `normal`、`hammerf` 或 `perform`
+- `midi`: MIDI 音高，C4 是 `60`，C5 是 `72`
+- `vin`: 直接写入 hammer 的初速度，近似单位 `m/s`
+- `duration`: 仿真时长，单位秒；`0.002` 表示 2 ms
+- `forceYMax`: 力图 y 轴上限，单位 N
+- `probe`: 可选，弦输出观察点，范围 `0..1`，默认 `0.7`
+
+## Normal / Perform 叠图
+
+```bash
+AcousticLab/HammerLab/run_normal_perform_overlay.sh 60 4 0.002 0.7 25
+```
+
+同时运行 `normal` 和 `perform`，并把两者的 `F` 与 `sample` 画在同一张 SVG 里。
+
+参数顺序：
+
+```text
+midi vin duration probe forceYMax
+```
+
+输出文件：
+
+```text
+AcousticLab/HammerLab/.Generated/normal_force_midi60_vin4_s0.002_p0.7.csv
+AcousticLab/HammerLab/.Generated/perform_force_midi60_vin4_s0.002_p0.7.csv
+AcousticLab/HammerLab/.Generated/normal_vs_perform_midi60_vin4_s0.002_p0.7.svg
+```
+
+## 叠 Figure 5.4
+
+```bash
+AcousticLab/HammerLab/run_fig54_overlay.sh
+```
+
+把默认 Hammer-F CSV 叠到 Figure 5.4 参考图上。
+
+默认输入：
+
+```text
+AcousticLab/HammerLab/.Generated/hammerf_force_midi60_vin4_s0.002_p0.7.csv
+```
+
+也可以指定 CSV：
+
+```bash
+AcousticLab/HammerLab/run_fig54_overlay.sh AcousticLab/HammerLab/.Generated/perform_force_midi60_vin4_s0.002_p0.7.csv
+```
+
+## 单独编译
+
+```bash
+bash AcousticLab/HammerLab/build.sh
+```
+
+编译输出：
+
+```text
+/private/tmp/bBpiano_HammerLab_Build/HammerLab
+```
+
+## CSV 常用列
+
+- `time_sec`: 当前帧时间，单位秒
+- `F`: 当前锤弦接触力，单位 N
+- `dy`: 锤毡压缩量
+- `v_in`: 当前 hammer 速度
+- `dv`: 当前锤毡压缩速度
+- `sigma`: Normal 高斯注入宽度；Hammer-F 单点注入时为 `0`
+- `sample`: 指定观察点的弦速度输出
