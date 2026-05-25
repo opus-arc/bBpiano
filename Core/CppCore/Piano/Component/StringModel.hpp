@@ -22,6 +22,13 @@ class HammerModel;
 
 struct LossConstant;
 
+enum class StringMode {
+    // 现有模式：fractional / loss / dispersion 都照常运行
+    Normal,
+    // Hammer-F 单弦实验模式：整数格点、无全通、无损耗、无色散
+    HammerFTest
+};
+
 class StringModel {
 
     // --------------------------------------------
@@ -35,12 +42,12 @@ private:
     // 弦的张力
     // 单位 牛顿
     // 这里暂时用一个固定值
-    static constexpr double T = 850.0;
+    static constexpr double T = 670; // 850.0
     
     // 弦的线密度
     // 单位 kg / m
     // 这里暂时用一个固定值
-    static constexpr double rho = 0.006;
+    static constexpr double rho = 0.0063387; // 0.006
     
     
     mutable int activityCounter = 0;
@@ -63,6 +70,9 @@ public:
     
     // 弦的编号
     const int string_index;
+    
+    // 弦的模式
+    StringMode mode = StringMode::Normal;
         
     
     // --------------------------------------------
@@ -141,10 +151,14 @@ public:
     void injectForce(double p, float F) const ;
     void injectForce(int relative_i, float F) const ;
     
+    // Hammer-F 专用错位注入，用于避免旧同格点注入的瞬时能量偏差
+    void injectHammerFStaggeredForce(int relative_i, float F) const;
+    
     // 传播
     void propagate();
     
-
+    //弦的模式的设置
+    void setMode(StringMode _mode);
     
     // --------------------------------------------
     // MARK: 运动帧
@@ -157,6 +171,13 @@ public:
     // 获取速度的方式
     float velocityAt(double p) const ;
     float nextVelocityAt(double p) ;
+    
+    // Hammer-F 专用：这里的 relative_i 就是 Bank 论文里的 M_in，
+    // relative_i表示击弦点对应的相对波导格点，不是 vector 里的绝对数组下标。
+    // 访问 left/right 时必须再经过 rToAIndex_l/r 转成 ring buffer 下标。
+    float velocityAtGrid(int relative_i) const;
+    // Bank 速度上采样：当前 M 的行波，与下一帧会到达 M 的相邻行波取平均。
+    float velocityAtHalfSample(int relative_i) const;
     
     float activityProbe() const;
     

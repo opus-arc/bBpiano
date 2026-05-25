@@ -91,6 +91,14 @@ void note_afterTouch(int midi_n, double pressure) {
     bBpiano->note_afterTouch(midi_n, pressure);
 }
 
+void set_hammer_mode(int mode) {
+    if(mode == 1) {
+        bBpiano->setHammerMode(HammerMode::HammerFPerform);
+    } else {
+        bBpiano->setHammerMode(HammerMode::Normal);
+    }
+}
+
 double get_engineRate() {
     return engineRate.load(std::memory_order_relaxed);
 }
@@ -101,7 +109,6 @@ void all_silence() {
         key->silence();
     }
 }
-
 
 
 
