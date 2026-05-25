@@ -8,9 +8,6 @@
 #include "PianoModel.hpp"
 
 
-
-
-
 void PianoModel::note_on(int midi_n, double velocity) {
     std::cout << "note_on: " << midi_n << ", " << velocity << std::endl;
     

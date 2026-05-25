@@ -17,6 +17,8 @@
 **Authors:** Ziyang Tan, Zhuoran Chen  
 *(hereinafter referred to as Z. Tan and Z. Chen)*
 
+bBpiano is developed openly at:  [https://github.com/opus-arc/bBpiano][https://github.com/opus-arc/bBpiano]
+
 ---
 
 ![Piano Structure](./Doc/assets/bBpiano.png)

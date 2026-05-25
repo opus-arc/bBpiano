@@ -14,9 +14,9 @@ struct AnalysisPanelView: View {
     
     var body: some View {
         ZStack {
-            MainCurvesView()
-                .position(x: -50, y: 540)
-                .scaleEffect(0.6)
+//            MainCurvesView()
+//                .position(x: -50, y: 540)
+//                .scaleEffect(0.6)
             
             PedalView()
                 .position(x: 130, y: 340)
