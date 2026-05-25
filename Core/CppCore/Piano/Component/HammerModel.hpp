@@ -17,24 +17,30 @@
 
 class KeyModel;
 
+enum class HammerMode {
+    Normal,
+    HammerF
+};
+
 class HammerModel {
     
 public:
     // --------------------------------------------
     // MARK: 常量
     
+    // 先用Bank用的Chaigne-Askenfelt 表的 C4 参数
     // 锤毡刚度系数
-    static constexpr double K = 1e9; // 1.5e9
+    static constexpr double K = 4.5e9; // 1e9
     
     // 非线性指数
-    static constexpr double P = 2.3; // 2.75
+    static constexpr double P = 2.5; // 2.3
     
     // 锤子质量
-    static constexpr double m = 0.003; // kg 0.007
+    static constexpr double m = 0.00297; // kg 0.003
     
     // 击弦点
     // 这个不能和采样点完全一样
-    static constexpr double strikePoint = 0.20;
+    static constexpr double strikePoint = 0.12; // 0.20
     
     // hammer 材料指数 Hertz 接触
     // 决定这股力在空间上铺多宽
@@ -49,6 +55,9 @@ public:
     explicit HammerModel(KeyModel *_pairedKey, int _midi_n) ;
     
     const KeyModel *pairedKey = nullptr;
+    
+    // hammer 模式
+    HammerMode mode = HammerMode::Normal;
     
     // midi 号码
     const int midi_n;
@@ -106,11 +115,16 @@ public:
     // --------------------------------------------
     // MARK: 计算函数
     
+    // 接受hammer模式
+    void setMode(HammerMode _mode);
+    
     // 接收按下的速度
     void setVIn(double _v_in);
     
     // 计算半个步长的力的大小
     double hammerHalfStepForce(double _string_v, double _half_Ts);
+    // 新增给 Hammer-F
+    double hammerFHalfStepForce(double _string_v, double _dt);
     
     // 计算力的分布尺度参数，Hertz 接触
     double computeSigma();
@@ -120,13 +134,18 @@ public:
     
     // 注入力
     void injectForce(std::vector<float>& string_F, int start, int end);
-    
+    // 负责算注入格点 M_in 以及决定打哪根弦
+    void injectHammerFForce(int M, double _F);
     
     // --------------------------------------------
     // MARK: 运动帧
     
     // 锤子的运动回合, 每帧的调用接口
     void hammerMovement();
+    
+    // 为了测试和撰写md先不直接修改调用接口，用mode去隔离
+    void hammerMovementNormal();
+    void hammerMovementHammerF();
     
     float getSample();
     

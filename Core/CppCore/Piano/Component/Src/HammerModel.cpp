@@ -46,7 +46,17 @@ float HammerModel::getSample(){
 
 // ------------------------------------------------------------------------------------------
 // MARK: 运动帧
+
+// 管理mode以方便实验
 void HammerModel::hammerMovement() {
+    if(mode == HammerMode::HammerF) {
+        hammerMovementHammerF();
+    } else {
+        hammerMovementNormal();
+    }
+}
+
+void HammerModel::hammerMovementNormal() {
     if (!pairedString_a) return;
     
     // 取一半的步长
@@ -103,6 +113,40 @@ void HammerModel::hammerMovement() {
 //    updateActivity();
 
     
+}
+
+void HammerModel::hammerMovementHammerF() {
+    if (!pairedString_a) return;
+    
+    // Hammer-F 第一版只做单弦实验：
+    double hammer_Ts = pairedString_a->Ts / 2.0;
+    
+    // 后续速度读取和力注入都复用同一个 M，避免格点不一致。
+    int M = std::floor(strikePoint * pairedString_a->delay_index);
+    
+    // 第一个 hammer 子步：时间 nTs。
+    // v_in,h(nTs) = y+(n, M) + y-(n, M)
+    double string_v1 = pairedString_a->velocityAtGrid(M);
+    double F1 = hammerFHalfStepForce(string_v1, hammer_Ts);
+    
+    // 第二个 hammer 子步：时间 nTs + Ts/2。
+    // 弦速度使用 Bank 的速度上采样公式：
+    // 当前 M 的行波，与下一帧会到达 M 的相邻行波取平均。
+    double string_v2 = pairedString_a->velocityAtHalfSample(M);
+    double F2 = hammerFHalfStepForce(string_v2, hammer_Ts);
+    
+    // Bank 对力的下采样：
+    // hammer 以 2 倍采样率产生 F1/F2；string 仍以原采样率接收一个力，因此取平均。
+    double forceAtStringRate = 0.5 * (F1 + F2);
+    
+    F = forceAtStringRate;
+    
+    // Hammer-F 第一版是单点错位注入，不使用 Gaussian sigma。
+    sigma = 0.0;
+    
+    injectHammerFForce(M, forceAtStringRate);
+    
+    pairedString_a->stringMovement();
 }
 
 double HammerModel::hammerHalfStepForce(double _string_v, double dt) {
@@ -210,7 +254,46 @@ std::vector<float> HammerModel::computeGaussianForce(int start, int end){
     
     return string_F;
 }
+
+double HammerModel::hammerFHalfStepForce(double _string_v, double _dt) {
     
+    // Hammer-F / Bank 半步锤子更新。
+    // _string_v 是当前 hammer 子步看到的弦速度。
+    // _dt = Ts / 2，所以 hammer 以弦采样率的两倍运行。
+    
+    double Z0 = pairedString_a->Z;
+    
+    // Bank 结构里的 z^-1 延迟力反馈：
+    // 上一个 hammer 子步的力 F_Last 通过 2Z0 转成速度修正项。
+    double delayedForceVelocity = F_Last / (2.0 * Z0);
+    
+    // 锤毡压缩速度：
+    // hammer 速度 - 弦速度 - 上一子步力造成的速度反馈。
+    dv = (v_in - _string_v) - delayedForceVelocity;
+    
+    // 更新锤毡压缩量。
+    dy += dv * _dt;
+    
+    // 锤子离开弦时，压缩量不能为负。
+    if (dy < 0.0) {
+        dy = 0.0;
+    }
+    
+    // 非线性锤毡力：F = K * dy^P。
+    double F_new = 0.0;
+    if (dy > 0.0) {
+        F_new = K * std::pow(dy, P);
+    }
+    
+    // 接触力反作用到锤子，降低锤子速度。
+    v_in -= (F_new / m) * _dt;
+    
+    // 保留 hammer-rate 的最后一个子步力。
+    // 下一次 half step 会把它作为 Bank 结构里的延迟反馈。
+    F_Last = F_new;
+    
+    return F_new;
+}
 
 void HammerModel::injectForce(std::vector<float>& string_F, int start, int end){
     
@@ -226,9 +309,15 @@ void HammerModel::injectForce(std::vector<float>& string_F, int start, int end){
             pairedString_c->injectForce(i, static_cast<float>(string_F[i] / 3));
         }
     }
-
-    
 }
+
+void HammerModel::injectHammerFForce(int M, double _F) {
+    
+    // M 是 Bank 论文里的 M_in，也就是击弦点对应的相对波导格点。
+    
+    pairedString_a->injectHammerFStaggeredForce(M, static_cast<float>(_F));
+}
+    
 
 double HammerModel::computeSigma(){
     return sigmaCoeff * std::sqrt(dy);
@@ -238,7 +327,18 @@ void HammerModel::setVIn(double _v_in){
     v_in = _v_in;
 }
 
-
+//为了复现Bank的测试在HammerF里先用单弦
+void HammerModel::setMode(HammerMode _mode){
+    mode = _mode;
+    
+    if(mode == HammerMode::HammerF) {
+        if(pairedString_a) pairedString_a->setMode(StringMode::HammerFTest);
+    } else {
+        if(pairedString_a) pairedString_a->setMode(StringMode::Normal);
+        if(pairedString_b) pairedString_b->setMode(StringMode::Normal);
+        if(pairedString_c) pairedString_c->setMode(StringMode::Normal);
+    }
+}
 
 void HammerModel::setInactive(){
     pairedKey->key_active = false;

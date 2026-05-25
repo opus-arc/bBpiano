@@ -86,14 +86,12 @@ int main(int argc, char** argv) {
     }
 
     HammerModel hammer(nullptr, config.midi);
-    // 目前 HammerModel 还没有 Hammer-F 分支；这里先只切换 StringModel，
-    // 用来验证“有/无边界滤波器”的弦模式差异。
+    
     if (config.mode == "hammerf") {
-        if (hammer.pairedString_a) hammer.pairedString_a->setMode(StringMode::HammerFTest);
-        if (hammer.pairedString_b) hammer.pairedString_b->setMode(StringMode::HammerFTest);
-        if (hammer.pairedString_c) hammer.pairedString_c->setMode(StringMode::HammerFTest);
-    }
-
+    hammer.setMode(HammerMode::HammerF);
+} else {
+    hammer.setMode(HammerMode::Normal);
+}
     hammer.setVIn(config.vin);
 
     std::ofstream csv(outputPath);
