@@ -113,10 +113,10 @@ void StringModel::stringMovement() {
 //        std::cout << activityProbe() << "\n";
 //        std::cout << "pairedHammer->pairedKey->key_active: " << pairedHammer->pairedKey->key_active << "\n";
 //        std::cout << "&pairedHammer->pairedKey->key_active: " << &pairedHammer->pairedKey->key_active << "\n";
-        if((activityProbe() < 0.01) && pairedHammer->pairedKey->key_active) {
-            pairedHammer->setInactive();
-            std::cout<<"!!!!!!!"<<"\n";
-        }
+//        if((activityProbe() < 0.01) && pairedHammer->pairedKey->key_active) {
+//            pairedHammer->setInactive();
+//            std::cout<<"!!!!!!!"<<"\n";
+//        }
         activityCounter = 0;
     }
 }
