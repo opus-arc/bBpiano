@@ -100,6 +100,9 @@ float StringModel::get_f0() const {
 // --------------------------------------------
 // MARK: 计算函数
 
+void StringModel::setMode(StringMode _mode) {
+    mode = _mode;
+}
 
 void StringModel::stringMovement() {
     
@@ -144,6 +147,21 @@ void StringModel::injectForce(int relative_i, float F) const {
     left[absolute_i_l] += delta;
 }
 
+void StringModel::injectHammerFStaggeredForce(int relative_i, float F) const {
+    
+    // 边界条件：要访问 right[M + 1]，所以 M 不能太靠右
+    const int M = std::clamp(relative_i, 1, delay_index - 2);
+    
+    const int absolute_i_l = rToAIndex_l(M);
+    const int absolute_i_r = rToAIndex_r(M + 1);
+    
+    const float delta = F / (2.0f * static_cast<float>(Z));
+    
+    // Bank 错位注入：left[M] 和 right[M + 1]
+    left[absolute_i_l] += delta;
+    right[absolute_i_r] += delta;
+}
+
 void StringModel::propagate() {
     
     // 先读边界
@@ -151,9 +169,12 @@ void StringModel::propagate() {
     float l_l_boundary_value = left[rToAIndex_l(0)];
     
     // 边界与滤波器
-    BoundaryFilter(l_l_boundary_value, true);
-    BoundaryFilter(r_r_boundary_value, false);
-    
+    // Normal 模式走原来的 fractional / dispersion / loss。
+    // HammerFTest 模式跳过这些滤波器，得到整数格点、无损耗、无色散的理想 DWG。
+    if(mode == StringMode::Normal){
+        BoundaryFilter(l_l_boundary_value, true);
+        BoundaryFilter(r_r_boundary_value, false);
+    }
     // 边界传播
     rightHead = (rightHead - 1 + delay_int) % delay_int; // 右边界向左移动 则波向右传播
     leftHead  = (leftHead + 1) % delay_int; // 左边界向右移动 则波向左传播
@@ -184,6 +205,13 @@ float StringModel::velocityAt(double p) const {
     return left[absolute_i_l] + right[absolute_i_r];
 }
 
+float StringModel::velocityAtGrid(int relative_i) const{
+    //注意是只读函数（专门给编程学到牛肚皮里去的fancy准备的注释）
+    relative_i = std::clamp(relative_i, 0, delay_index);
+    
+    return left[rToAIndex_l(relative_i)] + right[rToAIndex_r(relative_i)];
+}
+
 float StringModel::nextVelocityAt(double p) {
     // 边界条件
     p = std::clamp(p, 0.0, 1.0);
@@ -197,6 +225,27 @@ float StringModel::nextVelocityAt(double p) {
     return left[rToAIndex_l(relative_i_l_next)]
          + right[rToAIndex_r(relative_i_r_next)];
     
+}
+
+float StringModel::velocityAtHalfSample(int relative_i) const{
+    //边界条件
+    relative_i = std::clamp(relative_i, 1, delay_index - 1);
+    
+    
+    //y+(n+1, M) = y+(n, M - 1)
+    float yPlus = 0.5f * (
+            right[rToAIndex_r(relative_i)]
+          + right[rToAIndex_r(relative_i-1)]
+        );
+    
+    
+    //y-(n+1, M) = y-(n, M + 1)
+    float yMinus = 0.5f * (
+            left[rToAIndex_l(relative_i)]
+          + left[rToAIndex_l(relative_i + 1)]
+        );
+    
+    return yPlus + yMinus;
 }
     
 float StringModel::activityProbe() const {
@@ -265,5 +314,3 @@ float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
         return -boundary_value;
     }
 }
-
-
