@@ -57,7 +57,7 @@ struct blueBirdApp: App {
 
                 RootView()
             }
-            .frame(width: 88, height: 695)
+            .frame(width: 880, height: 695)
             .preferredColorScheme(.light)
         }
         .windowResizability(.contentSize)
