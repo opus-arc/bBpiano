@@ -57,7 +57,7 @@ struct blueBirdApp: App {
 
                 RootView()
             }
-            .frame(width: 88, height: 695)
+            .frame(width: 880, height: 695)
             .preferredColorScheme(.light)
         }
         .windowResizability(.contentSize)
@@ -105,7 +105,7 @@ struct RootView: View {
                     try SoundCard.shared.start()
                     print("Sound card started")
                     
-//                    // 
+                    // 
 //                    try MidiService.play(
 //                        playbackRate: 1,
 //                        startTime: 325,
@@ -113,7 +113,15 @@ struct RootView: View {
 //                            filePath: "/Users/opusarc/XCodeProjects/bBpiano/Doc/midi/Chopin - Scherzo No. 3 in C-sharp Minor, Op. 39.mid"
 //                        )!
 //                    )
-                    
+//                    
+                    try MidiService.play(
+                        playbackRate: 1,
+                        startTime: 0,
+                        midiFileURL: URL(
+                            filePath: "/Users/opusarc/Projects/XCodeProjects/bBpiano/Doc/midi/Mozart - Sonata in F Major, K332.mid"
+                        )!
+                    )
+//                    
 //                    try MidiService.play(
 //                        playbackRate: 1,
 //                        startTime: 0,

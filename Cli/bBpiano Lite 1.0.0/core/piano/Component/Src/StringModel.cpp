@@ -10,9 +10,10 @@
 #include "StringModel.hpp"
 #include "../HammerModel.hpp"
 #include "../KeyModel.hpp"
-#include "../../../ModelParameters/PrecomputedValue.hpp"
 
-#include "../../../../../AcousticLab/StringFilterLab/Utils/MyCSVReader.hpp"
+
+#include "../../Utils/MyCSVReader.hpp"
+#include "../../ModelParameters/PrecomputedValue.hpp"
 
 #include <array>
 #include <fstream>
@@ -67,23 +68,6 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     auto dispersion = MyCSVReader::getDispersionConstantByMidi(midi_n);
     dispersion_a1 = static_cast<float>(dispersion.a1);
     dispersion_order = static_cast<float>(dispersion.order);
-    
-    
-    if(midi_n == 69) {
-        std::cout << loss_g << ", " << loss_a1 << "\n";
-    }
-    
-    if (midi_n == 69) {
-        std::cout
-            << "midi_n: " << midi_n
-            << ", string_index: " << string_index
-            << ", f0: " << get_f0()
-//            << ", loopDelayTarget: " << loopDelayTarget
-//            << ", halfDelayTarget: " << halfDelayTarget
-            << ", Delay: " << delay
-//            << ", halfDelayFractional: " << halfDelayFractional
-            << "\n";
-    }
 
 }
 
@@ -117,7 +101,7 @@ void StringModel::stringMovement() {
 //        std::cout << "&pairedHammer->pairedKey->key_active: " << &pairedHammer->pairedKey->key_active << "\n";
         if((activityProbe() < 0.005) && pairedHammer->pairedKey->key_active) {
             pairedHammer->setInactive();
-            std::cout<<"!!!!!!!"<<"\n";
+//            std::cout<<"!!!!!!!"<<"\n";
         }
         activityCounter = 0;
     }

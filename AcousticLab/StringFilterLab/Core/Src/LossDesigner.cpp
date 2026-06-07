@@ -26,7 +26,7 @@ std::array<QuadraticRegressionResult, 109> smoothLossABCByMidi(
 void writeLossFilterConstantsCSV() {
     
     const fs::path outputPath =
-        "/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Generated/loss_filter_constants.csv";
+        "/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Generated/loss_filter_constants.csv";
 
     fs::create_directories(outputPath.parent_path());
 

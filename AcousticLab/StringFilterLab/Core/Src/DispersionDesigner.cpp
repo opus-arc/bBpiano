@@ -34,7 +34,7 @@ void writeDispersionFilterConstantsCSV() {
     
     double sampleRate = 44100.0;
     std::array<double, 109> accurateB = makeAccurateBByMidi();
-    std::ofstream csv("/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Generated/dispersion_filter_constants.csv");
+    std::ofstream csv("/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Generated/dispersion_filter_constants.csv");
     csv << "key,f0,a1,order,usedPartialCount,error\n";
     
     for(int midi_n_i = 21; midi_n_i <= 108; midi_n_i++) {

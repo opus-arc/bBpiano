@@ -10,6 +10,8 @@
 #define A4_STANDARD 440.0
 
 
+
+
 int MyPitch::nameToMidi(const std::string& noteName) {
     if (noteName.size() < 2) {
         throw std::invalid_argument("Invalid note name: " + noteName);

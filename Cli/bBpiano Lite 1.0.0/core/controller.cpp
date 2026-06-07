@@ -1,31 +1,28 @@
 //
-//  main.cpp
-//  bBpiano
+//  controller.cpp
+//  bBpiano Lite
 //
-//  Created by opus arc on 2026/4/4.
+//  Created by opus arc on 2026/6/7.
 //
 
-
-#include "main.hpp"
+#include "controller.hpp"
 #include <iostream>
 #include <atomic>
 #include <time.h>
 
+#include "piano/PianoModel.hpp"
 
+static std::unique_ptr<PianoModel> bBpiano;
 
+void bBpiano_init() {
+    if (!bBpiano) {
+        bBpiano = std::make_unique<PianoModel>();
+    }
+}
 
-//static std::unique_ptr<PianoModel> bBpiano;
-static PianoModel *bBpiano = new PianoModel();
-
-//void bBpiano_init() {
-//    if (!bBpiano) {
-//        bBpiano = std::make_unique<PianoModel>();
-//    }
-//}
-//
-//void bBpiano_shutdown() {
-//    bBpiano.reset();
-//}
+void bBpiano_shutdown() {
+    bBpiano.reset();
+}
 
 float sampleRate = 44100.0;
 float frequency = 440.0;
@@ -41,29 +38,9 @@ void get_next_buffer(float* out, int frameCount, double amplitudeLimiter) {
     const uint64_t start = clock_gettime_nsec_np(CLOCK_UPTIME_RAW);
     
     for (int i = 0; i < frameCount; ++i) {
-        
-//        int __midi_n = 93; // A6
-//        int __midi_n = 69; // A4
-//        int _midi_n = 71; // B4
-//        int __midi_n = 25; // A2
-        
-        
         if(bBpiano->pianoKeys.size() < 87) return;
-        
-//        double sum = 0.0;
-//        for(int midi_n = 43; midi_n < 45; midi_n++) { // 63 71
-//            bBpiano->pianoKeys[midi_n - 21]->keyMovement();
-//            sum += bBpiano->pianoKeys[midi_n - 21]->getSample();
-//            
-//        }
-        
         bBpiano->pianoMovement();
-    
-        
-//        out[i] = tanh(bBpiano->pianoKeys[__midi_n - 21].hammer->getSample());
         out[i] = bBpiano->getSample();
-
-        
     }
     
     const uint64_t end = clock_gettime_nsec_np(CLOCK_UPTIME_RAW);
@@ -92,25 +69,12 @@ void note_afterTouch(int midi_n, double pressure) {
     bBpiano->note_afterTouch(midi_n, pressure);
 }
 
-void set_hammer_mode(int mode) {
-    if(mode == 1) {
-        bBpiano->setHammerMode(HammerMode::HammerFPerform);
-    } else {
-        bBpiano->setHammerMode(HammerMode::Normal);
-    }
-}
-
 double get_engineRate() {
     return engineRate.load(std::memory_order_relaxed);
 }
-
 
 void all_silence() {
     for(auto& key : bBpiano->pianoKeys) {
         key->silence();
     }
 }
-
-
-
-
