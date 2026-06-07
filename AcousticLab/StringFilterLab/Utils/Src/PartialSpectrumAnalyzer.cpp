@@ -25,6 +25,19 @@
 #include <iostream>
 #include <system_error>
 
+void test() {
+    using std::cout;
+    const std::filesystem::path testRoot = "/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/decay_results.csv";
+    std::ofstream csv(testRoot);
+    
+    csv << "partial,f_partial,sigma,b,amp" << "\n";
+    
+    csv << 1 << 880 << 0.8 << 1 << 1 << static_cast<float>(0.2) << "\n";
+
+}
+
+
+
 bool isTestSpecificMidi = true;
 bool isTestSpecificVelocity = false;
 //int test_midi_n_begin = 53;
@@ -34,10 +47,10 @@ int test_midi_n_end = 108;
 std::string test_velocity = "95";
 
 namespace fs = std::filesystem;
-const fs::path generatedDataRoot = "/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Generated";
+const fs::path generatedDataRoot = "/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Generated";
 const fs::path spectrogramFolderPath = generatedDataRoot / "Spectrogram";
 const fs::path splitFolder =
-    "/Users/opusarc/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Split";
+    "/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Split";
 
 //const bool useSymmetricDoubleSidedLoss = true; // 双边反射各承担一半 loss, 如果以后改成单边滤波，这里改成 false。
 
