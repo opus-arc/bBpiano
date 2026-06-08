@@ -5,7 +5,7 @@
 //  Created by opus arc on 2026/6/7.
 //
 
-#define VERSION "1.0.0"
+#define VERSION "L0-α"
 
 #include <iostream>
 #include <csignal>
@@ -53,7 +53,7 @@ int main(int argc, const char * argv[]) {
        cmd == "-v") {
         printLogo();
         std::cout
-         << "bBpiano Lite " << VERSION << "\n";
+         << "   bBpiano Lite " << VERSION << "\n";
         return 0;
     } else if(cmd == "-zh" || cmd == "zh") {
         help_zh();
@@ -156,7 +156,6 @@ void signalHandler(int) {
 void help_zh() {
     
     std::cout
-        << "bBpiano Lite " << VERSION << "\n\n"
         << "用法:\n"
         << "  bbpiano run -k\n"
         << "  bbpiano run -p\n"
@@ -164,21 +163,12 @@ void help_zh() {
         << "命令:\n"
         << "  -k    电脑键盘演奏\n"
         << "  -p    MIDI 键盘演奏\n"
-        << "  -m    播放 MIDI 文件\n\n"
-        << "选项:\n"
-        << "  -v, --version   显示版本信息\n"
-        << "  zh, -zh         中文帮助\n"
-        << "  en, -en         English Help\n"
-        << "  ja, -ja         日本語ヘルプ\n\n"
-        << "MIDI 参数:\n"
-        << "  start   起始时间（秒）\n"
-        << "  rate    播放速度（默认 1.0）\n\n";
+        << "  -m    播放 MIDI 文件\n\n";
 }
 
 void help_en() {
     
     std::cout
-        << "bBpiano Lite " << VERSION << "\n\n"
         << "Usage:\n"
         << "  bbpiano run -k\n"
         << "  bbpiano run -p\n"
@@ -186,21 +176,12 @@ void help_en() {
         << "Commands:\n"
         << "  -k    Play with computer keyboard\n"
         << "  -p    Play with MIDI keyboard\n"
-        << "  -m    Play a MIDI file\n\n"
-        << "Options:\n"
-        << "  -v, --version   Show version information\n"
-        << "  zh, -zh         中文帮助\n"
-        << "  en, -en         English Help\n"
-        << "  ja, -ja         日本語ヘルプ\n\n"
-        << "MIDI Parameters:\n"
-        << "  start   Start time in seconds\n"
-        << "  rate    Playback speed (default: 1.0)\n\n";
+        << "  -m    Play a MIDI file\n\n";
 }
 
 void help_ja() {
     
     std::cout
-        << "bBpiano Lite " << VERSION << "\n\n"
         << "使用方法:\n"
         << "  bbpiano run -k\n"
         << "  bbpiano run -p\n"
@@ -208,22 +189,16 @@ void help_ja() {
         << "コマンド:\n"
         << "  -k    PCキーボードで演奏\n"
         << "  -p    MIDIキーボードで演奏\n"
-        << "  -m    MIDIファイルを再生\n\n"
-        << "オプション:\n"
-        << "  -v, --version   バージョン情報を表示\n"
-        << "  zh, -zh         中文帮助\n"
-        << "  en, -en         English Help\n"
-        << "  ja, -ja         日本語ヘルプ\n\n"
-        << "MIDI パラメータ:\n"
-        << "  start   開始位置（秒）\n"
-        << "  rate    再生速度（デフォルト: 1.0）\n\n";
+        << "  -m    MIDIファイルを再生\n\n";
 }
 
 void printLogo() {
     static constexpr const char* logo = 
  R"(
     ┌──────────────────────────────────────┐
-    │  bBpiano Lite                        │
+    │                                      │
+    │  bBpiano 0                           │                          
+    │  L-α/260607                          │                          
     │                                      │
     │  Physical Modeling Piano             │
     │                                      │
@@ -231,8 +206,10 @@ void printLogo() {
     │  Ziyang Tan · Zhuoran Chen           │
     │                                      │
     │  bBSonicLab                          │
-    │  2026-06-07                          │
-    └──────────────────────────────────────┘)";
+    └──────────────────────────────────────┘
 
-    std::cout << logo << "\n\n";
+    纪念一段以创伤为代价的求索。
+)";
+
+    std::cout << logo << "\n";
 }

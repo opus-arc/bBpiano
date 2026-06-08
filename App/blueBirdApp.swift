@@ -114,13 +114,13 @@ struct RootView: View {
 //                        )!
 //                    )
 //                    
-                    try MidiService.play(
-                        playbackRate: 1,
-                        startTime: 0,
-                        midiFileURL: URL(
-                            filePath: "/Users/opusarc/Projects/XCodeProjects/bBpiano/Doc/midi/Mozart - Sonata in F Major, K332.mid"
-                        )!
-                    )
+//                    try MidiService.play(
+//                        playbackRate: 1,
+//                        startTime: 0,
+//                        midiFileURL: URL(
+//                            filePath: "/Users/opusarc/Projects/XCodeProjects/bBpiano/Doc/midi/Mozart - Sonata in F Major, K332.mid"
+//                        )!
+//                    )
 //                    
 //                    try MidiService.play(
 //                        playbackRate: 1,

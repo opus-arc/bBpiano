@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "142C184F2FD5036700685F41"
-               BuildableName = "bbl"
-               BlueprintName = "bbl"
+               BuildableName = "bbpl"
+               BlueprintName = "bbpl"
                ReferencedContainer = "container:bBpiano.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -46,8 +46,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "142C184F2FD5036700685F41"
-            BuildableName = "bbl"
-            BlueprintName = "bbl"
+            BuildableName = "bbpl"
+            BlueprintName = "bbpl"
             ReferencedContainer = "container:bBpiano.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -70,8 +70,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "142C184F2FD5036700685F41"
-            BuildableName = "bbl"
-            BlueprintName = "bbl"
+            BuildableName = "bbpl"
+            BlueprintName = "bbpl"
             ReferencedContainer = "container:bBpiano.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
