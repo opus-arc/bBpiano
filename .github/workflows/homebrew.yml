@@ -3,17 +3,23 @@ name: Update Homebrew Formula
 on:
   release:
     types: [published, edited]
+
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, for example L0-beta"
+        required: true
+        type: string
 
 jobs:
   update-homebrew-formula:
-    if: startsWith(github.ref_name, 'L')
+    if: startsWith(github.event.release.tag_name || inputs.tag, 'L')
     runs-on: ubuntu-latest
 
     steps:
       - name: Set release variables
         run: |
-          TAG="${GITHUB_REF_NAME}"
+          TAG="${{ github.event.release.tag_name || inputs.tag }}"
           ZIP="bBpiano-${TAG}-macOS-arm64.zip"
           URL="https://github.com/opus-arc/bBpiano/releases/download/${TAG}/${ZIP}"
 
