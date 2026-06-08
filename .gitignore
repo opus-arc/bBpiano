@@ -10,4 +10,6 @@ AcousticLab/HammerLab/.Generated/
 !/Doc/
 !/Doc/**
 
+/Cli/_archive_local
+
 /AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples

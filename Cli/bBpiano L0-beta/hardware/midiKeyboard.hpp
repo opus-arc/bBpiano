@@ -9,14 +9,13 @@
 #define midiKeyboard_hpp
 
 #include "../core/controller.hpp"
-#include "../external/RtMidi.h"
+#include "./midiInputHub.hpp"
+#include "midiInputHub.hpp"
 
 #include <cstdint>
 #include <condition_variable>
-#include <memory>
-#include <stdexcept>
 #include <mutex>
-#include <vector>
+#include <stdexcept>
 
 class MidiKeyboard {
 public:
@@ -29,23 +28,11 @@ public:
             return;
         }
 
-        RtMidiIn probe;
-        const unsigned int portCount = probe.getPortCount();
+        MidiInputHub::start();
 
-        if (portCount == 0) {
-            throw std::runtime_error("No MIDI input device found.");
-        }
-
-        inputs_.clear();
-        inputs_.reserve(portCount);
-
-        for (unsigned int port = 0; port < portCount; ++port) {
-            auto input = std::make_unique<RtMidiIn>();
-            input->ignoreTypes(false, false, false);
-            input->setCallback(&MidiKeyboard::midiCallback, nullptr);
-            input->openPort(port);
-            inputs_.push_back(std::move(input));
-        }
+        handlerToken_ = MidiInputHub::addHandler([](const std::vector<uint8_t>& message) {
+            handleMessage(message);
+        });
 
         {
             std::lock_guard<std::mutex> lock(mutex_);
@@ -63,13 +50,14 @@ public:
 
         all_silence();
 
-        for (auto& input : inputs_) {
-            if (input != nullptr && input->isPortOpen()) {
-                input->closePort();
-            }
+        if (handlerToken_ != 0) {
+            MidiInputHub::removeHandler(handlerToken_);
+            handlerToken_ = 0;
         }
 
-        inputs_.clear();
+        if (!MidiInputHub::hasHandlers()) {
+            MidiInputHub::stop();
+        }
 
         {
             std::lock_guard<std::mutex> lock(mutex_);
@@ -91,25 +79,12 @@ public:
     }
 
 private:
-    static void midiCallback(
-        double /* deltaTime */,
-        std::vector<unsigned char>* message,
-        void* userData
-    ) {
-        static_cast<void>(userData);
-        if (message == nullptr) {
-            return;
-        }
-
-        handleMessage(*message);
-    }
-
-    static void handleMessage(const std::vector<unsigned char>& message) {
+    static void handleMessage(const std::vector<uint8_t>& message) {
         if (message.empty()) {
             return;
         }
 
-        const uint8_t status = static_cast<uint8_t>(message[0]);
+        const uint8_t status = message[0];
         const uint8_t statusType = status & 0xF0;
 
         switch (statusType) {
@@ -161,7 +136,8 @@ private:
     inline static std::mutex mutex_;
     inline static std::condition_variable condition_;
     inline static bool running_ = false;
-    inline static std::vector<std::unique_ptr<RtMidiIn>> inputs_;
+
+    inline static int handlerToken_ = 0;
 };
 
 #endif /* midiKeyboard_hpp */

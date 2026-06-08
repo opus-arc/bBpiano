@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		142C18C42FD52A2A00685F41 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C32FD52A2A00685F41 /* CoreAudio.framework */; };
-		142C18C62FD52A3300685F41 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C52FD52A3300685F41 /* CoreFoundation.framework */; };
-		142C18CA2FD52A8600685F41 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C92FD52A8600685F41 /* CoreMIDI.framework */; };
+		147D713D2FD6F9CB008F3BF8 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C32FD52A2A00685F41 /* CoreAudio.framework */; };
+		147D71402FD6F9F1008F3BF8 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C52FD52A3300685F41 /* CoreFoundation.framework */; };
+		147D71412FD6F9F9008F3BF8 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C92FD52A8600685F41 /* CoreMIDI.framework */; };
+		147D71502FD70102008F3BF8 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C72FD52A3C00685F41 /* AudioToolbox.framework */; };
 		14DCEED32FD579E500243BB5 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 147EE0CA2FC3E4AF0004B0D4 /* Inject */; };
 /* End PBXBuildFile section */
 
@@ -32,7 +33,7 @@
 			);
 			name = "Embed Frameworks";
 		};
-		142C184E2FD5036700685F41 /* CopyFiles */ = {
+		147D71342FD6F9B6008F3BF8 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			dstPath = /usr/share/man/man1/;
 			dstSubfolder = None;
@@ -43,52 +44,32 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		142C18502FD5036700685F41 /* bbpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbpl; sourceTree = BUILT_PRODUCTS_DIR; };
 		142C18C32FD52A2A00685F41 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		142C18C52FD52A3300685F41 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		142C18C72FD52A3C00685F41 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		142C18C92FD52A8600685F41 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		14553D072FC14D60008E3CD7 /* HammerStringEvaluationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HammerStringEvaluationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		146587D62FA42DAF009F5C08 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		147D71362FD6F9B6008F3BF8 /* bbpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbpl; sourceTree = BUILT_PRODUCTS_DIR; };
+		147D713E2FD6F9D7008F3BF8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		14E708362F78BE0C005C806C /* bBpiano.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bBpiano.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		142C185E2FD5038400685F41 /* Exceptions for "Cli" folder in "bbpl" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"bBpiano Lite 1.0.0/core/controller.cpp",
-				"bBpiano Lite 1.0.0/core/piano/Component/Src/DamperModel.cpp",
-				"bBpiano Lite 1.0.0/core/piano/Component/Src/HammerModel.cpp",
-				"bBpiano Lite 1.0.0/core/piano/Component/Src/KeyModel.cpp",
-				"bBpiano Lite 1.0.0/core/piano/Component/Src/PedalModel.cpp",
-				"bBpiano Lite 1.0.0/core/piano/Component/Src/StringModel.cpp",
-				"bBpiano Lite 1.0.0/core/piano/ModelParameters/ModelParameters.cpp",
-				"bBpiano Lite 1.0.0/core/piano/ModelParameters/PrecomputedValue.cpp",
-				"bBpiano Lite 1.0.0/core/piano/PianoModel.cpp",
-				"bBpiano Lite 1.0.0/core/piano/Utils/MyCSVReader.cpp",
-				"bBpiano Lite 1.0.0/external/RtAudio.cpp",
-				"bBpiano Lite 1.0.0/external/RtMidi.cpp",
-				"bBpiano Lite 1.0.0/main.cpp",
-			);
-			target = 142C184F2FD5036700685F41 /* bbpl */;
-		};
 		142C18652FD5133400685F41 /* Exceptions for "Cli" folder in "bBpiano" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"bBpiano Lite 1.0.0/core/controller.cpp",
-				"bBpiano Lite 1.0.0/core/piano/Component/Src/DamperModel.cpp",
-				"bBpiano Lite 1.0.0/core/piano/Component/Src/HammerModel.cpp",
-				"bBpiano Lite 1.0.0/core/piano/Component/Src/KeyModel.cpp",
-				"bBpiano Lite 1.0.0/core/piano/Component/Src/PedalModel.cpp",
-				"bBpiano Lite 1.0.0/core/piano/Component/Src/StringModel.cpp",
-				"bBpiano Lite 1.0.0/core/piano/ModelParameters/ModelParameters.cpp",
-				"bBpiano Lite 1.0.0/core/piano/ModelParameters/PrecomputedValue.cpp",
-				"bBpiano Lite 1.0.0/core/piano/PianoModel.cpp",
-				"bBpiano Lite 1.0.0/core/piano/Utils/MyCSVReader.cpp",
-				"bBpiano Lite 1.0.0/external/RtAudio.cpp",
-				"bBpiano Lite 1.0.0/external/RtMidi.cpp",
-				"bBpiano Lite 1.0.0/main.cpp",
+				"bBpiano L0-beta/core/controller.cpp",
+				"bBpiano L0-beta/core/piano/Component/Src/DamperModel.cpp",
+				"bBpiano L0-beta/core/piano/Component/Src/HammerModel.cpp",
+				"bBpiano L0-beta/core/piano/Component/Src/KeyModel.cpp",
+				"bBpiano L0-beta/core/piano/Component/Src/PedalModel.cpp",
+				"bBpiano L0-beta/core/piano/Component/Src/StringModel.cpp",
+				"bBpiano L0-beta/core/piano/ModelParameters/ModelParameters.cpp",
+				"bBpiano L0-beta/core/piano/ModelParameters/PrecomputedValue.cpp",
+				"bBpiano L0-beta/core/piano/PianoModel.cpp",
+				"bBpiano L0-beta/core/piano/Utils/MyCSVReader.cpp",
+				"bBpiano L0-beta/main.cpp",
 			);
 			target = 14E708352F78BE0C005C806C /* bBpiano */;
 		};
@@ -120,6 +101,23 @@
 			);
 			target = 14553D062FC14D60008E3CD7 /* HammerStringEvaluationTests */;
 		};
+		147D714F2FD6FA1C008F3BF8 /* Exceptions for "Cli" folder in "bBpiano Lite" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"bBpiano L0-beta/core/controller.cpp",
+				"bBpiano L0-beta/core/piano/Component/Src/DamperModel.cpp",
+				"bBpiano L0-beta/core/piano/Component/Src/HammerModel.cpp",
+				"bBpiano L0-beta/core/piano/Component/Src/KeyModel.cpp",
+				"bBpiano L0-beta/core/piano/Component/Src/PedalModel.cpp",
+				"bBpiano L0-beta/core/piano/Component/Src/StringModel.cpp",
+				"bBpiano L0-beta/core/piano/ModelParameters/ModelParameters.cpp",
+				"bBpiano L0-beta/core/piano/ModelParameters/PrecomputedValue.cpp",
+				"bBpiano L0-beta/core/piano/PianoModel.cpp",
+				"bBpiano L0-beta/core/piano/Utils/MyCSVReader.cpp",
+				"bBpiano L0-beta/main.cpp",
+			);
+			target = 147D71352FD6F9B6008F3BF8 /* bBpiano Lite */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -127,7 +125,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				142C18652FD5133400685F41 /* Exceptions for "Cli" folder in "bBpiano" target */,
-				142C185E2FD5038400685F41 /* Exceptions for "Cli" folder in "bbpl" target */,
+				147D714F2FD6FA1C008F3BF8 /* Exceptions for "Cli" folder in "bBpiano Lite" target */,
 			);
 			path = Cli;
 			sourceTree = "<group>";
@@ -172,17 +170,18 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		142C184D2FD5036700685F41 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			files = (
-				142C18C62FD52A3300685F41 /* CoreFoundation.framework in Frameworks */,
-				142C18C42FD52A2A00685F41 /* CoreAudio.framework in Frameworks */,
-				142C18CA2FD52A8600685F41 /* CoreMIDI.framework in Frameworks */,
-			);
-		};
 		14553D042FC14D60008E3CD7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+			);
+		};
+		147D71332FD6F9B6008F3BF8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				147D71402FD6F9F1008F3BF8 /* CoreFoundation.framework in Frameworks */,
+				147D71412FD6F9F9008F3BF8 /* CoreMIDI.framework in Frameworks */,
+				147D713D2FD6F9CB008F3BF8 /* CoreAudio.framework in Frameworks */,
+				147D71502FD70102008F3BF8 /* AudioToolbox.framework in Frameworks */,
 			);
 		};
 		14E708332F78BE0C005C806C /* Frameworks */ = {
@@ -197,6 +196,7 @@
 		142C18C22FD52A2A00685F41 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				147D713E2FD6F9D7008F3BF8 /* AVFoundation.framework */,
 				142C18C92FD52A8600685F41 /* CoreMIDI.framework */,
 				142C18C72FD52A3C00685F41 /* AudioToolbox.framework */,
 				142C18C52FD52A3300685F41 /* CoreFoundation.framework */,
@@ -226,7 +226,7 @@
 			children = (
 				14E708362F78BE0C005C806C /* bBpiano.app */,
 				14553D072FC14D60008E3CD7 /* HammerStringEvaluationTests.xctest */,
-				142C18502FD5036700685F41 /* bbpl */,
+				147D71362FD6F9B6008F3BF8 /* bbpl */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -234,21 +234,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		142C184F2FD5036700685F41 /* bbpl */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 142C18542FD5036700685F41 /* Build configuration list for PBXNativeTarget "bbpl" */;
-			buildPhases = (
-				142C184C2FD5036700685F41 /* Sources */,
-				142C184D2FD5036700685F41 /* Frameworks */,
-				142C184E2FD5036700685F41 /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			name = bbpl;
-			productName = "bBpiano Lite";
-			productReference = 142C18502FD5036700685F41 /* bbpl */;
-			productType = "com.apple.product-type.tool";
-		};
 		14553D062FC14D60008E3CD7 /* HammerStringEvaluationTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 14553D0D2FC14D61008E3CD7 /* Build configuration list for PBXNativeTarget "HammerStringEvaluationTests" */;
@@ -266,6 +251,21 @@
 			productName = HammerStringEvaluationTests;
 			productReference = 14553D072FC14D60008E3CD7 /* HammerStringEvaluationTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		147D71352FD6F9B6008F3BF8 /* bBpiano Lite */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 147D713A2FD6F9B6008F3BF8 /* Build configuration list for PBXNativeTarget "bBpiano Lite" */;
+			buildPhases = (
+				147D71322FD6F9B6008F3BF8 /* Sources */,
+				147D71332FD6F9B6008F3BF8 /* Frameworks */,
+				147D71342FD6F9B6008F3BF8 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			name = "bBpiano Lite";
+			productName = "bBpiano Lite";
+			productReference = 147D71362FD6F9B6008F3BF8 /* bbpl */;
+			productType = "com.apple.product-type.tool";
 		};
 		14E708352F78BE0C005C806C /* bBpiano */ = {
 			isa = PBXNativeTarget;
@@ -304,13 +304,13 @@
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
-					142C184F2FD5036700685F41 = {
-						CreatedOnToolsVersion = 26.2;
-					};
 					14553D062FC14D60008E3CD7 = {
 						CreatedOnToolsVersion = 26.2;
 						LastSwiftMigration = 2620;
 						TestTargetID = 14E708352F78BE0C005C806C;
+					};
+					147D71352FD6F9B6008F3BF8 = {
+						CreatedOnToolsVersion = 26.2;
 					};
 					14E708352F78BE0C005C806C = {
 						CreatedOnToolsVersion = 26.2;
@@ -337,7 +337,7 @@
 			targets = (
 				14E708352F78BE0C005C806C /* bBpiano */,
 				14553D062FC14D60008E3CD7 /* HammerStringEvaluationTests */,
-				142C184F2FD5036700685F41 /* bbpl */,
+				147D71352FD6F9B6008F3BF8 /* bBpiano Lite */,
 			);
 		};
 /* End PBXProject section */
@@ -367,12 +367,12 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		142C184C2FD5036700685F41 /* Sources */ = {
+		14553D032FC14D60008E3CD7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
 			);
 		};
-		14553D032FC14D60008E3CD7 /* Sources */ = {
+		147D71322FD6F9B6008F3BF8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
 			);
@@ -393,36 +393,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		142C18552FD5036700685F41 /* Debug configuration for PBXNativeTarget "bbpl" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = L746W9JTR3;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
-					__MACOSX_CORE__,
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 26.2;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		142C18562FD5036700685F41 /* Release configuration for PBXNativeTarget "bbpl" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = L746W9JTR3;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = __MACOSX_CORE__;
-				MACOSX_DEPLOYMENT_TARGET = 26.2;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		14553D0E2FC14D61008E3CD7 /* Debug configuration for PBXNativeTarget "HammerStringEvaluationTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -467,6 +437,30 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/bBpiano.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/bBpiano";
+			};
+			name = Release;
+		};
+		147D713B2FD6F9B6008F3BF8 /* Debug configuration for PBXNativeTarget "bBpiano Lite" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = L746W9JTR3;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				PRODUCT_NAME = bbpl;
+			};
+			name = Debug;
+		};
+		147D713C2FD6F9B6008F3BF8 /* Release configuration for PBXNativeTarget "bBpiano Lite" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = L746W9JTR3;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				PRODUCT_NAME = bbpl;
 			};
 			name = Release;
 		};
@@ -684,19 +678,19 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		142C18542FD5036700685F41 /* Build configuration list for PBXNativeTarget "bbpl" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				142C18552FD5036700685F41 /* Debug configuration for PBXNativeTarget "bbpl" */,
-				142C18562FD5036700685F41 /* Release configuration for PBXNativeTarget "bbpl" */,
-			);
-			defaultConfigurationName = Release;
-		};
 		14553D0D2FC14D61008E3CD7 /* Build configuration list for PBXNativeTarget "HammerStringEvaluationTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				14553D0E2FC14D61008E3CD7 /* Debug configuration for PBXNativeTarget "HammerStringEvaluationTests" */,
 				14553D0F2FC14D61008E3CD7 /* Release configuration for PBXNativeTarget "HammerStringEvaluationTests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		147D713A2FD6F9B6008F3BF8 /* Build configuration list for PBXNativeTarget "bBpiano Lite" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				147D713B2FD6F9B6008F3BF8 /* Debug configuration for PBXNativeTarget "bBpiano Lite" */,
+				147D713C2FD6F9B6008F3BF8 /* Release configuration for PBXNativeTarget "bBpiano Lite" */,
 			);
 			defaultConfigurationName = Release;
 		};
