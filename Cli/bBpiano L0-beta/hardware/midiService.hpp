@@ -4,6 +4,8 @@
 //
 //  Created by opus arc on 2026/6/7.
 //
+//  平台无关代码，通用
+//
 
 #ifndef midiService_hpp
 #define midiService_hpp
@@ -99,8 +101,26 @@ private:
 };
 
 class MidiService {
-private:
+public:
     struct MidiEvent {
+    static std::vector<MidiEvent> loadEvents(
+        const std::string& midiFilePath
+    ) {
+        std::vector<uint8_t> data = readWholeFile(midiFilePath);
+
+        std::vector<MidiEvent> allEvents = parseMidiFile(std::move(data));
+        std::vector<MidiEvent> pianoEvents = selectPianoEvents(allEvents);
+
+        std::sort(
+            pianoEvents.begin(),
+            pianoEvents.end(),
+            [](const MidiEvent& lhs, const MidiEvent& rhs) {
+                return lhs.timeInSeconds < rhs.timeInSeconds;
+            }
+        );
+
+        return pianoEvents;
+    }
         uint64_t tick = 0;
         double timeInSeconds = 0.0;
         uint8_t status = 0;
@@ -233,9 +253,7 @@ public:
 
         stop();
 
-        std::vector<uint8_t> data = readWholeFile(midiFilePath);
-        std::vector<MidiEvent> allEvents = parseMidiFile(std::move(data));
-        std::vector<MidiEvent> pianoEvents = selectPianoEvents(allEvents);
+        std::vector<MidiEvent> pianoEvents = MidiEvent::loadEvents(midiFilePath);
 
         const double safeStartTime = std::max(0.0, startTime);
 

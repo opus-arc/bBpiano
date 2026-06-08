@@ -5,7 +5,7 @@
 //  Created by opus arc on 2026/6/7.
 //
 
-#define VERSION "L0-α"
+#define VERSION "L0-β"
 
 #include <iostream>
 #include <csignal>
@@ -14,6 +14,9 @@
 #include "./hardware/midiService.hpp"
 #include "./hardware/midiKeyboard.hpp"
 #include "./hardware/pcKeyboard.hpp"
+
+#include "./hardware/midiRecorder.hpp"
+#include "./hardware/midiExporter.hpp"
 
 #include "./core/controller.hpp"
 
@@ -96,9 +99,11 @@ void run(int argc, const char * argv[]){
             if(cmd == "-t") { // touchboard
                 // TODO: touchboard
             } else if (cmd == "-k") { // keyboard
+                SoundCard::shared().start();
                 PcKeyboard::shared().start();
                 PcKeyboard::shared().waitUntilStopped();
             } else if (cmd == "-p") { // piano
+                SoundCard::shared().start();
                 MidiKeyboard::start();
                 MidiKeyboard::waitUntilStopped();
             } else if (cmd == "-m") { // midifile
@@ -107,6 +112,8 @@ void run(int argc, const char * argv[]){
                     std::cerr << "No MIDI file path provided.\n";
                     return;
                 }
+                
+                SoundCard::shared().start();
                 
                 std::string midiFilePath = argv[3];
                 double playbackRate = 1.0;
@@ -122,7 +129,31 @@ void run(int argc, const char * argv[]){
                 
                 MidiService::play(playbackRate, startTime, midiFilePath);
                 MidiService::waitUntilFinished();
+            } else if (cmd == "-e") {
+                if (argc < 4) {
+                    std::cerr << "No MIDI file path provided.\n";
+                    return;
+                }
+
+                std::string midiFilePath = argv[3];
+                std::string outputWavPath;
+                if (argc >= 5) {
+                    outputWavPath = argv[4];
+                }
+
+                MidiExporter::exportWav(midiFilePath, outputWavPath);
+            } else if(cmd == "-pr") {
+                SoundCard::shared().start();
+                std::string recordFilePath;
+                if (argc >= 4) {
+                    recordFilePath = argv[3];
+                }
+
+                MidiRecorder::start(recordFilePath);
+                MidiKeyboard::start();
+                MidiKeyboard::waitUntilStopped();
             }
+            
         } catch (const std::exception& error) {
             shotdown_engine();
             std::cerr << "Error: " << error.what() << '\n';
@@ -134,7 +165,6 @@ void run(int argc, const char * argv[]){
 
 void init_engine() {
     bBpiano_init();
-    SoundCard::shared().start();
 }
 void shotdown_engine() {
     std::cout << "\nStopping...\n";
@@ -144,6 +174,7 @@ void shotdown_engine() {
     MidiService::stop();
     PcKeyboard::shared().stop();
     MidiKeyboard::stop();
+    MidiRecorder::stop();
 }
 
 void signalHandler(int) {
@@ -157,48 +188,60 @@ void help_zh() {
     
     std::cout
         << "用法:\n"
-        << "  bbpiano run -k\n"
-        << "  bbpiano run -p\n"
-        << "  bbpiano run -m <file.mid> [start] [rate]\n\n"
+        << "  bbpl run -k\n"
+        << "  bbpl run -p\n"
+        << "  bbpl run -pr [output.mid]\n"
+        << "  bbpl run -m <file.mid> [start] [rate]\n"
+        << "  bbpl run -e <file.mid> [output.wav]\n\n"
         << "命令:\n"
         << "  -k    电脑键盘演奏\n"
         << "  -p    MIDI 键盘演奏\n"
-        << "  -m    播放 MIDI 文件\n\n";
+        << "  -pr   MIDI 键盘演奏并录制\n"
+        << "  -m    播放 MIDI 文件\n"
+        << "  -e    将 MIDI 文件导出为 WAV\n\n";
 }
 
 void help_en() {
     
     std::cout
         << "Usage:\n"
-        << "  bbpiano run -k\n"
-        << "  bbpiano run -p\n"
-        << "  bbpiano run -m <file.mid> [start] [rate]\n\n"
+        << "  bbpl run -k\n"
+        << "  bbpl run -p\n"
+        << "  bbpl run -pr [output.mid]\n"
+        << "  bbpl run -m <file.mid> [start] [rate]\n"
+        << "  bbpl run -e <file.mid> [output.wav]\n\n"
         << "Commands:\n"
         << "  -k    Play with computer keyboard\n"
         << "  -p    Play with MIDI keyboard\n"
-        << "  -m    Play a MIDI file\n\n";
+        << "  -pr   Play with MIDI keyboard and record\n"
+        << "  -m    Play a MIDI file\n"
+        << "  -e    Export a MIDI file to WAV\n\n";
 }
 
 void help_ja() {
     
     std::cout
         << "使用方法:\n"
-        << "  bbpiano run -k\n"
-        << "  bbpiano run -p\n"
-        << "  bbpiano run -m <file.mid> [start] [rate]\n\n"
+        << "  bbpl run -k\n"
+        << "  bbpl run -p\n"
+        << "  bbpl run -pr [output.mid]\n"
+        << "  bbpl run -m <file.mid> [start] [rate]\n"
+        << "  bbpl run -e <file.mid> [output.wav]\n\n"
         << "コマンド:\n"
         << "  -k    PCキーボードで演奏\n"
         << "  -p    MIDIキーボードで演奏\n"
-        << "  -m    MIDIファイルを再生\n\n";
+        << "  -pr   MIDIキーボードで演奏しながら録音\n"
+        << "  -m    MIDIファイルを再生\n"
+        << "  -e    MIDIファイルをWAVとして書き出し\n\n";
 }
 
 void printLogo() {
-    static constexpr const char* logo = 
+    static constexpr const char* logo =
  R"(
     ┌──────────────────────────────────────┐
     │                                      │
     │  bBpiano 0                           │                          
-    │  L-α/260607                          │                          
+    │  L-β/260608                          │                          
     │                                      │
     │  Physical Modeling Piano             │
     │                                      │
@@ -207,8 +250,6 @@ void printLogo() {
     │                                      │
     │  bBSonicLab                          │
     └──────────────────────────────────────┘
-
-    纪念一段以创伤为代价的求索。
 )";
 
     std::cout << logo << "\n";
