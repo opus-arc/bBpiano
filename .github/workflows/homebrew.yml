@@ -1,0 +1,60 @@
+name: Update Homebrew Formula
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-homebrew-formula:
+    runs-on: macos-latest
+
+    steps:
+      - name: Set release variables
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          ZIP="bBpiano-${TAG}-macOS-arm64.zip"
+          URL="https://github.com/opus-arc/bBpiano/releases/download/${TAG}/${ZIP}"
+
+          echo "TAG=${TAG}" >> "$GITHUB_ENV"
+          echo "ZIP=${ZIP}" >> "$GITHUB_ENV"
+          echo "URL=${URL}" >> "$GITHUB_ENV"
+
+      - name: Verify release asset exists
+        run: |
+          curl -fL --head "$URL"
+
+      - name: Calculate SHA256
+        run: |
+          SHA256=$(curl -fL "$URL" | shasum -a 256 | awk '{print $1}')
+          echo "SHA256=${SHA256}" >> "$GITHUB_ENV"
+
+      - name: Checkout Homebrew tap
+        uses: actions/checkout@v4
+        with:
+          repository: opus-arc/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: homebrew-tap
+
+      - name: Update Formula
+        working-directory: homebrew-tap
+        run: |
+          FORMULA="Formula/bbpiano-l.rb"
+
+          sed -i '' "s|^  url .*|  url \"${URL}\"|" "$FORMULA"
+          sed -i '' "s|^  sha256 .*|  sha256 \"${SHA256}\"|" "$FORMULA"
+
+      - name: Commit and push Formula update
+        working-directory: homebrew-tap
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add Formula/bbpiano-l.rb
+
+          if git diff --cached --quiet; then
+            echo "Formula is already up to date."
+            exit 0
+          fi
+
+          git commit -m "Update bbpiano-l formula for ${TAG}"
+          git push
