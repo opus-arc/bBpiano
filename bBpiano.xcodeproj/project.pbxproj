@@ -41,6 +41,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		14D55CDA2FD8273E00F009D7 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolder = None;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +60,7 @@
 		146587D62FA42DAF009F5C08 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		147D71362FD6F9B6008F3BF8 /* bbpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbpl; sourceTree = BUILT_PRODUCTS_DIR; };
 		147D713E2FD6F9D7008F3BF8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		14D55CDC2FD8273E00F009D7 /* bbps */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbps; sourceTree = BUILT_PRODUCTS_DIR; };
 		14E708362F78BE0C005C806C /* bBpiano.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bBpiano.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -59,17 +68,23 @@
 		142C18652FD5133400685F41 /* Exceptions for "Cli" folder in "bBpiano" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"bBpiano L0-beta/core/controller.cpp",
-				"bBpiano L0-beta/core/piano/Component/Src/DamperModel.cpp",
-				"bBpiano L0-beta/core/piano/Component/Src/HammerModel.cpp",
-				"bBpiano L0-beta/core/piano/Component/Src/KeyModel.cpp",
-				"bBpiano L0-beta/core/piano/Component/Src/PedalModel.cpp",
-				"bBpiano L0-beta/core/piano/Component/Src/StringModel.cpp",
-				"bBpiano L0-beta/core/piano/ModelParameters/ModelParameters.cpp",
-				"bBpiano L0-beta/core/piano/ModelParameters/PrecomputedValue.cpp",
-				"bBpiano L0-beta/core/piano/PianoModel.cpp",
-				"bBpiano L0-beta/core/piano/Utils/MyCSVReader.cpp",
-				"bBpiano L0-beta/main.cpp",
+				"bBpiano Lite/core/controller.cpp",
+				"bBpiano Lite/core/piano/Component/Src/DamperModel.cpp",
+				"bBpiano Lite/core/piano/Component/Src/HammerModel.cpp",
+				"bBpiano Lite/core/piano/Component/Src/KeyModel.cpp",
+				"bBpiano Lite/core/piano/Component/Src/PedalModel.cpp",
+				"bBpiano Lite/core/piano/Component/Src/StringModel.cpp",
+				"bBpiano Lite/core/piano/ModelParameters/ModelParameters.cpp",
+				"bBpiano Lite/core/piano/ModelParameters/PrecomputedValue.cpp",
+				"bBpiano Lite/core/piano/PianoModel.cpp",
+				"bBpiano Lite/core/piano/Utils/MyCSVReader.cpp",
+				"bBpiano Lite/main.cpp",
+				"bBpiano Sonic/external/fft/kfc.c",
+				"bBpiano Sonic/external/fft/kiss_fft.c",
+				"bBpiano Sonic/external/fft/kiss_fftnd.c",
+				"bBpiano Sonic/external/fft/kiss_fftndr.c",
+				"bBpiano Sonic/external/fft/kiss_fftr.c",
+				"bBpiano Sonic/main.cpp",
 			);
 			target = 14E708352F78BE0C005C806C /* bBpiano */;
 		};
@@ -104,19 +119,31 @@
 		147D714F2FD6FA1C008F3BF8 /* Exceptions for "Cli" folder in "bBpiano Lite" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"bBpiano L0-beta/core/controller.cpp",
-				"bBpiano L0-beta/core/piano/Component/Src/DamperModel.cpp",
-				"bBpiano L0-beta/core/piano/Component/Src/HammerModel.cpp",
-				"bBpiano L0-beta/core/piano/Component/Src/KeyModel.cpp",
-				"bBpiano L0-beta/core/piano/Component/Src/PedalModel.cpp",
-				"bBpiano L0-beta/core/piano/Component/Src/StringModel.cpp",
-				"bBpiano L0-beta/core/piano/ModelParameters/ModelParameters.cpp",
-				"bBpiano L0-beta/core/piano/ModelParameters/PrecomputedValue.cpp",
-				"bBpiano L0-beta/core/piano/PianoModel.cpp",
-				"bBpiano L0-beta/core/piano/Utils/MyCSVReader.cpp",
-				"bBpiano L0-beta/main.cpp",
+				"bBpiano Lite/core/controller.cpp",
+				"bBpiano Lite/core/piano/Component/Src/DamperModel.cpp",
+				"bBpiano Lite/core/piano/Component/Src/HammerModel.cpp",
+				"bBpiano Lite/core/piano/Component/Src/KeyModel.cpp",
+				"bBpiano Lite/core/piano/Component/Src/PedalModel.cpp",
+				"bBpiano Lite/core/piano/Component/Src/StringModel.cpp",
+				"bBpiano Lite/core/piano/ModelParameters/ModelParameters.cpp",
+				"bBpiano Lite/core/piano/ModelParameters/PrecomputedValue.cpp",
+				"bBpiano Lite/core/piano/PianoModel.cpp",
+				"bBpiano Lite/core/piano/Utils/MyCSVReader.cpp",
+				"bBpiano Lite/main.cpp",
 			);
 			target = 147D71352FD6F9B6008F3BF8 /* bBpiano Lite */;
+		};
+		14D55CE42FD8274800F009D7 /* Exceptions for "Cli" folder in "bBpiano Sonic" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"bBpiano Sonic/external/fft/kfc.c",
+				"bBpiano Sonic/external/fft/kiss_fft.c",
+				"bBpiano Sonic/external/fft/kiss_fftnd.c",
+				"bBpiano Sonic/external/fft/kiss_fftndr.c",
+				"bBpiano Sonic/external/fft/kiss_fftr.c",
+				"bBpiano Sonic/main.cpp",
+			);
+			target = 14D55CDB2FD8273E00F009D7 /* bBpiano Sonic */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -126,6 +153,7 @@
 			exceptions = (
 				142C18652FD5133400685F41 /* Exceptions for "Cli" folder in "bBpiano" target */,
 				147D714F2FD6FA1C008F3BF8 /* Exceptions for "Cli" folder in "bBpiano Lite" target */,
+				14D55CE42FD8274800F009D7 /* Exceptions for "Cli" folder in "bBpiano Sonic" target */,
 			);
 			path = Cli;
 			sourceTree = "<group>";
@@ -184,6 +212,11 @@
 				147D71502FD70102008F3BF8 /* AudioToolbox.framework in Frameworks */,
 			);
 		};
+		14D55CD92FD8273E00F009D7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
 		14E708332F78BE0C005C806C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
@@ -227,6 +260,7 @@
 				14E708362F78BE0C005C806C /* bBpiano.app */,
 				14553D072FC14D60008E3CD7 /* HammerStringEvaluationTests.xctest */,
 				147D71362FD6F9B6008F3BF8 /* bbpl */,
+				14D55CDC2FD8273E00F009D7 /* bbps */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -265,6 +299,21 @@
 			name = "bBpiano Lite";
 			productName = "bBpiano Lite";
 			productReference = 147D71362FD6F9B6008F3BF8 /* bbpl */;
+			productType = "com.apple.product-type.tool";
+		};
+		14D55CDB2FD8273E00F009D7 /* bBpiano Sonic */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 14D55CE02FD8273E00F009D7 /* Build configuration list for PBXNativeTarget "bBpiano Sonic" */;
+			buildPhases = (
+				14D55CD82FD8273E00F009D7 /* Sources */,
+				14D55CD92FD8273E00F009D7 /* Frameworks */,
+				14D55CDA2FD8273E00F009D7 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			name = "bBpiano Sonic";
+			productName = "bBpiano Sonic";
+			productReference = 14D55CDC2FD8273E00F009D7 /* bbps */;
 			productType = "com.apple.product-type.tool";
 		};
 		14E708352F78BE0C005C806C /* bBpiano */ = {
@@ -312,6 +361,9 @@
 					147D71352FD6F9B6008F3BF8 = {
 						CreatedOnToolsVersion = 26.2;
 					};
+					14D55CDB2FD8273E00F009D7 = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					14E708352F78BE0C005C806C = {
 						CreatedOnToolsVersion = 26.2;
 						LastSwiftMigration = 2620;
@@ -338,6 +390,7 @@
 				14E708352F78BE0C005C806C /* bBpiano */,
 				14553D062FC14D60008E3CD7 /* HammerStringEvaluationTests */,
 				147D71352FD6F9B6008F3BF8 /* bBpiano Lite */,
+				14D55CDB2FD8273E00F009D7 /* bBpiano Sonic */,
 			);
 		};
 /* End PBXProject section */
@@ -373,6 +426,11 @@
 			);
 		};
 		147D71322FD6F9B6008F3BF8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		14D55CD82FD8273E00F009D7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
 			);
@@ -461,6 +519,30 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				PRODUCT_NAME = bbpl;
+			};
+			name = Release;
+		};
+		14D55CE12FD8273E00F009D7 /* Debug configuration for PBXNativeTarget "bBpiano Sonic" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = L746W9JTR3;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				PRODUCT_NAME = bbps;
+			};
+			name = Debug;
+		};
+		14D55CE22FD8273E00F009D7 /* Release configuration for PBXNativeTarget "bBpiano Sonic" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = L746W9JTR3;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				PRODUCT_NAME = bbps;
 			};
 			name = Release;
 		};
@@ -691,6 +773,14 @@
 			buildConfigurations = (
 				147D713B2FD6F9B6008F3BF8 /* Debug configuration for PBXNativeTarget "bBpiano Lite" */,
 				147D713C2FD6F9B6008F3BF8 /* Release configuration for PBXNativeTarget "bBpiano Lite" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		14D55CE02FD8273E00F009D7 /* Build configuration list for PBXNativeTarget "bBpiano Sonic" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				14D55CE12FD8273E00F009D7 /* Debug configuration for PBXNativeTarget "bBpiano Sonic" */,
+				14D55CE22FD8273E00F009D7 /* Release configuration for PBXNativeTarget "bBpiano Sonic" */,
 			);
 			defaultConfigurationName = Release;
 		};

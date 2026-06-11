@@ -10,6 +10,8 @@ AcousticLab/HammerLab/.Generated/
 !/Doc/
 !/Doc/**
 
-/Cli/_archive_local
+/Cli/bBpiano Lite/_archive_local
+/Cli/bBpiano Sonic/_archive_local
+/Cli/bBpiano Sonic/data
 
 /AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples
