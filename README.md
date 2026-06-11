@@ -184,9 +184,9 @@ VISQOL evaluates perceptual audio quality by estimating similarity between synth
 
 | Method | VISQOL Score |
 |:---------|---------:|
-| Pianoteq 8 | TBD |
-| SF2 (Grand Piano) | TBD |
-| bBpiano L0-beta | TBD |
+| Pianoteq 8 | 5.000 TBD |
+| SF2 (Grand Piano) | 2.736 TBD |
+| bBpiano L0-beta | 2.529 TBD |
 
 ---
 
