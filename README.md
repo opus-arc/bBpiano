@@ -16,7 +16,7 @@
   <a href="https://github.com/opus-arc/bBpiano/milestone/1" target="_blank"><img alt="Milestone Issues"
     src="https://img.shields.io/github/milestones/progress/opus-arc/bBpiano/1?label=issues"/></a>
   <br>
-  <a href="./From-PDE-to-PCM.pdf"><b>Primary Research Document</b>👁️</a>
+  <a href="./From-PDE-to-PCM.md"><b>Primary Research Document</b>👁️</a>
 </div>
 
 ##     1. Introduction
