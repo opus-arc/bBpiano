@@ -26,6 +26,7 @@ theme:
     - toc.integrate
 
 nav:
+  - README: bBpiano.md
   - From PDE to PCM: index.md
 
 markdown_extensions:
