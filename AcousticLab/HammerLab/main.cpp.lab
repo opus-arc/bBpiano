@@ -1,4 +1,4 @@
-#include "../../Core/CppCore/Piano/Component/HammerModel.hpp"
+#include "../../Cli/bBpiano Lite/core/piano/Component/HammerModel.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -15,8 +15,7 @@ struct Config {
     double vin = 4.0;
     double seconds = 0.08;
     double probePosition = 0.7;
-    std::string mode = "normal";
-    std::string output = "AcousticLab/HammerLab/.Generated/hammer_trace.csv";
+    std::string output = "AcousticLab/HammerLab/.Generated/lite_hammerp_trace.csv";
 };
 
 int parseInt(const char* value, int fallback) {
@@ -47,19 +46,16 @@ Config parseArgs(int argc, char** argv) {
             config.seconds = parseDouble(argv[++i], config.seconds);
         } else if (arg == "--probe" && i + 1 < argc) {
             config.probePosition = parseDouble(argv[++i], config.probePosition);
-        } else if (arg == "--mode" && i + 1 < argc) {
-            config.mode = argv[++i];
         } else if (arg == "--output" && i + 1 < argc) {
             config.output = argv[++i];
         } else if (arg == "--help") {
             std::cout
-                << "HammerLab\n"
+                << "HammerLab Lite Hammer-P trace\n"
                 << "  --midi <21..108>        default 69\n"
                 << "  --vin <m/s>             direct initial hammer velocity\n"
                 << "  --seconds <duration>    default 0.08\n"
                 << "  --probe <0..1>          string observation position, default 0.7\n"
-                << "  --mode <normal|hammerf|perform> default normal\n"
-                << "  --output <csv path>     default AcousticLab/HammerLab/.Generated/hammer_trace.csv\n";
+                << "  --output <csv path>     default AcousticLab/HammerLab/.Generated/lite_hammerp_trace.csv\n";
             std::exit(0);
         }
     }
@@ -67,9 +63,6 @@ Config parseArgs(int argc, char** argv) {
     config.vin = std::max(0.0, config.vin);
     config.seconds = std::max(0.001, config.seconds);
     config.probePosition = std::clamp(config.probePosition, 0.0, 1.0);
-    if (config.mode != "normal" && config.mode != "hammerf" && config.mode != "perform") {
-        config.mode = "normal";
-    }
     return config;
 }
 
@@ -86,17 +79,6 @@ int main(int argc, char** argv) {
     }
 
     HammerModel hammer(nullptr, config.midi);
-    
-    if (config.mode == "hammerf") {
-        // 论文复现实验模式：单弦 + HammerFTest 弦，接近 Bank 图里的理想实验场。
-        hammer.setMode(HammerMode::HammerF);
-    } else if (config.mode == "perform") {
-        // app 演奏接入模式：Hammer-F 锤子逻辑 + 完整 Normal 弦。
-        hammer.setMode(HammerMode::HammerFPerform);
-    } else {
-        // 原始演奏模式：原有 Gaussian hammer + 完整 Normal 弦。
-        hammer.setMode(HammerMode::Normal);
-    }
     hammer.setVIn(config.vin);
 
     std::ofstream csv(outputPath);
@@ -105,7 +87,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    csv << "frame,time_sec,midi,initial_vin,probe_position,F,dy,v_in,dv,sigma,sample,sample_a,sample_b,sample_c\n";
+    csv << "frame,time_sec,midi,initial_vin,probe_position,F,dy,v_in,dv,sample,sample_a,sample_b,sample_c\n";
     csv << std::fixed << std::setprecision(12);
 
     for (int n = 0; n < frameCount; n++) {
@@ -126,7 +108,6 @@ int main(int argc, char** argv) {
             << hammer.dy << ","
             << hammer.v_in << ","
             << hammer.dv << ","
-            << hammer.sigma << ","
             << sampleSum << ","
             << sampleA << ","
             << sampleB << ","
@@ -136,7 +117,7 @@ int main(int argc, char** argv) {
 
     std::cout
         << "HammerLab wrote " << frameCount << " frames to " << outputPath << "\n"
-        << "mode=" << config.mode
+        << "core=lite-hammerp"
         << ", midi=" << config.midi
         << ", vin=" << config.vin
         << ", seconds=" << config.seconds

@@ -7,7 +7,7 @@
 //  This document is not AI-assisted.
 //
 
-#include "StringModel.hpp"
+#include "../StringModel.hpp"
 #include "../HammerModel.hpp"
 #include "../KeyModel.hpp"
 #include "../../../ModelParameters/PrecomputedValue.hpp"
