@@ -36,8 +36,8 @@ struct RT425StringParameter {
     double volume_density_kg_m3 = 7850.0;
     double linear_density_kg_m = 0.00623958204318;
     double tension_n = 741.0;
-    double strike_position_m = 0.075;
-    double strike_ratio = 0.114155251142;
+    double strike_position_m = 0.079;
+    double strike_ratio = 0.120243531202;
 };
 
 struct RT425HammerParameter {
