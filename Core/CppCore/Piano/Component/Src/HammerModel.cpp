@@ -8,7 +8,7 @@
 //
 
 
-#include "HammerModel.hpp"
+#include "../HammerModel.hpp"
 #include "../KeyModel.hpp"
 
 
