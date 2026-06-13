@@ -86,10 +86,6 @@ float StringModel::get_f0() const {
 // --------------------------------------------
 // MARK: 计算函数
 
-void StringModel::setMode(StringMode _mode) {
-    mode = _mode;
-}
-
 void StringModel::stringMovement() {
     
     propagate();
@@ -107,40 +103,16 @@ void StringModel::stringMovement() {
     }
 }
 
-void StringModel::injectForce(double p, float F) const {
-    // 边界条件
-    p = std::clamp(p, 0.0, 1.0);
-
-    int relative_i = std::floor(p * delay_index);
-    
-    injectForce(relative_i, F);
-    
-}
-
 void StringModel::injectForce(int relative_i, float F) const {
     
-    // 边界条件
-    relative_i = std::clamp(relative_i, 1, delay_index - 1);
-    int absolute_i_l = rToAIndex_l(relative_i);
-    int absolute_i_r = rToAIndex_r(relative_i);
-
-    // 增量计算公式
-    // TODO: 这里应该还能凹
-    float delta = F / (2.0f * static_cast<float>(Z));
-
-    // 注入弦
-    right[absolute_i_r] += delta;
-    left[absolute_i_l] += delta;
-}
-
-void StringModel::injectHammerFStaggeredForce(int relative_i, float F) const {
-    
     // 边界条件：要访问 right[M + 1]，所以 M 不能太靠右
-    const int M = std::clamp(relative_i, 1, delay_index - 2);
+    const int maxM = std::max(1, delay_index - 2);
+    const int M = std::clamp(relative_i, 1, maxM);
+    const int MPlus = std::min(M + 1, delay_index);
     
-    // Bank 错位注入：left[M] 和 right[M + 1]
+    // Hammer-P 错位注入：left[M] 和 right[M + 1]
     const int absolute_i_l = rToAIndex_l(M);
-    const int absolute_i_r = rToAIndex_r(M + 1);
+    const int absolute_i_r = rToAIndex_r(MPlus);
     
     const float delta = F / (2.0f * static_cast<float>(Z));
     
@@ -154,13 +126,8 @@ void StringModel::propagate() {
     float r_r_boundary_value = right[rToAIndex_r(delay_index)];
     float l_l_boundary_value = left[rToAIndex_l(0)];
     
-    // 边界与滤波器
-    // Normal 模式走原来的 fractional / dispersion / loss。
-    // HammerFTest 模式跳过这些滤波器，得到整数格点、无损耗、无色散的理想 DWG。
-    if(mode == StringMode::Normal){
-        BoundaryFilter(l_l_boundary_value, true);
-        BoundaryFilter(r_r_boundary_value, false);
-    }
+    BoundaryFilter(l_l_boundary_value, true);
+    BoundaryFilter(r_r_boundary_value, false);
     // 边界传播
     rightHead = (rightHead - 1 + delay_int) % delay_int; // 右边界向左移动 则波向右传播
     leftHead  = (leftHead + 1) % delay_int; // 左边界向右移动 则波向左传播
@@ -191,47 +158,24 @@ float StringModel::velocityAt(double p) const {
     return left[absolute_i_l] + right[absolute_i_r];
 }
 
-float StringModel::velocityAtGrid(int relative_i) const{
-    //注意是只读函数（专门给编程学到牛肚皮里去的fancy准备的注释）
-    relative_i = std::clamp(relative_i, 0, delay_index);
+void StringModel::readHammerVelocityPair(int relative_i, float& v0, float& vHalf) const {
+    // M 是 hammer 的相对击弦格点。为了半采样读速度，需要访问 M - 1 和 M + 1。
+    const int maxM = std::max(1, delay_index - 1);
+    const int M = std::clamp(relative_i, 1, maxM);
+    const int MMinus = std::max(M - 1, 0);
+    const int MPlus = std::min(M + 1, delay_index);
     
-    return left[rToAIndex_l(relative_i)] + right[rToAIndex_r(relative_i)];
-}
-
-float StringModel::nextVelocityAt(double p) {
-    // 边界条件
-    p = std::clamp(p, 0.0, 1.0);
-
-    int relative_i = std::floor(p * delay_index);
-    relative_i = std::clamp(relative_i, 0, delay_index);
+    const float right_M = right[rToAIndex_r(M)];
+    const float left_M = left[rToAIndex_l(M)];
     
-    int relative_i_l_next = std::clamp(relative_i + 1, 0, delay_index); // 左波拾音点右侧的点下一帧就在拾音点上
-    int relative_i_r_next = std::clamp(relative_i - 1, 0, delay_index); // 右波拾音点左侧的点下一帧就在拾音点上
-
-    return left[rToAIndex_l(relative_i_l_next)]
-         + right[rToAIndex_r(relative_i_r_next)];
+    // v(nTs) = y+(n, M) + y-(n, M)
+    v0 = right_M + left_M;
     
-}
-
-float StringModel::velocityAtHalfSample(int relative_i) const{
-    //边界条件
-    relative_i = std::clamp(relative_i, 1, delay_index - 1);
-    
-    
-    //y+(n+1, M) = y+(n, M - 1)
-    float yPlus = 0.5f * (
-            right[rToAIndex_r(relative_i)]
-          + right[rToAIndex_r(relative_i-1)]
-        );
-    
-    
-    //y-(n+1, M) = y-(n, M + 1)
-    float yMinus = 0.5f * (
-            left[rToAIndex_l(relative_i)]
-          + left[rToAIndex_l(relative_i + 1)]
-        );
-    
-    return yPlus + yMinus;
+    // v(nTs + Ts/2) 使用半采样速度：
+    // 右行波取当前 M 与半步后会到达 M 的 M - 1 平均；
+    // 左行波取当前 M 与半步后会到达 M 的 M + 1 平均。
+    vHalf = 0.5f * (right_M + right[rToAIndex_r(MMinus)])
+          + 0.5f * (left_M + left[rToAIndex_l(MPlus)]);
 }
     
 float StringModel::activityProbe() const {
