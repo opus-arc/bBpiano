@@ -30,17 +30,6 @@ private:
     // 采样率
     private: static constexpr double sampleRate = 44100.0;
         
-    // 弦的张力
-    // 单位 牛顿
-    // 这里暂时用一个固定值
-    static constexpr double T = 670; // 850.0
-    
-    // 弦的线密度
-    // 单位 kg / m
-    // 这里暂时用一个固定值
-    static constexpr double rho = 0.0063387; // 0.006
-    
-    
     mutable int activityCounter = 0;
     
     // --------------------------------------------
@@ -61,6 +50,14 @@ public:
     
     // 弦的编号
     const int string_index;
+    
+    // RT-425 wrapped string 基础参数。
+    // rho 在当前代码里表示线密度 kg/m，不是论文表里的体密度 kg/m^3。
+    double T = 0.0;
+    double rho = 0.0;
+    double physical_f0_hz = 0.0;
+    double physical_length_m = 0.0;
+    double physical_strike_ratio = 0.0;
     
     // --------------------------------------------
     // MARK: 实时值与其函数

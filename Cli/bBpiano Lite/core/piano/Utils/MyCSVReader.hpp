@@ -28,10 +28,33 @@ struct DispersionConstant {
 //    DispersionConstant() = default;
 };
 
+struct RT425StringParameter {
+    int key = 60;
+    double f0_hz = 262.22;
+    double length_m = 0.657;
+    double diameter_m = 0.001006;
+    double volume_density_kg_m3 = 7850.0;
+    double linear_density_kg_m = 0.00623958204318;
+    double tension_n = 741.0;
+    double strike_position_m = 0.075;
+    double strike_ratio = 0.114155251142;
+};
+
+struct RT425HammerParameter {
+    int key = 60;
+    int note_index = 40;
+    double mass_kg = 0.00870608;
+    double K = 5.84001775414e9;
+    double P = 2.41808;
+    double R = 5.32115980739e5;
+};
+
 class MyCSVReader {
 public:
     static std::vector<LossConstant> getLossConstant();
     static DispersionConstant getDispersionConstantByMidi(int midi_n);
+    static RT425StringParameter getRT425WrappedStringParameterByMidi(int midi_n);
+    static RT425HammerParameter getRT425HammerParameterByMidi(int midi_n);
     
 };
 

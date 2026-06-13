@@ -10,6 +10,7 @@
 
 #include "HammerModel.hpp"
 #include "../KeyModel.hpp"
+#include "../../Utils/MyCSVReader.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -22,6 +23,15 @@ HammerModel::HammerModel(KeyModel *_pairedKey, int _midi_n) :
     midi_n(_midi_n),
     string_count(midi_n <= 52 ? 2 : 3)
 {
+    const auto hammerParameter = MyCSVReader::getRT425HammerParameterByMidi(midi_n);
+    K = hammerParameter.K;
+    P = hammerParameter.P;
+    m = hammerParameter.mass_kg;
+    RH = hammerParameter.R;
+    
+    const auto stringParameter = MyCSVReader::getRT425WrappedStringParameterByMidi(midi_n);
+    strikePoint = stringParameter.strike_ratio;
+    
     pairedString_a = new StringModel(this, midi_n, 1);
     pairedString_b = new StringModel(this, midi_n, 2);
     pairedString_c = new StringModel(this, midi_n, 3);
