@@ -19,20 +19,7 @@ class KeyModel;
 class HammerModel {
     
 public:
-    // --------------------------------------------
-    // MARK: 常量
     
-    // Chaigne-Askenfelt 1994b C4 hammer 参数
-    // 锤毡刚度系数
-    static constexpr double K = 4.5e9;
-    // 非线性指数
-    static constexpr double P = 2.5;
-    static constexpr double m = 0.00297;
-    
-    // 击弦点比例。构造时会转换成 strikeM，实时路径不再重复乘 delay_index。
-    static constexpr double strikePoint = 0.12;
-    
-    // --------------------------------------------
     // MARK: 组件与基本信息
     
     explicit HammerModel(KeyModel *_pairedKey, int _midi_n);
@@ -45,6 +32,15 @@ public:
     StringModel* pairedString_a = nullptr;
     StringModel* pairedString_b = nullptr;
     StringModel* pairedString_c = nullptr;
+    
+    // RT-425 hammer 参数。构造时按 key 初始化；RH 先随表保存，当前 Hammer-P 只使用 K/P/m。
+    double K = 0.0;
+    double P = 0.0;
+    double m = 0.0;
+    double RH = 0.0;
+    
+    // 击弦点比例。构造时会转换成 strikeM，实时路径不再重复乘 delay_index。
+    double strikePoint = 0.0;
     
     // Hammer-P 固定击弦格点。这里是相对波导下标，不是 vector 绝对下标。
     int strikeM = 1;

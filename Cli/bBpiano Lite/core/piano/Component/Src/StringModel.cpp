@@ -32,8 +32,17 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     
     Ts = 1.0 / static_cast<double>(sampleRate);
     
+    const auto physicalParameter = MyCSVReader::getRT425WrappedStringParameterByMidi(midi_n);
+    T = physicalParameter.tension_n;
+    rho = physicalParameter.linear_density_kg_m;
+    physical_f0_hz = physicalParameter.f0_hz;
+    physical_length_m = physicalParameter.length_m;
+    physical_strike_ratio = physicalParameter.strike_ratio;
+    
 
 //    // 计算波导长度
+    // delay 仍使用现有 tuning / unison detune 系统的 f0。
+    // RT-425 的 f0 保存为物理参数来源，暂时不替换现有调律路径。
     delay = double(sampleRate) / double(2 * get_f0());
 //
     

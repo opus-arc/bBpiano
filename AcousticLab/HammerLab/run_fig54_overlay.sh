@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/../.."
 
-csv="${1:-AcousticLab/HammerLab/.Generated/lite_hammerp_force_midi60_vin4_s0.002_p0.7.csv}"
+csv="${1:-AcousticLab/HammerLab/.Generated/lite_hammerp_force_midi60_vin4_s0.003_p0.7.csv}"
 out="${2:-}"
 
 if [[ -z "$out" ]]; then

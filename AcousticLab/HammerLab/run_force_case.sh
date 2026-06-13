@@ -5,8 +5,8 @@ cd "$(dirname "$0")/../.."
 
 midi="${1:-60}"
 vin="${2:-4}"
-seconds="${3:-0.002}"
-ymax="${4:-25}"
+seconds="${3:-0.003}"
+ymax="${4:-40}"
 probe="${5:-0.7}"
 xmax_ms="$(python3 -c 'import sys; print(float(sys.argv[1]) * 1000.0)' "$seconds")"
 

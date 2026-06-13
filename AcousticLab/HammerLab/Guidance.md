@@ -5,7 +5,7 @@ HammerLab 当前接入的是 `bBpiano Lite` 的 C++ core，用来离线跑 Lite 
 ## 单条力曲线
 
 ```bash
-AcousticLab/HammerLab/run_force_case.sh 60 4 0.002 25
+AcousticLab/HammerLab/run_force_case.sh 60 4 0.003 40
 ```
 
 参数顺序：
@@ -18,15 +18,17 @@ midi vin duration forceYMax [probe]
 
 - `midi`: MIDI 音高，C4 是 `60`，C5 是 `72`
 - `vin`: 直接写入 hammer 的初速度，近似单位 `m/s`
-- `duration`: 仿真时长，单位秒；`0.002` 表示 2 ms
+- `duration`: 仿真时长，单位秒；`0.003` 表示 3 ms
 - `forceYMax`: 力图 y 轴上限，单位 N
 - `probe`: 可选，弦输出观察点，范围 `0..1`，默认 `0.7`
+
+RT-425 的 C4 hammer 参数比之前的 1994b C4 参数更重、更硬，`vin=4` 时 2 ms 内接触力可能还没归零，峰值也可能超过 25 N。因此默认建议用 `0.003` 秒和 `40` N 观察完整曲线。
 
 输出文件示例：
 
 ```text
-AcousticLab/HammerLab/.Generated/lite_hammerp_force_midi60_vin4_s0.002_p0.7.csv
-AcousticLab/HammerLab/.Generated/lite_hammerp_force_midi60_vin4_s0.002_p0.7.svg
+AcousticLab/HammerLab/.Generated/lite_hammerp_force_midi60_vin4_s0.003_p0.7.csv
+AcousticLab/HammerLab/.Generated/lite_hammerp_force_midi60_vin4_s0.003_p0.7.svg
 ```
 
 ## 叠 Figure 5.4
@@ -38,13 +40,13 @@ AcousticLab/HammerLab/run_fig54_overlay.sh
 默认输入：
 
 ```text
-AcousticLab/HammerLab/.Generated/lite_hammerp_force_midi60_vin4_s0.002_p0.7.csv
+AcousticLab/HammerLab/.Generated/lite_hammerp_force_midi60_vin4_s0.003_p0.7.csv
 ```
 
 也可以指定 CSV：
 
 ```bash
-AcousticLab/HammerLab/run_fig54_overlay.sh AcousticLab/HammerLab/.Generated/lite_hammerp_force_midi60_vin4_s0.002_p0.7.csv
+AcousticLab/HammerLab/run_fig54_overlay.sh AcousticLab/HammerLab/.Generated/lite_hammerp_force_midi60_vin4_s0.003_p0.7.csv
 ```
 
 ## 单独编译
