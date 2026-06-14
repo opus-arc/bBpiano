@@ -78,3 +78,67 @@ void all_silence() {
         key->silence();
     }
 }
+
+
+// 临时
+
+
+void increaseLossG() {
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_a->increaseLossG();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_b->increaseLossG();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_c->increaseLossG();
+}
+
+void decreaseLossG() {
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_a->decreaseLossG();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_b->decreaseLossG();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_c->decreaseLossG();
+}
+
+void increaseLossA1() {
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_a->increaseLossA1();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_b->increaseLossA1();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_c->increaseLossA1();
+}
+
+void decreaseLossA1() {
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_a->decreaseLossA1();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_b->decreaseLossA1();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_c->decreaseLossA1();
+}
+
+void increaseDispersionA0() {
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_a->increaseDispersionA0();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_b->increaseDispersionA0();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_c->increaseDispersionA0();
+}
+
+void decreaseDispersionA0() {
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_a->decreaseDispersionA0();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_b->decreaseDispersionA0();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_c->decreaseDispersionA0();
+}
+
+void increaseDispersionA1() {
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_a->increaseDispersionA1();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_b->increaseDispersionA1();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_c->increaseDispersionA1();
+}
+
+void decreaseDispersionA1() {
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_a->decreaseDispersionA1();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_b->decreaseDispersionA1();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_c->decreaseDispersionA1();
+}
+
+void increaseDispersionOrder() {
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_a->increaseDispersionOrder();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_b->increaseDispersionOrder();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_c->increaseDispersionOrder();
+}
+
+void decreaseDispersionOrder() {
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_a->decreaseDispersionOrder();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_b->decreaseDispersionOrder();
+    bBpiano->pianoKeys[69 - 21]->hammer->pairedString_c->decreaseDispersionOrder();
+}
