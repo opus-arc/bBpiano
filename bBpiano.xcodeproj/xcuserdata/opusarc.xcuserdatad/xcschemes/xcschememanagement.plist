@@ -17,12 +17,12 @@
 		<key>bBpiano Lite.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>1</integer>
+			<integer>2</integer>
 		</dict>
 		<key>bBpiano Sonic.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>2</integer>
+			<integer>1</integer>
 		</dict>
 		<key>bBpiano.xcscheme_^#shared#^_</key>
 		<dict>
@@ -53,6 +53,16 @@
 			<true/>
 		</dict>
 		<key>147D711C2FD6F917008F3BF8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>147D71352FD6F9B6008F3BF8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>14D55CDB2FD8273E00F009D7</key>
 		<dict>
 			<key>primary</key>
 			<true/>

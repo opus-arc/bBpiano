@@ -16,9 +16,11 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <chrono>
 
 class MidiExporter {
 public:
@@ -29,6 +31,7 @@ public:
         if (midiFilePath.empty()) {
             throw std::runtime_error("No MIDI file path provided.");
         }
+        const auto exportStart = std::chrono::steady_clock::now();
 
         constexpr int sampleRate = 44'100;
         constexpr int bufferSize = 512;
@@ -89,6 +92,14 @@ public:
 
         all_silence();
         writeWavFloat32Mono(outPath, samples);
+
+        const auto exportEnd = std::chrono::steady_clock::now();
+        const double elapsedSeconds =
+            std::chrono::duration<double>(exportEnd - exportStart).count();
+
+        std::cout << "MIDI export finished in "
+                  << elapsedSeconds
+                  << " seconds" << std::endl;
     }
 
 private:

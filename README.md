@@ -151,6 +151,8 @@ brew install opus-arc/tap/bBpiano-L
 
 To evaluate the acoustic realism and synthesis quality of bBpiano, we compare synthesized audio against reference recordings from the MAESTRO Yamaha Disklavier dataset. Baseline systems include Pianoteq 8 (physical modeling) and a conventional SF2 sampled piano. Current evaluations focus on model efficiency, representation-level similarity, and perceptual audio quality.
 
+In addition to the MAESTRO Yamaha Disklavier dataset, selected evaluations also incorporate recordings from the Iowa Electronic Music Studios (Iowa EMS) Steinway Model B dataset. Since the Iowa dataset provides isolated piano recordings rather than aligned MIDI performances, note events and velocity information are automatically estimated using a pretrained piano transcription model to construct a unified benchmarking sequence. This allows direct comparisons between bBpiano, physical-modeling instruments, and sample-based pianos under controlled and reproducible conditions.
+
 ### Engine Overview
 
 | Category | Maestro Dataset | Pianoteq 8 | SF2 (Grand Piano) | bBpiano L0-beta |
@@ -184,9 +186,9 @@ VISQOL evaluates perceptual audio quality by estimating similarity between synth
 
 | Method | VISQOL Score |
 |:---------|---------:|
-| Pianoteq 8 | TBD |
-| SF2 (Grand Piano) | TBD |
-| bBpiano L0-beta | TBD |
+| Pianoteq 8 | 5.000 TBD |
+| SF2 (Grand Piano) | 2.736 TBD |
+| bBpiano L0-beta | 2.529 TBD |
 
 ---
 

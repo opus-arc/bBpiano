@@ -20,13 +20,6 @@ class HammerModel;
 
 struct LossConstant;
 
-enum class StringMode {
-    // 现有模式：fractional / loss / dispersion 都照常运行
-    Normal,
-    // Hammer-F 单弦实验模式：整数格点、无全通、无损耗、无色散
-    HammerFTest
-};
-
 class StringModel {
 
     // --------------------------------------------
@@ -37,17 +30,6 @@ private:
     // 采样率
     private: static constexpr double sampleRate = 44100.0;
         
-    // 弦的张力
-    // 单位 牛顿
-    // 这里暂时用一个固定值
-    static constexpr double T = 670; // 850.0
-    
-    // 弦的线密度
-    // 单位 kg / m
-    // 这里暂时用一个固定值
-    static constexpr double rho = 0.0063387; // 0.006
-    
-    
     mutable int activityCounter = 0;
     
     // --------------------------------------------
@@ -69,9 +51,13 @@ public:
     // 弦的编号
     const int string_index;
     
-    // 弦的模式
-    StringMode mode = StringMode::Normal;
-        
+    // RT-425 wrapped string 基础参数。
+    // rho 在当前代码里表示线密度 kg/m，不是论文表里的体密度 kg/m^3。
+    double T = 0.0;
+    double rho = 0.0;
+    double physical_f0_hz = 0.0;
+    double physical_length_m = 0.0;
+    double physical_strike_ratio = 0.0;
     
     // --------------------------------------------
     // MARK: 实时值与其函数
@@ -144,19 +130,11 @@ public:
 
 public:
     
-    // 注入
-    //  将力变成波
-    void injectForce(double p, float F) const ;
-    void injectForce(int relative_i, float F) const ;
-    
-    // Hammer-F 专用错位注入，用于避免旧同格点注入的瞬时能量偏差
-    void injectHammerFStaggeredForce(int relative_i, float F) const;
+    // Hammer-P 错位注入，将力变成波
+    void injectForce(int relative_i, float F) const;
     
     // 传播
     void propagate();
-    
-    //弦的模式的设置
-    void setMode(StringMode _mode);
     
     // --------------------------------------------
     // MARK: 运动帧
@@ -168,14 +146,9 @@ public:
     
     // 获取速度的方式
     float velocityAt(double p) const ;
-    float nextVelocityAt(double p) ;
     
-    // Hammer-F 专用：这里的 relative_i 就是 Bank 论文里的 M_in，
-    // relative_i表示击弦点对应的相对波导格点，不是 vector 里的绝对数组下标。
-    // 访问 left/right 时必须再经过 rToAIndex_l/r 转成 ring buffer 下标。
-    float velocityAtGrid(int relative_i) const;
-    // Bank 速度上采样：当前 M 的行波，与下一帧会到达 M 的相邻行波取平均。
-    float velocityAtHalfSample(int relative_i) const;
+    // Hammer-P 读速度接口：一次读出当前格点速度与半采样速度。
+    void readHammerVelocityPair(int relative_i, float& v0, float& vHalf) const;
     
     float activityProbe() const;
     
@@ -233,9 +206,11 @@ public:
     inline void dispersionFilter(float &x, std::array<float, 20>& x1, std::array<float, 20>& y1) const {
         for(int i = 0; i < dispersion_order; i++) {
             // y = a1 * x + x1 - a1 * y1;
-            float y = static_cast<float>(dispersion_a1 * x)
+            float a = static_cast<float>(dispersion_a1);
+
+            float y = -a * x
                 + x1[i]
-                - static_cast<float>(dispersion_a1 * y1[i]);
+                + a * y1[i];
 
             y1[i] = y;
             x1[i] = x;

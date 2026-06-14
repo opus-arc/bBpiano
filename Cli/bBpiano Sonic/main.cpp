@@ -5,6 +5,11 @@
 //  Created by opus arc on 2026/6/9.
 //
 
+
+// test
+#include "./core/loris/FilterConstantsCompute.hpp"
+#include "./utils/MyPitch.hpp"
+
 #include <iostream>
 #define VERSION "S0-alpha"
 void printLogo() {
@@ -41,6 +46,34 @@ void shotdown_engine();
 void signalHandler(int);
 
 int main(int argc, const char * argv[]) {
+    using std::cout;
+    
+//    FilterConstantsCompute fcc = FilterConstantsCompute( "/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Split/v80/A2_take03_v80.wav");
+//
+    for(int j = 1; j <= 7; j++) {
+        
+        std::string pitchName = "A" + std::to_string(j);
+        std::string wavPath = "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/core/loris/" +  pitchName + ".wav";
+        
+        FilterConstantsCompute fcc = FilterConstantsCompute(MyPitch::getFrequency(pitchName),
+                                                            wavPath);
+        
+        for(int i = 0; i < fcc.lorisData.partials.size(); i++)
+            cout << "A" << j << ": f" << i << ": " << fcc.lorisData.partials[i].mean_frequency_hz << "\n";
+    }
+
+    
+    
+//    fcc.findRealPartials();
+    
+//    fcc.computeB();
+//    fcc.printTopPartial();
+    
+    
+    
+    
+    
+    
 //    const char* testArgv[] = {
 //        argv[0],
 //        "-k"

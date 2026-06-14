@@ -11,72 +11,42 @@
 #define Hammer_hpp
 
 #include <iostream>
-#include <vector>
 
 #include "StringModel.hpp"
 
 class KeyModel;
 
-enum class HammerMode {
-    Normal,
-    HammerF,
-    HammerFPerform
-};
-
 class HammerModel {
     
 public:
-    // --------------------------------------------
-    // MARK: 常量
     
-    // 先用Bank用的Chaigne-Askenfelt 表的 C4 参数
-    // 锤毡刚度系数
-    static constexpr double K = 4.5e9; // 1e9
-    
-    // 非线性指数
-    static constexpr double P = 2.5; // 2.3
-    
-    // 锤子质量
-    static constexpr double m = 0.00297; // kg 0.003
-    
-    // 击弦点
-    // 这个不能和采样点完全一样
-    static constexpr double strikePoint = 0.12; // 0.20
-    
-    // hammer 材料指数 Hertz 接触
-    // 决定这股力在空间上铺多宽
-    static constexpr double sigmaCoeff = 6.5;
-    
-    // --------------------------------------------
     // MARK: 组件与基本信息
-    //  初始化后固定的内容
     
-    // 初始化
-    // explicit 禁止隐式转换带来的语义污染
-    explicit HammerModel(KeyModel *_pairedKey, int _midi_n) ;
+    explicit HammerModel(KeyModel *_pairedKey, int _midi_n);
     
     const KeyModel *pairedKey = nullptr;
     
-    // hammer 模式
-    HammerMode mode = HammerMode::Normal;
-    
-    // midi 号码
     const int midi_n;
-    
-    // 弦的数量
     const int string_count;
     
-    // Strings
-    StringModel* pairedString_a;
-    StringModel* pairedString_b;
-    StringModel* pairedString_c;
-
+    StringModel* pairedString_a = nullptr;
+    StringModel* pairedString_b = nullptr;
+    StringModel* pairedString_c = nullptr;
     
-    // --------------------------------------------
-    // MARK: 实时值与其函数
-    //  Derived Value（派生量）, Lazy Evaluation（惰性计算）, Cache（缓存）
+    // RT-425 hammer 参数。构造时按 key 初始化；RH 先随表保存，当前 Hammer-P 只使用 K/P/m。
+    double K = 0.0;
+    double P = 0.0;
+    double m = 0.0;
+    double RH = 0.0;
     
-
+    // 击弦点比例。构造时会转换成 strikeM，实时路径不再重复乘 delay_index。
+    double strikePoint = 0.0;
+    
+    // Hammer-P 固定击弦格点。这里是相对波导下标，不是 vector 绝对下标。
+    int strikeM = 1;
+    
+    // Hammer-P 以弦采样率两倍运行，所以每个子步是 Ts / 2。
+    double hammerTs = 0.0;
     
     // --------------------------------------------
     // MARK: 状态值
@@ -88,15 +58,9 @@ public:
     // active 弦检测剪枝计数器
     mutable int activityCounter = 0;
     
-    // 初速度
-//    double v0;
-    
     // 接触速度
     double v_in = 0.0;
     
-    // 弦速度
-//    double string_v = 0.0;
-
     // 压缩距离
     double dy = 0.0;
     
@@ -109,34 +73,18 @@ public:
     // 上一次的接触力
     double F_Last = 0.0;
     
-    // 力分布的尺度参数
-    double sigma = 0.0;
-
-    
     // --------------------------------------------
     // MARK: 计算函数
     
-    // 接受hammer模式
-    void setMode(HammerMode _mode);
-    
-    // 接收按下的速度
     void setVIn(double _v_in);
     
-    // 计算半个步长的力的大小
-    double hammerHalfStepForce(double _string_v, double _half_Ts);
-    // 新增给 Hammer-F
-    double hammerFHalfStepForce(double _string_v, double _dt);
+    // Hammer-P 子步力更新。_string_v 是当前子步看到的多弦总反馈速度。
+    double hammerPHalfStepForce(double _string_v, double _dt);
     
-    // 计算力的分布尺度参数，Hertz 接触
-    double computeSigma();
+    // 把 Hammer-P 的总接触力按弦数平均后做错位单点注入。
+    void distributeHammerForce(int M, double _F);
     
-    // 计算高斯分布
-    std::vector<float> computeGaussianForce(int start, int end);
-    
-    // 注入力
-    void injectForce(std::vector<float>& string_F, int start, int end);
-    // 负责算注入格点 M_in 以及决定打哪根弦
-    void injectHammerFForce(int M, double _F);
+    void moveStrings();
     
     // --------------------------------------------
     // MARK: 运动帧
@@ -144,18 +92,9 @@ public:
     // 锤子的运动回合, 每帧的调用接口
     void hammerMovement();
     
-    // 为了测试和撰写md先不直接修改调用接口，用mode去隔离
-    void hammerMovementNormal();
-    void hammerMovementHammerF();
-    void hammerMovementHammerFPerform();
-    
     float getSample();
     
-
     void setInactive();
-    
-    
 };
-
 
 #endif /* Hammer_hpp */
