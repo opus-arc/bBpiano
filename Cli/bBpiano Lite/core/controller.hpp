@@ -21,22 +21,4 @@ double get_engineRate();
 void all_silence();
 
 
-// 临时
-
-void increaseLossG();
-void decreaseLossG();
-
-void increaseLossA1();
-void decreaseLossA1();
-
-void increaseDispersionA0();
-void decreaseDispersionA0();
-
-void increaseDispersionA1();
-void decreaseDispersionA1();
-
-void increaseDispersionOrder();
-void decreaseDispersionOrder();
-
-
 #endif /* controller_hpp */

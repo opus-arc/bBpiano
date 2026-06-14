@@ -16,7 +16,7 @@
 #include <string>
 #include <sys/wait.h>
 #include <vector>
-#include "../../external/nlohmann/json.hpp"
+#include "../../../external/nlohmann/json.hpp"
 
 struct LorisDataBreakpoint {
     double time_seconds = 0.0;
@@ -79,7 +79,7 @@ public:
     
     FilterConstantsCompute(double f0,
                            const std::string& wavPath,
-                           const std::string& lorisScriptPath = "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/core/loris/loris.py",
+                           const std::string& lorisScriptPath = "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/core/eval/loris/loris.py",
                            const std::string& pythonExecutable = "/Users/opusarc/miniforge3/bin/python"
                            ) : f0(f0) {
         lorisData = getLorisData(wavPath, lorisScriptPath, pythonExecutable);
@@ -189,7 +189,7 @@ public:
 
     inline LorisData getLorisData(
         const std::string& wavPath,
-        const std::string& lorisScriptPath = "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/core/loris/loris.py",
+        const std::string& lorisScriptPath = "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/core/eval/loris/loris.py",
         const std::string& pythonExecutable = "/Users/opusarc/miniforge3/bin/python"
     ) {
         const std::string command =

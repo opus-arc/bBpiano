@@ -7,7 +7,7 @@
 
 
 // test
-#include "./core/loris/FilterConstantsCompute.hpp"
+#include "./core/eval/loris/FilterConstantsCompute.hpp"
 #include "./utils/MyPitch.hpp"
 
 #include <iostream>
@@ -50,17 +50,18 @@ int main(int argc, const char * argv[]) {
     
 //    FilterConstantsCompute fcc = FilterConstantsCompute( "/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Split/v80/A2_take03_v80.wav");
 //
-    for(int j = 1; j <= 7; j++) {
+//    for(int j = 1; j <= 7; j++) {
         
-        std::string pitchName = "A" + std::to_string(j);
-        std::string wavPath = "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/core/loris/" +  pitchName + ".wav";
+//        std::string pitchName = "A" + std::to_string(j);
+    std::string wavPath = "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/A4_2s.wav";
         
-        FilterConstantsCompute fcc = FilterConstantsCompute(MyPitch::getFrequency(pitchName),
-                                                            wavPath);
+    FilterConstantsCompute fcc = FilterConstantsCompute(440, wavPath);
+    
+    fcc.printTopPartial();
         
-        for(int i = 0; i < fcc.lorisData.partials.size(); i++)
-            cout << "A" << j << ": f" << i << ": " << fcc.lorisData.partials[i].mean_frequency_hz << "\n";
-    }
+//        for(int i = 0; i < fcc.lorisData.partials.size(); i++)
+//            cout << "A" << j << ": f" << i << ": " << /*fcc.lorisData.partials[i].mean_frequency_hz << "\n";*/
+//    }
 
     
     

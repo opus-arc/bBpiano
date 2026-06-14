@@ -15,6 +15,9 @@
 #include <vector>
 #include <cmath>
 #include <array>
+#include <complex>
+
+#include "../Utils/RT425DispersionPresets.hpp"
 
 class HammerModel;
 
@@ -107,14 +110,15 @@ public:
     double loss_g = 0.999293;
 
     // dispersion filter
-    mutable std::array<float, 20> dispersion_x1_r = {}; // 上一次传入 allpass 的值
-    mutable std::array<float, 20> dispersion_x2_r = {};
-    mutable std::array<float, 20> dispersion_y1_r = {};
-    mutable std::array<float, 20> dispersion_y2_r = {};
-    mutable std::array<float, 20> dispersion_x1_l = {}; // 上一次传入 allpass 的值
-    mutable std::array<float, 20> dispersion_x2_l = {};
-    mutable std::array<float, 20> dispersion_y1_l = {};
-    mutable std::array<float, 20> dispersion_y2_l = {};
+    Piano::Data::DispersionPreset dispersionPreset;
+    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_x1_r = {}; // 上一次传入 allpass 的值
+    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_x2_r = {};
+    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_y1_r = {};
+    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_y2_r = {};
+    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_x1_l = {}; // 上一次传入 allpass 的值
+    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_x2_l = {};
+    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_y1_l = {};
+    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_y2_l = {};
     
     
     double dispersion_a0 = 0.5;
@@ -148,62 +152,6 @@ public:
     
 public:
     
-    // Runtime parameter nudges for keyboard mapping.
-    inline void increaseLossG() {
-        loss_g = std::clamp(loss_g + 0.0001, 0.0, 0.999999);
-        std::cout << "loss_g = " << loss_g << "\n";
-    }
-
-    inline void decreaseLossG() {
-        loss_g = std::clamp(loss_g - 0.0001, 0.0, 0.999999);
-        std::cout << "loss_g = " << loss_g << "\n";
-    }
-
-    inline void increaseLossA1() {
-        loss_a1 = std::clamp(loss_a1 + 0.005, -0.99, 0.0);
-        std::cout << "loss_a1 = " << loss_a1 << "\n";
-    }
-
-    inline void decreaseLossA1() {
-        loss_a1 = std::clamp(loss_a1 - 0.005, -0.99, 0.0);
-        std::cout << "loss_a1 = " << loss_a1 << "\n";
-    }
-
-    inline void increaseDispersionA0() {
-        dispersion_a0 = std::clamp(dispersion_a0 + 0.01, 0.0, 0.999);
-        std::cout << "dispersion_a0 = " << dispersion_a0 << "\n";
-    }
-
-    inline void decreaseDispersionA0() {
-        dispersion_a0 = std::clamp(dispersion_a0 - 0.01, 0.0, 0.999);
-        std::cout << "dispersion_a0 = " << dispersion_a0 << "\n";
-    }
-
-    inline void increaseDispersionA1() {
-        const double limit = 1.0 + dispersion_a0;
-        dispersion_a1 = std::clamp(dispersion_a1 + 0.01, -limit, 0.0);
-        std::cout << "dispersion_a1 = " << dispersion_a1 << "\n";
-    }
-
-    inline void decreaseDispersionA1() {
-        const double limit = 1.0 + dispersion_a0;
-        dispersion_a1 = std::clamp(dispersion_a1 - 0.01, -limit, 0.0);
-        std::cout << "dispersion_a1 = " << dispersion_a1 << "\n";
-    }
-
-    inline void increaseDispersionOrder() {
-        dispersion_order = std::clamp(dispersion_order + 1, 0, 20);
-        std::cout << "dispersion_order = " << dispersion_order << "\n";
-    }
-
-    inline void decreaseDispersionOrder() {
-        dispersion_order = std::clamp(dispersion_order - 1, 0, 20);
-        std::cout << "dispersion_order = " << dispersion_order << "\n";
-    }
-    
-    
-    
-    
     
     // 弦的运动回合，每帧的调用接口
     void stringMovement() ;
@@ -214,7 +162,10 @@ public:
     // Hammer-P 读速度接口：一次读出当前格点速度与半采样速度。
     void readHammerVelocityPair(int relative_i, float& v0, float& vHalf) const;
     
-    float activityProbe() const;
+//    float activityProbe() const;
+    
+    
+    
     
     // --------------------------------------------
     // MARK: inline 小函数
@@ -223,15 +174,7 @@ public:
     
     // 边界滤波器
     float BoundaryFilter_virtual(float boundary_value, bool isLeft);
-    
 
-//    inline int rToAIndex_l(int i) const {
-//        return (leftHead + i + Delay_Int) % Delay_Int;
-//    }
-//
-//    inline int rToAIndex_r(int i) const {
-//        return (rightHead + i + Delay_Int) % Delay_Int;
-//    }
     
     // 0 <= i < Delay_Int !!!
     inline int rToAIndex_l(int i) const {
@@ -269,23 +212,25 @@ public:
 
     inline void dispersionFilter(
         float& x,
-        std::array<float, 20>& x1,
-        std::array<float, 20>& x2,
-        std::array<float, 20>& y1,
-        std::array<float, 20>& y2
+        std::array<float, Piano::Data::kRT425DispersionSectionCount>& x1,
+        std::array<float, Piano::Data::kRT425DispersionSectionCount>& x2,
+        std::array<float, Piano::Data::kRT425DispersionSectionCount>& y1,
+        std::array<float, Piano::Data::kRT425DispersionSectionCount>& y2
     ) const {
-        for (int i = 0; i < dispersion_order; i++) {
-            float a0 = static_cast<float>(dispersion_a0);
-            float a1 = static_cast<float>(dispersion_a1);
+        for (std::size_t i = 0; i < dispersionPreset.sections.size(); ++i) {
+            const auto& c = dispersionPreset.sections[i];
 
-            // H(z) = (a0 + a1 z^-1 + z^-2)
-            //      / (1  + a1 z^-1 + a0 z^-2)
+            // H(z) = (b0 + b1 z^-1 + b2 z^-2)
+            //      / (1  + a1 z^-1 + a2 z^-2)
+            // Difference equation:
+            // y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2]
+            //      - a1*y[n-1] - a2*y[n-2]
             float y =
-                  a0 * x
-                + a1 * x1[i]
-                + x2[i]
-                - a1 * y1[i]
-                - a0 * y2[i];
+                  static_cast<float>(c.b0) * x
+                + static_cast<float>(c.b1) * x1[i]
+                + static_cast<float>(c.b2) * x2[i]
+                - static_cast<float>(c.a1) * y1[i]
+                - static_cast<float>(c.a2) * y2[i];
 
             x2[i] = x1[i];
             x1[i] = x;
@@ -300,8 +245,8 @@ public:
     inline void BoundaryFilter(float& boundary_value, bool isLeft) {
         if(isLeft) {
             fractionalFilter(boundary_value, fractional_x1_l, fractional_y1_l);
-            dispersionFilter(boundary_value, dispersion_x1_l, dispersion_x2_l, dispersion_y1_l, dispersion_y2_l);
-            lossFilter(boundary_value, loss_y1_l);
+//            dispersionFilter(boundary_value, dispersion_x1_l, dispersion_x2_l, dispersion_y1_l, dispersion_y2_l);
+//            lossFilter(boundary_value, loss_y1_l);
         } else {
             fractionalFilter(boundary_value, fractional_x1_r, fractional_y1_r);
             dispersionFilter(boundary_value, dispersion_x1_r, dispersion_x2_r, dispersion_y1_r, dispersion_y2_r);

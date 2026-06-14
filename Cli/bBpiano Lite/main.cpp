@@ -52,11 +52,19 @@ void signalHandler(int);
 int main(int argc, const char * argv[]) {
     const char* testArgv[] = {
         argv[0],
-        "-k"
+        "-e",
+        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/A4_2s.mid",
+        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/A4_2s.wav"
     };
-    argc = 2;
+    argc = 4;
     argv = testArgv;
-
+//    const char* testArgv[] = {
+//        argv[0],
+//        "-k"
+//    };
+//    argc = 2;
+//    argv = testArgv;
+    
     std::signal(SIGINT, signalHandler);
     std::signal(SIGTERM, signalHandler);
     

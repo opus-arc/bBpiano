@@ -1,0 +1,163 @@
+//
+//  AllpassBiquad.swift
+//  bBpiano
+//
+//  Created by opus arc on 2026/6/14.
+//
+
+
+Last login: Sun Jun 14 19:52:46 on ttys007
+(base) opusarc@opuss-MacBook-Air outputs % python fit_allpass.py \
+  --f1 440 \
+  --B 0.004183 \
+  --order 16 \
+  --max-partial 20 \
+  --max-radius 0.995 \
+  --radius-regularization 0.01 \
+  --starts 24 \
+  --max-nfev 3000
+start 01/24: nfev= 238, maxFitCent=   6.8152, rmsFitCent=   2.5257
+start 02/24: nfev= 895, maxFitCent=   1.4395, rmsFitCent=   0.6334
+start 03/24: nfev= 787, maxFitCent=   1.4395, rmsFitCent=   0.6334
+start 04/24: nfev= 853, maxFitCent=   1.4395, rmsFitCent=   0.6334
+start 05/24: nfev= 965, maxFitCent=   1.4395, rmsFitCent=   0.6334
+start 06/24: nfev= 235, maxFitCent=   6.8152, rmsFitCent=   2.5257
+start 07/24: nfev= 840, maxFitCent=   1.4395, rmsFitCent=   0.6334
+start 08/24: nfev= 423, maxFitCent=   1.4395, rmsFitCent=   0.6334
+start 09/24: nfev= 600, maxFitCent=   1.4395, rmsFitCent=   0.6334
+start 10/24: nfev= 149, maxFitCent=   6.8152, rmsFitCent=   2.5257
+start 11/24: nfev=  88, maxFitCent=   6.8152, rmsFitCent=   2.5257
+start 12/24: nfev=  48, maxFitCent=  18.3219, rmsFitCent=   6.5520
+start 13/24: nfev= 789, maxFitCent=   1.4395, rmsFitCent=   0.6334
+start 14/24: nfev= 125, maxFitCent=   6.8152, rmsFitCent=   2.5257
+start 15/24: nfev= 109, maxFitCent=   6.8152, rmsFitCent=   2.5257
+start 16/24: nfev= 120, maxFitCent=   6.8152, rmsFitCent=   2.5257
+start 17/24: nfev=1833, maxFitCent=   1.4395, rmsFitCent=   0.6334
+start 18/24: nfev= 165, maxFitCent=   6.8152, rmsFitCent=   2.5257
+start 19/24: nfev= 162, maxFitCent=  18.3219, rmsFitCent=   6.5520
+start 20/24: nfev= 135, maxFitCent=  18.3218, rmsFitCent=   6.5520
+start 21/24: nfev= 861, maxFitCent=   1.4395, rmsFitCent=   0.6334
+start 22/24: nfev= 918, maxFitCent=   1.4395, rmsFitCent=   0.6334
+start 23/24: nfev= 833, maxFitCent=   1.4395, rmsFitCent=   0.6334
+start 24/24: nfev= 928, maxFitCent=   1.4395, rmsFitCent=   0.6334
+
+// Fit summary
+sample_rate = 44100
+f1 = 440
+B = 0.004183
+flexible_string_F0 = 439.082617058
+order = 16
+biquad_sections = 8
+has_first_order_section = False
+used_partials = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+phase_method = group_delay_integral_no_unwrap
+fit_elapsed_sec = 24.014
+optimizer_best_nfev = 853
+fit_residual_max_cent_like = 1.439515
+fit_residual_rms_cent_like = 0.633424
+
+// Stability / loop report
+max_section_pole_radius = 0.994999999998
+max_denominator_root_radius = 0.994999810940
+poles_outside_or_on_unit_circle = 0
+stable_by_sos_construction = True
+phase_delay_at_f1_samples = 62.665583864591
+loop_delay_after_retuning_samples = 37.561688862681
+min_total_group_delay_samples = 38.528516870397
+
+// SOS pole parameters
+std::array<double, 8> dispersionPoleRadius = {
+    0.9949999999983048,
+    0.97297047833205574,
+    0.95004707868199012,
+    0.94748900964406013,
+    0.92720648059019684,
+    0.89329982358499849,
+    0.77061256736374406,
+    0.84687118242597059
+};
+
+std::array<double, 8> dispersionPoleAngleRadians = {
+    0.062254582464653672,
+    0.18185357074515957,
+    0.27856369830642613,
+    0.400055641450277,
+    0.55234892318883688,
+    0.73094518166250133,
+    1.2935614308057493,
+    0.95847749304525076
+};
+
+std::array<double, 8> dispersionPoleAngleHz = {
+    436.94829174529025,
+    1276.3816564024692,
+    1955.1642192179374,
+    2807.883728623724,
+    3876.7896093712152,
+    5130.3090606738615,
+    9079.1622894440043,
+    6727.2976009471413
+};
+
+// C++ parameters
+// Biquad denominator convention: 1 + a1 z^-1 + a2 z^-2
+// Difference equation uses -a1*y[n-1] - a2*y[n-2].
+// Each section is:
+// H(z) = (b0 + b1 z^-1 + b2 z^-2) / (1 + a1 z^-1 + a2 z^-2)
+constexpr double dispersionLoopDelaySamples = 37.561688862681329;
+
+struct AllpassBiquad { double b0, b1, b2, a1, a2; };
+std::array<AllpassBiquad, 8> dispersionAllpass = {
+    { 0.99002499999662652, -1.9861449904154698, 1, -1.9861449904154698, 0.99002499999662652 },
+    { 0.94667155170570938, -1.9138526994809568, 1, -1.9138526994809568, 0.94667155170570938 },
+    { 0.90258945171218352, -1.8268481439319375, 1, -1.8268481439319375, 0.90258945171218352 },
+    { 0.89773542339628187, -1.745349275350069, 1, -1.745349275350069, 0.89773542339628187 },
+    { 0.85971185764845903, -1.5786514046718378, 1, -1.5786514046718378, 0.85971185764845903 },
+    { 0.79798457481698937, -1.3302016128992802, 1, -1.3302016128992802, 0.79798457481698937 },
+    { 0.593843728978941, -0.42182896884155197, 1, -0.42182896884155197, 0.593843728978941 },
+    { 0.71719079962356158, -0.97350644840795897, 1, -0.97350644840795897, 0.71719079962356158 }
+};
+
+std::array<double, 16> dispersionAllpassDenominatorA = {
+    -11.776383543999062,
+    66.358130383217897,
+    -237.88341827318419,
+    608.27994815618774,
+    -1178.5375828917099,
+    1793.0181701694405,
+    -2189.0663125549368,
+    2171.40302160801,
+    -1758.8011804752912,
+    1161.2296930347227,
+    -619.20199352196141,
+    261.68750151890123,
+    -84.795996385399263,
+    19.874883587342779,
+    -3.0103709858567891,
+    0.22189034293801096
+};
+// Direct-form numerator is reverse([1, A...]). Prefer the SOS above for runtime use.
+
+// Verification: true loop resonance solve
+n	target_freq	predicted_freq	deltaHz	errorCent	B_pred
+1	440.000000	440.000000	+0.000000	+0.000000	0.004183
+2	885.481488	885.484292	+0.002805	+0.005484	0.00418461036439
+3	1341.813992	1341.812162	-0.001830	-0.002361	0.00418268547626
+4	1814.152501	1814.153411	+0.000910	+0.000869	0.00418306690973
+5	2307.351997	2307.342014	-0.009983	-0.007490	0.00418261767588
+6	2825.904068	2825.910645	+0.006577	+0.004029	0.00418314877623
+7	3373.897315	3373.851032	-0.046283	-0.023749	0.00418232531986
+8	3955.000400	3955.069306	+0.068906	+0.030162	0.00418369021624
+9	4572.464431	4572.187486	-0.276945	-0.104861	0.00418099784016
+10	5229.140315	5229.719522	+0.579207	+0.191750	0.00418614214144
+11	5927.506421	5925.813501	-1.692920	-0.494518	0.00417589092465
+12	6669.702357	6672.884281	+3.181924	+0.825725	0.00419361970207
+13	7457.565396	7452.058267	-5.507129	-1.278923	0.00416808833884
+14	8292.666958	8297.690714	+5.023756	+1.048476	0.00419425329357
+15	9176.347422	9178.268898	+1.921476	+0.362473	0.00418661345539
+16	10109.748183	10100.734663	-9.013520	-1.544200	0.0041685822103
+17	11093.840436	11092.294222	-1.546213	-0.241309	0.00418086959169
+18	12129.450532	12142.769820	+13.319288	+1.900016	0.00419897379111
+19	13217.281998	13230.132213	+12.850215	+1.682337	0.00419652654019
+20	14357.934440	14339.323274	-18.611166	-2.245531	0.00416568583689
+(base) opusarc@opuss-MacBook-Air outputs % 

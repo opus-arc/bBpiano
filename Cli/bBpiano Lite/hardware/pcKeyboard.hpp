@@ -170,27 +170,6 @@ private:
             return;
         }
 
-
-        switch (ch) {
-            case '-': increaseLossG(); return;
-            case '_': decreaseLossG(); return;
-
-            case '=': increaseLossA1(); return;
-            case '+': decreaseLossA1(); return;
-
-            case '[': increaseDispersionA0(); return;
-            case '{': decreaseDispersionA0(); return;
-
-            case ']': increaseDispersionA1(); return;
-            case '}': decreaseDispersionA1(); return;
-
-            case '\\': increaseDispersionOrder(); return;
-            case '|': decreaseDispersionOrder(); return;
-
-            default:
-                break;
-        }
-
         const KeyMapping mapping = mapKey(ch);
         if (!mapping.valid) {
             return;
@@ -254,11 +233,6 @@ private:
             << "  A S D F G H J K L ; : medium velocity\n"
             << "  Z X C V B N M , . / : soft velocity\n"
             << "  1-8                 : switch octave\n"
-            << "  - / _               : loss_g +/-\n"
-            << "  = / +               : loss_a1 +/-\n"
-            << "  [ / {               : dispersion_a0 +/-\n"
-            << "  ] / }               : dispersion_a1 +/-\n"
-            << "  \\\\ / |               : dispersion_order +/-\n"
             << "  ESC                 : stop\n";
     }
 
