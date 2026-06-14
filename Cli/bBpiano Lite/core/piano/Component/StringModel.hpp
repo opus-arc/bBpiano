@@ -108,10 +108,17 @@ public:
 
     // dispersion filter
     mutable std::array<float, 20> dispersion_x1_r = {}; // 上一次传入 allpass 的值
+    mutable std::array<float, 20> dispersion_x2_r = {};
     mutable std::array<float, 20> dispersion_y1_r = {};
+    mutable std::array<float, 20> dispersion_y2_r = {};
     mutable std::array<float, 20> dispersion_x1_l = {}; // 上一次传入 allpass 的值
+    mutable std::array<float, 20> dispersion_x2_l = {};
     mutable std::array<float, 20> dispersion_y1_l = {};
-    double dispersion_a1 = 0.0;
+    mutable std::array<float, 20> dispersion_y2_l = {};
+    
+    
+    double dispersion_a0 = 0.5;
+    double dispersion_a1 = -1.0;
     int dispersion_order = 0;
 
     
@@ -140,6 +147,63 @@ public:
     // MARK: 运动帧
     
 public:
+    
+    // Runtime parameter nudges for keyboard mapping.
+    inline void increaseLossG() {
+        loss_g = std::clamp(loss_g + 0.0001, 0.0, 0.999999);
+        std::cout << "loss_g = " << loss_g << "\n";
+    }
+
+    inline void decreaseLossG() {
+        loss_g = std::clamp(loss_g - 0.0001, 0.0, 0.999999);
+        std::cout << "loss_g = " << loss_g << "\n";
+    }
+
+    inline void increaseLossA1() {
+        loss_a1 = std::clamp(loss_a1 + 0.005, -0.99, 0.0);
+        std::cout << "loss_a1 = " << loss_a1 << "\n";
+    }
+
+    inline void decreaseLossA1() {
+        loss_a1 = std::clamp(loss_a1 - 0.005, -0.99, 0.0);
+        std::cout << "loss_a1 = " << loss_a1 << "\n";
+    }
+
+    inline void increaseDispersionA0() {
+        dispersion_a0 = std::clamp(dispersion_a0 + 0.01, 0.0, 0.999);
+        std::cout << "dispersion_a0 = " << dispersion_a0 << "\n";
+    }
+
+    inline void decreaseDispersionA0() {
+        dispersion_a0 = std::clamp(dispersion_a0 - 0.01, 0.0, 0.999);
+        std::cout << "dispersion_a0 = " << dispersion_a0 << "\n";
+    }
+
+    inline void increaseDispersionA1() {
+        const double limit = 1.0 + dispersion_a0;
+        dispersion_a1 = std::clamp(dispersion_a1 + 0.01, -limit, 0.0);
+        std::cout << "dispersion_a1 = " << dispersion_a1 << "\n";
+    }
+
+    inline void decreaseDispersionA1() {
+        const double limit = 1.0 + dispersion_a0;
+        dispersion_a1 = std::clamp(dispersion_a1 - 0.01, -limit, 0.0);
+        std::cout << "dispersion_a1 = " << dispersion_a1 << "\n";
+    }
+
+    inline void increaseDispersionOrder() {
+        dispersion_order = std::clamp(dispersion_order + 1, 0, 20);
+        std::cout << "dispersion_order = " << dispersion_order << "\n";
+    }
+
+    inline void decreaseDispersionOrder() {
+        dispersion_order = std::clamp(dispersion_order - 1, 0, 20);
+        std::cout << "dispersion_order = " << dispersion_order << "\n";
+    }
+    
+    
+    
+    
     
     // 弦的运动回合，每帧的调用接口
     void stringMovement() ;
@@ -203,17 +267,32 @@ public:
         x = y;
     }
 
-    inline void dispersionFilter(float &x, std::array<float, 20>& x1, std::array<float, 20>& y1) const {
-        for(int i = 0; i < dispersion_order; i++) {
-            // y = a1 * x + x1 - a1 * y1;
-            float a = static_cast<float>(dispersion_a1);
+    inline void dispersionFilter(
+        float& x,
+        std::array<float, 20>& x1,
+        std::array<float, 20>& x2,
+        std::array<float, 20>& y1,
+        std::array<float, 20>& y2
+    ) const {
+        for (int i = 0; i < dispersion_order; i++) {
+            float a0 = static_cast<float>(dispersion_a0);
+            float a1 = static_cast<float>(dispersion_a1);
 
-            float y = -a * x
-                + x1[i]
-                + a * y1[i];
+            // H(z) = (a0 + a1 z^-1 + z^-2)
+            //      / (1  + a1 z^-1 + a0 z^-2)
+            float y =
+                  a0 * x
+                + a1 * x1[i]
+                + x2[i]
+                - a1 * y1[i]
+                - a0 * y2[i];
 
-            y1[i] = y;
+            x2[i] = x1[i];
             x1[i] = x;
+
+            y2[i] = y1[i];
+            y1[i] = y;
+
             x = y;
         }
     }
@@ -221,11 +300,11 @@ public:
     inline void BoundaryFilter(float& boundary_value, bool isLeft) {
         if(isLeft) {
             fractionalFilter(boundary_value, fractional_x1_l, fractional_y1_l);
-            dispersionFilter(boundary_value, dispersion_x1_l, dispersion_y1_l);
+            dispersionFilter(boundary_value, dispersion_x1_l, dispersion_x2_l, dispersion_y1_l, dispersion_y2_l);
             lossFilter(boundary_value, loss_y1_l);
         } else {
             fractionalFilter(boundary_value, fractional_x1_r, fractional_y1_r);
-            dispersionFilter(boundary_value, dispersion_x1_r, dispersion_y1_r);
+            dispersionFilter(boundary_value, dispersion_x1_r, dispersion_x2_r, dispersion_y1_r, dispersion_y2_r);
             lossFilter(boundary_value, loss_y1_r);
         }
     }

@@ -33,6 +33,7 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     Ts = 1.0 / static_cast<double>(sampleRate);
     
     const auto physicalParameter = MyCSVReader::getRT425WrappedStringParameterByMidi(midi_n);
+    
     T = physicalParameter.tension_n;
     rho = physicalParameter.linear_density_kg_m;
     physical_f0_hz = physicalParameter.f0_hz;
@@ -66,19 +67,23 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     rightHead = 0;
     
     // loss init
-    lossConstants = MyCSVReader::getLossConstant();
-    for (const auto& c : lossConstants) {
-        if (c.midi_n == midi_n) {
-            loss_g = c.g;
-            loss_a1 = c.a_1;
-            break;
-        }
-    }
+//    lossConstants = MyCSVReader::getLossConstant();
+//    for (const auto& c : lossConstants) {
+//        if (c.midi_n == midi_n) {
+//            loss_g = c.g;
+//            loss_a1 = c.a_1;
+//            break;
+//        }
+//    }
+    loss_g = 0.998293;
+    loss_a1 = -0.0025;
     
     // dispersion init
-    auto dispersion = MyCSVReader::getDispersionConstantByMidi(midi_n);
-    dispersion_a1 = static_cast<float>(dispersion.a1);
-    dispersion_order = dispersion.order;
+//    auto dispersion = MyCSVReader::getDispersionConstantByMidi(midi_n);
+
+    dispersion_a0 = 0.5; // 0~1
+    dispersion_a1 = -0.5; // -2.0 ~ 0
+    dispersion_order = 12; // 听感类似于一种共鸣感，越大越类似编钟，
     
 
 //    std::cout << "midi_n: " << midi_n << ", delay: " << delay << "\n";
@@ -103,18 +108,7 @@ float StringModel::get_f0() const {
 void StringModel::stringMovement() {
     
     propagate();
-    
-    activityCounter++;
-    if(activityCounter >= 10000) {
-//        std::cout << activityProbe() << "\n";
-//        std::cout << "pairedHammer->pairedKey->key_active: " << pairedHammer->pairedKey->key_active << "\n";
-//        std::cout << "&pairedHammer->pairedKey->key_active: " << &pairedHammer->pairedKey->key_active << "\n";
-        if((activityProbe() < 0.005) && pairedHammer->pairedKey->key_active) {
-            pairedHammer->setInactive();
-//            std::cout<<"!!!!!!!"<<"\n";
-        }
-        activityCounter = 0;
-    }
+
 }
 
 void StringModel::injectForce(int relative_i, float F) const {
@@ -173,21 +167,6 @@ float StringModel::velocityAt(double p) const {
 }
 
 
-//float StringModel::nextVelocityAt(double p) {
-//    // 边界条件
-//    p = std::clamp(p, 0.0, 1.0);
-//
-//    int relative_i = std::floor(p * delay_index);
-//    relative_i = std::clamp(relative_i, 0, delay_index);
-//    
-//    int relative_i_l_next = std::clamp(relative_i + 1, 0, delay_index); // 左波拾音点右侧的点下一帧就在拾音点上
-//    int relative_i_r_next = std::clamp(relative_i - 1, 0, delay_index); // 右波拾音点左侧的点下一帧就在拾音点上
-//
-//    return left[rToAIndex_l(relative_i_l_next)]
-//         + right[rToAIndex_r(relative_i_r_next)];
-//    
-//}
-
 void StringModel::readHammerVelocityPair(int relative_i, float& v0, float& vHalf) const {
     // M 是 hammer 的相对击弦格点。为了半采样读速度，需要访问 M - 1 和 M + 1。
     const int maxM = std::max(1, delay_index - 1);
@@ -208,41 +187,41 @@ void StringModel::readHammerVelocityPair(int relative_i, float& v0, float& vHalf
           + 0.5f * (left_M + left[rToAIndex_l(MPlus)]);
 }
     
-float StringModel::activityProbe() const {
-    int points[5] = {
-        delay_int / 5,
-        delay_int / 3,
-        delay_int / 2,
-        (delay_int * 2) / 3,
-        (delay_int * 4) / 5
-    };
-
-    float p = 0.0f;
-
-    for (int relative_idx : points) {
-        relative_idx = std::clamp(relative_idx, 0, delay_index);
-        
-        int absolute_idx_l = rToAIndex_l(relative_idx);
-        int absolute_idx_r = rToAIndex_r(relative_idx);
-        
-
-        float l = left[absolute_idx_l];
-        float r = right[absolute_idx_r];
-
-        p = std::max(p, std::abs(l + r)); // physical velocity proxy
-        p = std::max(p, std::abs(l));     // travelling wave proxy
-        p = std::max(p, std::abs(r));
-    }
-
-    p = std::max(p, std::abs(loss_y1_l));
-    p = std::max(p, std::abs(loss_y1_r));
-    p = std::max(p, std::abs(fractional_y1_l));
-    p = std::max(p, std::abs(fractional_y1_r));
-//    p = std::max(p, std::abs(dispersion_y1_l));
-//    p = std::max(p, std::abs(dispersion_y1_r));
-
-    return p;
-}
+//float StringModel::activityProbe() const {
+//    int points[5] = {
+//        delay_int / 5,
+//        delay_int / 3,
+//        delay_int / 2,
+//        (delay_int * 2) / 3,
+//        (delay_int * 4) / 5
+//    };
+//
+//    float p = 0.0f;
+//
+//    for (int relative_idx : points) {
+//        relative_idx = std::clamp(relative_idx, 0, delay_index);
+//
+//        int absolute_idx_l = rToAIndex_l(relative_idx);
+//        int absolute_idx_r = rToAIndex_r(relative_idx);
+//
+//
+//        float l = left[absolute_idx_l];
+//        float r = right[absolute_idx_r];
+//
+//        p = std::max(p, std::abs(l + r)); // physical velocity proxy
+//        p = std::max(p, std::abs(l));     // travelling wave proxy
+//        p = std::max(p, std::abs(r));
+//    }
+//
+//    p = std::max(p, std::abs(loss_y1_l));
+//    p = std::max(p, std::abs(loss_y1_r));
+//    p = std::max(p, std::abs(fractional_y1_l));
+//    p = std::max(p, std::abs(fractional_y1_r));
+////    p = std::max(p, std::abs(dispersion_y1_l));
+////    p = std::max(p, std::abs(dispersion_y1_r));
+//
+//    return p;
+//}
 
 
 
@@ -253,10 +232,12 @@ float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
         float fy1 = fractional_y1_l;
         float ly1 = loss_y1_l;
         std::array<float, 20> dx1 = dispersion_x1_l;
+        std::array<float, 20> dx2 = dispersion_x2_l;
         std::array<float, 20> dy1 = dispersion_y1_l;
+        std::array<float, 20> dy2 = dispersion_y2_l;
 
         fractionalFilter(boundary_value, fx1, fy1);
-        dispersionFilter(boundary_value, dx1, dy1);
+        dispersionFilter(boundary_value, dx1, dx2, dy1, dy2);
         lossFilter(boundary_value, ly1);
 
         return -boundary_value;
@@ -265,10 +246,12 @@ float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
         float fy1 = fractional_y1_r;
         float ly1 = loss_y1_r;
         std::array<float, 20> dx1 = dispersion_x1_r;
+        std::array<float, 20> dx2 = dispersion_x2_r;
         std::array<float, 20> dy1 = dispersion_y1_r;
+        std::array<float, 20> dy2 = dispersion_y2_r;
         
         fractionalFilter(boundary_value, fx1, fy1);
-        dispersionFilter(boundary_value, dx1, dy1);
+        dispersionFilter(boundary_value, dx1, dx2, dy1, dy2);
         lossFilter(boundary_value, ly1);
 
         return -boundary_value;

@@ -16,17 +16,14 @@ struct LossConstant {
     
     double g = 0.999293;
     double a_1 = -0.01;
-    
-//    LossConstant() = default;
+
 };
 
-struct DispersionConstant {
-    int midi_n = 0;
-    double a1 = 0.0;
-    int order = 1;
-    
-//    DispersionConstant() = default;
-};
+//struct DispersionConstant {
+//    double f = 0.0;
+//    double a1 = 0.0;
+//    int order = 1;
+//};
 
 struct RT425StringParameter {
     int key = 60;
@@ -52,9 +49,10 @@ struct RT425HammerParameter {
 class MyCSVReader {
 public:
     static std::vector<LossConstant> getLossConstant();
-    static DispersionConstant getDispersionConstantByMidi(int midi_n);
+//    static DispersionConstant getDispersionConstantByMidi(int midi_n);
     static RT425StringParameter getRT425WrappedStringParameterByMidi(int midi_n);
     static RT425HammerParameter getRT425HammerParameterByMidi(int midi_n);
+    static double estimateRT425WrappedB(double frequencyHz);
     
 };
 
