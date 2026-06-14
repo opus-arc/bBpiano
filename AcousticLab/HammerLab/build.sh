@@ -7,14 +7,14 @@ mkdir -p "$build_dir" AcousticLab/HammerLab/.Generated
 
 clang++ -std=c++20 -O0 -g \
   -x c++ AcousticLab/HammerLab/main.cpp.lab \
-  -x c++ AcousticLab/HammerLab/MyCSVReaderStub.cpp.lab \
-  Core/CppCore/Piano/Component/Src/HammerModel.cpp \
-  Core/CppCore/Piano/Component/Src/StringModel.cpp \
-  Core/CppCore/ModelParameters/ModelParameters.cpp \
-  Core/CppCore/ModelParameters/PrecomputedValue.cpp \
+  "Cli/bBpiano Lite/core/piano/Component/Src/HammerModel.cpp" \
+  "Cli/bBpiano Lite/core/piano/Component/Src/StringModel.cpp" \
+  "Cli/bBpiano Lite/core/piano/ModelParameters/ModelParameters.cpp" \
+  "Cli/bBpiano Lite/core/piano/ModelParameters/PrecomputedValue.cpp" \
+  "Cli/bBpiano Lite/core/piano/Utils/MyCSVReader.cpp" \
   -I. \
-  -ICore/CppCore/Piano/Component \
-  -ICore/CppCore/Piano/Component/Src \
+  -I"Cli/bBpiano Lite/core/piano/Component" \
+  -I"Cli/bBpiano Lite/core/piano/Component/Src" \
   -o "$build_dir/HammerLab"
 
 echo "Built $build_dir/HammerLab"

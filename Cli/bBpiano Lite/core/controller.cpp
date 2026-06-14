@@ -40,7 +40,7 @@ void get_next_buffer(float* out, int frameCount, double amplitudeLimiter) {
     for (int i = 0; i < frameCount; ++i) {
         if(bBpiano->pianoKeys.size() < 87) return;
         bBpiano->pianoMovement();
-        out[i] = bBpiano->getSample();
+        out[i] = bBpiano->getSample()*amplitudeLimiter;
     }
     
     const uint64_t end = clock_gettime_nsec_np(CLOCK_UPTIME_RAW);

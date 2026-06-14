@@ -86,6 +86,8 @@
 				"bBpiano Sonic/external/fft/kiss_fftndr.c",
 				"bBpiano Sonic/external/fft/kiss_fftr.c",
 				"bBpiano Sonic/main.cpp",
+				"bBpiano Sonic/utils/src/LinearRegression.cpp",
+				"bBpiano Sonic/utils/src/MyPitch.cpp",
 			);
 			target = 14E708352F78BE0C005C806C /* bBpiano */;
 		};
@@ -143,6 +145,8 @@
 				"bBpiano Sonic/external/fft/kiss_fftndr.c",
 				"bBpiano Sonic/external/fft/kiss_fftr.c",
 				"bBpiano Sonic/main.cpp",
+				"bBpiano Sonic/utils/src/LinearRegression.cpp",
+				"bBpiano Sonic/utils/src/MyPitch.cpp",
 			);
 			target = 14D55CDB2FD8273E00F009D7 /* bBpiano Sonic */;
 		};
