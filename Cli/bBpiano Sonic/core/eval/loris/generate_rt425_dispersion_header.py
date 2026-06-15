@@ -3,7 +3,8 @@
 Generate compile-time RT425 dispersion presets for all 88 piano keys.
 
 This script calls fit_allpass.py in --cpp-sos-only mode for each MIDI note,
-parses the eight stable SOS allpass sections, and writes a constexpr C++ header.
+parses the stable SOS allpass sections, pads lower-order presets with identity
+sections, and writes a constexpr C++ header.
 """
 
 from __future__ import annotations
@@ -33,10 +34,24 @@ DEFAULT_OUTPUT = (
 MIDI_MIN = 21
 MIDI_MAX = 108
 SAMPLE_RATE = 44100.0
-ORDER = 16
 SECTION_COUNT = 8
 
-BASE_MAX_PARTIALS = (20, 12, 10, 8)
+BYPASS_SECTION = (1.0, 0.0, 0.0, 0.0, 0.0)
+
+PRIMARY_CONFIGS = [
+    (21, 72, 16, 20, 0.995, 0.01),
+    (73, 79, 12, 14, 0.990, 0.02),
+    (80, 84, 8, 10, 0.985, 0.03),
+    (85, 88, 6, 8, 0.980, 0.04),
+    (89, 96, 4, 6, 0.970, 0.05),
+    (97, 108, 2, 4, 0.950, 0.08),
+]
+
+EMERGENCY_CONFIGS = [
+    (2, 3, 0.900, 0.12),
+    (2, 2, 0.850, 0.20),
+    (2, 2, 0.700, 0.35),
+]
 
 RT425_WRAPPED_B_VALUES = [
     7.65422867528e-05, 7.49396648865e-05, 7.34193813176e-05, 6.76924110619e-05,
@@ -80,8 +95,8 @@ LOOP_DELAY_RE = re.compile(
 
 @dataclasses.dataclass(frozen=True)
 class FitConfig:
-    max_partial: int
     order: int
+    max_partial: int
     starts: int
     max_nfev: int
     max_radius: float
@@ -168,16 +183,80 @@ def run_fit(
 
     loop_delay_samples = parse_loop_delay_samples(result.stdout)
     sections = parse_sections(result.stdout)
-    if len(sections) != SECTION_COUNT:
+    expected_sections = config.order // 2
+    if len(sections) != expected_sections:
         raise RuntimeError(
-            f"parsed {len(sections)} sections for MIDI {midi}; expected {SECTION_COUNT}. "
+            f"parsed {len(sections)} sections for MIDI {midi}; expected {expected_sections}. "
             f"stdout was:\n{result.stdout}"
         )
     return loop_delay_samples, sections
 
 
 def identity_sections() -> list[tuple[float, float, float, float, float]]:
-    return [(1.0, 0.0, 0.0, 0.0, 0.0) for _ in range(SECTION_COUNT)]
+    return [BYPASS_SECTION for _ in range(SECTION_COUNT)]
+
+
+def padded_sections(
+    sections: list[tuple[float, float, float, float, float]],
+) -> list[tuple[float, float, float, float, float]]:
+    if len(sections) > SECTION_COUNT:
+        raise ValueError(f"cannot fit {len(sections)} sections into {SECTION_COUNT}")
+    return sections + [BYPASS_SECTION for _ in range(SECTION_COUNT - len(sections))]
+
+
+def primary_config_index(midi: int) -> int:
+    for index, (lo, hi, *_rest) in enumerate(PRIMARY_CONFIGS):
+        if lo <= midi <= hi:
+            return index
+    raise ValueError(f"MIDI {midi} is outside the RT425 range")
+
+
+def candidate_configs(
+    midi: int,
+    starts: int,
+    max_nfev: int,
+) -> list[FitConfig]:
+    configs: list[FitConfig] = []
+    for _lo, _hi, order, max_partial, max_radius, radius_regularization in PRIMARY_CONFIGS[
+        primary_config_index(midi) :
+    ]:
+        configs.append(
+            FitConfig(
+                order=order,
+                max_partial=max_partial,
+                starts=starts,
+                max_nfev=max_nfev,
+                max_radius=max_radius,
+                radius_regularization=radius_regularization,
+            )
+        )
+
+    for order, max_partial, max_radius, radius_regularization in EMERGENCY_CONFIGS:
+        configs.append(
+            FitConfig(
+                order=order,
+                max_partial=max_partial,
+                starts=starts,
+                max_nfev=max_nfev,
+                max_radius=max_radius,
+                radius_regularization=radius_regularization,
+            )
+        )
+
+    deduped: list[FitConfig] = []
+    seen: set[tuple[int, int, float, float]] = set()
+    for config in configs:
+        key = (
+            config.order,
+            config.max_partial,
+            config.max_radius,
+            config.radius_regularization,
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(config)
+    return deduped
 
 
 def fit_midi(
@@ -185,27 +264,24 @@ def fit_midi(
     midi: int,
     starts: int,
     max_nfev: int,
-    max_radius: float,
-    radius_regularization: float,
 ) -> Preset:
     b = RT425_WRAPPED_B_VALUES[midi - MIDI_MIN]
     f1 = midi_to_f1(midi)
     errors: list[str] = []
 
-    for max_partial in BASE_MAX_PARTIALS:
-        config = FitConfig(
-            max_partial=max_partial,
-            order=ORDER,
-            starts=starts,
-            max_nfev=max_nfev,
-            max_radius=max_radius,
-            radius_regularization=radius_regularization,
-        )
+    for config in candidate_configs(midi, starts, max_nfev):
         try:
             loop_delay_samples, sections = run_fit(fit_script, midi, f1, b, config)
+            if loop_delay_samples <= 0.0:
+                raise RuntimeError(
+                    f"non-positive loopDelaySamples={loop_delay_samples:.12f}"
+                )
+
+            section_count = len(sections)
             print(
                 f"MIDI {midi:3d} f1={f1:.6f} B={b:.12g} "
-                f"ok maxPartial={max_partial} loopDelay={loop_delay_samples:.9f}",
+                f"ok order={config.order} maxPartial={config.max_partial} "
+                f"sections={section_count} loopDelay={loop_delay_samples:.9f}",
                 flush=True,
             )
             return Preset(
@@ -214,26 +290,27 @@ def fit_midi(
                 b=b,
                 config=config,
                 loop_delay_samples=loop_delay_samples,
-                sections=sections,
+                sections=padded_sections(sections),
             )
         except Exception as exc:
             message = str(exc)
             errors.append(message)
             print(
                 f"MIDI {midi:3d} f1={f1:.6f} B={b:.12g} "
-                f"failed maxPartial={max_partial}: {message}",
+                f"failed order={config.order} maxPartial={config.max_partial} "
+                f"maxRadius={config.max_radius} reg={config.radius_regularization}: {message}",
                 flush=True,
             )
 
     fallback_config = FitConfig(
-        max_partial=BASE_MAX_PARTIALS[-1],
-        order=ORDER,
+        order=0,
+        max_partial=1,
         starts=starts,
         max_nfev=max_nfev,
-        max_radius=max_radius,
-        radius_regularization=radius_regularization,
+        max_radius=0.0,
+        radius_regularization=0.0,
     )
-    warning = "fit failed for all maxPartial values; identity fallback emitted"
+    warning = "fit failed or produced non-positive loop delay for all configs; bypass emitted"
     print(f"WARNING MIDI {midi}: {warning}", flush=True)
     for error in errors:
         print(f"  {error}", flush=True)
@@ -288,7 +365,8 @@ def render_header(presets: list[Preset]) -> str:
             f"loopDelaySamples = {preset.loop_delay_samples:.12f}, "
             f"order = {preset.config.order}, starts = {preset.config.starts}, "
             f"maxNfev = {preset.config.max_nfev}, maxRadius = {preset.config.max_radius}, "
-            f"radiusRegularization = {preset.config.radius_regularization}"
+            f"radiusRegularization = {preset.config.radius_regularization}, "
+            f"sectionCount = {preset.config.order // 2}"
         )
         if preset.warning:
             lines.append(f"    // WARNING: {preset.warning}")
@@ -301,7 +379,7 @@ def render_header(presets: list[Preset]) -> str:
                 f"        {format_double(SAMPLE_RATE)},",
                 f"        {format_double(preset.loop_delay_samples)},",
                 f"        {preset.config.order},",
-                f"        {SECTION_COUNT},",
+                f"        {preset.config.order // 2},",
                 "        {{",
             ]
         )
@@ -343,8 +421,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--midi-max", type=int, default=MIDI_MAX)
     parser.add_argument("--starts", type=int, default=24)
     parser.add_argument("--max-nfev", type=int, default=3000)
-    parser.add_argument("--max-radius", type=float, default=0.995)
-    parser.add_argument("--radius-regularization", type=float, default=0.01)
     parser.add_argument(
         "--jobs",
         type=int,
@@ -380,8 +456,6 @@ def main() -> None:
                 midi,
                 args.starts,
                 args.max_nfev,
-                args.max_radius,
-                args.radius_regularization,
             ): midi
             for midi in range(MIDI_MIN, MIDI_MAX + 1)
         }

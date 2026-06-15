@@ -162,10 +162,8 @@ public:
     // Hammer-P 读速度接口：一次读出当前格点速度与半采样速度。
     void readHammerVelocityPair(int relative_i, float& v0, float& vHalf) const;
     
-//    float activityProbe() const;
-    
-    
-    
+    float activityProbe() const;
+
     
     // --------------------------------------------
     // MARK: inline 小函数
@@ -217,7 +215,12 @@ public:
         std::array<float, Piano::Data::kRT425DispersionSectionCount>& y1,
         std::array<float, Piano::Data::kRT425DispersionSectionCount>& y2
     ) const {
-        for (std::size_t i = 0; i < dispersionPreset.sections.size(); ++i) {
+        const std::size_t sectionCount = std::min<std::size_t>(
+            static_cast<std::size_t>(dispersionPreset.sectionCount),
+            dispersionPreset.sections.size()
+        );
+
+        for (std::size_t i = 0; i < sectionCount; ++i) {
             const auto& c = dispersionPreset.sections[i];
 
             // H(z) = (b0 + b1 z^-1 + b2 z^-2)

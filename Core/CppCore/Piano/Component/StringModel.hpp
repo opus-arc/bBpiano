@@ -10,24 +10,18 @@
 #ifndef String_hpp
 #define String_hpp
 
-#include "../../ModelParameters/ModelParameters.hpp"
-
 #include <iostream>
 #include <algorithm>
 #include <vector>
 #include <cmath>
 #include <array>
+#include <complex>
+
+#include "../Utils/RT425DispersionPresets.hpp"
 
 class HammerModel;
 
 struct LossConstant;
-
-enum class StringMode {
-    // 现有模式：fractional / loss / dispersion 都照常运行
-    Normal,
-    // Hammer-F 单弦实验模式：整数格点、无全通、无损耗、无色散
-    HammerFTest
-};
 
 class StringModel {
 
@@ -39,17 +33,6 @@ private:
     // 采样率
     private: static constexpr double sampleRate = 44100.0;
         
-    // 弦的张力
-    // 单位 牛顿
-    // 这里暂时用一个固定值
-    static constexpr double T = 670; // 850.0
-    
-    // 弦的线密度
-    // 单位 kg / m
-    // 这里暂时用一个固定值
-    static constexpr double rho = 0.0063387; // 0.006
-    
-    
     mutable int activityCounter = 0;
     
     // --------------------------------------------
@@ -71,9 +54,13 @@ public:
     // 弦的编号
     const int string_index;
     
-    // 弦的模式
-    StringMode mode = StringMode::Normal;
-        
+    // RT-425 wrapped string 基础参数。
+    // rho 在当前代码里表示线密度 kg/m，不是论文表里的体密度 kg/m^3。
+    double T = 0.0;
+    double rho = 0.0;
+    double physical_f0_hz = 0.0;
+    double physical_length_m = 0.0;
+    double physical_strike_ratio = 0.0;
     
     // --------------------------------------------
     // MARK: 实时值与其函数
@@ -123,11 +110,19 @@ public:
     double loss_g = 0.999293;
 
     // dispersion filter
-    mutable std::array<float, 20> dispersion_x1_r = {}; // 上一次传入 allpass 的值
-    mutable std::array<float, 20> dispersion_y1_r = {};
-    mutable std::array<float, 20> dispersion_x1_l = {}; // 上一次传入 allpass 的值
-    mutable std::array<float, 20> dispersion_y1_l = {};
-    double dispersion_a1 = 0.0;
+    MACOS::Piano::Data::DispersionPreset dispersionPreset;
+    mutable std::array<float, MACOS::Piano::Data::kRT425DispersionSectionCount> dispersion_x1_r = {}; // 上一次传入 allpass 的值
+    mutable std::array<float, MACOS::Piano::Data::kRT425DispersionSectionCount> dispersion_x2_r = {};
+    mutable std::array<float, MACOS::Piano::Data::kRT425DispersionSectionCount> dispersion_y1_r = {};
+    mutable std::array<float, MACOS::Piano::Data::kRT425DispersionSectionCount> dispersion_y2_r = {};
+    mutable std::array<float, MACOS::Piano::Data::kRT425DispersionSectionCount> dispersion_x1_l = {}; // 上一次传入 allpass 的值
+    mutable std::array<float, MACOS::Piano::Data::kRT425DispersionSectionCount> dispersion_x2_l = {};
+    mutable std::array<float, MACOS::Piano::Data::kRT425DispersionSectionCount> dispersion_y1_l = {};
+    mutable std::array<float, MACOS::Piano::Data::kRT425DispersionSectionCount> dispersion_y2_l = {};
+    
+    
+    double dispersion_a0 = 0.5;
+    double dispersion_a1 = -1.0;
     int dispersion_order = 0;
 
     
@@ -146,40 +141,29 @@ public:
 
 public:
     
-    // 注入
-    //  将力变成波
-    void injectForce(double p, float F) const ;
-    void injectForce(int relative_i, float F) const ;
-    
-    // Hammer-F 专用错位注入，用于避免旧同格点注入的瞬时能量偏差
-    void injectHammerFStaggeredForce(int relative_i, float F) const;
+    // Hammer-P 错位注入，将力变成波
+    void injectForce(int relative_i, float F) const;
     
     // 传播
     void propagate();
-    
-    //弦的模式的设置
-    void setMode(StringMode _mode);
     
     // --------------------------------------------
     // MARK: 运动帧
     
 public:
     
+    
     // 弦的运动回合，每帧的调用接口
     void stringMovement() ;
     
     // 获取速度的方式
     float velocityAt(double p) const ;
-    float nextVelocityAt(double p) ;
     
-    // Hammer-F 专用：这里的 relative_i 就是 Bank 论文里的 M_in，
-    // relative_i表示击弦点对应的相对波导格点，不是 vector 里的绝对数组下标。
-    // 访问 left/right 时必须再经过 rToAIndex_l/r 转成 ring buffer 下标。
-    float velocityAtGrid(int relative_i) const;
-    // Bank 速度上采样：当前 M 的行波，与下一帧会到达 M 的相邻行波取平均。
-    float velocityAtHalfSample(int relative_i) const;
+    // Hammer-P 读速度接口：一次读出当前格点速度与半采样速度。
+    void readHammerVelocityPair(int relative_i, float& v0, float& vHalf) const;
     
     float activityProbe() const;
+
     
     // --------------------------------------------
     // MARK: inline 小函数
@@ -188,15 +172,7 @@ public:
     
     // 边界滤波器
     float BoundaryFilter_virtual(float boundary_value, bool isLeft);
-    
 
-//    inline int rToAIndex_l(int i) const {
-//        return (leftHead + i + Delay_Int) % Delay_Int;
-//    }
-//
-//    inline int rToAIndex_r(int i) const {
-//        return (rightHead + i + Delay_Int) % Delay_Int;
-//    }
     
     // 0 <= i < Delay_Int !!!
     inline int rToAIndex_l(int i) const {
@@ -232,15 +208,39 @@ public:
         x = y;
     }
 
-    inline void dispersionFilter(float &x, std::array<float, 20>& x1, std::array<float, 20>& y1) const {
-        for(int i = 0; i < dispersion_order; i++) {
-            // y = a1 * x + x1 - a1 * y1;
-            float y = static_cast<float>(dispersion_a1 * x)
-                + x1[i]
-                - static_cast<float>(dispersion_a1 * y1[i]);
+    inline void dispersionFilter(
+        float& x,
+        std::array<float, MACOS::Piano::Data::kRT425DispersionSectionCount>& x1,
+        std::array<float, MACOS::Piano::Data::kRT425DispersionSectionCount>& x2,
+        std::array<float, MACOS::Piano::Data::kRT425DispersionSectionCount>& y1,
+        std::array<float, MACOS::Piano::Data::kRT425DispersionSectionCount>& y2
+    ) const {
+        const std::size_t sectionCount = std::min<std::size_t>(
+            static_cast<std::size_t>(dispersionPreset.sectionCount),
+            dispersionPreset.sections.size()
+        );
 
-            y1[i] = y;
+        for (std::size_t i = 0; i < sectionCount; ++i) {
+            const auto& c = dispersionPreset.sections[i];
+
+            // H(z) = (b0 + b1 z^-1 + b2 z^-2)
+            //      / (1  + a1 z^-1 + a2 z^-2)
+            // Difference equation:
+            // y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2]
+            //      - a1*y[n-1] - a2*y[n-2]
+            float y =
+                  static_cast<float>(c.b0) * x
+                + static_cast<float>(c.b1) * x1[i]
+                + static_cast<float>(c.b2) * x2[i]
+                - static_cast<float>(c.a1) * y1[i]
+                - static_cast<float>(c.a2) * y2[i];
+
+            x2[i] = x1[i];
             x1[i] = x;
+
+            y2[i] = y1[i];
+            y1[i] = y;
+
             x = y;
         }
     }
@@ -248,11 +248,11 @@ public:
     inline void BoundaryFilter(float& boundary_value, bool isLeft) {
         if(isLeft) {
             fractionalFilter(boundary_value, fractional_x1_l, fractional_y1_l);
-            dispersionFilter(boundary_value, dispersion_x1_l, dispersion_y1_l);
-            lossFilter(boundary_value, loss_y1_l);
+//            dispersionFilter(boundary_value, dispersion_x1_l, dispersion_x2_l, dispersion_y1_l, dispersion_y2_l);
+//            lossFilter(boundary_value, loss_y1_l);
         } else {
             fractionalFilter(boundary_value, fractional_x1_r, fractional_y1_r);
-            dispersionFilter(boundary_value, dispersion_x1_r, dispersion_y1_r);
+            dispersionFilter(boundary_value, dispersion_x1_r, dispersion_x2_r, dispersion_y1_r, dispersion_y2_r);
             lossFilter(boundary_value, loss_y1_r);
         }
     }

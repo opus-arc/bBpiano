@@ -7,7 +7,7 @@
 //  This document is not AI-assisted.
 //
 
-#include "../KeyModel.hpp"
+#include "KeyModel.hpp"
 
 
 KeyModel::KeyModel(PianoModel * _piano, int _midi_n) :

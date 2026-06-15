@@ -35,26 +35,6 @@ struct blueBirdApp: App {
     var body: some Scene {
         WindowGroup {
             ZStack {
-//                Image("油画背景1")
-//                    .resizable()
-//                    .scaledToFill()
-//                    .frame(width: 880, height: 695)
-//                    .clipped()
-//                    .overlay(
-//                        LinearGradient(
-//                            gradient: Gradient(colors: [
-//                                Color.clear,
-//                                Color.clear,
-//
-//                                Color.white.opacity(0.15),
-//                                Color.white.opacity(0.45),
-//                                Color.white
-//                            ]),
-//                            startPoint: .center,
-//                            endPoint: .bottom
-//                        )
-//                    )
-
                 RootView()
             }
             .frame(width: 880, height: 695)
@@ -74,7 +54,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         didShutdownBPiano = true
-//        bBpiano_shutdown()
+        bBpiano_shutdown()
         print("bBpiano shut down")
 
         return .terminateNow
@@ -91,6 +71,8 @@ struct RootView: View {
     var body: some View {
         ContentView()
             .task {
+                
+                
                 // XCTest 环境下不启动声卡
                 if isRunningTests {
                     print("Running under XCTest, audio engine disabled")
@@ -134,7 +116,8 @@ struct RootView: View {
 //                    MidiService.stop()
                     
                     
-//                    bBpiano_init()
+                    bBpiano_init()
+                    Thread.sleep(forTimeInterval: 2.0)
                     print("bBpiano inited")
                 } catch {
                     print("Failed to start sound card or bBpiano")

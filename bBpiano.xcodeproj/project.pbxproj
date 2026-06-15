@@ -136,6 +136,13 @@
 			);
 			target = 147D71352FD6F9B6008F3BF8 /* bBpiano Lite */;
 		};
+		14C698EE2FDF9AF0001DD708 /* Exceptions for "AcousticLab" folder in "bBpiano" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				StringFilterLab/Utils/Src/MyCSVReader.cpp,
+			);
+			target = 14E708352F78BE0C005C806C /* bBpiano */;
+		};
 		14D55CE42FD8274800F009D7 /* Exceptions for "Cli" folder in "bBpiano Sonic" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -192,6 +199,9 @@
 		};
 		14FD02262FB889F3000D46DC /* AcousticLab */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				14C698EE2FDF9AF0001DD708 /* Exceptions for "AcousticLab" folder in "bBpiano" target */,
+			);
 			path = AcousticLab;
 			sourceTree = "<group>";
 		};

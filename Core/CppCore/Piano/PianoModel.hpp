@@ -56,20 +56,12 @@ public:
     // active 弦检测剪枝计数器
     mutable int activityCounter = 0;
     
-    // 当前全局 hammer 模式，只影响之后按下的音
-    HammerMode hammerMode = HammerMode::Normal;
-
-    
     // --------------------------------------------
     // MARK: 函数
     
-    void setHammerMode(HammerMode _mode);
     void note_on(int midi_n, double velocity);
     void note_off(int midi_n, double velocity);
     void note_afterTouch(int midi_n, double pressure);
-    
-
-    
     
     // --------------------------------------------
     // MARK: 运动帧

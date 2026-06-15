@@ -123,6 +123,15 @@ float StringModel::get_f0() const {
 void StringModel::stringMovement() {
     
     propagate();
+    
+    activityCounter++;
+        if(activityCounter >= 10000) {
+            // 此处仍然不可低于 0.003
+            if((activityProbe() < 0.003) && pairedHammer->pairedKey->key_active) {
+                pairedHammer->setInactive();
+            }
+            activityCounter = 0;
+        }
 
 }
 
@@ -234,4 +243,41 @@ float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
 
         return -boundary_value;
     }
+}
+
+
+float StringModel::activityProbe() const {
+    int points[5] = {
+        delay_int / 5,
+        delay_int / 3,
+        delay_int / 2,
+        (delay_int * 2) / 3,
+        (delay_int * 4) / 5
+    };
+
+    float p = 0.0f;
+
+    for (int relative_idx : points) {
+        relative_idx = std::clamp(relative_idx, 0, delay_index);
+
+        int absolute_idx_l = rToAIndex_l(relative_idx);
+        int absolute_idx_r = rToAIndex_r(relative_idx);
+
+
+        float l = left[absolute_idx_l];
+        float r = right[absolute_idx_r];
+
+        p = std::max(p, std::abs(l + r)); // physical velocity proxy
+        p = std::max(p, std::abs(l));     // travelling wave proxy
+        p = std::max(p, std::abs(r));
+    }
+
+    p = std::max(p, std::abs(loss_y1_l));
+    p = std::max(p, std::abs(loss_y1_r));
+    p = std::max(p, std::abs(fractional_y1_l));
+    p = std::max(p, std::abs(fractional_y1_r));
+//    p = std::max(p, std::abs(dispersion_y1_l));
+//    p = std::max(p, std::abs(dispersion_y1_r));
+
+    return p;
 }
