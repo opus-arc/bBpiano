@@ -153,30 +153,16 @@ To evaluate the acoustic realism and synthesis quality of bBpiano, we compare sy
 
 In addition to the MAESTRO Yamaha Disklavier dataset, selected evaluations also incorporate recordings from the Iowa Electronic Music Studios (Iowa EMS) Steinway Model B dataset. Since the Iowa dataset provides isolated piano recordings rather than aligned MIDI performances, note events and velocity information are automatically estimated using a pretrained piano transcription model to construct a unified benchmarking sequence. This allows direct comparisons between bBpiano, physical-modeling instruments, and sample-based pianos under controlled and reproducible conditions.
 
+*Detailed test results and statistical data are included in the attachment below.*
+
 ### Engine Overview
 
 | Category | Maestro Dataset | Pianoteq 8 | SF2 (Grand Piano) | bBpiano L0-100c(Provisional) |
 |:----------|:----------:|:----------:|:----------:|:----------:|
 | Type | Reference Recording | Physical Modeling | Sample-Based | Physical Modeling |
-| Size | 1–10 GB (test subset) | **380 KB** | 36 MB | 1.04 MB |
+| Size | 1–10 GB (test subset) | **380 KB** | 36 MB | 1.1 MB |
 | Real-Time Synthesis | ❌ | **✅** | ❌ | **✅** |
-| Polyphony | N/A | **> 88** | N/A | **23.34** |
-
----
-
-### LAION-CLAP Similarity
-
-Reference recordings are taken from the MAESTRO Yamaha Disklavier dataset. Cosine similarity is computed in the LAION-CLAP embedding space, where higher values indicate stronger acoustic similarity to the reference performance.
-
-| Method | Cosine Similarity |
-|:---------|---------:|
-| Pianoteq 8 | **1.000000** |
-| SF2 (Grand Piano) | 0.844363 |
-| bBpiano L0-100c(Provisional) | - |
-
-Pianoteq serves as an approximate upper bound rather than a direct competitor.
-
-The purpose of this benchmark is to establish a reference point for future iterations of the physical model rather than to claim parity with commercial instruments.
+| Polyphony | N/A | **> 88** | N/A | 23.34 |
 
 ---
 
@@ -186,9 +172,27 @@ VISQOL evaluates perceptual audio quality by estimating similarity between synth
 
 | Method | VISQOL Score |
 |:---------|---------:|
-| Pianoteq 8 | 5.000 TBD |
-| SF2 (Grand Piano) | 2.736 TBD |
-| bBpiano L0-100c(Provisional) | - TBD |
+| Yamaha Disklavier (MAESTRO) | *Standard* |
+| Pianoteq 9 | 2.8466 TBD |
+| SF2 (Grand Piano) | 2.9008 TBD |
+| **bBpiano L0-100c** | 2.4260 TBD |
+| bBpiano L0-beta | 2.3532 TBD |
+
+---
+
+### LAION-CLAP Similarity
+
+Reference recordings are taken from the MAESTRO Yamaha Disklavier dataset. Cosine similarity is computed in the LAION-CLAP embedding space, where higher values indicate stronger acoustic similarity to the reference performance.
+
+I believe the values provided by LAION-CLAP reflect more of an overall impression—such as tone, style, and mood—rather than physical accuracy. bBpiano aims to create a model that closely resembles a real piano, but isn’t limited to that style.
+
+| Method | Cosine Similarity |
+|:---------|---------:|
+| Yamaha Disklavier (MAESTRO) | *Standard* |
+| Pianoteq 8 | 0.8045 |
+| SF2 (Grand Piano) | **0.8283** |
+| **bBpiano L0-100c** | 0.3213 |
+| bBpiano L0-beta | 0.4628 |
 
 ---
 
@@ -197,8 +201,8 @@ VISQOL evaluates perceptual audio quality by estimating similarity between synth
 Spectral partial analysis measures how accurately the synthesized instrument reproduces the harmonic structure of the reference piano.
 
 | Method | Dispersion | Loss |
-|:---------|---------:|----------|
-| RT425 | Standard | Standard |
+|:---------|---------:|---------:|
+| RT425 | *Standard* | *Standard* |
 | Pianoteq 8 | - | - |
 | SF2 (Grand Piano) | - | - |
 | bBpiano L0-100c(Provisional) | <1hz | >30% |
@@ -207,12 +211,13 @@ Spectral partial analysis measures how accurately the synthesized instrument rep
 
 ### Historical Progress
 
-| Category | Benchmark | bBpiano L0-alpha | bBpiano L0-beta | bBpiano L0-100c(Provisional) |
-|:---------|:---------|---------:|---------:|----------|
-| Engine | Binary Size | — | 1.04 MB | - |
+| Category | Benchmark | bBpiano L0-alpha | bBpiano L0-beta | bBpiano L0-100c |
+|:---------|:---------|---------:|---------:|---------:|
+| Engine | Binary Size | 1.04 MB | 1.04 MB | 1.1 MB |
 | Engine | Real-Time Synthesis | Semi - ✅ | Semi - ✅ | ✅ |
-| Engine | Polyphony | 5.21 | 11.27 | >88 |
-| LAION-CLAP | Cosine Similarity (Pianoteq Reference) | 0.538950 | 0.538950 | - |
+| Engine | Polyphony | 5.21 | 11.27 | 23.34 |
+| LAION-CLAP | Cosine Similarity (MAESTRO Reference) | - | 0.4628 | 0.3213 |
+| VISQOL | TBD (MAESTRO Reference) | - | 2.3532 | 2.4260 |
 
 The values above represent the current state of the project and will continue to evolve as the physical model, hammer-string interaction, dispersion network, and parameter calibration pipeline mature.
 
@@ -225,6 +230,120 @@ This repository and all accompanying experimental data are currently released un
 If you have any questions, please raise an issue or contact us at arcopus07@gmail.com or https://t.me/arcopus .
 
 
+
+
+
+
+
+---
+
+# **Appendix A. ViSQOL Benchmark Details**
+
+The following table provides the complete ViSQOL scores used to generate the aggregate results reported in Section 5.
+
+Reference recordings were taken from the Yamaha Disklavier subset of the MAESTRO dataset. Higher values indicate stronger perceptual similarity to the reference recordings.
+
+## **A.1 Per-Piece Results**
+
+| Piece                                 | Pianoteq 9 | SF2 Grand Piano | bBpiano L0-100c | bBpiano L0-beta |
+| :------------------------------------ | ---------: | --------------: | --------------: | --------------: |
+| Etude-Tableaux Op.39 No.5             |     2.9136 |      **2.9863** |          2.6995 |          2.4852 |
+| Images, Book II "Poissons d'or"       | **2.8029** |          2.7804 |          2.5644 |          2.3634 |
+| Piano Sonata "From the Street"        |     2.9598 |      **3.0255** |          2.4664 |          2.3462 |
+| Prel. Chor. Fug.                      |     2.9266 |      **3.0012** |          2.5196 |          2.2769 |
+| Prelude and Fugue in A Minor, S.462/1 |     2.9671 |      **3.0924** |          2.5948 |          2.4029 |
+| Prelude and Fugue in D Major, BWV 874 | **2.7859** |          2.6779 |          2.2438 |          2.2183 |
+| Sonata No.28 Op.101                   |     2.8137 |      **2.8996** |          2.3586 |          2.3095 |
+| Sonata No.4 Op.30                     |     2.7626 |      **2.8409** |          2.4185 |          2.2881 |
+| Sonata in B Minor                     | **2.8854** |          2.8354 |          2.3827 |          2.2733 |
+| Sonata in D Major K.576               |     2.8285 |      **3.0614** |          2.0482 |          2.4669 |
+| Sonata in D Minor K.141               | **2.6867** |          2.5331 |          2.2945 |          2.4932 |
+| Sonata in F Minor Op.5                |     2.9342 |      **2.9671** |          2.5207 |          2.3144 |
+
+## **A.2 Aggregate Statistics**
+
+| Engine          |       Mean |        Min |        Max |
+| :-------------- | ---------: | ---------: | ---------: |
+| Pianoteq 9      |     2.8466 | **2.6779** |     2.9671 |
+| SF2 Grand Piano | **2.9008** |     2.5331 | **3.0924** |
+| bBpiano L0-100c |     2.4260 |     2.0482 |     2.6995 |
+| bBpiano L0-beta |     2.3532 |     2.2183 |     2.4932 |
+
+## **A.3 Reproducibility Notes**
+
+- Reference dataset: Yamaha Disklavier (MAESTRO)
+- Number of excerpts: 12
+- Metric: ViSQOL
+- Evaluation mode: pairwise comparison against aligned reference recordings
+
+ViSQOL estimates perceptual audio similarity by modeling the relationship between spectral structures observed in the reference and synthesized signals. Higher scores indicate greater perceptual similarity to the original recording.
+
+Unlike embedding-based metrics such as CLAP, ViSQOL directly evaluates the audio signals themselves and therefore serves as a complementary measure of synthesis quality.
+
+> [!NOTE]
+>
+> An interesting observation is that while bBpiano L0-100c underperforms L0-beta in the CLAP benchmark, it achieves a slightly higher average ViSQOL score. This suggests that improvements in perceptual audio quality do not necessarily translate into higher embedding-space similarity, highlighting the importance of evaluating physical modeling instruments using multiple complementary metrics.
+
+
+
+---
+
+# Appendix B. CLAP Benchmark Details
+
+The following table provides the complete per-piece LAION-CLAP similarity scores used to generate the aggregate results reported in Section 5.
+
+Reference recordings were taken from the Yamaha Disklavier subset of the MAESTRO dataset. Higher values indicate stronger similarity in CLAP embedding space.
+
+I believe the values provided by LAION-CLAP reflect more of an overall impression—such as tone, style, and mood—rather than physical accuracy. bBpiano aims to create a model that closely resembles a real piano, but isn’t limited to that style.
+
+## B.1 Per-Piece Results
+
+| Piece                                 | Pianoteq 9 | SF2 Grand Piano | bBpiano L0-100c | bBpiano L0-beta |
+| :------------------------------------ | ---------: | --------------: | --------------: | --------------: |
+| Etude-Tableaux Op.39 No.5             |     0.7640 |      **0.8494** |          0.3476 |          0.5452 |
+| Images, Book II "Poissons d'or"       | **0.7816** |          0.7704 |          0.4385 |          0.4862 |
+| Piano Sonata "From the Street"        | **0.8993** |          0.8060 |          0.1505 |          0.5820 |
+| Prel. Chor. Fug.                      |     0.7994 |      **0.8852** |          0.4831 |          0.4735 |
+| Prelude and Fugue in A Minor, S.462/1 | **0.9413** |          0.8776 |          0.5253 |          0.6226 |
+| Prelude and Fugue in D Major, BWV 874 |     0.6436 |      **0.8413** |          0.1691 |          0.4318 |
+| Sonata No.28 Op.101                   |     0.7851 |      **0.8338** |          0.3241 |          0.4066 |
+| Sonata No.4 Op.30                     |     0.7962 |      **0.8154** |          0.4225 |          0.5763 |
+| Sonata in B Minor                     | **0.7088** |          0.7059 |          0.2329 |          0.5579 |
+| Sonata in D Major K.576               | **0.8754** |          0.8503 |          0.2747 |          0.4318 |
+| Sonata in D Minor K.141               | **0.8897** |          0.8641 |          0.2403 |          0.2966 |
+| Sonata in F Minor Op.5                |     0.7701 |      **0.8401** |          0.2468 |          0.1436 |
+
+## B.2 Aggregate Statistics
+
+| Engine          |       Mean |        Min |        Max |
+| :-------------- | ---------: | ---------: | ---------: |
+| Pianoteq 9      |     0.8045 |     0.6436 | **0.9413** |
+| SF2 Grand Piano | **0.8283** | **0.7059** |     0.8852 |
+| bBpiano L0-100c |     0.3213 |     0.1505 |     0.5253 |
+| bBpiano L0-beta |     0.4628 |     0.1436 |     0.6226 |
+
+## B.3 Reproducibility Notes
+
+- Reference dataset: Yamaha Disklavier (MAESTRO)
+- Number of excerpts: 12
+- Embedding model: LAION-CLAP
+- Similarity metric: cosine similarity
+
+Repeated evaluations indicate that CLAP exhibits measurable stochastic variation. Under identical conditions, fluctuations of approximately 5–10% are common, while deviations exceeding 30% have occasionally been observed. Consequently, CLAP scores should be interpreted as approximate perceptual indicators rather than absolute measures of acoustic realism.
+
+> [!NOTE]
+>
+> Although the benchmark results of **bBpiano L0-100c** are not as impressive as we had hoped, we still consider it one of our most meaningful models. Compared with the earlier L0-beta version, L0-100c represents an attempt to strike a balance between physical accuracy derived from real-world measurements and the pursuit of a beautiful, musically satisfying tone. Through this process, it gradually developed a unique voice and aesthetic character of its own. Whatever its position in the benchmark tables, it remains a model with a strong personality, carrying within it countless experiments, revisions, and the genuine effort of those who created it.
+
+
+
+
+
+**bBSonicLab**
+
+![page_end](./Doc/assets/page_end.PNG)
+
+ 
 
 
 

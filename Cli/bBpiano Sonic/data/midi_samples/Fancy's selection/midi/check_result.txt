@@ -1,0 +1,108 @@
+====================================================================================================
+Etude-Tableaux Op. 39 No. 5 in E-flat Minor_2008
+MIDI : 276.089s
+Yamaha Disklaviers - MAESTRO     276.810s   diff=  +0.721s
+Pianoteq 9                       276.089s   diff=  +0.000s
+SF2 Grand Piano                  276.087s   diff=  -0.001s
+bBpiano                          276.089s   diff=  +0.000s
+bBpiano L0-beta                  276.089s   diff=  +0.000s
+
+====================================================================================================
+Images, Book II, _Poissons d'or__2008
+MIDI : 223.889s
+Yamaha Disklaviers - MAESTRO     224.783s   diff=  +0.893s
+Pianoteq 9                       223.889s   diff=  -0.000s
+SF2 Grand Piano                  223.888s   diff=  -0.001s
+bBpiano                          223.889s   diff=  -0.000s
+bBpiano L0-beta                  223.889s   diff=  -0.000s
+
+====================================================================================================
+Piano Sonata 1. X. 1905 _From the Street__2018
+MIDI : 840.177s
+Yamaha Disklaviers - MAESTRO     840.788s   diff=  +0.611s
+Pianoteq 9                       840.177s   diff=  -0.000s
+SF2 Grand Piano                  840.176s   diff=  -0.001s
+bBpiano                          840.177s   diff=  -0.000s
+bBpiano L0-beta                  840.177s   diff=  -0.000s
+
+====================================================================================================
+Prel._Chor._Fug._2006
+MIDI : 1188.430s
+Yamaha Disklaviers - MAESTRO    1189.268s   diff=  +0.838s
+Pianoteq 9                      1188.430s   diff=  -0.000s
+SF2 Grand Piano                 1188.428s   diff=  -0.001s
+bBpiano                         1188.430s   diff=  -0.000s
+bBpiano L0-beta                 1188.430s   diff=  -0.000s
+
+====================================================================================================
+Prelude and Fugue in A Minor, S.462_1_2011
+MIDI : 184.478s
+Yamaha Disklaviers - MAESTRO     185.377s   diff=  +0.899s
+Pianoteq 9                       184.478s   diff=  +0.000s
+SF2 Grand Piano                  184.477s   diff=  -0.001s
+bBpiano                          184.478s   diff=  +0.000s
+bBpiano L0-beta                  184.478s   diff=  +0.000s
+
+====================================================================================================
+Prelude and Fugue in D Major, WTC II, BWV 874_2015
+MIDI : 374.364s
+Yamaha Disklaviers - MAESTRO     374.622s   diff=  +0.258s
+Pianoteq 9                       374.364s   diff=  -0.000s
+SF2 Grand Piano                  374.362s   diff=  -0.001s
+bBpiano                          374.364s   diff=  -0.000s
+bBpiano L0-beta                  374.364s   diff=  -0.000s
+
+====================================================================================================
+Sonata No. 28 in A Major, Op. 101 (Complete)_2014
+MIDI : 1201.669s
+Yamaha Disklaviers - MAESTRO    1202.569s   diff=  +0.900s
+Pianoteq 9                      1201.669s   diff=  +0.000s
+SF2 Grand Piano                 1201.668s   diff=  -0.001s
+bBpiano                         1201.669s   diff=  +0.000s
+bBpiano L0-beta                 1201.669s   diff=  +0.000s
+
+====================================================================================================
+Sonata No. 4 in F-sharp Major ,Op.30_2013
+MIDI : 440.240s
+Yamaha Disklaviers - MAESTRO     441.194s   diff=  +0.954s
+Pianoteq 9                       440.240s   diff=  +0.000s
+SF2 Grand Piano                  440.238s   diff=  -0.001s
+bBpiano                          440.240s   diff=  +0.000s
+bBpiano L0-beta                  999.100s   diff=+558.860s
+
+====================================================================================================
+Sonata in B Min._2006
+MIDI : 1396.309s
+Yamaha Disklaviers - MAESTRO    1397.307s   diff=  +0.999s
+Pianoteq 9                      1396.309s   diff=  +0.000s
+SF2 Grand Piano                 1396.307s   diff=  -0.001s
+bBpiano                         1396.309s   diff=  +0.000s
+bBpiano L0-beta                 1396.309s   diff=  +0.000s
+
+====================================================================================================
+Sonata in D Major, K. 576, I - Allegro_2013
+MIDI : 214.948s
+Yamaha Disklaviers - MAESTRO     215.958s   diff=  +1.010s
+Pianoteq 9                       214.948s   diff=  -0.000s
+SF2 Grand Piano                  214.947s   diff=  -0.001s
+bBpiano                          214.948s   diff=  -0.000s
+bBpiano L0-beta                  214.948s   diff=  -0.000s
+
+====================================================================================================
+Sonata in D Minor, K. 141_2018
+MIDI : 194.768s
+Yamaha Disklaviers - MAESTRO     195.773s   diff=  +1.004s
+Pianoteq 9                       194.768s   diff=  +0.000s
+SF2 Grand Piano                  194.767s   diff=  -0.001s
+bBpiano                          194.768s   diff=  +0.000s
+bBpiano L0-beta                  194.768s   diff=  +0.000s
+
+====================================================================================================
+Sonata in F Minor, Op. 5_2004
+MIDI : 995.199s
+Yamaha Disklaviers - MAESTRO     995.490s   diff=  +0.291s
+Pianoteq 9                       995.199s   diff=  -0.000s
+SF2 Grand Piano                  995.198s   diff=  -0.001s
+bBpiano                          995.199s   diff=  -0.000s
+bBpiano L0-beta                  995.199s   diff=  -0.000s
+(base) opusarc@opuss-MacBook-Air SF2 Grand Piano %
