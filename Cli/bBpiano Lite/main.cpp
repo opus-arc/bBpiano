@@ -6,14 +6,14 @@
 //
 
 #include <iostream>
-#define VERSION "L0-preview"
+#define VERSION "L0-100c"
 void printLogo() {
     static constexpr const char* logo =
     R"(
         ┌────────────────────────────┐──╭────╮
         │                            │==│╲╱╲╱│
         │  bBpiano 0                 │==│╱╲╱╲│
-        │  L-preview/260608          │==│╲╱╲╱│
+        │  L0-100c🎉/260608          │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
         │  Physical Modeling Piano   │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
@@ -23,6 +23,8 @@ void printLogo() {
         │                            │==│╲╱╲╱│
         │  bBSonicLab                │==│╱╲╱╲│
         └────────────────────────────┘──╰────╯
+    
+       🎊 Celebrating 100 Commits of bBpiano 🎊
     )";
     std::cout << logo << "\n";
 }
@@ -58,12 +60,14 @@ int main(int argc, const char * argv[]) {
 //    };
 //    argc = 4;
 //    argv = testArgv;
-    const char* testArgv[] = {
-        argv[0],
-        "-k"
-    };
-    argc = 2;
-    argv = testArgv;
+    
+    
+//    const char* testArgv[] = {
+//        argv[0],
+//        "-k"
+//    };
+//    argc = 2;
+//    argv = testArgv;
     
     std::signal(SIGINT, signalHandler);
     std::signal(SIGTERM, signalHandler);
@@ -238,7 +242,7 @@ void help_ja() {
         << "          bbpl -e <file.mid> [output.wav]\n\n"
         << "        コマンド:\n"
         << "          -k    PCキーボードで演奏\n"
-        << "         -p    MIDIキーボードで演奏\n"
+        << "          -p    MIDIキーボードで演奏\n"
         << "          -pr   MIDIキーボードで演奏しながら録音\n"
         << "          -m    MIDIファイルを再生\n"
         << "          -e    MIDIファイルをWAVとして書き出し\n\n";

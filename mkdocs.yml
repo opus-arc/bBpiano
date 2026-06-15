@@ -28,6 +28,7 @@ theme:
 nav:
   - README: bBpiano.md
   - From PDE to PCM: index.md
+  - Audio: Audio/Audio.md
 
 markdown_extensions:
   - toc:

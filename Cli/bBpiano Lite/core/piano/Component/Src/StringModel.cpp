@@ -48,13 +48,13 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     
     // dispersion init
     dispersionPreset = std::move(Piano::Data::getRT425DispersionPreset(midi_n));
-    std::cout
-    << "midi_n: " << midi_n
-    << ", referenceF1: " << dispersionPreset.referenceF1
-    << ", B: " << dispersionPreset.B
-    << ", loopDelaySamples: " << dispersionPreset.loopDelaySamples
-    << ", sectionCount: " << dispersionPreset.sectionCount
-    << "\n";
+//    std::cout
+//    << "midi_n: " << midi_n
+//    << ", referenceF1: " << dispersionPreset.referenceF1
+//    << ", B: " << dispersionPreset.B
+//    << ", loopDelaySamples: " << dispersionPreset.loopDelaySamples
+//    << ", sectionCount: " << dispersionPreset.sectionCount
+//    << "\n";
     
 //    auto dispersion = MyCSVReader::getDispersionConstantByMidi(midi_n);
 //    dispersion_a0 = 0.32; // 0~1
