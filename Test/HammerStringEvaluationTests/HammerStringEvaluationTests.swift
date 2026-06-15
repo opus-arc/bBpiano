@@ -22,6 +22,13 @@ final class HammerStringEvaluationTests: XCTestCase {
         Double(frameCount) / sampleRate
     }
 
+    override func setUp() {
+        super.setUp()
+
+        bBpiano_init()
+        Thread.sleep(forTimeInterval: 2.0)
+    }
+
     func testPianoEngineEfficiencyScore() throws {
         let benchmarkVelocity = 120.0
         let allMidiNotes = Array(21...108).map(Int32.init)

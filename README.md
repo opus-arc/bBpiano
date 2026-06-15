@@ -160,7 +160,7 @@ In addition to the MAESTRO Yamaha Disklavier dataset, selected evaluations also 
 | Type | Reference Recording | Physical Modeling | Sample-Based | Physical Modeling |
 | Size | 1–10 GB (test subset) | **380 KB** | 36 MB | 1.04 MB |
 | Real-Time Synthesis | ❌ | **✅** | ❌ | **✅** |
-| Polyphony | N/A | **> 88** | N/A | **> 88** |
+| Polyphony | N/A | **> 88** | N/A | **23.34** |
 
 ---
 

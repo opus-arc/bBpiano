@@ -7,14 +7,6 @@
 
 #include "PianoModel.hpp"
 
-
-
-void PianoModel::setHammerMode(HammerMode _mode) {
-    hammerMode = _mode;
-}
-
-
-
 void PianoModel::note_on(int midi_n, double velocity) {
     std::cout << "note_on: " << midi_n << ", " << velocity << std::endl;
     
@@ -22,8 +14,7 @@ void PianoModel::note_on(int midi_n, double velocity) {
         midi_n = std::clamp(midi_n, 21, 108);
     //     这里太重要了
     pianoKeys[midi_n - 21]->key_active = true;
-    std::cout << "pianoKeys[" << midi_n << "].key_active: " << pianoKeys[midi_n - 21]->key_active << "\n";
-    pianoKeys[midi_n - 21]->hammer->setMode(hammerMode);
+//    std::cout << "pianoKeys[" << midi_n << "].key_active: " << pianoKeys[midi_n - 21]->key_active << "\n";
     pianoKeys[midi_n - 21]->hammer->setVIn(velocity * 2.0);
 }
 

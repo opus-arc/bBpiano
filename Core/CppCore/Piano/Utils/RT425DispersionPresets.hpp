@@ -3,7 +3,7 @@
 #include <array>
 #include <cstddef>
 
-namespace Piano::Data {
+namespace MACOS::Piano::Data {
 
 struct AllpassBiquad {
     double b0, b1, b2;
