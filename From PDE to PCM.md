@@ -250,7 +250,7 @@ private func render(
 ```
 
 <audio controls>
-  <source src="/Doc/audio/440Hz%E6%AD%A3%E5%BC%A6%E6%B3%A2.wav" type="audio/wav">
+  <source src="Doc/audio/440Hz%E6%AD%A3%E5%BC%A6%E6%B3%A2.wav" type="audio/wav">
 </audio>
 
 这是桥接 PCM 数据和声卡的 swift 最核心的部分代码，**AVAudioSourceNode **是一个“源节点”，我们可以写入自己的数据，这也是 Apple 提供的实时合成音频的关键工具。
@@ -382,7 +382,7 @@ private func render(
 ```
 
 <audio controls>
-  <source src="/Doc/audio/440Hz50%25duty%E6%96%B9%E6%B3%A2.wav" type="audio/wav">
+  <source src="Doc/audio/440Hz50%25duty%E6%96%B9%E6%B3%A2.wav" type="audio/wav">
 </audio>
 
 
@@ -945,7 +945,7 @@ float StringModel::velocityAt(double p) const {
 
 
 
-<video src="/Doc/Vedio/录屏2026-05-07%2018.42.46.mov" controls width="640"></video>
+<video src="Doc/Vedio/录屏2026-05-07%2018.42.46.mov" controls width="640"></video>
 
 
 
@@ -982,7 +982,7 @@ f_0 = \frac{f_s}{2D}
 
 因此，Friture 显示的频率读数本身会受到 FFT bin 分辨率、窗函数和峰值估计算法的影响，不应将其视为完全精确的基频值，如果说这里因为过大的误差而不能说明问题，那我们再使用被 Frac 影响更大的更高频的 A6 再来做一次试验。
 
-<video src="/Doc/Vedio/录屏2026-05-07%2019.05.55.mov" controls width="640"></video>
+<video src="Doc/Vedio/录屏2026-05-07%2019.05.55.mov" controls width="640"></video>
 
 ```math
 D = \frac{f_s}{2D}
@@ -1809,7 +1809,7 @@ double fractional_a1 = double(1 - Delay_Frac) / double(1 + Delay_Frac);
   }
 ```
 
-<video src="/Doc/Vedio/录屏2026-05-08%2014.47.28.mov" controls width="640"></video>
+<video src="Doc/Vedio/录屏2026-05-08%2014.47.28.mov" controls width="640"></video>
 
 ```math
 |R_{measure} - R_{ideal}| = 1761\mathrm{Hz} - 1760\mathrm{Hz} = 1\mathrm{Hz} < (\Delta f = 2.69\mathrm{Hz})
@@ -2736,13 +2736,13 @@ SSE = \sum (y_i - \hat y_i)^2
 
 
 
-<video src="/Doc/Vedio/录屏2026-05-24%2012.57.42.mov" controls width="640"></video>
+<video src="Doc/Vedio/录屏2026-05-24%2012.57.42.mov" controls width="640"></video>
 
 
 
 <div style="display: flex; gap: 16px; align-items: flex-start;">
-  <img src="/Doc/graphics/截屏2026-05-18 09.19.13.png" style="width: 50%;">
-  <img src="/Doc/graphics/截屏2026-05-18 09.18.17.png" style="width: 50%;">
+  <img src="Doc/graphics/截屏2026-05-18 09.19.13.png" style="width: 50%;">
+  <img src="Doc/graphics/截屏2026-05-18 09.18.17.png" style="width: 50%;">
 </div>
 
 
@@ -2751,7 +2751,7 @@ SSE = \sum (y_i - \hat y_i)^2
 
 但声音听着太干了，再听一下 A6：
 
-<video src="/Doc/Vedio/录屏2026-05-24%2018.33.18.mov" controls width="640"></video>
+<video src="Doc/Vedio/录屏2026-05-24%2018.33.18.mov" controls width="640"></video>
 
 
 
@@ -2761,7 +2761,7 @@ SSE = \sum (y_i - \hat y_i)^2
 
 因为平滑会加剧回归模型的特征，从而导致以中频为支点的倾斜：
 
-<video src="/Doc/Vedio/录屏2026-05-24%2018.45.07.mov" controls width="640"></video>
+<video src="Doc/Vedio/录屏2026-05-24%2018.45.07.mov" controls width="640"></video>
 
 
 
@@ -2849,7 +2849,7 @@ LossFilterFitResult fitOnePoleLossFilterFromSigmaPoints(
 
 于是得到这样的效果：
 
-<video src="/Doc/Vedio/录屏2026-05-24%2018.49.55.mov" controls width="640"></video>
+<video src="Doc/Vedio/录屏2026-05-24%2018.49.55.mov" controls width="640"></video>
 
 
 
@@ -2931,7 +2931,7 @@ ___
 
 > **图注：斯坦威（Steinway）大钢琴击弦机模型。其中木质琴键由其子公司德国 Kluge 制造，上方的击弦机械及榔头为斯坦威自制。斯坦威对于卓越工艺极其尊重，允许并自豪地在官方展示模型上保留 Kluge 的 Logo。**
 
-我们不妨先做一个思想实验：如果没有任何外部机械结构的介入，钢琴这个复杂模型中的一根弦在数学上表现为什么？
+![Kluge](./Doc/assets/Steinway_Kluge_hammer.jpg)
 
 根据一维双曲型偏微分方程的齐次分离变量解，自由振动的弦在某一特定拾音点 $x_p$ 处的横向位移可以严格表述为无数个固有振动模态（Modes）的线性叠加（接下来的的推导和定义可能有一些略过的数学细节，但我会尽量讲清楚依据和来源。读者可先抓住逻辑主干再去试图理解细节。数学是一片汪洋，但这弱水三千里我们先只取一瓢——那就是和工程的整个实现逻辑最相关的）：
 
@@ -3051,7 +3051,7 @@ v_{string}(M_{in}, 0) = v^+_{M_{in}} + v^-_{M_{in}} = v + v = 2v
 
 > 图注：在传统对称注入逻辑下，对 C4 音符进行DWG实现的触弦力学曲线
 
-为了从根本上抹除速度异常加倍引起的数值拉锯，Bank 给出了一个极其精妙的非对称解耦拓扑——半步延迟注入（The Half-Sample Delay Solution）。
+![Normal](./Doc/assets/Normal.jpg)
 
 其核心逻辑在于：当我们计算出当前步的注入速度脉冲 $v[n] = \frac{F_{in}[n]}{2Z_0}$ 后，仅将其直接叠加到上延迟线（向右传）的 $M_{in}$ 位置；而对于下延迟线（向左传），则强制级联一个 $z^{-1}$ 延迟单元，并在下一个周期将其注入到 $M_{in}-1$ 的位置。
 
@@ -3067,7 +3067,7 @@ v_{string}(M_{in}, 0) = v^+_{M_{in}} + 0 = v
 
 > 图注：采用 Bank 正确的半步延迟注入拓扑后，针对同一 C4 音符进行DWG实现的触弦力学曲线
 
-由图可见，采用 Bank 正确的半步延迟注入拓扑后，非线性毛毡方程得以完全顺应真实的物理因果律演化。曲线整体展现出平滑且饱满的特征，峰值顺畅突破 20 N。更重要的是，中后段清晰的双峰特征完美复现了波动在击弦点到最近固支端之间往返反射、二次挤压毛毡的真实物理动态；且力信号在 1.7 ms 附近平滑归零，标志着槌-弦系统无缝地实现了物理脱离。
+![Bank—injection](./Doc/assets/Hammer-F.jpg)
 
 为了进一步定量验证上述半步延迟注入逻辑的数理精确度，我们将仿真程序中的物理参数与 Chaigne 和 Askenfelt (1994a) 经典文献中的 C4 音符基准参数进行严格对齐，包括弦张力、线密度、击弦位置以及毛毡的非线性指数 $p$ 与刚度系数 $K$（当时真是找了我半天，因为1994a原文根本就没有这些参数，其实是在1994b里面才给出了这些参数），并与 Bank 原文中的多模型对比实验进行重叠验证。
 
@@ -3075,7 +3075,7 @@ v_{string}(M_{in}, 0) = v^+_{M_{in}} + 0 = v
 
 通过将我们基于 C++/Python 脚本编写的hammer-lab测试输出csv（图中的红实线 `hammerf_force_midi60_vin4_s0.002_p0.7.csv`）与上述三条经典曲线进行叠合，可以清晰地看到，我们的仿真结果与高精度有限差分基准（黑实线）以及 Bank 理论修正值（虚线）达成了高度的定量吻合。
 
-红实线不仅精准锁定了第一波峰（约 14.5 N）、第二主体波峰（约 20.5 N）以及第三反射峰（约 17.0 N）的空间代数极值，更在 1.75 ms 处展现出与 FDM 完全一致的连续非线性脱离轨迹。
+![fig](./Doc/assets/figure5.4.png)
 
 至此，通过引入半步延迟注入拓扑，我们成功克服了数字导波管系统由于时空网格化带来的数值缺陷。这标志着我们不仅在宏观上理解了槌-弦交互的连续动力学，更在底层的离散数字系统（DWG）内部，在每一根弦的物理单元上，都完美实现了 Bank 的纯正力学注入模型。
 
