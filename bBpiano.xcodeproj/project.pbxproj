@@ -56,16 +56,16 @@
 		142C18C52FD52A3300685F41 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		142C18C72FD52A3C00685F41 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		142C18C92FD52A8600685F41 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
-		14356E862FE0FD4200614C65 /* L0-100c Op.101.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "L0-100c Op.101.mp3"; sourceTree = "<group>"; };
-		14356E872FE0FD4200614C65 /* L0-beta k.141.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "L0-beta k.141.mp3"; sourceTree = "<group>"; };
-		14356E882FE0FD4200614C65 /* Pianoteq 9 "From the Street".mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Pianoteq 9 \"From the Street\".mp3"; sourceTree = "<group>"; };
-		14356E892FE0FD4200614C65 /* SF2 Grand Piano BWV 874.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "SF2 Grand Piano BWV 874.mp3"; sourceTree = "<group>"; };
-		14356E8A2FE0FD4200614C65 /* Yamaha Disklaviers B Minor.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Yamaha Disklaviers B Minor.mp3"; sourceTree = "<group>"; };
-		14356E8D2FE0FD4200614C65 /* mathjax.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = mathjax.js; sourceTree = "<group>"; };
-		14356E8F2FE0FD4200614C65 /* Audio.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Audio.md; sourceTree = "<group>"; };
-		14356E902FE0FD4200614C65 /* bBpiano.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = bBpiano.md; sourceTree = "<group>"; };
-		14356E912FE0FD4200614C65 /* Doc */ = {isa = PBXFileReference; lastKnownFileType = text; path = Doc; sourceTree = "<group>"; };
-		14356E922FE0FD4200614C65 /* index.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = index.md; sourceTree = "<group>"; };
+		143FB63B2FE4E182000091A3 /* L0-100c Op.101.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "L0-100c Op.101.mp3"; sourceTree = "<group>"; };
+		143FB63C2FE4E182000091A3 /* L0-beta k.141.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "L0-beta k.141.mp3"; sourceTree = "<group>"; };
+		143FB63D2FE4E182000091A3 /* Pianoteq 9 "From the Street".mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Pianoteq 9 \"From the Street\".mp3"; sourceTree = "<group>"; };
+		143FB63E2FE4E182000091A3 /* SF2 Grand Piano BWV 874.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "SF2 Grand Piano BWV 874.mp3"; sourceTree = "<group>"; };
+		143FB63F2FE4E182000091A3 /* Yamaha Disklaviers B Minor.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Yamaha Disklaviers B Minor.mp3"; sourceTree = "<group>"; };
+		143FB6412FE4E182000091A3 /* Audio.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Audio.md; sourceTree = "<group>"; };
+		143FB6432FE4E182000091A3 /* mathjax.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = mathjax.js; sourceTree = "<group>"; };
+		143FB6452FE4E182000091A3 /* bBpiano.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = bBpiano.md; sourceTree = "<group>"; };
+		143FB6462FE4E182000091A3 /* Doc */ = {isa = PBXFileReference; lastKnownFileType = text; path = Doc; sourceTree = "<group>"; };
+		143FB6472FE4E182000091A3 /* index.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = index.md; sourceTree = "<group>"; };
 		14553D072FC14D60008E3CD7 /* HammerStringEvaluationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HammerStringEvaluationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		146587D62FA42DAF009F5C08 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		146A412C2FDA96F900AF2C9C /* From PDE to PCM.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "From PDE to PCM.md"; sourceTree = "<group>"; };
@@ -263,43 +263,43 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		14356E8B2FE0FD4200614C65 /* examples */ = {
+		143FB6402FE4E182000091A3 /* examples */ = {
 			isa = PBXGroup;
 			children = (
-				14356E862FE0FD4200614C65 /* L0-100c Op.101.mp3 */,
-				14356E872FE0FD4200614C65 /* L0-beta k.141.mp3 */,
-				14356E882FE0FD4200614C65 /* Pianoteq 9 "From the Street".mp3 */,
-				14356E892FE0FD4200614C65 /* SF2 Grand Piano BWV 874.mp3 */,
-				14356E8A2FE0FD4200614C65 /* Yamaha Disklaviers B Minor.mp3 */,
+				143FB63B2FE4E182000091A3 /* L0-100c Op.101.mp3 */,
+				143FB63C2FE4E182000091A3 /* L0-beta k.141.mp3 */,
+				143FB63D2FE4E182000091A3 /* Pianoteq 9 "From the Street".mp3 */,
+				143FB63E2FE4E182000091A3 /* SF2 Grand Piano BWV 874.mp3 */,
+				143FB63F2FE4E182000091A3 /* Yamaha Disklaviers B Minor.mp3 */,
 			);
 			path = examples;
 			sourceTree = "<group>";
 		};
-		14356E8C2FE0FD4200614C65 /* audio */ = {
+		143FB6422FE4E182000091A3 /* Audio */ = {
 			isa = PBXGroup;
 			children = (
-				14356E8B2FE0FD4200614C65 /* examples */,
+				143FB6402FE4E182000091A3 /* examples */,
+				143FB6412FE4E182000091A3 /* Audio.md */,
 			);
-			path = audio;
+			path = Audio;
 			sourceTree = "<group>";
 		};
-		14356E8E2FE0FD4200614C65 /* javascripts */ = {
+		143FB6442FE4E182000091A3 /* javascripts */ = {
 			isa = PBXGroup;
 			children = (
-				14356E8D2FE0FD4200614C65 /* mathjax.js */,
+				143FB6432FE4E182000091A3 /* mathjax.js */,
 			);
 			path = javascripts;
 			sourceTree = "<group>";
 		};
-		14356E932FE0FD4200614C65 /* docs */ = {
+		143FB6482FE4E182000091A3 /* docs */ = {
 			isa = PBXGroup;
 			children = (
-				14356E8C2FE0FD4200614C65 /* audio */,
-				14356E8E2FE0FD4200614C65 /* javascripts */,
-				14356E8F2FE0FD4200614C65 /* Audio.md */,
-				14356E902FE0FD4200614C65 /* bBpiano.md */,
-				14356E912FE0FD4200614C65 /* Doc */,
-				14356E922FE0FD4200614C65 /* index.md */,
+				143FB6422FE4E182000091A3 /* Audio */,
+				143FB6442FE4E182000091A3 /* javascripts */,
+				143FB6452FE4E182000091A3 /* bBpiano.md */,
+				143FB6462FE4E182000091A3 /* Doc */,
+				143FB6472FE4E182000091A3 /* index.md */,
 			);
 			path = docs;
 			sourceTree = "<group>";
@@ -318,7 +318,7 @@
 				142C18C22FD52A2A00685F41 /* Frameworks */,
 				14E708372F78BE0C005C806C /* Products */,
 				146A412C2FDA96F900AF2C9C /* From PDE to PCM.md */,
-				14356E932FE0FD4200614C65 /* docs */,
+				143FB6482FE4E182000091A3 /* docs */,
 			);
 			sourceTree = "<group>";
 		};

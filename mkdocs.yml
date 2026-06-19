@@ -1,4 +1,5 @@
 site_name: bBpiano
+use_directory_urls: false
 
 theme:
   name: material
