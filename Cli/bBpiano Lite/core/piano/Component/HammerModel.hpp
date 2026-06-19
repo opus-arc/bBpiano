@@ -27,7 +27,7 @@ public:
     const KeyModel *pairedKey = nullptr;
     
     const int midi_n;
-    const int string_count;
+    int string_count;
     
     StringModel* pairedString_a = nullptr;
     StringModel* pairedString_b = nullptr;

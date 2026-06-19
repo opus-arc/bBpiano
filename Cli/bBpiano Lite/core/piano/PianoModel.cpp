@@ -27,6 +27,9 @@ void PianoModel::note_afterTouch(int midi_n, double pressure) {
 }
 
 PianoModel::PianoModel(){
+    
+    PianoModel::modelParameters = new ModelParameters();
+    
     pianoKeys.reserve(88);
 
     for (int midi_n = 21; midi_n <= 108; ++midi_n) {

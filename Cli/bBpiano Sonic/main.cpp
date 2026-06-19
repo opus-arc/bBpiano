@@ -10,6 +10,7 @@
 #include "./core/eval/loris/FilterConstantsCompute.hpp"
 #include "./utils/MyPitch.hpp"
 
+#include <filesystem>
 #include <iostream>
 #define VERSION "S0-alpha"
 void printLogo() {
@@ -53,11 +54,149 @@ int main(int argc, const char * argv[]) {
 //    for(int j = 1; j <= 7; j++) {
         
 //        std::string pitchName = "A" + std::to_string(j);
-    std::string wavPath = "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/A4_2s.wav";
-        
-    FilterConstantsCompute fcc = FilterConstantsCompute(440, wavPath);
     
-    fcc.printTopPartial();
+    std::string basePath_head = "/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Split/v80/";
+    std::string basePath_tail = "_take03_v80.wav";
+    
+    
+    for(int i = 0; i <=7; i++) {
+        std::string pitchName = "A" + std::to_string(i);
+        double f0 = MyPitch::getFrequency(pitchName);
+        std::string fullPath = basePath_head + pitchName + basePath_tail;
+        if(std::filesystem::exists(fullPath)) {
+            FilterConstantsCompute fcc =
+                FilterConstantsCompute(f0, fullPath);
+            fcc.printTopPartial();
+            std::cout<<"\n";
+        }
+    }
+    for(int i = 0; i <=7; i++) {
+        std::string pitchName = "As" + std::to_string(i);
+        double f0 = MyPitch::getFrequency(pitchName);
+        std::string fullPath = basePath_head + pitchName + basePath_tail;
+        if(std::filesystem::exists(fullPath)) {
+            FilterConstantsCompute fcc =
+                FilterConstantsCompute(f0, fullPath);
+            fcc.printTopPartial();
+            std::cout<<"\n";
+        }
+    }
+    for(int i = 0; i <=7; i++) {
+        std::string pitchName = "B" + std::to_string(i);
+        double f0 = MyPitch::getFrequency(pitchName);
+        std::string fullPath = basePath_head + pitchName + basePath_tail;
+        if(std::filesystem::exists(fullPath)) {
+            FilterConstantsCompute fcc =
+                FilterConstantsCompute(f0, fullPath);
+            fcc.printTopPartial();
+            std::cout<<"\n";
+        }
+    }
+    for(int i = 0; i <=7; i++) {
+        std::string pitchName = "C" + std::to_string(i);
+        double f0 = MyPitch::getFrequency(pitchName);
+        std::string fullPath = basePath_head + pitchName + basePath_tail;
+        if(std::filesystem::exists(fullPath)) {
+            FilterConstantsCompute fcc =
+                FilterConstantsCompute(f0, fullPath);
+            fcc.printTopPartial();
+            std::cout<<"\n";
+        }
+    }
+    for(int i = 0; i <=7; i++) {
+        std::string pitchName = "Cs" + std::to_string(i);
+        double f0 = MyPitch::getFrequency(pitchName);
+        std::string fullPath = basePath_head + pitchName + basePath_tail;
+        if(std::filesystem::exists(fullPath)) {
+            FilterConstantsCompute fcc =
+                FilterConstantsCompute(f0, fullPath);
+            fcc.printTopPartial();
+            std::cout<<"\n";
+        }
+    }
+    for(int i = 0; i <=7; i++) {
+        std::string pitchName = "D" + std::to_string(i);
+        double f0 = MyPitch::getFrequency(pitchName);
+        std::string fullPath = basePath_head + pitchName + basePath_tail;
+        if(std::filesystem::exists(fullPath)) {
+            FilterConstantsCompute fcc =
+                FilterConstantsCompute(f0, fullPath);
+            fcc.printTopPartial();
+            std::cout<<"\n";
+        }
+    }
+    for(int i = 0; i <=7; i++) {
+        std::string pitchName = "Ds" + std::to_string(i);
+        double f0 = MyPitch::getFrequency(pitchName);
+        std::string fullPath = basePath_head + pitchName + basePath_tail;
+        if(std::filesystem::exists(fullPath)) {
+            FilterConstantsCompute fcc =
+                FilterConstantsCompute(f0, fullPath);
+            fcc.printTopPartial();
+            std::cout<<"\n";
+        }
+    }
+    for(int i = 0; i <=7; i++) {
+        std::string pitchName = "E" + std::to_string(i);
+        double f0 = MyPitch::getFrequency(pitchName);
+        std::string fullPath = basePath_head + pitchName + basePath_tail;
+        if(std::filesystem::exists(fullPath)) {
+            FilterConstantsCompute fcc =
+                FilterConstantsCompute(f0, fullPath);
+            fcc.printTopPartial();
+            std::cout<<"\n";
+        }
+    }
+    for(int i = 0; i <=7; i++) {
+        std::string pitchName = "F" + std::to_string(i);
+        double f0 = MyPitch::getFrequency(pitchName);
+        std::string fullPath = basePath_head + pitchName + basePath_tail;
+        if(std::filesystem::exists(fullPath)) {
+            FilterConstantsCompute fcc =
+                FilterConstantsCompute(f0, fullPath);
+            fcc.printTopPartial();
+            std::cout<<"\n";
+        }
+    }
+    for(int i = 0; i <=7; i++) {
+        std::string pitchName = "Fs" + std::to_string(i);
+        double f0 = MyPitch::getFrequency(pitchName);
+        std::string fullPath = basePath_head + pitchName + basePath_tail;
+        if(std::filesystem::exists(fullPath)) {
+            FilterConstantsCompute fcc =
+                FilterConstantsCompute(f0, fullPath);
+            fcc.printTopPartial();
+            std::cout<<"\n";
+        }
+    }
+    for(int i = 0; i <=7; i++) {
+        std::string pitchName = "G" + std::to_string(i);
+        double f0 = MyPitch::getFrequency(pitchName);
+        std::string fullPath = basePath_head + pitchName + basePath_tail;
+        if(std::filesystem::exists(fullPath)) {
+            FilterConstantsCompute fcc =
+                FilterConstantsCompute(f0, fullPath);
+            fcc.printTopPartial();
+            std::cout<<"\n";
+        }
+    }
+    for(int i = 0; i <=7; i++) {
+        std::string pitchName = "Gs" + std::to_string(i);
+        double f0 = MyPitch::getFrequency(pitchName);
+        std::string fullPath = basePath_head + pitchName + basePath_tail;
+        if(std::filesystem::exists(fullPath)) {
+            FilterConstantsCompute fcc =
+                FilterConstantsCompute(f0, fullPath);
+            fcc.printTopPartial();
+            std::cout<<"\n";
+        }
+    }
+    
+//    std::string wavPath = "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/core/eval/loris/pianoteq_A7.wav";
+//        
+//    FilterConstantsCompute fcc = FilterConstantsCompute(440, wavPath);
+//    
+//    fcc.printTopPartial();
         
 //        for(int i = 0; i < fcc.lorisData.partials.size(); i++)
 //            cout << "A" << j << ": f" << i << ": " << /*fcc.lorisData.partials[i].mean_frequency_hz << "\n";*/
