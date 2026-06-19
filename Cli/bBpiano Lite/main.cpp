@@ -52,14 +52,14 @@ void shotdown_engine();
 void signalHandler(int);
 
 int main(int argc, const char * argv[]) {
-//    const char* testArgv[] = {
-//        argv[0],
-//        "-e",
-//        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/A4_2s.mid",
-//        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/A4_2s.wav"
-//    };
-//    argc = 4;
-//    argv = testArgv;
+    const char* testArgv[] = {
+        argv[0],
+        "-e",
+        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/data/midi_samples/Fancy's selection/midi/Sonata No. 28 in A Major, Op. 101 (Complete)_2014.midi",
+        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/Sonata No. 28 in A Major, Op. 101 (Complete)_2014.wav"
+    };
+    argc = 4;
+    argv = testArgv;
     
     
 //    const char* testArgv[] = {

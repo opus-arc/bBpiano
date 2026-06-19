@@ -17,7 +17,7 @@
 #include <array>
 #include <complex>
 
-#include "../Utils/RT425DispersionPresets.hpp"
+#include "../ModelParameters/constants/RT425DispersionPresets.hpp"
 
 class HammerModel;
 
@@ -110,15 +110,15 @@ public:
     double loss_g = 0.999293;
 
     // dispersion filter
-    Piano::Data::DispersionPreset dispersionPreset;
-    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_x1_r = {}; // 上一次传入 allpass 的值
-    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_x2_r = {};
-    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_y1_r = {};
-    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_y2_r = {};
-    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_x1_l = {}; // 上一次传入 allpass 的值
-    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_x2_l = {};
-    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_y1_l = {};
-    mutable std::array<float, Piano::Data::kRT425DispersionSectionCount> dispersion_y2_l = {};
+    Parameters::Tuning::RT425DispersionPresets::DispersionPreset dispersionPreset;
+    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_x1_r = {}; // 上一次传入 allpass 的值
+    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_x2_r = {};
+    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_y1_r = {};
+    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_y2_r = {};
+    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_x1_l = {}; // 上一次传入 allpass 的值
+    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_x2_l = {};
+    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_y1_l = {};
+    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_y2_l = {};
     
     
     double dispersion_a0 = 0.5;
@@ -210,10 +210,10 @@ public:
 
     inline void dispersionFilter(
         float& x,
-        std::array<float, Piano::Data::kRT425DispersionSectionCount>& x1,
-        std::array<float, Piano::Data::kRT425DispersionSectionCount>& x2,
-        std::array<float, Piano::Data::kRT425DispersionSectionCount>& y1,
-        std::array<float, Piano::Data::kRT425DispersionSectionCount>& y2
+        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount>& x1,
+        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount>& x2,
+        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount>& y1,
+        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount>& y2
     ) const {
         const std::size_t sectionCount = std::min<std::size_t>(
             static_cast<std::size_t>(dispersionPreset.sectionCount),
@@ -249,10 +249,11 @@ public:
         if(isLeft) {
             fractionalFilter(boundary_value, fractional_x1_l, fractional_y1_l);
 //            dispersionFilter(boundary_value, dispersion_x1_l, dispersion_x2_l, dispersion_y1_l, dispersion_y2_l);
-//            lossFilter(boundary_value, loss_y1_l);
+            lossFilter(boundary_value, loss_y1_l);
         } else {
             fractionalFilter(boundary_value, fractional_x1_r, fractional_y1_r);
-            dispersionFilter(boundary_value, dispersion_x1_r, dispersion_x2_r, dispersion_y1_r, dispersion_y2_r);
+//            if(midi_n < 83)
+                dispersionFilter(boundary_value, dispersion_x1_r, dispersion_x2_r, dispersion_y1_r, dispersion_y2_r);
             lossFilter(boundary_value, loss_y1_r);
         }
     }

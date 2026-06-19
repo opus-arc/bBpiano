@@ -10,11 +10,13 @@
 #include "StringModel.hpp"
 #include "../HammerModel.hpp"
 #include "../KeyModel.hpp"
+#include "../../PianoModel.hpp"
 
 
 #include "../../Utils/MyCSVReader.hpp"
-#include "../../Utils/RT425DispersionPresets.hpp"
-#include "../../ModelParameters/PrecomputedValue.hpp"
+#include "../../ModelParameters/constants/RT425DispersionPresets.hpp"
+#include "../../ModelParameters/constants/TunningPresets.hpp"
+
 
 
 
@@ -43,31 +45,17 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
             break;
         }
     }
-//    loss_g = 0.998293;
-//    loss_a1 = -0.0025;
     
     // dispersion init
-    dispersionPreset = std::move(Piano::Data::getRT425DispersionPreset(midi_n));
-//    std::cout
-//    << "midi_n: " << midi_n
-//    << ", referenceF1: " << dispersionPreset.referenceF1
-//    << ", B: " << dispersionPreset.B
-//    << ", loopDelaySamples: " << dispersionPreset.loopDelaySamples
-//    << ", sectionCount: " << dispersionPreset.sectionCount
-//    << "\n";
-    
-//    auto dispersion = MyCSVReader::getDispersionConstantByMidi(midi_n);
-//    dispersion_a0 = 0.32; // 0~1
-//    dispersion_a1 = -0.5; // -2.0 ~ 0
-//    dispersion_order = 8; // 听感类似于一种共鸣感，越大越类似编钟，
-    
-    
-    
-    
+    dispersionPreset =
+        Parameters::Tuning::RT425DispersionPresets::getRT425DispersionPreset(get_f0());
+
+    // 步长
     Ts = 1.0 / static_cast<double>(sampleRate);
     
     const auto physicalParameter = MyCSVReader::getRT425WrappedStringParameterByMidi(midi_n);
     
+    // 物理常数初始化
     T = physicalParameter.tension_n;
     rho = physicalParameter.linear_density_kg_m;
     physical_f0_hz = physicalParameter.f0_hz;
@@ -75,10 +63,11 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     physical_strike_ratio = physicalParameter.strike_ratio;
     
 
-//    // 计算波导长度
-    // loopDelaySamples is the total pure delay needed by the complete loop.
-    // This two-rail waveguide stores half of that delay in each rail.
-    delay = 0.5 * dispersionPreset.loopDelaySamples;
+    // 计算波导长度
+    double originalDelay = sampleRate / (2 * get_f0());
+    double dispersionDelay = originalDelay - 0.5 * dispersionPreset.loopDelaySamples;
+    delay = originalDelay - dispersionDelay;
+
     
     
 //    // 取不大于波导长度的最大整数作为数组长度
@@ -93,17 +82,32 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
 
     // 计算力和速度的比例常数
     Z = std::sqrt(T * rho);
-
-    // 初始化 N_int 个 0.0f 的离散位置
-    right.assign(delay_int, 0.0f);
-    left.assign(delay_int, 0.0f);
+    
+    // 这里直接借鉴最大的 midi_n = 21 的 delay 623.743 来初始化
+    // 暂时选择 1000 初始化 N_int 个 0.0f 的离散位置
+    // 这样在调琴的过程中不会数组越界
+    right.assign(1000, 0.0f);
+    left.assign(1000, 0.0f);
     leftHead = 0;
     rightHead = 0;
 
     
     
 
-//    std::cout << "midi_n: " << midi_n << ", delay: " << delay << "\n";
+    //    std::cout
+    //    << "midi_n: " << midi_n
+    //    << ", referenceF1: " << dispersionPreset.referenceF1
+    //    << ", B: " << dispersionPreset.B
+    //    << ", loopDelaySamples: " << dispersionPreset.loopDelaySamples
+    //    << ", sectionCount: " << dispersionPreset.sectionCount
+    //    << "\n";
+//    std::cout << "midi_n: " << midi_n << ", stringCount: " << string_index << "\n";
+    std::cout << "midi_n: " << midi_n << ", delay: " << delay << "\n";
+//    std::cout << "midi_n: " << midi_n << ", f0: " << get_f0() << "\n";
+//    std::cout << "f0: " << get_f0() << "\n";
+//    std::cout << "dispersionDelay: " << sampleRate / (2 * get_f0()) - 0.5 * dispersionPreset.loopDelaySamples << "\n";
+//    std::cout << "_delay: " << sampleRate / (2 * get_f0()) - (sampleRate / (2 * get_f0()) - 0.5 * dispersionPreset.loopDelaySamples) << "\n";
+    
 
 }
 
@@ -113,7 +117,7 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
 // 根据 midi_n, reference_tone, temperament 计算 f0
 // TODO: 这里能使用查表的方式降低加计算成本
 float StringModel::get_f0() const {
-    return PrecomputedValue::get_f0(midi_n, string_index);
+    return pairedHammer->pairedKey->piano->modelParameters->tunningPresets->getFrequency(midi_n, TunningPresets::Temperament::equal, static_cast<TunningPresets::StringIndex>(string_index));
 }
 
 
@@ -232,13 +236,14 @@ float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
         float fx1 = fractional_x1_r;
         float fy1 = fractional_y1_r;
         float ly1 = loss_y1_r;
-        std::array<float, Piano::Data::kRT425DispersionSectionCount> dx1 = dispersion_x1_r;
-        std::array<float, Piano::Data::kRT425DispersionSectionCount> dx2 = dispersion_x2_r;
-        std::array<float, Piano::Data::kRT425DispersionSectionCount> dy1 = dispersion_y1_r;
-        std::array<float, Piano::Data::kRT425DispersionSectionCount> dy2 = dispersion_y2_r;
+        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dx1 = dispersion_x1_r;
+        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dx2 = dispersion_x2_r;
+        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dy1 = dispersion_y1_r;
+        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dy2 = dispersion_y2_r;
         
         fractionalFilter(boundary_value, fx1, fy1);
-        dispersionFilter(boundary_value, dx1, dx2, dy1, dy2);
+//        if(midi_n < 83)
+            dispersionFilter(boundary_value, dx1, dx2, dy1, dy2);
         lossFilter(boundary_value, ly1);
 
         return -boundary_value;

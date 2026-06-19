@@ -9,8 +9,10 @@
 #define Piano_hpp
 
 #include <iostream>
-#include "Component/KeyModel.hpp"
-#include "Component/PedalModel.hpp"
+#include "./Component/KeyModel.hpp"
+#include "./Component/PedalModel.hpp"
+
+#include "./ModelParameters/ModelParameters.hpp"
 
 class PianoModel{
 
@@ -19,7 +21,7 @@ public:
     // --------------------------------------------
     // MARK: 常量
     
-    
+    ModelParameters* modelParameters;
     
     // --------------------------------------------
     // MARK: 组件与基本信息
@@ -31,16 +33,16 @@ public:
     std::vector<std::unique_ptr<KeyModel>> pianoKeys;
     
     // Soft pedal
-    PedalModel *softPedal;
+    std::vector<std::unique_ptr<PedalModel>> *softPedal;
     
     // Harmonic pedal
-    PedalModel *harmonicPedal;
+    std::vector<std::unique_ptr<PedalModel>> *harmonicPedal;
     
     // Sostenuto pedal
-    PedalModel *sostenutoPedal;
+    std::vector<std::unique_ptr<PedalModel>> *sostenutoPedal;
     
     // Sustain pedal
-    PedalModel *sustainPedal;
+    std::vector<std::unique_ptr<PedalModel>> *sustainPedal;
     
     // --------------------------------------------
     // MARK: 实时值与其函数

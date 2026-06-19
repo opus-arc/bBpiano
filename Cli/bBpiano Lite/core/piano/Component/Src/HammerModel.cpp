@@ -20,8 +20,7 @@
 
 HammerModel::HammerModel(KeyModel *_pairedKey, int _midi_n) :
     pairedKey(_pairedKey),
-    midi_n(_midi_n),
-    string_count(midi_n <= 52 ? 2 : 3)
+    midi_n(_midi_n)
 {
     const auto hammerParameter = MyCSVReader::getRT425HammerParameterByMidi(midi_n);
     K = hammerParameter.K;
@@ -32,9 +31,20 @@ HammerModel::HammerModel(KeyModel *_pairedKey, int _midi_n) :
     const auto stringParameter = MyCSVReader::getRT425WrappedStringParameterByMidi(midi_n);
     strikePoint = stringParameter.strike_ratio;
     
-    pairedString_a = new StringModel(this, midi_n, 1);
-    pairedString_b = new StringModel(this, midi_n, 2);
-    pairedString_c = new StringModel(this, midi_n, 3);
+    if(midi_n <= 30) {
+        pairedString_a = new StringModel(this, midi_n, 1);
+        string_count = 1;
+    } else if (midi_n <= 37) {
+        pairedString_a = new StringModel(this, midi_n, 1);
+        pairedString_b = new StringModel(this, midi_n, 2);
+        string_count = 2;
+    } else {
+        pairedString_a = new StringModel(this, midi_n, 1);
+        pairedString_b = new StringModel(this, midi_n, 2);
+        pairedString_c = new StringModel(this, midi_n, 3);
+        string_count = 3;
+    }
+
     
     if (pairedString_a) {
         hammerTs = pairedString_a->Ts * 0.5;
@@ -54,9 +64,11 @@ HammerModel::HammerModel(KeyModel *_pairedKey, int _midi_n) :
 // MARK: 整合 Sample
 float HammerModel::getSample(){
     
-    if(string_count == 2) {
+    if(string_count == 1) {
+        return pairedString_a->velocityAt(0.7);
+    } else if(string_count == 2) {
         return pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7);
-    } else {
+    } else if(string_count == 3) {
         return pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7) + pairedString_c->velocityAt(0.7);
     }
     
@@ -142,10 +154,11 @@ double HammerModel::hammerPHalfStepForce(double _string_v, double _dt) {
 
 void HammerModel::distributeHammerForce(int M, double _F) {
     
-    // _F 是 hammer 看到的总接触力。
-    // 多弦时先读多弦总反馈速度，再把同一个总力平均注入到每根弦。
-    if(string_count == 2) {
-        const float forcePerString = static_cast<float>(_F * 0.5);
+    if(string_count == 1) {
+        const float forcePerString = static_cast<float>(_F);
+        pairedString_a->injectForce(M, forcePerString);
+    } else if(string_count == 2) {
+        const float forcePerString = static_cast<float>(_F / 2.0);
         pairedString_a->injectForce(M, forcePerString);
         pairedString_b->injectForce(M, forcePerString);
     } else if(string_count == 3) {
@@ -158,7 +171,9 @@ void HammerModel::distributeHammerForce(int M, double _F) {
 
 void HammerModel::moveStrings() {
     
-    if(string_count == 2) {
+    if(string_count == 1) {
+        pairedString_a->stringMovement();
+    } else if (string_count == 2) {
         pairedString_a->stringMovement();
         pairedString_b->stringMovement();
     } else if (string_count == 3) {

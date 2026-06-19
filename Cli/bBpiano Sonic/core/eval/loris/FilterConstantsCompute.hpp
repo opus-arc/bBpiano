@@ -164,10 +164,24 @@ public:
                .partials[i].duration_seconds < 0.001 || lorisData
                .partials[i].breakpoint_count <= 1) continue;
             
-            std::cout << "f" << i << ": " << lorisData
-                .partials[i].mean_frequency_hz << ", duration_seconds: " << lorisData
-                .partials[i].duration_seconds << ", breakpoint_count: " << lorisData
+            std::cout << "f" << i << ": " <<
+            lorisData
+                .partials[i].mean_frequency_hz <<
+            ", duration_seconds: " <<
+            lorisData
+                .partials[i].duration_seconds <<
+//            ", amplitude_linear: " <<
+//            lorisData
+//                .partials[i]
+//                .breakpoints[0].amplitude_linear <<
+//            ", phase_radians: " <<
+//            lorisData
+//                .partials[i]
+//                .breakpoints[0].phase_radians <<
+            ", breakpoint_count: " <<
+            lorisData
                 .partials[i].breakpoint_count << "\n";
+            
         }
     }
 
