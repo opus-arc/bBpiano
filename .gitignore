@@ -17,6 +17,9 @@ AcousticLab/HammerLab/.Generated/
 /AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples
 
 !/docs/
+!/docs/**
+
+
 /site/
 
 
