@@ -18,6 +18,7 @@
 #include <complex>
 
 #include "../ModelParameters/constants/RT425DispersionPresets.hpp"
+#include "../ModelParameters/constants/D274LossPresets.hpp"
 
 class HammerModel;
 
@@ -101,13 +102,15 @@ public:
     mutable float fractional_y1_l = 0.0;
     
     // loss filter
-    std::vector<LossConstant> lossConstants;
-    mutable float loss_x1_r = 0.0; // 上一次传入 allpass 的值
-    mutable float loss_y1_r = 0.0;
-    mutable float loss_x1_l = 0.0; // 上一次传入 allpass 的值
-    mutable float loss_y1_l = 0.0;
-    double loss_a1 = -0.01;
-    double loss_g = 0.999293;
+    Parameters::Tuning::D274LossPresets::LossPreset lossPreset;
+    mutable std::array<float, Parameters::Tuning::D274LossPresets::kD274LossSectionCount> loss_x1_r = {};
+    mutable std::array<float, Parameters::Tuning::D274LossPresets::kD274LossSectionCount> loss_x2_r = {};
+    mutable std::array<float, Parameters::Tuning::D274LossPresets::kD274LossSectionCount> loss_y1_r = {};
+    mutable std::array<float, Parameters::Tuning::D274LossPresets::kD274LossSectionCount> loss_y2_r = {};
+    mutable std::array<float, Parameters::Tuning::D274LossPresets::kD274LossSectionCount> loss_x1_l = {};
+    mutable std::array<float, Parameters::Tuning::D274LossPresets::kD274LossSectionCount> loss_x2_l = {};
+    mutable std::array<float, Parameters::Tuning::D274LossPresets::kD274LossSectionCount> loss_y1_l = {};
+    mutable std::array<float, Parameters::Tuning::D274LossPresets::kD274LossSectionCount> loss_y2_l = {};
 
     // dispersion filter
     Parameters::Tuning::RT425DispersionPresets::DispersionPreset dispersionPreset;
@@ -200,12 +203,50 @@ public:
         x = y;
     }
 
-    inline void lossFilter(float &x, float &y1) const {
-        // y = g * (1 + a1) * x - a1 * y1
-        float y = static_cast<float>(loss_g * (1.0 + loss_a1)) * x
-                - static_cast<float>(loss_a1) * y1;
-        y1 = y;
-        x = y;
+    // loss 每个完整 round trip 只经过一次。StringModel::delay 是半圈长度，
+    // 因此基频 phase-delay 补偿只能在每个半圈扣除一半。
+    inline double lossHalfLoopPhaseDelayCompensation() const {
+        const double phaseDelay = lossPreset.phaseDelaySamples;
+        return (std::isfinite(phaseDelay) && phaseDelay > 0.0)
+            ? 0.5 * phaseDelay
+            : 0.0;
+    }
+
+    inline void lossFilter(
+        float& x,
+        std::array<float, Parameters::Tuning::D274LossPresets::kD274LossSectionCount>& x1,
+        std::array<float, Parameters::Tuning::D274LossPresets::kD274LossSectionCount>& x2,
+        std::array<float, Parameters::Tuning::D274LossPresets::kD274LossSectionCount>& y1,
+        std::array<float, Parameters::Tuning::D274LossPresets::kD274LossSectionCount>& y2
+    ) const {
+        const std::size_t sectionCount = std::min<std::size_t>(
+            static_cast<std::size_t>(lossPreset.sectionCount),
+            lossPreset.sections.size()
+        );
+
+        for (std::size_t i = 0; i < sectionCount; ++i) {
+            const auto& c = lossPreset.sections[i];
+
+            // H(z) = (b0 + b1 z^-1 + b2 z^-2)
+            //      / (1  + a1 z^-1 + a2 z^-2)
+            // Difference equation:
+            // y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2]
+            //      - a1*y[n-1] - a2*y[n-2]
+            float y =
+                  static_cast<float>(c.b0) * x
+                + static_cast<float>(c.b1) * x1[i]
+                + static_cast<float>(c.b2) * x2[i]
+                - static_cast<float>(c.a1) * y1[i]
+                - static_cast<float>(c.a2) * y2[i];
+
+            x2[i] = x1[i];
+            x1[i] = x;
+
+            y2[i] = y1[i];
+            y1[i] = y;
+
+            x = y;
+        }
     }
 
     inline void dispersionFilter(
@@ -249,12 +290,12 @@ public:
         if(isLeft) {
             fractionalFilter(boundary_value, fractional_x1_l, fractional_y1_l);
 //            dispersionFilter(boundary_value, dispersion_x1_l, dispersion_x2_l, dispersion_y1_l, dispersion_y2_l);
-            lossFilter(boundary_value, loss_y1_l);
+//            lossFilter(boundary_value, loss_x1_l, loss_x2_l, loss_y1_l, loss_y2_l);
         } else {
             fractionalFilter(boundary_value, fractional_x1_r, fractional_y1_r);
 //            if(midi_n < 83)
                 dispersionFilter(boundary_value, dispersion_x1_r, dispersion_x2_r, dispersion_y1_r, dispersion_y2_r);
-            lossFilter(boundary_value, loss_y1_r);
+            lossFilter(boundary_value, loss_x1_r, loss_x2_r, loss_y1_r, loss_y2_r);
         }
     }
 
