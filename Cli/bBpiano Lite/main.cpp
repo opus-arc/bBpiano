@@ -56,7 +56,7 @@ int main(int argc, const char * argv[]) {
         argv[0],
         "-e",
         "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/data/midi_samples/Fancy's selection/midi/Sonata No. 28 in A Major, Op. 101 (Complete)_2014.midi",
-        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/Sonata No. 28 in A Major, Op. 101 (Complete)_2014.wav"
+        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/Sonata No. 28 in A Major, Op. 101 new2.wav"
     };
     argc = 4;
     argv = testArgv;

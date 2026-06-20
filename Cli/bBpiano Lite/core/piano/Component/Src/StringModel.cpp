@@ -15,6 +15,7 @@
 
 #include "../../Utils/MyCSVReader.hpp"
 #include "../../ModelParameters/constants/RT425DispersionPresets.hpp"
+#include "../../ModelParameters/constants/D274LossPresets.hpp"
 #include "../../ModelParameters/constants/TunningPresets.hpp"
 
 
@@ -36,15 +37,9 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
 {
     // 先加载所有常数
     
-//     loss init
-    lossConstants = MyCSVReader::getLossConstant();
-    for (const auto& c : lossConstants) {
-        if (c.midi_n == midi_n) {
-            loss_g = c.g;
-            loss_a1 = c.a_1;
-            break;
-        }
-    }
+    // loss init
+    lossPreset =
+        Parameters::Tuning::D274LossPresets::getD274LossPreset(midi_n, string_index);
     
     // dispersion init
     dispersionPreset =
@@ -61,12 +56,18 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     physical_f0_hz = physicalParameter.f0_hz;
     physical_length_m = physicalParameter.length_m;
     physical_strike_ratio = physicalParameter.strike_ratio;
-    
-
     // 计算波导长度
-    double originalDelay = sampleRate / (2 * get_f0());
-    double dispersionDelay = originalDelay - 0.5 * dispersionPreset.loopDelaySamples;
-    delay = originalDelay - dispersionDelay;
+    double halfDispersionPureDelay = 0.5 * dispersionPreset.loopDelaySamples;
+    const double lossHalfLoopPhaseDelay =
+        lossHalfLoopPhaseDelayCompensation();
+
+    // Dispersion preset 已经给出满足目标模态的纯 delay。
+    // Loss 每个完整 round trip 经过一次，所以这里只扣除一半的
+    // 基频 phase delay；不要用 group delay，也不要整段从半圈扣除。
+    delay = halfDispersionPureDelay - lossHalfLoopPhaseDelay;
+//    std::cout<<"midi_n: "<<midi_n<<", halfIdealDelay: "<<halfIdealDelay<<", halfDispersionPureDelay: "<<halfDispersionPureDelay<<", dispersionDelay: "<<dispersionDelay<<
+////    ", lossDelay: "<<lossDelay<<
+//    ", delay: "<<delay<<"\n";
 
     
     
@@ -102,7 +103,8 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     //    << ", sectionCount: " << dispersionPreset.sectionCount
     //    << "\n";
 //    std::cout << "midi_n: " << midi_n << ", stringCount: " << string_index << "\n";
-    std::cout << "midi_n: " << midi_n << ", delay: " << delay << "\n";
+//    std::cout << "midi_n: " << midi_n << ", delay: " << delay << "\n";
+//    std::cout << "midi_n: " << midi_n << ", delay: " << lossPreset.lossDelaySamples << "\n";
 //    std::cout << "midi_n: " << midi_n << ", f0: " << get_f0() << "\n";
 //    std::cout << "f0: " << get_f0() << "\n";
 //    std::cout << "dispersionDelay: " << sampleRate / (2 * get_f0()) - 0.5 * dispersionPreset.loopDelaySamples << "\n";
@@ -131,7 +133,7 @@ void StringModel::stringMovement() {
     activityCounter++;
         if(activityCounter >= 10000) {
             // 此处仍然不可低于 0.003
-            if((activityProbe() < 0.003) && pairedHammer->pairedKey->key_active) {
+            if((activityProbe() < 0.001) && pairedHammer->pairedKey->key_active) {
                 pairedHammer->setInactive();
             }
             activityCounter = 0;
@@ -221,30 +223,31 @@ float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
     if (isLeft) {
         float fx1 = fractional_x1_l;
         float fy1 = fractional_y1_l;
-        float ly1 = loss_y1_l;
-//        std::array<float, Piano::Data::kRT425DispersionSectionCount> dx1 = dispersion_x1_l;
-//        std::array<float, Piano::Data::kRT425DispersionSectionCount> dx2 = dispersion_x2_l;
-//        std::array<float, Piano::Data::kRT425DispersionSectionCount> dy1 = dispersion_y1_l;
-//        std::array<float, Piano::Data::kRT425DispersionSectionCount> dy2 = dispersion_y2_l;
+//        auto lx1 = loss_x1_l;
+//        auto lx2 = loss_x2_l;
+//        auto ly1 = loss_y1_l;
+//        auto ly2 = loss_y2_l;
 
         fractionalFilter(boundary_value, fx1, fy1);
 //        dispersionFilter(boundary_value, dx1, dx2, dy1, dy2);
-        lossFilter(boundary_value, ly1);
+//        lossFilter(boundary_value, lx1, lx2, ly1, ly2);
 
         return -boundary_value;
     } else {
         float fx1 = fractional_x1_r;
         float fy1 = fractional_y1_r;
-        float ly1 = loss_y1_r;
+        auto lx1 = loss_x1_r;
+        auto lx2 = loss_x2_r;
+        auto ly1 = loss_y1_r;
+        auto ly2 = loss_y2_r;
         std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dx1 = dispersion_x1_r;
         std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dx2 = dispersion_x2_r;
         std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dy1 = dispersion_y1_r;
         std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dy2 = dispersion_y2_r;
         
         fractionalFilter(boundary_value, fx1, fy1);
-//        if(midi_n < 83)
-            dispersionFilter(boundary_value, dx1, dx2, dy1, dy2);
-        lossFilter(boundary_value, ly1);
+        dispersionFilter(boundary_value, dx1, dx2, dy1, dy2);
+        lossFilter(boundary_value, lx1, lx2, ly1, ly2);
 
         return -boundary_value;
     }
@@ -277,8 +280,10 @@ float StringModel::activityProbe() const {
         p = std::max(p, std::abs(r));
     }
 
-    p = std::max(p, std::abs(loss_y1_l));
-    p = std::max(p, std::abs(loss_y1_r));
+    for (float y : loss_y1_l) p = std::max(p, std::abs(y));
+    for (float y : loss_y1_r) p = std::max(p, std::abs(y));
+    for (float y : loss_y2_l) p = std::max(p, std::abs(y));
+    for (float y : loss_y2_r) p = std::max(p, std::abs(y));
     p = std::max(p, std::abs(fractional_y1_l));
     p = std::max(p, std::abs(fractional_y1_r));
 //    p = std::max(p, std::abs(dispersion_y1_l));

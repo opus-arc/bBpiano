@@ -4767,6 +4767,32 @@ inline constexpr std::array<DispersionPreset, 237> kRT425DispersionPresets = {{
     }
 }};
 
+inline double computeFittedB(double f0_hz) {
+    constexpr double k1 = -1.3333333333333333;
+    constexpr double k2 =  1.3333333333333333;
+
+    constexpr double c0 = -6.5760753629956712;
+    constexpr double c1 =  1.9137732290077178;
+    constexpr double c2 =  0.27614763151078042;
+    constexpr double c3 = -0.28572738557770405;
+    constexpr double c4 = -0.30709648310494486;
+
+    const double x = std::log2(f0_hz / 440.0);
+
+    double log_b =
+          c0
+        + c1 * x
+        + c2 * x * x
+        + c3 * std::pow(std::max(x - k1, 0.0), 2.0)
+        + c4 * std::pow(std::max(x - k2, 0.0), 2.0);
+
+    log_b = std::clamp(log_b,
+                       std::log(5e-6),
+                       std::log(2e-2));
+
+    return std::exp(log_b);
+}
+
 inline constexpr const DispersionPreset& getRT425DispersionPreset(double f0_hz) {
     std::size_t bestIndex = 0;
     double bestDistance = kRT425DispersionPresets[0].referenceF1 - f0_hz;
@@ -4782,5 +4808,6 @@ inline constexpr const DispersionPreset& getRT425DispersionPreset(double f0_hz) 
     }
     return kRT425DispersionPresets[bestIndex];
 }
+
 
 } // namespace Parameters::Tuning::RT425DispersionPresets
