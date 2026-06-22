@@ -14,62 +14,54 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run engine performance tests
+      - name: Build bBpiano Lite
         shell: bash
         run: |
           set -o pipefail
 
-          xcodebuild test \
-            -scheme bBpiano \
+          xcodebuild build \
+            -scheme "bBpiano Lite" \
+            -configuration Release \
             -destination 'platform=macOS' \
             CODE_SIGNING_ALLOWED=NO \
-            | tee engine-evaluation.log
+            | tee engine-build.log
 
-      - name: Locate EngineTestResult.json
+      - name: Run engine benchmark
         shell: bash
         run: |
-          RESULT_PATH=$(find . -name "EngineTestResult.json" | head -n 1)
+          set -o pipefail
 
-          if [ -z "$RESULT_PATH" ]; then
-            echo "EngineTestResult.json not found"
+          BBPL_PATH=$(find ~/Library/Developer/Xcode/DerivedData \
+            -path "*/Build/Products/Release/*" \
+            -type f \
+            -perm -111 \
+            -name "bBpiano Lite" \
+            | head -n 1)
+
+          if [ -z "$BBPL_PATH" ]; then
+            echo "bBpiano Lite executable not found"
             exit 1
           fi
 
-          echo "RESULT_PATH=$RESULT_PATH" >> $GITHUB_ENV
+          echo "Using executable: $BBPL_PATH"
+
+          "$BBPL_PATH" -b | tee engine-evaluation.log
 
       - name: Write engine evaluation summary
         shell: bash
         run: |
-          python3 - <<'PY'
-          import json
-          import os
+          {
+            echo "# bBpiano Engine Evaluation"
+            echo
+            echo '```'
+            cat engine-evaluation.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
-          path = os.environ["RESULT_PATH"]
-
-          with open(path, "r") as f:
-              data = json.load(f)
-
-          lines = [
-              "# bBpiano Engine Evaluation",
-              "",
-              "| Metric | Value |",
-              "|---|---:|",
-              f"| Estimated Polyphony Under 90% Load | {data['estimatedPolyphonyUnder90PercentLoad']} |",
-              f"| All-note Average | {data['allNoteAverage']} |",
-              f"| Low Average | {data['lowAverage']} |",
-              f"| Middle Average | {data['middleAverage']} |",
-              f"| High Average | {data['highAverage']} |",
-              "",
-          ]
-
-          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f:
-              f.write("\n".join(lines))
-          PY
-
-      - name: Upload engine evaluation log
+      - name: Upload engine evaluation logs
         uses: actions/upload-artifact@v4
         with:
-          name: engine-evaluation-log
+          name: engine-evaluation-logs
           path: |
+            engine-build.log
             engine-evaluation.log
-            ${{ env.RESULT_PATH }}
