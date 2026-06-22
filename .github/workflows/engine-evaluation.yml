@@ -22,6 +22,7 @@ jobs:
           xcodebuild build \
             -scheme "bBpiano Lite" \
             -configuration Release \
+            -derivedDataPath "$PWD/build" \
             -destination 'platform=macOS' \
             CODE_SIGNING_ALLOWED=NO \
             | tee engine-build.log
@@ -31,15 +32,13 @@ jobs:
         run: |
           set -o pipefail
 
-          BBPL_PATH=$(find ~/Library/Developer/Xcode/DerivedData \
-            -path "*/Build/Products/Release/*" \
-            -type f \
-            -perm -111 \
-            -name "bBpiano Lite" \
-            | head -n 1)
+          BBPL_PATH="$PWD/build/Build/Products/Release/bbpl"
 
-          if [ -z "$BBPL_PATH" ]; then
-            echo "bBpiano Lite executable not found"
+          if [ ! -x "$BBPL_PATH" ]; then
+            echo "bbpl executable not found at: $BBPL_PATH"
+            echo
+            echo "Release products:"
+            find "$PWD/build/Build/Products/Release" -maxdepth 4 -print || true
             exit 1
           fi
 
