@@ -11,7 +11,6 @@
 		147D71402FD6F9F1008F3BF8 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C52FD52A3300685F41 /* CoreFoundation.framework */; };
 		147D71412FD6F9F9008F3BF8 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C92FD52A8600685F41 /* CoreMIDI.framework */; };
 		147D71502FD70102008F3BF8 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C72FD52A3C00685F41 /* AudioToolbox.framework */; };
-		14DCEED32FD579E500243BB5 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 147EE0CA2FC3E4AF0004B0D4 /* Inject */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -259,7 +258,6 @@
 		14E708332F78BE0C005C806C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
-				14DCEED32FD579E500243BB5 /* Inject in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -427,9 +425,6 @@
 				14FD022F2FB88D2E000D46DC /* External */,
 			);
 			name = bBpiano;
-			packageProductDependencies = (
-				147EE0CA2FC3E4AF0004B0D4 /* Inject */,
-			);
 			productName = blueBird;
 			productReference = 14E708362F78BE0C005C806C /* bBpiano.app */;
 			productType = "com.apple.product-type.application";
@@ -470,7 +465,6 @@
 			mainGroup = 14E7082D2F78BE0C005C806C;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				147EE0C92FC3E4AF0004B0D4 /* XCRemoteSwiftPackageReference "Inject" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 14E708372F78BE0C005C806C /* Products */;
@@ -887,25 +881,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		147EE0C92FC3E4AF0004B0D4 /* XCRemoteSwiftPackageReference "Inject" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/krzysztofzablocki/Inject";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.6.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		147EE0CA2FC3E4AF0004B0D4 /* Inject */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 147EE0C92FC3E4AF0004B0D4 /* XCRemoteSwiftPackageReference "Inject" */;
-			productName = Inject;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 14E7082E2F78BE0C005C806C /* Project object */;
 }

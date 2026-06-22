@@ -6,14 +6,14 @@
 //
 
 #include <iostream>
-#define VERSION "L0-100c"
+#define VERSION "L0-Pizzicato"
 void printLogo() {
     static constexpr const char* logo =
     R"(
         ┌────────────────────────────┐──╭────╮
         │                            │==│╲╱╲╱│
         │  bBpiano 0                 │==│╱╲╱╲│
-        │  L0-100c🎉/260608          │==│╲╱╲╱│
+        │  L0-Pizzicato/260624       │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
         │  Physical Modeling Piano   │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
@@ -24,8 +24,9 @@ void printLogo() {
         │  bBSonicLab                │==│╱╲╱╲│
         └────────────────────────────┘──╰────╯
     
-       🎊 Celebrating 100 Commits of bBpiano 🎊
+        Pizzicato Until the Fingers Bleed.
     )";
+    
     std::cout << logo << "\n";
 }
 
@@ -58,8 +59,8 @@ int main(int argc, const char * argv[]) {
 //    const char* testArgv[] = {
 //        argv[0],
 //        "-e",
-//        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/data/midi_samples/Fancy's selection/midi/Sonata No. 28 in A Major, Op. 101 (Complete)_2014.midi",
-//        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/Sonata No. 28 in A Major, Op. 101 new2.wav"
+//        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/2026-06-22 1018 (Monday) 171 notes, 213 seconds.mid",
+//        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/260622-opusarc.wav"
 //    };
 //    argc = 4;
 //    argv = testArgv;
@@ -82,7 +83,7 @@ int main(int argc, const char * argv[]) {
 //    const char* testArgv[] = {
 //        argv[0],
 //        "-m",
-//        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/data/midi_samples/Fancy's selection/midi/Sonata in D Minor, K. 141_2018.midi"
+//        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/data/midi_samples/Fancy's selection/midi/Sonata in B Min._2006.midi"
 //    };
 //    argc = 3;
 //    argv = testArgv;

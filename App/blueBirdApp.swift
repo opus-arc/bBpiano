@@ -15,23 +15,7 @@ internal import System
 @main
 struct blueBirdApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    
 
-    init() {
-        #if DEBUG
-        if let path = Bundle.main.path(forResource: "macOSInjection", ofType: "bundle") {
-            if Bundle(path: path)?.load() == true {
-                print("InjectionIII macOS bundle loaded from app bundle")
-            } else {
-                print("Failed to load bundled macOSInjection.bundle")
-            }
-        } else {
-            print("macOSInjection.bundle not found in app bundle")
-        }
-        #endif
-    }
-    
-    
     var body: some Scene {
         WindowGroup {
             ZStack {

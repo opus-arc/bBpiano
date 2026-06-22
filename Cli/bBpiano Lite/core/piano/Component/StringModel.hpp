@@ -17,7 +17,7 @@
 #include <array>
 #include <complex>
 
-#include "../ModelParameters/constants/RT425DispersionPresets.hpp"
+#include "../ModelParameters/constants/D274DispersionPresets.hpp"
 #include "../ModelParameters/constants/D274LossPresets.hpp"
 
 class HammerModel;
@@ -47,6 +47,13 @@ public:
         float b2 = 0.0f;
         float a1 = 0.0f;
         float a2 = 0.0f;
+    };
+
+    struct SpatialPort {
+        int index0 = 0;
+        int index1 = 0;
+        float weight0 = 1.0f;
+        float weight1 = 0.0f;
     };
     
     // 初始化
@@ -102,7 +109,8 @@ public:
     int delay_int = 0;
     int delay_index = 0;
     double delay_frac = 0.0;// 波导长度小数部分
-    int pickupRelativeIndex = 0;
+    SpatialPort strikePort;
+    SpatialPort pickupPort;
     double fractional_a1 = 0.0;
     mutable float fractional_x1_r = 0.0; // 上一次传入 allpass 的值
     mutable float fractional_y1_r = 0.0;
@@ -121,17 +129,17 @@ public:
     mutable std::array<float, Parameters::Tuning::D274LossPresets::kD274LossSectionCount> loss_y2_l = {};
 
     // dispersion filter
-    Parameters::Tuning::RT425DispersionPresets::DispersionPreset dispersionPreset;
+    Parameters::Tuning::D274DispersionPresets::DispersionPreset dispersionPreset;
     std::size_t dispersionSectionCount = 0;
-    std::array<FloatBiquadCoefficients, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersionCoefficients = {};
-    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_x1_r = {}; // 上一次传入 allpass 的值
-    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_x2_r = {};
-    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_y1_r = {};
-    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_y2_r = {};
-    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_x1_l = {}; // 上一次传入 allpass 的值
-    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_x2_l = {};
-    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_y1_l = {};
-    mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_y2_l = {};
+    std::array<FloatBiquadCoefficients, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersionCoefficients = {};
+    mutable std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersion_x1_r = {}; // 上一次传入 allpass 的值
+    mutable std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersion_x2_r = {};
+    mutable std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersion_y1_r = {};
+    mutable std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersion_y2_r = {};
+    mutable std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersion_x1_l = {}; // 上一次传入 allpass 的值
+    mutable std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersion_x2_l = {};
+    mutable std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersion_y1_l = {};
+    mutable std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersion_y2_l = {};
     
     
     double dispersion_a0 = 0.5;
@@ -154,8 +162,8 @@ public:
 
 public:
     
-    // Hammer-P 错位注入，将力变成波
-    void injectForce(int relative_i, float F) const;
+    // Hammer-P 分数空间错位注入，将力分配到相邻 junction。
+    void injectForce(float F) const;
     
     // 传播
     void propagate();
@@ -173,8 +181,8 @@ public:
     float velocityAt(double p) const ;
     float pickupVelocity() const;
     
-    // Hammer-P 读速度接口：一次读出当前格点速度与半采样速度。
-    void readHammerVelocityPair(int relative_i, float& v0, float& vHalf) const;
+    // Hammer-P 分数空间读速度接口：一次读出当前速度与半采样速度。
+    void readHammerVelocityPair(float& v0, float& vHalf) const;
     
     float activityProbe() const;
 
@@ -186,6 +194,11 @@ public:
     
     // 边界滤波器
     float BoundaryFilter_virtual(float boundary_value, bool isLeft);
+
+    static SpatialPort makeSpatialPort(double position, int maxIndex);
+    float velocityAtPort(const SpatialPort& port) const;
+    void readIntegerHammerVelocityPair(int relative_i, float& v0, float& vHalf) const;
+    void injectForceAtJunction(int junctionIndex, float F) const;
 
     
     // 0 <= i < Delay_Int !!!
@@ -268,10 +281,10 @@ public:
 
     inline void dispersionFilter(
         float& x,
-        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount>& x1,
-        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount>& x2,
-        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount>& y1,
-        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount>& y2
+        std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount>& x1,
+        std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount>& x2,
+        std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount>& y1,
+        std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount>& y2
     ) const {
         for (std::size_t i = 0; i < dispersionSectionCount; ++i) {
             const auto& c = dispersionCoefficients[i];

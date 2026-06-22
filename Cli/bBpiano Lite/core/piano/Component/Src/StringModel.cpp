@@ -14,7 +14,7 @@
 
 
 #include "../../Utils/MyCSVReader.hpp"
-#include "../../ModelParameters/constants/RT425DispersionPresets.hpp"
+#include "../../ModelParameters/constants/D274DispersionPresets.hpp"
 #include "../../ModelParameters/constants/D274LossPresets.hpp"
 #include "../../ModelParameters/constants/TunningPresets.hpp"
 
@@ -43,7 +43,7 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     
     // dispersion init
     dispersionPreset =
-        Parameters::Tuning::RT425DispersionPresets::getRT425DispersionPreset(get_f0());
+        Parameters::Tuning::D274DispersionPresets::getRT425DispersionPreset(get_f0());
 
     // 步长
     Ts = 1.0 / static_cast<double>(sampleRate);
@@ -76,7 +76,17 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     if(delay_int <= 0) delay_int = 2;
     delay_index = delay_int - 1;
     delay_frac = delay - static_cast<double>(delay_int);
-    pickupRelativeIndex = static_cast<int>(std::floor(0.7 * delay_index));
+
+    // pickup 可落在 0...delay_index 的任意分数位置。
+    pickupPort = makeSpatialPort(0.7 * delay_index, delay_index);
+
+    // 一个 Hammer-P junction j 对应 left[j] / right[j + 1]。
+    // 因而有效 junction 范围是 0...delay_index-1。
+    const int maxStrikeJunction = std::max(0, delay_index - 1);
+    strikePort = makeSpatialPort(
+        physical_strike_ratio * delay_index,
+        maxStrikeJunction
+    );
 
     
     fractional_a1 = double(1 - delay_frac) / double(1 + delay_frac);
@@ -116,7 +126,9 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     //    << ", sectionCount: " << dispersionPreset.sectionCount
     //    << "\n";
 //    std::cout << "midi_n: " << midi_n << ", stringCount: " << string_index << "\n";
-    std::cout << "midi_n: " << midi_n << ", delay: " << delay << "\n";
+//    std::cout << "midi_n: " << midi_n << ", delay: " << delay
+//              << ", pickupPort: " << pickupPort.index0 << "+"
+//              << pickupPort.weight1 << "\n";
 //    std::cout << "midi_n: " << midi_n << ", delay: " << lossPreset.lossDelaySamples << "\n";
 //    std::cout << "midi_n: " << midi_n << ", f0: " << get_f0() << "\n";
 //    std::cout << "f0: " << get_f0() << "\n";
@@ -154,21 +166,43 @@ void StringModel::stringMovement() {
 
 }
 
-void StringModel::injectForce(int relative_i, float F) const {
-    
-    // 边界条件：要访问 right[M + 1]，所以 M 不能太靠右
-    const int maxM = std::max(1, delay_index - 2);
-    const int M = std::clamp(relative_i, 1, maxM);
-    const int MPlus = std::min(M + 1, delay_index);
-    
-    // Hammer-P 错位注入：left[M] 和 right[M + 1]
-    const int absolute_i_l = rToAIndex_l(M);
-    const int absolute_i_r = rToAIndex_r(MPlus);
-    
+StringModel::SpatialPort StringModel::makeSpatialPort(
+    double position,
+    int maxIndex
+) {
+    maxIndex = std::max(0, maxIndex);
+    position = std::clamp(position, 0.0, static_cast<double>(maxIndex));
+
+    const int index0 = static_cast<int>(std::floor(position));
+    const int index1 = std::min(index0 + 1, maxIndex);
+    const float weight1 = index1 == index0
+        ? 0.0f
+        : static_cast<float>(position - index0);
+
+    return SpatialPort{
+        index0,
+        index1,
+        1.0f - weight1,
+        weight1
+    };
+}
+
+void StringModel::injectForceAtJunction(int junctionIndex, float F) const {
+    // Hammer-P 错位 junction：left[j] 和 right[j + 1]。
+    const int absolute_i_l = rToAIndex_l(junctionIndex);
+    const int absolute_i_r = rToAIndex_r(junctionIndex + 1);
     const float delta = F / (2.0f * static_cast<float>(Z));
-    
+
     left[absolute_i_l] += delta;
     right[absolute_i_r] += delta;
+}
+
+void StringModel::injectForce(float F) const {
+    injectForceAtJunction(strikePort.index0, F * strikePort.weight0);
+
+    if (strikePort.index1 != strikePort.index0) {
+        injectForceAtJunction(strikePort.index1, F * strikePort.weight1);
+    }
 }
 
 void StringModel::propagate() {
@@ -218,15 +252,32 @@ float StringModel::velocityAt(double p) const {
 }
 
 float StringModel::pickupVelocity() const {
-    return left[rToAIndex_l(pickupRelativeIndex)]
-        + right[rToAIndex_r(pickupRelativeIndex)];
+    return velocityAtPort(pickupPort);
 }
 
+float StringModel::velocityAtPort(const SpatialPort& port) const {
+    const float velocity0 =
+        left[rToAIndex_l(port.index0)]
+        + right[rToAIndex_r(port.index0)];
 
-void StringModel::readHammerVelocityPair(int relative_i, float& v0, float& vHalf) const {
+    if (port.index1 == port.index0) {
+        return velocity0;
+    }
+
+    const float velocity1 =
+        left[rToAIndex_l(port.index1)]
+        + right[rToAIndex_r(port.index1)];
+
+    return port.weight0 * velocity0 + port.weight1 * velocity1;
+}
+
+void StringModel::readIntegerHammerVelocityPair(
+    int relative_i,
+    float& v0,
+    float& vHalf
+) const {
     // M 是 hammer 的相对击弦格点。为了半采样读速度，需要访问 M - 1 和 M + 1。
-    const int maxM = std::max(1, delay_index - 1);
-    const int M = std::clamp(relative_i, 1, maxM);
+    const int M = std::clamp(relative_i, 0, delay_index);
     const int MMinus = std::max(M - 1, 0);
     const int MPlus = std::min(M + 1, delay_index);
     
@@ -241,6 +292,35 @@ void StringModel::readHammerVelocityPair(int relative_i, float& v0, float& vHalf
     // 左行波取当前 M 与半步后会到达 M 的 M + 1 平均。
     vHalf = 0.5f * (right_M + right[rToAIndex_r(MMinus)])
           + 0.5f * (left_M + left[rToAIndex_l(MPlus)]);
+}
+
+void StringModel::readHammerVelocityPair(float& v0, float& vHalf) const {
+    float v0AtIndex0 = 0.0f;
+    float vHalfAtIndex0 = 0.0f;
+    readIntegerHammerVelocityPair(
+        strikePort.index0,
+        v0AtIndex0,
+        vHalfAtIndex0
+    );
+
+    if (strikePort.index1 == strikePort.index0) {
+        v0 = v0AtIndex0;
+        vHalf = vHalfAtIndex0;
+        return;
+    }
+
+    float v0AtIndex1 = 0.0f;
+    float vHalfAtIndex1 = 0.0f;
+    readIntegerHammerVelocityPair(
+        strikePort.index1,
+        v0AtIndex1,
+        vHalfAtIndex1
+    );
+
+    v0 = strikePort.weight0 * v0AtIndex0
+       + strikePort.weight1 * v0AtIndex1;
+    vHalf = strikePort.weight0 * vHalfAtIndex0
+          + strikePort.weight1 * vHalfAtIndex1;
 }
 
 
@@ -266,10 +346,10 @@ float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
         auto lx2 = loss_x2_r;
         auto ly1 = loss_y1_r;
         auto ly2 = loss_y2_r;
-        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dx1 = dispersion_x1_r;
-        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dx2 = dispersion_x2_r;
-        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dy1 = dispersion_y1_r;
-        std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dy2 = dispersion_y2_r;
+        std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dx1 = dispersion_x1_r;
+        std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dx2 = dispersion_x2_r;
+        std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dy1 = dispersion_y1_r;
+        std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dy2 = dispersion_y2_r;
         
         fractionalFilter(boundary_value, fx1, fy1);
         dispersionFilter(boundary_value, dx1, dx2, dy1, dy2);

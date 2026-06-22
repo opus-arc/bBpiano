@@ -119,6 +119,31 @@ private:
             note_off(note, noteVelocity);
         } else if (event.statusType() == 0xA0) {
             note_afterTouch(note, normalizedValue);
+        } else if (event.isPedalControlChange()) {
+            dispatchPedalEvent(event);
+        }
+    }
+
+    static void dispatchPedalEvent(const MidiService::MidiEvent& event) {
+        // MIDI CC pedal values are continuous controller depths in 0~127.
+        // Engine pedal APIs expect normalized depth in 0~1.
+        const double depth = std::clamp(static_cast<double>(event.data2) / 127.0, 0.0, 1.0);
+
+        switch (event.data1) {
+            case 64: // Damper / sustain pedal
+                sustainPedal_control(depth);
+                break;
+            case 65: // Non-standard assignment: harmonic pedal
+                harmonicPedal_control(depth);
+                break;
+            case 66: // Sostenuto pedal
+                sostenutoPedal_control(depth);
+                break;
+            case 67: // Soft / una corda pedal
+                softPedal_control(depth);
+                break;
+            default:
+                break;
         }
     }
 

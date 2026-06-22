@@ -106,6 +106,12 @@ public:
     }
 
 private:
+    static constexpr int kMinimumKeyboardOctave = 1;
+    static constexpr int kMaximumKeyboardOctave = 9;
+    static constexpr int kKeyboardPitchCountPerOctaveSlot = 10;
+    static constexpr int kKeyboardLowestBaseNote = 24;
+    static constexpr int kMaximumPlayableMidiNote = 108;
+
     PcKeyboard() = default;
 
     ~PcKeyboard() {
@@ -164,7 +170,7 @@ private:
             return;
         }
 
-        if (ch >= '1' && ch <= '8') {
+        if (ch >= '1' && ch <= '9') {
             setOctave(static_cast<int>(ch - '0'));
             return;
         }
@@ -178,7 +184,11 @@ private:
             return;
         }
 
-        const int note = std::clamp(baseNote_ + mapping.offset, 0, 127);
+        const int note = baseNote_ + mapping.offset;
+        if (note > kMaximumPlayableMidiNote) {
+            return;
+        }
+
         const double velocity = mapping.velocity;
         const int durationMs = noteDurationMs_.load();
 
@@ -259,8 +269,9 @@ private:
     }
 
     void setOctave(int octave) {
-        octave = std::clamp(octave, 1, 8);
-        baseNote_ = 12 * (octave + 1);
+        octave = std::clamp(octave, kMinimumKeyboardOctave, kMaximumKeyboardOctave);
+        baseNote_ = kKeyboardLowestBaseNote
+                  + (octave - kMinimumKeyboardOctave) * kKeyboardPitchCountPerOctaveSlot;
 
         std::cout << "\rPcKeyboard octave: " << octave
                   << "  base MIDI note: " << baseNote_.load()
@@ -304,7 +315,7 @@ private:
             << "  Q W E R T Y U I O P : strong velocity 112/127\n"
             << "  A S D F G H J K L ; : medium velocity 72/127\n"
             << "  Z X C V B N M , . / : soft velocity 40/127\n"
-            << "  1-8                 : switch octave\n"
+            << "  1-9                 : switch keyboard range, continuous by Q-P pitch span\n"
             << "  - = [ ]             : soft / harmonic / sostenuto / sustain pedal toggle\n"
             << "  ESC                 : stop\n";
     }

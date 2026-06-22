@@ -41,10 +41,10 @@ public:
     double m = 0.0;
     double RH = 0.0;
     
-    // 击弦点比例。构造时会转换成 strikeM，实时路径不再重复乘 delay_index。
+    // 击弦点比例。每根弦构造时转换为自己的分数空间端口。
     double strikePoint = 0.0;
     
-    // Hammer-P 固定击弦格点。这里是相对波导下标，不是 vector 绝对下标。
+    // 仅用于初始化诊断，实时路径使用各 StringModel 自己的 strikePort。
     int strikeM = 1;
     
     // Hammer-P 以弦采样率两倍运行，所以每个子步是 Ts / 2。
@@ -75,6 +75,8 @@ public:
     // 上一次的接触力
     double F_Last = 0.0;
     
+    double feltRelaxationState = 0.0;
+    
     // --------------------------------------------
     // MARK: 计算函数
     
@@ -83,10 +85,12 @@ public:
     // Hammer-P 子步力更新。_string_v 是当前子步看到的多弦总反馈速度。
     double hammerPHalfStepForce(double _string_v, double _dt);
     
-    // 把 Hammer-P 的总接触力按弦数平均后做错位单点注入。
-    void distributeHammerForce(int M, double _F);
+    // 把 Hammer-P 的总接触力按弦数平均后做分数空间错位注入。
+    void distributeHammerForce(double _F);
     
     void moveStrings();
+    
+    double stulovFeltForce(double compression, double compressionVelocity, double dt);
     
     // --------------------------------------------
     // MARK: 运动帧
