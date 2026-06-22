@@ -10,7 +10,6 @@
 
 #include "../core/controller.hpp"
 #include "./midiInputHub.hpp"
-#include "midiInputHub.hpp"
 
 #include <cstdint>
 #include <condition_variable>
@@ -30,8 +29,12 @@ public:
 
         MidiInputHub::start();
 
-        handlerToken_ = MidiInputHub::addHandler([](const std::vector<uint8_t>& message) {
+        handlerToken_ = MidiInputHub::addHandler([](MidiInputHub::MidiMessage message) {
             handleMessage(message);
+        });
+
+        pedalHandlerToken_ = MidiInputHub::addPedalHandler([](const MidiInputHub::PedalState& pedalState) {
+            handlePedalState(pedalState);
         });
 
         {
@@ -54,6 +57,13 @@ public:
             MidiInputHub::removeHandler(handlerToken_);
             handlerToken_ = 0;
         }
+
+        if (pedalHandlerToken_ != 0) {
+            MidiInputHub::removePedalHandler(pedalHandlerToken_);
+            pedalHandlerToken_ = 0;
+        }
+
+        resetPedals();
 
         if (!MidiInputHub::hasHandlers()) {
             MidiInputHub::stop();
@@ -79,7 +89,7 @@ public:
     }
 
 private:
-    static void handleMessage(const std::vector<uint8_t>& message) {
+    static void handleMessage(MidiInputHub::MidiMessage message) {
         if (message.empty()) {
             return;
         }
@@ -132,12 +142,27 @@ private:
         }
     }
 
+    static void handlePedalState(const MidiInputHub::PedalState& pedalState) {
+        softPedal_control(pedalState.soft);
+        harmonicPedal_control(pedalState.harmonic);
+        sostenutoPedal_control(pedalState.sostenuto);
+        sustainPedal_control(pedalState.sustain);
+    }
+
+    static void resetPedals() {
+        softPedal_control(0.0);
+        harmonicPedal_control(0.0);
+        sostenutoPedal_control(0.0);
+        sustainPedal_control(0.0);
+    }
+
 private:
     inline static std::mutex mutex_;
     inline static std::condition_variable condition_;
     inline static bool running_ = false;
 
     inline static int handlerToken_ = 0;
+    inline static int pedalHandlerToken_ = 0;
 };
 
 #endif /* midiKeyboard_hpp */

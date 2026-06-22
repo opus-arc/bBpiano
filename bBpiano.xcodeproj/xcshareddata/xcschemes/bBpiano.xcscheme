@@ -47,8 +47,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "14553D062FC14D60008E3CD7"
-               BuildableName = "HammerStringEvaluationTests.xctest"
-               BlueprintName = "HammerStringEvaluationTests"
+               BuildableName = "DSP-Benchmark.xctest"
+               BlueprintName = "DSP-Benchmark"
                ReferencedContainer = "container:bBpiano.xcodeproj">
             </BuildableReference>
          </TestableReference>

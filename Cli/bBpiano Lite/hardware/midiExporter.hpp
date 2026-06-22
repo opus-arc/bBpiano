@@ -105,14 +105,20 @@ public:
 private:
     static void dispatchMidiEvent(const MidiService::MidiEvent& event) {
         const int note = static_cast<int>(event.data1);
-        const double value = std::clamp(static_cast<double>(event.data2) / 127.0, 0.0, 1.0);
+
+        // Note velocity must remain in the MIDI domain: 0~127.
+        // HammerModel maps raw note velocity to physical hammer impact velocity.
+        const double noteVelocity = static_cast<double>(event.data2);
+
+        // Continuous controller-like pressure values are normalized to 0~1.
+        const double normalizedValue = std::clamp(noteVelocity / 127.0, 0.0, 1.0);
 
         if (event.isNoteOn()) {
-            note_on(note, value);
+            note_on(note, noteVelocity);
         } else if (event.isNoteOff()) {
-            note_off(note, value);
+            note_off(note, noteVelocity);
         } else if (event.statusType() == 0xA0) {
-            note_afterTouch(note, value);
+            note_afterTouch(note, normalizedValue);
         }
     }
 

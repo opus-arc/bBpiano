@@ -1,5 +1,3 @@
-
-
 //
 //  pcKeyboard.hpp
 //  bBpiano Lite
@@ -71,6 +69,7 @@ public:
         }
 
         restoreTerminalMode();
+        resetPedals();
 
         if (inputThread_.joinable()) {
             if (inputThread_.get_id() == std::this_thread::get_id()) {
@@ -170,6 +169,10 @@ private:
             return;
         }
 
+        if (handlePedalKey(ch)) {
+            return;
+        }
+
         const KeyMapping mapping = mapKey(ch);
         if (!mapping.valid) {
             return;
@@ -184,6 +187,75 @@ private:
             std::this_thread::sleep_for(std::chrono::milliseconds(durationMs));
             note_off(note, velocity);
         }).detach();
+    }
+
+    bool handlePedalKey(char ch) {
+        switch (ch) {
+            case '-':
+                toggleSoftPedal();
+                return true;
+
+            case '=':
+                toggleHarmonicPedal();
+                return true;
+
+            case '[':
+                toggleSostenutoPedal();
+                return true;
+
+            case ']':
+                toggleSustainPedal();
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    void toggleSoftPedal() {
+        const bool enabled = !softPedalDown_.load();
+        softPedalDown_ = enabled;
+        softPedal_control(enabled ? 1.0 : 0.0);
+        printPedalState("soft", enabled);
+    }
+
+    void toggleHarmonicPedal() {
+        const bool enabled = !harmonicPedalDown_.load();
+        harmonicPedalDown_ = enabled;
+        harmonicPedal_control(enabled ? 1.0 : 0.0);
+        printPedalState("harmonic", enabled);
+    }
+
+    void toggleSostenutoPedal() {
+        const bool enabled = !sostenutoPedalDown_.load();
+        sostenutoPedalDown_ = enabled;
+        sostenutoPedal_control(enabled ? 1.0 : 0.0);
+        printPedalState("sostenuto", enabled);
+    }
+
+    void toggleSustainPedal() {
+        const bool enabled = !sustainPedalDown_.load();
+        sustainPedalDown_ = enabled;
+        sustainPedal_control(enabled ? 1.0 : 0.0);
+        printPedalState("sustain", enabled);
+    }
+
+    void resetPedals() {
+        softPedalDown_ = false;
+        harmonicPedalDown_ = false;
+        sostenutoPedalDown_ = false;
+        sustainPedalDown_ = false;
+
+        softPedal_control(0.0);
+        harmonicPedal_control(0.0);
+        sostenutoPedal_control(0.0);
+        sustainPedal_control(0.0);
+    }
+
+    void printPedalState(const char* name, bool enabled) const {
+//        std::cout << "\rPcKeyboard " << name << " pedal: "
+//                  << (enabled ? "down" : "up")
+//                  << "        " << std::flush;
     }
 
     void setOctave(int octave) {
@@ -210,17 +282,17 @@ private:
 
         const size_t topIndex = topRow.find(lower);
         if (topIndex != std::string::npos) {
-            return KeyMapping{true, static_cast<int>(topIndex), 1.0};
+            return KeyMapping{true, static_cast<int>(topIndex), 112.0};
         }
 
         const size_t middleIndex = middleRow.find(lower);
         if (middleIndex != std::string::npos) {
-            return KeyMapping{true, static_cast<int>(middleIndex), 0.6};
+            return KeyMapping{true, static_cast<int>(middleIndex), 72.0};
         }
 
         const size_t bottomIndex = bottomRow.find(lower);
         if (bottomIndex != std::string::npos) {
-            return KeyMapping{true, static_cast<int>(bottomIndex), 0.3};
+            return KeyMapping{true, static_cast<int>(bottomIndex), 40.0};
         }
 
         return KeyMapping{};
@@ -229,10 +301,11 @@ private:
     void printHelp() const {
         std::cout
             << "PcKeyboard started.\n"
-            << "  Q W E R T Y U I O P : strong velocity\n"
-            << "  A S D F G H J K L ; : medium velocity\n"
-            << "  Z X C V B N M , . / : soft velocity\n"
+            << "  Q W E R T Y U I O P : strong velocity 112/127\n"
+            << "  A S D F G H J K L ; : medium velocity 72/127\n"
+            << "  Z X C V B N M , . / : soft velocity 40/127\n"
             << "  1-8                 : switch octave\n"
+            << "  - = [ ]             : soft / harmonic / sostenuto / sustain pedal toggle\n"
             << "  ESC                 : stop\n";
     }
 
@@ -240,6 +313,11 @@ private:
     std::atomic<bool> running_ { false };
     std::atomic<int> baseNote_ { 60 };
     std::atomic<int> noteDurationMs_ { 100 };
+
+    std::atomic<bool> softPedalDown_ { false };
+    std::atomic<bool> harmonicPedalDown_ { false };
+    std::atomic<bool> sostenutoPedalDown_ { false };
+    std::atomic<bool> sustainPedalDown_ { false };
 
     mutable std::mutex mutex_;
     std::condition_variable condition_;

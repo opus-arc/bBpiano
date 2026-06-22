@@ -43,7 +43,7 @@ public:
         MidiInputHub::start();
 
         handlerToken_ = MidiInputHub::addHandler(
-            [](const std::vector<uint8_t>& message) {
+            [](MidiInputHub::MidiMessage message) {
                 recordMessage(message);
             }
         );
@@ -94,7 +94,7 @@ public:
 private:
     using Clock = std::chrono::steady_clock;
 
-    static void recordMessage(const std::vector<uint8_t>& message) {
+    static void recordMessage(MidiInputHub::MidiMessage message) {
         if (message.empty()) {
             return;
         }
@@ -105,7 +105,7 @@ private:
                 Clock::now() - startTime_
             ).count()
         );
-        event.message = message;
+        event.message.assign(message.begin(), message.end());
 
         std::lock_guard<std::mutex> lock(eventMutex_);
         events_.push_back(std::move(event));
@@ -117,6 +117,7 @@ private:
 
         uint64_t durationSeconds = 0;
         size_t noteCount = 0;
+        size_t pedalEventCount = 0;
 
         {
             std::lock_guard<std::mutex> lock(eventMutex_);
@@ -130,6 +131,8 @@ private:
                     const uint8_t status = event.message[0] & 0xF0;
                     if (status == 0x90 && event.message[2] > 0) {
                         ++noteCount;
+                    } else if (isPedalControlChange(event.message)) {
+                        ++pedalEventCount;
                     }
                 }
             }
@@ -146,6 +149,8 @@ private:
             << " (" << weekdays[localTime.tm_wday] << ") "
             << noteCount
             << " notes, "
+            << pedalEventCount
+            << " pedal events, "
             << durationSeconds
             << " seconds.mid";
 
@@ -218,6 +223,46 @@ private:
         }
     }
 
+    static bool isPedalControlChange(const std::vector<uint8_t>& message) {
+        if (message.size() < 3) {
+            return false;
+        }
+
+        if ((message[0] & 0xF0) != 0xB0) {
+            return false;
+        }
+
+        switch (message[1]) {
+            case MidiInputHub::kSustainPedalController:
+            case MidiInputHub::kSostenutoPedalController:
+            case MidiInputHub::kSoftPedalController:
+            case MidiInputHub::kHarmonicPedalController:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    static void appendPedalResetEvents(std::vector<uint8_t>& track) {
+        constexpr uint8_t channelZeroControlChange = 0xB0;
+        constexpr uint8_t releasedValue = 0;
+
+        const uint8_t controllers[] = {
+            MidiInputHub::kSustainPedalController,
+            MidiInputHub::kSostenutoPedalController,
+            MidiInputHub::kSoftPedalController,
+            MidiInputHub::kHarmonicPedalController
+        };
+
+        for (uint8_t controller : controllers) {
+            appendVariableLengthQuantity(track, 0);
+            track.push_back(channelZeroControlChange);
+            track.push_back(controller);
+            track.push_back(releasedValue);
+        }
+    }
+
     static void writeMidiFile() {
         if (filePath_.empty()) {
             filePath_ = buildDefaultFileName();
@@ -262,6 +307,9 @@ private:
             appendVariableLengthQuantity(track, deltaTick);
             track.insert(track.end(), event.message.begin(), event.message.end());
         }
+
+        // Ensure pedal state is released before End of Track.
+        appendPedalResetEvents(track);
 
         // End of Track meta event.
         appendVariableLengthQuantity(track, 0);
