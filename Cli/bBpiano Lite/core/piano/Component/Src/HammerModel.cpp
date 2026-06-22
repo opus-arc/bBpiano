@@ -65,14 +65,14 @@ HammerModel::HammerModel(KeyModel *_pairedKey, int _midi_n) :
 float HammerModel::getSample(){
     
     if(string_count == 1) {
-        return pairedString_a->velocityAt(0.7);
+        return pairedString_a->pickupVelocity();
     } else if(string_count == 2) {
-        return pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7);
+        return pairedString_a->pickupVelocity() + pairedString_b->pickupVelocity();
     } else if(string_count == 3) {
-        return pairedString_a->velocityAt(0.7) + pairedString_b->velocityAt(0.7) + pairedString_c->velocityAt(0.7);
+        return pairedString_a->pickupVelocity() + pairedString_b->pickupVelocity() + pairedString_c->pickupVelocity();
     }
     
-    return pairedString_a->velocityAt(0.7);
+    return pairedString_a->pickupVelocity();
 }
 
 // ------------------------------------------------------------------------------------------
@@ -184,9 +184,10 @@ void HammerModel::moveStrings() {
 }
 
 void HammerModel::setVIn(double _v_in){
-    // 每次新的 note_on 都是一轮新的 hammer-string 接触。
-    // 弦本身不清空，保留正在振动的能量；这里只重置锤子的接触状态。
-    v_in = _v_in;
+    // _v_in 此处语义为 MIDI velocity 0~128，
+    // HammerModel 内部转换为物理 hammer impact velocity，单位 m/s。
+    v_in = midiVelocityToHammerVelocity(_v_in);
+
     dy = 0.0;
     dv = 0.0;
     F = 0.0;
@@ -195,4 +196,52 @@ void HammerModel::setVIn(double _v_in){
 
 void HammerModel::setInactive(){
     pairedKey->key_active = false;
+}
+
+
+
+double HammerModel::midiVelocityToHammerVelocity(double midiVelocity) const {
+    // `_v_in` from PianoModel is currently MIDI velocity, not a physical speed.
+    // This function maps MIDI velocity to hammer impact velocity in m/s through
+    // the action travel-time model reported by Goebl et al. (2005).
+    //
+    // Empirical anchors used here:
+    // - very soft tones: about 0.18 m/s
+    // - typical expressive MIDI 40~60: about 0.7~1.25 m/s
+    // - loud/fortissimo actions: about 6.8~7.8 m/s
+    //
+    // Goebl travel-time model:
+    //     tt = a * HV^b
+    // so:
+    //     HV = pow(tt / a, 1 / b)
+    //
+    // This is an initial ActionModel approximation. HammerModel itself still
+    // receives a physical hammer impact velocity after this conversion.
+    const double midi = std::clamp(midiVelocity, 0.0, 127.0);
+    if (midi <= 0.0) {
+        return 0.0;
+    }
+
+    // MIDI velocity is treated as a linear control of target action travel time.
+    // The endpoints follow the measured range: very soft attacks can take around
+    // 200 ms, while very loud struck attacks approach about 20 ms.
+    constexpr double slowTravelTimeMs = 200.0;
+    constexpr double fastTravelTimeMs = 20.0;
+    const double u = midi / 127.0;
+    const double travelTimeMs = slowTravelTimeMs + (fastTravelTimeMs - slowTravelTimeMs) * u;
+
+    // Average Bösendorfer SE290 / Goebl 2001 travel-time approximation,
+    // verified in Goebl et al. 2005 as close to the pressed-touch data:
+    //     tt = 89.16 * HV^-0.570
+    constexpr double travelA = 89.16;
+    constexpr double travelB = -0.570;
+
+    double hammerVelocity = std::pow(travelTimeMs / travelA, 1.0 / travelB);
+
+    // Keep the excitation inside the experimentally reported grand-piano range.
+    // The upper bound is intentionally below 8.0 m/s to avoid excessive high-note
+    // brittleness while still allowing fortissimo struck tones.
+    hammerVelocity = std::clamp(hammerVelocity, 0.18, 7.5);
+
+    return hammerVelocity;
 }

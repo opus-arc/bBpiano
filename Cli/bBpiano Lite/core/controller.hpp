@@ -16,6 +16,11 @@ void note_on(int midi_n, double velocity);
 void note_off(int midi_n, double velocity);
 void note_afterTouch(int midi_n, double pressure);
 
+void softPedal_control(double depth);
+void harmonicPedal_control(double depth);
+void sostenutoPedal_control(double depth);
+void sustainPedal_control(double depth);
+
 double get_engineRate();
 
 void all_silence();

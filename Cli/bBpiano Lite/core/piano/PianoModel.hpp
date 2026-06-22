@@ -11,6 +11,7 @@
 #include <iostream>
 #include "./Component/KeyModel.hpp"
 #include "./Component/PedalModel.hpp"
+#include "./Component/DamperModel.hpp"
 
 #include "./ModelParameters/ModelParameters.hpp"
 
@@ -32,17 +33,21 @@ public:
     // 88个键
     std::vector<std::unique_ptr<KeyModel>> pianoKeys;
     
-    // Soft pedal
-    std::vector<std::unique_ptr<PedalModel>> *softPedal;
+    DamperModel *damper;
     
-    // Harmonic pedal
-    std::vector<std::unique_ptr<PedalModel>> *harmonicPedal;
+    bool test_sustainPedal_active = false;
     
-    // Sostenuto pedal
-    std::vector<std::unique_ptr<PedalModel>> *sostenutoPedal;
-    
-    // Sustain pedal
-    std::vector<std::unique_ptr<PedalModel>> *sustainPedal;
+//    // Soft pedal
+//    std::vector<std::unique_ptr<PedalModel>> *softPedal;
+//    
+//    // Harmonic pedal
+//    std::vector<std::unique_ptr<PedalModel>> *harmonicPedal;
+//    
+//    // Sostenuto pedal
+//    std::vector<std::unique_ptr<PedalModel>> *sostenutoPedal;
+//    
+//    // Sustain pedal
+//    std::vector<std::unique_ptr<PedalModel>> *sustainPedal;
     
     // --------------------------------------------
     // MARK: 实时值与其函数
@@ -64,6 +69,10 @@ public:
     void note_on(int midi_n, double velocity);
     void note_off(int midi_n, double velocity);
     void note_afterTouch(int midi_n, double pressure);
+    void softPedal_control(double depth);
+    void harmonicPedal_control(double depth);
+    void sostenutoPedal_control(double depth);
+    void sustainPedal_control(double depth);
     
     // --------------------------------------------
     // MARK: 运动帧

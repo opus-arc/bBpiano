@@ -10,12 +10,10 @@
 void PianoModel::note_on(int midi_n, double velocity) {
     std::cout << "note_on: " << midi_n << ", " << velocity << std::endl;
     
-    //     还是封一个口吧
-        midi_n = std::clamp(midi_n, 21, 108);
-    //     这里太重要了
+    midi_n = std::clamp(midi_n, 21, 108);
     pianoKeys[midi_n - 21]->key_active = true;
-//    std::cout << "pianoKeys[" << midi_n << "].key_active: " << pianoKeys[midi_n - 21]->key_active << "\n";
-    pianoKeys[midi_n - 21]->hammer->setVIn(velocity * 2.0);
+
+    pianoKeys[midi_n - 21]->hammer->setVIn(velocity);
 }
 
 void PianoModel::note_off(int midi_n, double velocity) {
@@ -25,6 +23,52 @@ void PianoModel::note_off(int midi_n, double velocity) {
 void PianoModel::note_afterTouch(int midi_n, double pressure) {
     std::cout << "after_touch: " << midi_n << ", " << pressure << std::endl;
 }
+
+void PianoModel::softPedal_control(double depth) {
+    if (depth > 0.1) {
+        std::cout << "PedalPressed: Soft pedal (una corda) has been pressed." << "\n";
+        std::cout << "Pedal depth: " + std::to_string(depth)  << "\n";
+    } else {
+        std::cout << "PedalReleased: Soft pedal (una corda) has been released."  << "\n";
+    }
+}
+
+void PianoModel::harmonicPedal_control(double depth) {
+    if (depth > 0.1) {
+        std::cout << "PedalPressed: Harmonic pedal has been pressed." << "\n";
+        std::cout << "Pedal depth: " + std::to_string(depth)  << "\n";
+    } else {
+        std::cout << "PedalReleased: Harmonic pedal has been released." << "\n";
+    }
+}
+
+void PianoModel::sostenutoPedal_control(double depth) {
+    if (depth > 0.1) {
+        std::cout << "PedalPressed: Sostenuto pedal has been pressed." << "\n";
+        std::cout << "Pedal depth: " + std::to_string(depth)  << "\n";
+    } else {
+        std::cout << "PedalReleased: Sostenuto pedal has been released."  << "\n";
+    }
+}
+
+void PianoModel::sustainPedal_control(double depth) {
+    if (depth > 0.1) {
+        std::cout << "PedalPressed: Sustain pedal (damper) has been pressed." << "\n";
+        std::cout << "Pedal depth: " + std::to_string(depth)  << "\n";
+        
+        test_sustainPedal_active = true;
+        
+    } else {
+        std::cout << "PedalReleased: Sustain pedal (damper) has been released." << "\n";
+        
+        test_sustainPedal_active = false;
+    }
+}
+
+
+
+
+
 
 PianoModel::PianoModel(){
     
@@ -37,6 +81,10 @@ PianoModel::PianoModel(){
     }
     
     activePianoKeys.assign(88, false);
+    
+    damper = new DamperModel();
+    
+    
 }
 
 
@@ -58,3 +106,4 @@ float PianoModel::getSample(){
     }
     return sum;
 }
+

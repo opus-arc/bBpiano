@@ -41,6 +41,13 @@ private:
     //  初始化后固定的内容
     
 public:
+    struct FloatBiquadCoefficients {
+        float b0 = 0.0f;
+        float b1 = 0.0f;
+        float b2 = 0.0f;
+        float a1 = 0.0f;
+        float a2 = 0.0f;
+    };
     
     // 初始化
     // explicit 禁止隐式转换带来的语义污染
@@ -95,6 +102,7 @@ public:
     int delay_int = 0;
     int delay_index = 0;
     double delay_frac = 0.0;// 波导长度小数部分
+    int pickupRelativeIndex = 0;
     double fractional_a1 = 0.0;
     mutable float fractional_x1_r = 0.0; // 上一次传入 allpass 的值
     mutable float fractional_y1_r = 0.0;
@@ -114,6 +122,8 @@ public:
 
     // dispersion filter
     Parameters::Tuning::RT425DispersionPresets::DispersionPreset dispersionPreset;
+    std::size_t dispersionSectionCount = 0;
+    std::array<FloatBiquadCoefficients, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersionCoefficients = {};
     mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_x1_r = {}; // 上一次传入 allpass 的值
     mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_x2_r = {};
     mutable std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount> dispersion_y1_r = {};
@@ -161,6 +171,7 @@ public:
     
     // 获取速度的方式
     float velocityAt(double p) const ;
+    float pickupVelocity() const;
     
     // Hammer-P 读速度接口：一次读出当前格点速度与半采样速度。
     void readHammerVelocityPair(int relative_i, float& v0, float& vHalf) const;
@@ -227,17 +238,23 @@ public:
         for (std::size_t i = 0; i < sectionCount; ++i) {
             const auto& c = lossPreset.sections[i];
 
+            const float b0 = static_cast<float>(c.b0);
+            const float b1 = static_cast<float>(c.b1);
+            const float b2 = static_cast<float>(c.b2);
+            const float a1 = static_cast<float>(c.a1);
+            const float a2 = static_cast<float>(c.a2);
+
             // H(z) = (b0 + b1 z^-1 + b2 z^-2)
             //      / (1  + a1 z^-1 + a2 z^-2)
             // Difference equation:
             // y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2]
             //      - a1*y[n-1] - a2*y[n-2]
-            float y =
-                  static_cast<float>(c.b0) * x
-                + static_cast<float>(c.b1) * x1[i]
-                + static_cast<float>(c.b2) * x2[i]
-                - static_cast<float>(c.a1) * y1[i]
-                - static_cast<float>(c.a2) * y2[i];
+
+            const float y = b0 * x
+                + b1 * x1[i]
+                + b2 * x2[i]
+                - a1 * y1[i]
+                - a2 * y2[i];
 
             x2[i] = x1[i];
             x1[i] = x;
@@ -256,25 +273,20 @@ public:
         std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount>& y1,
         std::array<float, Parameters::Tuning::RT425DispersionPresets::kRT425DispersionSectionCount>& y2
     ) const {
-        const std::size_t sectionCount = std::min<std::size_t>(
-            static_cast<std::size_t>(dispersionPreset.sectionCount),
-            dispersionPreset.sections.size()
-        );
-
-        for (std::size_t i = 0; i < sectionCount; ++i) {
-            const auto& c = dispersionPreset.sections[i];
+        for (std::size_t i = 0; i < dispersionSectionCount; ++i) {
+            const auto& c = dispersionCoefficients[i];
 
             // H(z) = (b0 + b1 z^-1 + b2 z^-2)
             //      / (1  + a1 z^-1 + a2 z^-2)
             // Difference equation:
             // y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2]
             //      - a1*y[n-1] - a2*y[n-2]
-            float y =
-                  static_cast<float>(c.b0) * x
-                + static_cast<float>(c.b1) * x1[i]
-                + static_cast<float>(c.b2) * x2[i]
-                - static_cast<float>(c.a1) * y1[i]
-                - static_cast<float>(c.a2) * y2[i];
+
+            const float y = c.b0 * x
+                + c.b1 * x1[i]
+                + c.b2 * x2[i]
+                - c.a1 * y1[i]
+                - c.a2 * y2[i];
 
             x2[i] = x1[i];
             x1[i] = x;
@@ -286,6 +298,10 @@ public:
         }
     }
     
+    double damper_z1 = 0.0;
+    double damper_z2 = 0.0;
+    double testDamper(double x, double &z1, double &z2);
+    
     inline void BoundaryFilter(float& boundary_value, bool isLeft) {
         if(isLeft) {
             fractionalFilter(boundary_value, fractional_x1_l, fractional_y1_l);
@@ -296,6 +312,10 @@ public:
 //            if(midi_n < 83)
                 dispersionFilter(boundary_value, dispersion_x1_r, dispersion_x2_r, dispersion_y1_r, dispersion_y2_r);
             lossFilter(boundary_value, loss_x1_r, loss_x2_r, loss_y1_r, loss_y2_r);
+            
+            boundary_value = static_cast<float>(
+                testDamper(boundary_value, damper_z1, damper_z2)
+            );
         }
     }
 

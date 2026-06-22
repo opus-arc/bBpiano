@@ -51,15 +51,18 @@ void shotdown_engine();
 
 void signalHandler(int);
 
+int runEnginePerformanceTest();
+
 int main(int argc, const char * argv[]) {
-    const char* testArgv[] = {
-        argv[0],
-        "-e",
-        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/data/midi_samples/Fancy's selection/midi/Sonata No. 28 in A Major, Op. 101 (Complete)_2014.midi",
-        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/Sonata No. 28 in A Major, Op. 101 new2.wav"
-    };
-    argc = 4;
-    argv = testArgv;
+
+//    const char* testArgv[] = {
+//        argv[0],
+//        "-e",
+//        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/data/midi_samples/Fancy's selection/midi/Sonata No. 28 in A Major, Op. 101 (Complete)_2014.midi",
+//        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/Sonata No. 28 in A Major, Op. 101 new2.wav"
+//    };
+//    argc = 4;
+//    argv = testArgv;
     
     
 //    const char* testArgv[] = {
@@ -67,6 +70,21 @@ int main(int argc, const char * argv[]) {
 //        "-k"
 //    };
 //    argc = 2;
+//    argv = testArgv;
+    
+//        const char* testArgv[] = {
+//            argv[0],
+//            "-b"
+//        };
+//        argc = 2;
+//        argv = testArgv;
+    
+//    const char* testArgv[] = {
+//        argv[0],
+//        "-m",
+//        "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/data/midi_samples/Fancy's selection/midi/Sonata in D Minor, K. 141_2018.midi"
+//    };
+//    argc = 3;
 //    argv = testArgv;
     
     std::signal(SIGINT, signalHandler);
@@ -86,6 +104,9 @@ int main(int argc, const char * argv[]) {
         std::cout
          << "   bBpiano Lite " << VERSION << "\n";
         return EXIT_SUCCESS;
+    } else if(cmd == "--benchmark" ||
+              cmd == "-b") {
+        return runEnginePerformanceTest();
     } else if(cmd == "-zh" || cmd == "zh") {
         help_zh();
         return EXIT_SUCCESS;
@@ -205,13 +226,17 @@ void help_zh() {
         << "          bbpl -p\n"
         << "          bbpl -pr [output.mid]\n"
         << "          bbpl -m <file.mid> [start] [rate]\n"
-        << "          bbpl -e <file.mid> [output.wav]\n\n"
+        << "          bbpl -e <file.mid> [output.wav]\n"
+        << "          bbpl -b\n"
+        << "\n"
         << "        命令:\n"
         << "          -k    电脑键盘演奏\n"
         << "          -p    MIDI 键盘演奏\n"
         << "          -pr   MIDI 键盘演奏并录制\n"
         << "          -m    播放 MIDI 文件\n"
-        << "          -e    将 MIDI 文件导出为 WAV\n\n";
+        << "          -e    将 MIDI 文件导出为 WAV\n"
+        << "          -b    引擎实时性能测试\n"
+        << "\n";
 }
 
 void help_en() {
@@ -222,13 +247,17 @@ void help_en() {
         << "          bbpl -p\n"
         << "          bbpl -pr [output.mid]\n"
         << "          bbpl -m <file.mid> [start] [rate]\n"
-        << "          bbpl -e <file.mid> [output.wav]\n\n"
+        << "          bbpl -e <file.mid> [output.wav]\n"
+        << "          bbpl -b\n"
+        << "\n"
         << "        Commands:\n"
         << "          -k    Play with computer keyboard\n"
         << "          -p    Play with MIDI keyboard\n"
         << "          -pr   Play with MIDI keyboard and record\n"
         << "          -m    Play a MIDI file\n"
-        << "          -e    Export a MIDI file to WAV\n\n";
+        << "          -e    Export a MIDI file to WAV\n"
+        << "          -b    Run realtime engine benchmark\n"
+        << "\n";
 }
 
 void help_ja() {
@@ -239,13 +268,15 @@ void help_ja() {
         << "          bbpl -p\n"
         << "          bbpl -pr [output.mid]\n"
         << "          bbpl -m <file.mid> [start] [rate]\n"
-        << "          bbpl -e <file.mid> [output.wav]\n\n"
+        << "          bbpl -e <file.mid> [output.wav]\n"
+        << "          bbpl -b\n"
+        << "\n"
         << "        コマンド:\n"
         << "          -k    PCキーボードで演奏\n"
         << "          -p    MIDIキーボードで演奏\n"
         << "          -pr   MIDIキーボードで演奏しながら録音\n"
         << "          -m    MIDIファイルを再生\n"
-        << "          -e    MIDIファイルをWAVとして書き出し\n\n";
+        << "          -e    MIDIファイルをWAVとして書き出し\n"
+        << "          -b    エンジンのリアルタイム性能を測定\n"
+        << "\n";
 }
-
-

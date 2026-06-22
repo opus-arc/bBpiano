@@ -49,6 +49,8 @@ public:
         for (int note : notes) {
             note_off(note, 0.0);
         }
+
+        resetPedals();
     }
 
     bool isCancelled() const {
@@ -93,6 +95,12 @@ public:
     }
 
 private:
+    static void resetPedals() {
+        softPedal_control(0.0);
+        harmonicPedal_control(0.0);
+        sostenutoPedal_control(0.0);
+        sustainPedal_control(0.0);
+    }
     mutable std::mutex mutex_;
     bool cancelled_ = false;
     bool finished_ = false;
@@ -142,6 +150,31 @@ public:
 
         bool isNoteOff() const {
             return statusType() == 0x80 || (statusType() == 0x90 && data2 == 0);
+        }
+
+        bool isControlChange() const {
+            return statusType() == 0xB0;
+        }
+
+        bool isPedalControlChange() const {
+            if (!isControlChange()) {
+                return false;
+            }
+
+            switch (data1) {
+                case 64:
+                case 66:
+                case 67:
+                case 68:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        double normalizedData2() const {
+            return std::clamp(static_cast<double>(data2) / 127.0, 0.0, 1.0);
         }
     };
 
@@ -296,6 +329,8 @@ public:
             playbackThread_.join();
         }
 
+//        resetPedals();
+
         delete state;
     }
 
@@ -309,11 +344,19 @@ public:
             playbackThread_.join();
         }
 
+        resetPedals();
+
         MidiPlaybackState* finishedState = playbackState_.exchange(nullptr);
         delete finishedState;
     }
 
 private:
+    static void resetPedals() {
+        softPedal_control(0.0);
+        harmonicPedal_control(0.0);
+        sostenutoPedal_control(0.0);
+        sustainPedal_control(0.0);
+    }
     static std::vector<uint8_t> readWholeFile(const std::string& path) {
         std::ifstream file(path, std::ios::binary);
         if (!file) {
@@ -361,33 +404,70 @@ private:
                 return;
             }
 
-            const int note = static_cast<int>(event.data1);
-            const double velocity = std::clamp(static_cast<double>(event.data2) / 127.0, 0.0, 1.0);
-
             if (event.isNoteOn()) {
+                const int note = static_cast<int>(event.data1);
+
+                // Note velocity must stay in the MIDI domain here: 0~127.
+                // HammerModel maps this raw MIDI velocity to physical hammer
+                // impact velocity in m/s. Do not normalize note velocity here.
+                const double velocity = static_cast<double>(event.data2);
+
                 state.noteOn(note);
                 note_on(note, velocity);
             } else if (event.isNoteOff()) {
+                const int note = static_cast<int>(event.data1);
+
+                // Note-off velocity is currently not used physically, but keep
+                // the same MIDI-domain convention for semantic consistency.
+                const double velocity = static_cast<double>(event.data2);
+
                 state.noteOff(note);
                 note_off(note, velocity);
+            } else if (event.isPedalControlChange()) {
+                dispatchPedalEvent(event);
             }
         }
 
         state.finish();
     }
 
+    static void dispatchPedalEvent(const MidiEvent& event) {
+        const double depth = event.normalizedData2();
+
+        switch (event.data1) {
+            case 64:
+                sustainPedal_control(depth);
+                break;
+
+            case 66:
+                sostenutoPedal_control(depth);
+                break;
+
+            case 67:
+                softPedal_control(depth);
+                break;
+
+            case 68:
+                harmonicPedal_control(depth);
+                break;
+
+            default:
+                break;
+        }
+    }
+
     static std::vector<MidiEvent> selectPianoEvents(const std::vector<MidiEvent>& events) {
-        std::vector<MidiEvent> noteEvents;
-        noteEvents.reserve(events.size());
+        std::vector<MidiEvent> pianoRelevantEvents;
+        pianoRelevantEvents.reserve(events.size());
 
         for (const MidiEvent& event : events) {
-            if (event.isNoteOn() || event.isNoteOff()) {
-                noteEvents.push_back(event);
+            if (event.isNoteOn() || event.isNoteOff() || event.isPedalControlChange()) {
+                pianoRelevantEvents.push_back(event);
             }
         }
 
         std::vector<MidiEvent> explicitlyNamedPianoEvents;
-        for (const MidiEvent& event : noteEvents) {
+        for (const MidiEvent& event : pianoRelevantEvents) {
             std::string name = event.trackName;
             std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) {
                 return static_cast<char>(std::tolower(c));
@@ -405,7 +485,7 @@ private:
         }
 
         std::vector<MidiEvent> channelZeroEvents;
-        for (const MidiEvent& event : noteEvents) {
+        for (const MidiEvent& event : pianoRelevantEvents) {
             if (event.channel() == 0) {
                 channelZeroEvents.push_back(event);
             }
@@ -415,7 +495,7 @@ private:
             return channelZeroEvents;
         }
 
-        return noteEvents;
+        return pianoRelevantEvents;
     }
 
     static std::vector<MidiEvent> parseMidiFile(std::vector<uint8_t> data) {
@@ -532,10 +612,24 @@ private:
                     }
 
                     case 0xA0:
-                    case 0xB0:
                     case 0xE0:
                         static_cast<void>(reader.readByte());
                         break;
+
+                    case 0xB0: {
+                        const uint8_t value = reader.readByte();
+                        events.push_back(
+                            MidiEvent{
+                                absoluteTick,
+                                0.0,
+                                status,
+                                firstDataByte,
+                                value,
+                                trackName
+                            }
+                        );
+                        break;
+                    }
 
                     case 0xC0:
                     case 0xD0:

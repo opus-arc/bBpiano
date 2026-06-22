@@ -1,0 +1,28 @@
+{
+  "configurations" : [
+    {
+      "id" : "57B1C06C-1289-455B-BA16-D64349BD9731",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "skippedTests" : [
+        "HammerStringEvaluationTests",
+        "HammerStringEvaluationTests\/testPianoEngineEfficiencyScore()"
+      ],
+      "target" : {
+        "containerPath" : "container:bBpiano.xcodeproj",
+        "identifier" : "14553D062FC14D60008E3CD7",
+        "name" : "DSP-Benchmark"
+      }
+    }
+  ],
+  "version" : 1
+}

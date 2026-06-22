@@ -76,9 +76,25 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     if(delay_int <= 0) delay_int = 2;
     delay_index = delay_int - 1;
     delay_frac = delay - static_cast<double>(delay_int);
+    pickupRelativeIndex = static_cast<int>(std::floor(0.7 * delay_index));
 
     
     fractional_a1 = double(1 - delay_frac) / double(1 + delay_frac);
+
+    dispersionSectionCount = std::min<std::size_t>(
+        static_cast<std::size_t>(dispersionPreset.sectionCount),
+        dispersionPreset.sections.size()
+    );
+    for (std::size_t i = 0; i < dispersionSectionCount; ++i) {
+        const auto& source = dispersionPreset.sections[i];
+        dispersionCoefficients[i] = {
+            static_cast<float>(source.b0),
+            static_cast<float>(source.b1),
+            static_cast<float>(source.b2),
+            static_cast<float>(source.a1),
+            static_cast<float>(source.a2)
+        };
+    }
     
 
     // 计算力和速度的比例常数
@@ -92,9 +108,6 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     leftHead = 0;
     rightHead = 0;
 
-    
-    
-
     //    std::cout
     //    << "midi_n: " << midi_n
     //    << ", referenceF1: " << dispersionPreset.referenceF1
@@ -103,7 +116,7 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     //    << ", sectionCount: " << dispersionPreset.sectionCount
     //    << "\n";
 //    std::cout << "midi_n: " << midi_n << ", stringCount: " << string_index << "\n";
-//    std::cout << "midi_n: " << midi_n << ", delay: " << delay << "\n";
+    std::cout << "midi_n: " << midi_n << ", delay: " << delay << "\n";
 //    std::cout << "midi_n: " << midi_n << ", delay: " << lossPreset.lossDelaySamples << "\n";
 //    std::cout << "midi_n: " << midi_n << ", f0: " << get_f0() << "\n";
 //    std::cout << "f0: " << get_f0() << "\n";
@@ -167,8 +180,16 @@ void StringModel::propagate() {
     BoundaryFilter(l_l_boundary_value, true);
     BoundaryFilter(r_r_boundary_value, false);
     // 边界传播
-    rightHead = (rightHead - 1 + delay_int) % delay_int; // 右边界向左移动 则波向右传播
-    leftHead  = (leftHead + 1) % delay_int; // 左边界向右移动 则波向左传播
+    if (rightHead == 0) {
+        rightHead = delay_int - 1;
+    } else {
+        --rightHead;
+    }
+
+    ++leftHead;
+    if (leftHead == delay_int) {
+        leftHead = 0;
+    }
     
     // 写入新边界
     right[rToAIndex_r(0)] = -l_l_boundary_value;
@@ -194,6 +215,11 @@ float StringModel::velocityAt(double p) const {
 
     // 拾音点以数据为参考系位置不发生改变
     return left[absolute_i_l] + right[absolute_i_r];
+}
+
+float StringModel::pickupVelocity() const {
+    return left[rToAIndex_l(pickupRelativeIndex)]
+        + right[rToAIndex_r(pickupRelativeIndex)];
 }
 
 
@@ -248,6 +274,12 @@ float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
         fractionalFilter(boundary_value, fx1, fy1);
         dispersionFilter(boundary_value, dx1, dx2, dy1, dy2);
         lossFilter(boundary_value, lx1, lx2, ly1, ly2);
+        
+        double dz1 = damper_z1;
+        double dz2 = damper_z2;
+        boundary_value = static_cast<float>(
+            testDamper(boundary_value, dz1, dz2)
+        );
 
         return -boundary_value;
     }
@@ -290,4 +322,41 @@ float StringModel::activityProbe() const {
 //    p = std::max(p, std::abs(dispersion_y1_r));
 
     return p;
+}
+
+
+
+
+double StringModel::testDamper(double x, double &z1, double &z2) {
+    if(pairedHammer->pairedKey->piano->test_sustainPedal_active) {
+        z1 = 0.0;
+        z2 = 0.0;
+        return x;
+    }
+
+    // ==========================
+    // Temporary Damper Controls
+    // ==========================
+    constexpr double lowLoss   = 0.020; // 低频耗散：0.020~0.070
+    constexpr double highLoss  = 0.25;  // 高频抓取：0.25~0.70
+    constexpr double damperMix = 0.38;  // 毛毡低通占比：0.30~0.70
+
+    const double loopGain = 1.0 - lowLoss;
+    const double wet = damperMix * highLoss;
+    const double dry = 1.0 - wet;
+
+    // Gentle second-order low-pass damper color.
+    constexpr double b0 = 0.292893218813;
+    constexpr double b1 = 0.585786437627;
+    constexpr double b2 = 0.292893218813;
+
+    constexpr double a1 = 0.000000000000;
+    constexpr double a2 = 0.171572875254;
+
+    const double y = b0 * x + z1;
+
+    z1 = b1 * x - a1 * y + z2;
+    z2 = b2 * x - a2 * y;
+
+    return loopGain * (dry * x + wet * y);
 }

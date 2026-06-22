@@ -18,6 +18,8 @@ class KeyModel;
 
 class HammerModel {
     
+    double midiVelocityToHammerVelocity(double midiVelocity) const;
+    
 public:
     
     // MARK: 组件与基本信息

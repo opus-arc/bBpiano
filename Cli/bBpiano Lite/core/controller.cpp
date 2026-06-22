@@ -69,6 +69,22 @@ void note_afterTouch(int midi_n, double pressure) {
     bBpiano->note_afterTouch(midi_n, pressure);
 }
 
+void softPedal_control(double depth) {
+    bBpiano->softPedal_control(depth);
+}
+
+void harmonicPedal_control(double depth) {
+    bBpiano->harmonicPedal_control(depth);
+}
+
+void sostenutoPedal_control(double depth) {
+    bBpiano->sostenutoPedal_control(depth);
+}
+
+void sustainPedal_control(double depth) {
+    bBpiano->sustainPedal_control(depth);
+}
+
 double get_engineRate() {
     return engineRate.load(std::memory_order_relaxed);
 }
