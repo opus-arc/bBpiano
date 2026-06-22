@@ -4,12 +4,8 @@
 
 <hr>
 <div align="center" style="line-height: 1;">
-  <a href="https://github.com/opus-arc/bBpiano/actions/workflows/swift.yml" target="_blank"><img alt="Build macOS App"
-    src="https://github.com/opus-arc/bBpiano/actions/workflows/swift.yml/badge.svg"/></a>
   <a href="https://github.com/opus-arc/bBpiano/actions/workflows/engine-evaluation.yml" target="_blank"><img alt="bBpiano Engine Evaluation"
     src="https://github.com/opus-arc/bBpiano/actions/workflows/engine-evaluation.yml/badge.svg"/></a>
-  <a href="https://github.com/opus-arc/bBpiano/actions/workflows/ci.yml" target="_blank"><img alt="ci"
-    src="https://github.com/opus-arc/bBpiano/actions/workflows/ci.yml/badge.svg"/></a>
   <br>   
   <a href="https://github.com/opus-arc/bBpiano/milestone/1" target="_blank"><img alt="Foundational Research Progress"
     src="https://img.shields.io/github/milestones/progress-percent/opus-arc/bBpiano/1?label=foundational%20research"/></a>
