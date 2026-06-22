@@ -26,10 +26,21 @@ HammerModel::HammerModel(KeyModel *_pairedKey, int _midi_n) :
     K = hammerParameter.K;
     P = hammerParameter.P;
     m = hammerParameter.mass_kg;
+
+    // RT-425 provides a separate hammer coefficient RH in addition to KH and p.
+    // xH is the hammer strike position; RH is not xH/RHSP. The current force law
+    // below still uses only the conservative power-law part F = K * dy^P, so RH
+    // is stored here for the later dissipative / hysteretic hammer-felt term.
     RH = hammerParameter.R;
     
     const auto stringParameter = MyCSVReader::getRT425WrappedStringParameterByMidi(midi_n);
+    
     strikePoint = stringParameter.strike_ratio;
+    
+    std::cout<< "midi_n: " << midi_n <<
+        ", strikePoint: " << strikePoint << "\n";
+
+
     
     if(midi_n <= 30) {
         pairedString_a = new StringModel(this, midi_n, 1);
@@ -49,14 +60,14 @@ HammerModel::HammerModel(KeyModel *_pairedKey, int _midi_n) :
     if (pairedString_a) {
         hammerTs = pairedString_a->Ts * 0.5;
         
-        // strikeM 只在初始化时从比例位置量化到格点。
-        // 实时音频循环里不再做 strikePoint * delay_index。
-        const int maxM = std::max(1, pairedString_a->delay_index - 2);
-        strikeM = std::clamp(
-            static_cast<int>(std::floor(strikePoint * pairedString_a->delay_index)),
-            1,
-            maxM
-        );
+        strikeM = pairedString_a->strikePort.index0;
+        
+        std::cout
+        << "strikePort: " << pairedString_a->strikePort.index0
+        << "+" << pairedString_a->strikePort.weight1
+        << '\n';
+        
+        
     }
 }
 
@@ -88,7 +99,7 @@ void HammerModel::hammerMovement() {
     
     float v0_a = 0.0f;
     float vHalf_a = 0.0f;
-    pairedString_a->readHammerVelocityPair(strikeM, v0_a, vHalf_a);
+    pairedString_a->readHammerVelocityPair(v0_a, vHalf_a);
     
     double string_v0 = v0_a;
     double string_vHalf = vHalf_a;
@@ -96,7 +107,7 @@ void HammerModel::hammerMovement() {
     if(string_count >= 2 && pairedString_b) {
         float v0_b = 0.0f;
         float vHalf_b = 0.0f;
-        pairedString_b->readHammerVelocityPair(strikeM, v0_b, vHalf_b);
+        pairedString_b->readHammerVelocityPair(v0_b, vHalf_b);
         string_v0 += v0_b;
         string_vHalf += vHalf_b;
     }
@@ -104,7 +115,7 @@ void HammerModel::hammerMovement() {
     if(string_count >= 3 && pairedString_c) {
         float v0_c = 0.0f;
         float vHalf_c = 0.0f;
-        pairedString_c->readHammerVelocityPair(strikeM, v0_c, vHalf_c);
+        pairedString_c->readHammerVelocityPair(v0_c, vHalf_c);
         string_v0 += v0_c;
         string_vHalf += vHalf_c;
     }
@@ -114,7 +125,7 @@ void HammerModel::hammerMovement() {
     
     F = 0.5 * (F1 + F2);
     
-    distributeHammerForce(strikeM, F);
+    distributeHammerForce(F);
     moveStrings();
 }
 
@@ -136,11 +147,8 @@ double HammerModel::hammerPHalfStepForce(double _string_v, double _dt) {
         dy = 0.0;
     }
     
-    // 非线性锤毡力：F = K * dy^P。
-    double F_new = 0.0;
-    if (dy > 0.0) {
-        F_new = K * std::pow(dy, P);
-    }
+    // 非线性锤毡力：Stulov-style relaxation convolution.
+    double F_new = stulovFeltForce(dy, dv, _dt);
     
     // 接触力反作用到锤子，降低锤子速度。
     v_in -= (F_new / m) * _dt;
@@ -152,20 +160,51 @@ double HammerModel::hammerPHalfStepForce(double _string_v, double _dt) {
     return F_new;
 }
 
-void HammerModel::distributeHammerForce(int M, double _F) {
+double HammerModel::stulovFeltForce(double compression, double compressionVelocity, double dt) {
+    if (!(compression > 0.0) || !(dt > 0.0)) {
+        feltRelaxationState = 0.0;
+        return 0.0;
+    }
+
+    // Stulov-style hammer felt relaxation:
+    //     F(t) = K * [1 - h_r(t)] * [compression(t)^P]
+    // where h_r(t) = epsilon / tau * exp(-t / tau).
+    // The convolution h_r * x is implemented as a one-pole leaky memory whose
+    // DC gain is epsilon. RT-425 RH has the same dimensional form as KH here, so
+    // RH / K is used as the dimensionless relaxation depth.
+    const double x = std::pow(compression, P);
+
+    const double epsilonRaw = (K > 0.0) ? (RH / K) : 0.0;
+    const double epsilon = std::clamp(epsilonRaw, 0.0, 0.35);
+
+    // A short felt relaxation time keeps the memory inside the hammer-string
+    // contact window. Compression uses a slightly faster memory than release,
+    // which gives the force-compression loop a mild hysteretic area.
+    const double tauCompress = 0.00035;
+    const double tauRelease  = 0.00030;
+    const double tau = (compressionVelocity >= 0.0) ? tauCompress : tauRelease;
+
+    const double a = std::exp(-dt / tau);
+    feltRelaxationState = a * feltRelaxationState + epsilon * (1.0 - a) * x;
+
+    const double relaxedPower = std::max(0.0, x - feltRelaxationState);
+    return K * relaxedPower;
+}
+
+void HammerModel::distributeHammerForce(double _F) {
     
     if(string_count == 1) {
         const float forcePerString = static_cast<float>(_F);
-        pairedString_a->injectForce(M, forcePerString);
+        pairedString_a->injectForce(forcePerString);
     } else if(string_count == 2) {
         const float forcePerString = static_cast<float>(_F / 2.0);
-        pairedString_a->injectForce(M, forcePerString);
-        pairedString_b->injectForce(M, forcePerString);
+        pairedString_a->injectForce(forcePerString);
+        pairedString_b->injectForce(forcePerString);
     } else if(string_count == 3) {
         const float forcePerString = static_cast<float>(_F / 3.0);
-        pairedString_a->injectForce(M, forcePerString);
-        pairedString_b->injectForce(M, forcePerString);
-        pairedString_c->injectForce(M, forcePerString);
+        pairedString_a->injectForce(forcePerString);
+        pairedString_b->injectForce(forcePerString);
+        pairedString_c->injectForce(forcePerString);
     }
 }
 
@@ -192,6 +231,7 @@ void HammerModel::setVIn(double _v_in){
     dv = 0.0;
     F = 0.0;
     F_Last = 0.0;
+    feltRelaxationState = 0.0;
 }
 
 void HammerModel::setInactive(){

@@ -3,7 +3,7 @@
 #include <array>
 #include <cstddef>
 
-namespace Parameters::Tuning::RT425DispersionPresets {
+namespace Parameters::Tuning::D274DispersionPresets {
 
 struct AllpassBiquad {
     double b0, b1, b2;

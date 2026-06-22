@@ -157,12 +157,12 @@ In addition to the MAESTRO Yamaha Disklavier dataset, selected evaluations also 
 
 ### Engine Overview
 
-| Category | Maestro Dataset | Pianoteq 8 | SF2 (Grand Piano) | bBpiano L0-100c(Provisional) |
+| Category | Maestro Dataset | Pianoteq 8 | SF2 (Grand Piano) | bBpiano L0-Pizzicato |
 |:----------|:----------:|:----------:|:----------:|:----------:|
 | Type | Reference Recording | Physical Modeling | Sample-Based | Physical Modeling |
-| Size | 1–10 GB (test subset) | **380 KB** | 36 MB | 1.1 MB |
+| Size | 1–10 GB (test subset) | **380 KB** | 36 MB | 641 KB |
 | Real-Time Synthesis | ❌ | **✅** | ❌ | **✅** |
-| Polyphony | N/A | **> 88** | N/A | 23.34 |
+| Polyphony | N/A | **5 × 88** (M4) | N/A | 1.57 × 88 (M4) |
 
 ---
 
@@ -175,6 +175,7 @@ VISQOL evaluates perceptual audio quality by estimating similarity between synth
 | Yamaha Disklavier (MAESTRO) | *Standard* |
 | Pianoteq 9 | 2.8466 TBD |
 | SF2 (Grand Piano) | 2.9008 TBD |
+| bBpiano L0-Pizzicato |  |
 | **bBpiano L0-100c** | 2.4260 TBD |
 | bBpiano L0-beta | 2.3532 TBD |
 
@@ -191,33 +192,21 @@ I believe the values provided by LAION-CLAP reflect more of an overall impressio
 | Yamaha Disklavier (MAESTRO) | *Standard* |
 | Pianoteq 8 | 0.8045 |
 | SF2 (Grand Piano) | **0.8283** |
+|  |  |
 | **bBpiano L0-100c** | 0.3213 |
 | bBpiano L0-beta | 0.4628 |
 
 ---
 
-### Partial Analysis
-
-Spectral partial analysis measures how accurately the synthesized instrument reproduces the harmonic structure of the reference piano.
-
-| Method | Dispersion | Loss |
-|:---------|---------:|---------:|
-| RT425 | *Standard* | *Standard* |
-| Pianoteq 8 | - | - |
-| SF2 (Grand Piano) | - | - |
-| bBpiano L0-100c(Provisional) | <1hz | >30% |
-
----
-
 ### Historical Progress
 
-| Category | Benchmark | bBpiano L0-alpha | bBpiano L0-beta | bBpiano L0-100c |
-|:---------|:---------|---------:|---------:|---------:|
-| Engine | Binary Size | 1.04 MB | 1.04 MB | 1.1 MB |
-| Engine | Real-Time Synthesis | Semi - ✅ | Semi - ✅ | ✅ |
-| Engine | Polyphony | 5.21 | 11.27 | 23.34 |
-| LAION-CLAP | Cosine Similarity (MAESTRO Reference) | - | 0.4628 | 0.3213 |
-| VISQOL | TBD (MAESTRO Reference) | - | 2.3532 | 2.4260 |
+| Category | Benchmark | bBpiano L0-alpha | bBpiano L0-beta | bBpiano L0-100c | bBpiano L0-Pizzicato |
+|:---------|:---------|---------:|---------:|---------:|----------|
+| Engine | Binary Size | 1.04 MB | 1.04 MB | 1.1 MB | 641 KB |
+| Engine | Real-Time Synthesis | Semi - ✅ | Semi - ✅ | Semi - ✅ | ✅ |
+| Engine | Polyphony | 5.21 | 11.27 | 23.34 | 1.57 × 88 |
+| LAION-CLAP | Cosine Similarity (MAESTRO Reference) | - | 0.4628 | 0.3213 |  |
+| VISQOL | TBD (MAESTRO Reference) | - | 2.3532 | 2.4260 |  |
 
 The values above represent the current state of the project and will continue to evolve as the physical model, hammer-string interaction, dispersion network, and parameter calibration pipeline mature.
 
