@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "reference_engine": "Pianoteq 8",
+  "pianoteq_version_exact": "8.x.x",
+  "instrument_pack": "FILL_ME",
+  "instrument_preset": "FILL_ME",
+  "condition": "FILL_ME",
+  "sample_rate_hz": 44100,
+  "bit_depth": 24,
+  "channels": 1,
+  "normalization": "off",
+  "limiter": "off",
+  "reverb": "off",
+  "effects": "off",
+  "diapason_hz": 440.0,
+  "velocity_curve": "linear",
+  "pedal_state": "up",
+  "microphones_or_output": "FILL_ME",
+  "render_host": "Pianoteq 8 standalone or documented DAW offline bounce",
+  "probe_matrix": "configs/pianoteq8_probe_matrix.csv",
+  "captured_at_utc": "FILL_ME",
+  "notes": "Do not mix captures from any other Pianoteq major version into this dataset."
+}
