@@ -12,7 +12,6 @@
 
 #include <AudioToolbox/AudioToolbox.h>
 
-#include <algorithm>
 #include <atomic>
 #include <cstdint>
 #include <cstring>
@@ -59,14 +58,6 @@ public:
 
     bool isRunning() const {
         return running_.load();
-    }
-
-    void setAmplitudeLimiter(float value) {
-        amplitudeLimiter_.store(std::clamp(value, 0.0f, 1.0f));
-    }
-
-    float amplitudeLimiter() const {
-        return amplitudeLimiter_.load();
     }
 
 private:
@@ -163,7 +154,7 @@ private:
         get_next_buffer(
             out,
             static_cast<int>(bufferFrames_),
-            static_cast<double>(amplitudeLimiter_.load())
+            1.0
         );
 
         buffer->mAudioDataByteSize = bufferByteSize_;
@@ -180,7 +171,6 @@ private:
 
     AudioQueueBufferRef buffers_[bufferCount_] {};
     std::atomic<bool> running_ { false };
-    std::atomic<float> amplitudeLimiter_ { 0.3f };
 };
 
 #endif /* soundCard_hpp */

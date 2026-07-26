@@ -6,14 +6,14 @@
 //
 
 #include <iostream>
-#define VERSION "L0-Pizzicato"
+#define VERSION "L0-Chaos"
 void printLogo() {
     static constexpr const char* logo =
     R"(
         ┌────────────────────────────┐──╭────╮
         │                            │==│╲╱╲╱│
         │  bBpiano 0                 │==│╱╲╱╲│
-        │  L0-Pizzicato/260624       │==│╲╱╲╱│
+        │  L0-Chaos/260625           │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
         │  Physical Modeling Piano   │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
@@ -24,7 +24,7 @@ void printLogo() {
         │  bBSonicLab                │==│╱╲╱╲│
         └────────────────────────────┘──╰────╯
     
-        Pizzicato Until the Fingers Bleed.
+        Bleed.
     )";
     
     std::cout << logo << "\n";
@@ -66,12 +66,12 @@ int main(int argc, const char * argv[]) {
 //    argv = testArgv;
     
     
-//    const char* testArgv[] = {
-//        argv[0],
-//        "-k"
-//    };
-//    argc = 2;
-//    argv = testArgv;
+    const char* testArgv[] = {
+        argv[0],
+        "-k"
+    };
+    argc = 2;
+    argv = testArgv;
     
 //        const char* testArgv[] = {
 //            argv[0],

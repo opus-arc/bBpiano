@@ -1,0 +1,11 @@
+MIDI_ROOT="/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/data/midi_samples"
+WAV_ROOT="/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Sonic/data/wav_snippet"
+
+find "$MIDI_ROOT"/midi_register_scales "$MIDI_ROOT"/midi_register_polyphony \
+    -type f -name "*.mid" | while IFS= read -r midi; do
+    rel="${midi#$MIDI_ROOT/}"
+    wav="$WAV_ROOT/${rel%.mid}.wav"
+    mkdir -p "$(dirname "$wav")"
+    echo "Rendering: $wav"
+    ./bbpl -e "$midi" "$wav"
+done
