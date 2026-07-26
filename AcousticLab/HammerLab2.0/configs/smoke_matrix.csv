@@ -1,0 +1,4 @@
+case_id,model,load,sample_rate,oversample,duration,vin,mass,stiffness_n_mm_p,exponent,epsilon1,tau1,epsilon2,tau2,impedance
+power_v050,power,rigid,48000,4,0.012,0.50,0.010,400,2.4,0.0,0.0004,0.0,0.00008,7.0
+stulov_v100,stulov,rigid,48000,4,0.012,1.00,0.010,400,2.4,0.51,0.0004,0.0,0.00008,7.0
+prony2_v200,prony2,resistive-port,48000,4,0.012,2.00,0.010,400,2.4,0.35,0.0004,0.20,0.00008,7.0

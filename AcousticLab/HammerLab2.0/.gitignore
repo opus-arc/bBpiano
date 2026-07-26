@@ -1,0 +1,12 @@
+build/
+.venv/
+runs/*
+!runs/.gitkeep
+reports/*
+!reports/.gitkeep
+data/reference/pianoteq8/*
+!data/reference/pianoteq8/.gitkeep
+__pycache__/
+*.pyc
+*.profraw
+.DS_Store

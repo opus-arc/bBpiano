@@ -1,0 +1,22 @@
+# Reference corpus
+
+所有 PDF 均保存在本目录并已用 Poppler 验证页数、首屏文本和首屏渲染。SHA-256 用于保证后续实验引用的是同一份文献。
+
+| # | 文献与本地文件 | 页数 | 主要用途 | 来源 | SHA-256 |
+| --- | --- | ---: | --- | --- | --- |
+| 01 | [Stulov & Mägi, *Piano Hammer Testing Device*](01_Stulov_2000_Piano_Hammer_Testing_Device.pdf) | 9 | 刚性台砧、动态 force-compression 测量与参数辨识 | [IOC](https://www.ioc.ee/~stulov/Device.pdf) | `55da98506db105ebd8b672e29084bfef85aa2c48ef1e98f80b76fb95265f2251` |
+| 02 | [Stulov, *Experimental and Computational Studies of Piano Hammers*](02_Stulov_2005_Experimental_Computational_Hammers.pdf) | 20 | 跨锤头、弦径、湿度、voicing 与音区的实测数据 | [IOC](https://www.ioc.ee/~stulov/actaa2005.pdf) | `d6dc902d44184abaa7e88e6212937ef710fcfd61c4db21e1a02c374ae1a47ecb` |
+| 03 | [Stulov, *Dynamic Behavior and Mechanical Features of Wool Felt*](03_Stulov_2004_Mechanical_Features_Hammer_Felt.pdf) | 9 | 羊毛毡微结构、滞回与替代 hereditary 模型 | [IOC](https://www.ioc.ee/~stulov/Acta2004.pdf) | `0e577b56c5b3b491ff73d9b7a259e8bcfad034d3af8fc4e4a7ba4c3186885091` |
+| 04 | [Vergez et al., *Some Considerations on Sound Synthesis of Piano Hammer/String Collision*](04_Vergez_2002_Hammer_String_Collision.pdf) | 6 | 接触离散化伪影、felt model 对合成的影响 | [SEA](https://documentacion.sea-acustica.es/storage/publicaciones/Sevilla02_mus06003.pdf) | `83edd3d2277537a823c41d0f7e45522ae24e1d6af5f0880f73b4655b114fbf63` |
+| 05 | [Bank, *Physics-Based Sound Synthesis of the Piano*](05_Bank_2000_Physics_Based_Sound_Synthesis_Piano_Thesis.pdf) | 123 | 现有 DWG/钢琴系统基线与实时架构背景 | 仓库既有 `Doc/Reference Papers/pianomod.pdf` 的校验副本 | `0fbd2776e07bdfcd4d6bb501a7461c1eae0627181a9de0c5cae5efb7526d8e65` |
+| 06 | [Bensa et al., *The Simulation of Piano String Vibration: From Physical Models to Finite Difference Schemes and Digital Waveguides*](06_Bensa_2003_Piano_String_DWG_FD.pdf) | 14 | DWG 与有限差分弦模型、色散/损耗验证 | [University of Edinburgh](https://www.research.ed.ac.uk/files/11222473/1.1587146.pdf) | `43894b03fa1c15e95a85823f95addeacf50c36be5772e4afa5c6fa61142b78ef` |
+| 07 | [Avanzini et al., *Musical Instrument Modeling: The Case of the Piano*](07_Avanzini_2001_Musical_Instrument_Modeling_Piano.pdf) | 10 | 完整实时钢琴模块划分、可计算性与耦合 | [University of Padova](https://www.dei.unipd.it/~avanzini/papers/01-avanzini-icmc.pdf) | `67338adfa3b0a63348a8e76caf19f4bebd07a89a28f6c33195c74a8aa3d25809` |
+| 08 | [Chabassier et al., *Time Domain Simulation of a Piano. Part 1: Model Description*](08_Chabassier_2014_Piano_Time_Domain_Part1.pdf) | 38 | 全系统能量一致建模、锤弦耦合定义 | [Numdam](https://www.numdam.org/item/10.1051/m2an/2013136.pdf) | `718aeddc094f2892fa6a61fe7f832fc9b72d0dd55c2974ef6e5a63b8d1f3ac18` |
+| 09 | [Chabassier et al., *Time Domain Simulation of a Piano. Part 2: Numerical Aspects*](09_Chabassier_2016_Piano_Time_Domain_Part2.pdf) | 41 | 稳定时间离散、非线性接触数值方法 | [ESAIM](https://www.esaim-m2an.org/articles/m2an/pdf/2016/01/m2an141012.pdf) | `f41b4c23327d2cbcaa2be3091e3463bad0bd6777321113c235da33ba57a01fb2` |
+| 10 | [Chabassier & Duruflé, *Physical Parameters for Piano Modeling*](10_Chabassier_Durufle_2012_Physical_Parameters_RT425.pdf) | 25 | 可追溯的钢琴物理参数范围 | [HAL](https://hal.science/hal-00688679/document) | `c56424faad93702872555a7b172c7d7d0d13d4572bb78e0598ea06fbdced1faf` |
+| 11 | [Chabassier & Duruflé, *Energy Based Simulation of a Timoshenko Beam in Non-forced Rotation: Application to the Flexible Piano Hammer Shank*](11_Chabassier_Durufle_2014_Flexible_Hammer_Shank.pdf) | 25 | 柔性锤柄、集中质量假设的下一层修正 | [HAL](https://hal.science/hal-00918635v2/document) | `9e0852786fb62f4b216e408e0ebeb07381ce6629a7ceb35271ff65cd9292fcb8` |
+| 12 | [Kulcsár & Fiala, *A Compact Physics-Based Model of the Piano*](12_Kulcsar_Fiala_2016_Compact_Physics_Piano.pdf) | 4 | 工程级紧凑模型与实时权衡 | [DEGA](https://pub.dega-akustik.de/DAGA_2016/data/articles/000537.pdf) | `37748e2b74c45b7643154e0e279011f6a99f0deb263d3d39c06aee93370ad0c0` |
+| 13 | [Simionato et al., *Physics-Informed Differentiable Method for Piano Modeling*](13_Simionato_2024_Physics_Informed_Differentiable_Piano.pdf) | 19 | 可微物理校准、参数优化的后续路线 | [Frontiers](https://public-pages-files-2025.frontiersin.org/journals/signal-processing/articles/10.3389/frsip.2023.1276748/pdf) | `45cf2da10a88643c05241e0cd0d5af658f89c86c8bc594abe17bdfdc35907d6a` |
+| 14 | [Xie et al., *Physical Modeling of Piano Sound*](14_Xie_2024_Physical_Modeling_Piano_Sound.pdf) | 41 | 新近完整模型综述与现代实现背景 | [arXiv](https://arxiv.org/pdf/2409.03481) | `3ccf86dd5efdc9a39196777774430dbe626830962afcc4ec263b02bb4f6552ab` |
+
+阅读顺序建议：01 → 02 → 03 → 04 → 08/09 → 11；05/06/07 用于 DWG 系统边界，13 用于拟合基础设施，10/12/14 用于参数与整机交叉检查。
