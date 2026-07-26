@@ -69,9 +69,8 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
 ////    ", lossDelay: "<<lossDelay<<
 //    ", delay: "<<delay<<"\n";
 
-    
-    
-//    // 取不大于波导长度的最大整数作为数组长度
+
+    // 取不大于波导长度的最大整数作为数组长度
     delay_int = std::floor(delay - 0.5);
     if(delay_int <= 0) delay_int = 2;
     delay_index = delay_int - 1;
@@ -79,6 +78,8 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
 
     // pickup 可落在 0...delay_index 的任意分数位置。
     pickupPort = makeSpatialPort(0.7 * delay_index, delay_index);
+
+    bridgePort = makeSpatialPort(static_cast<double>(delay_index), delay_index);
 
     // 一个 Hammer-P junction j 对应 left[j] / right[j + 1]。
     // 因而有效 junction 范围是 0...delay_index-1。
@@ -88,7 +89,6 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
         maxStrikeJunction
     );
 
-    
     fractional_a1 = double(1 - delay_frac) / double(1 + delay_frac);
 
     dispersionSectionCount = std::min<std::size_t>(
@@ -126,7 +126,7 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
     //    << ", sectionCount: " << dispersionPreset.sectionCount
     //    << "\n";
 //    std::cout << "midi_n: " << midi_n << ", stringCount: " << string_index << "\n";
-//    std::cout << "midi_n: " << midi_n << ", delay: " << delay
+//    std::cout << "midi_n: " << midi_n << ", delay: " << delay << "\n";
 //              << ", pickupPort: " << pickupPort.index0 << "+"
 //              << pickupPort.weight1 << "\n";
 //    std::cout << "midi_n: " << midi_n << ", delay: " << lossPreset.lossDelaySamples << "\n";
@@ -134,6 +134,7 @@ StringModel::StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum
 //    std::cout << "f0: " << get_f0() << "\n";
 //    std::cout << "dispersionDelay: " << sampleRate / (2 * get_f0()) - 0.5 * dispersionPreset.loopDelaySamples << "\n";
 //    std::cout << "_delay: " << sampleRate / (2 * get_f0()) - (sampleRate / (2 * get_f0()) - 0.5 * dispersionPreset.loopDelaySamples) << "\n";
+
     
 
 }
@@ -157,8 +158,12 @@ void StringModel::stringMovement() {
     
     activityCounter++;
         if(activityCounter >= 10000) {
-            // 此处仍然不可低于 0.003
-            if((activityProbe() < 0.001) && pairedHammer->pairedKey->key_active) {
+            // 此处不再起到降低计算量的作用，而是削除噪声
+            const KeyModel* key = pairedHammer->pairedKey;
+            const bool damperLifted =
+                key->key_down || key->piano->test_sustainPedal_active;
+
+            if(!damperLifted && (activityProbe() < 0.001) && key->key_active) {
                 pairedHammer->setInactive();
             }
             activityCounter = 0;
@@ -205,6 +210,7 @@ void StringModel::injectForce(float F) const {
     }
 }
 
+
 void StringModel::propagate() {
     
     // 先读边界
@@ -213,6 +219,7 @@ void StringModel::propagate() {
     
     BoundaryFilter(l_l_boundary_value, true);
     BoundaryFilter(r_r_boundary_value, false);
+
     // 边界传播
     if (rightHead == 0) {
         rightHead = delay_int - 1;
@@ -227,32 +234,14 @@ void StringModel::propagate() {
     
     // 写入新边界
     right[rToAIndex_r(0)] = -l_l_boundary_value;
-    left[rToAIndex_l(delay_index)] = -r_r_boundary_value;
+    left[rToAIndex_l(delay_index)] = bridgeVelocity - r_r_boundary_value;
 
 }
 
-
-
-
-
-
-float StringModel::velocityAt(double p) const {
-    // 边界条件
-    p = std::clamp(p, 0.0, 1.0);
-
-    int relative_i = std::floor(p * delay_index);
-    
-    int absolute_i_l = (relative_i + delay_int + leftHead) % delay_int;
-    int absolute_i_r = (relative_i + delay_int + rightHead) % delay_int;
-    
-    
-
-    // 拾音点以数据为参考系位置不发生改变
-    return left[absolute_i_l] + right[absolute_i_r];
-}
-
-float StringModel::pickupVelocity() const {
-    return velocityAtPort(pickupPort);
+bool StringModel::isActive() const {
+    return pairedHammer
+        && pairedHammer->pairedKey
+        && pairedHammer->pairedKey->key_active;
 }
 
 float StringModel::velocityAtPort(const SpatialPort& port) const {
@@ -271,74 +260,31 @@ float StringModel::velocityAtPort(const SpatialPort& port) const {
     return port.weight0 * velocity0 + port.weight1 * velocity1;
 }
 
-void StringModel::readIntegerHammerVelocityPair(
-    int relative_i,
-    float& v0,
-    float& vHalf
-) const {
-    // M 是 hammer 的相对击弦格点。为了半采样读速度，需要访问 M - 1 和 M + 1。
-    const int M = std::clamp(relative_i, 0, delay_index);
-    const int MMinus = std::max(M - 1, 0);
-    const int MPlus = std::min(M + 1, delay_index);
-    
-    const float right_M = right[rToAIndex_r(M)];
-    const float left_M = left[rToAIndex_l(M)];
-    
-    // v(nTs) = y+(n, M) + y-(n, M)
-    v0 = right_M + left_M;
-    
-    // v(nTs + Ts/2) 使用半采样速度：
-    // 右行波取当前 M 与半步后会到达 M 的 M - 1 平均；
-    // 左行波取当前 M 与半步后会到达 M 的 M + 1 平均。
-    vHalf = 0.5f * (right_M + right[rToAIndex_r(MMinus)])
-          + 0.5f * (left_M + left[rToAIndex_l(MPlus)]);
-}
-
-void StringModel::readHammerVelocityPair(float& v0, float& vHalf) const {
-    float v0AtIndex0 = 0.0f;
-    float vHalfAtIndex0 = 0.0f;
-    readIntegerHammerVelocityPair(
-        strikePort.index0,
-        v0AtIndex0,
-        vHalfAtIndex0
-    );
-
-    if (strikePort.index1 == strikePort.index0) {
-        v0 = v0AtIndex0;
-        vHalf = vHalfAtIndex0;
-        return;
-    }
-
-    float v0AtIndex1 = 0.0f;
-    float vHalfAtIndex1 = 0.0f;
-    readIntegerHammerVelocityPair(
-        strikePort.index1,
-        v0AtIndex1,
-        vHalfAtIndex1
-    );
-
-    v0 = strikePort.weight0 * v0AtIndex0
-       + strikePort.weight1 * v0AtIndex1;
-    vHalf = strikePort.weight0 * vHalfAtIndex0
-          + strikePort.weight1 * vHalfAtIndex1;
-}
-
+//float StringModel::getSamples() const {
+//    // 右行波到达右端/桥端的入射速度波 v+
+//    float vPlus = right[rToAIndex_r(delay_index)];
+//    // 预览右端会经过的 fractional / dispersion / loss / damper
+//    // 注意 BoundaryFilter_virtual 返回的是 -processed，所以这里取负号还原。
+//    float reflectedPreview =
+//        const_cast<StringModel*>(this)->BoundaryFilter_virtual(vPlus, false);
+//    float processedVPlus = -reflectedPreview;
+//    // 暂时假设桥速度 vb = 0
+//    // F_bridge = 2 * Z * v+
+//    return static_cast<float>(2.0 * Z * processedVPlus);
+//}
 
 
 float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
+
     if (isLeft) {
         float fx1 = fractional_x1_l;
         float fy1 = fractional_y1_l;
-//        auto lx1 = loss_x1_l;
-//        auto lx2 = loss_x2_l;
-//        auto ly1 = loss_y1_l;
-//        auto ly2 = loss_y2_l;
 
         fractionalFilter(boundary_value, fx1, fy1);
-//        dispersionFilter(boundary_value, dx1, dx2, dy1, dy2);
-//        lossFilter(boundary_value, lx1, lx2, ly1, ly2);
 
-        return -boundary_value;
+        boundary_value = -boundary_value;
+
+        return boundary_value;
     } else {
         float fx1 = fractional_x1_r;
         float fy1 = fractional_y1_r;
@@ -361,7 +307,9 @@ float StringModel::BoundaryFilter_virtual(float boundary_value, bool isLeft) {
             testDamper(boundary_value, dz1, dz2)
         );
 
-        return -boundary_value;
+        boundary_value = bridgeVelocity - boundary_value;
+
+        return boundary_value;
     }
 }
 
@@ -404,11 +352,15 @@ float StringModel::activityProbe() const {
     return p;
 }
 
-
-
-
 double StringModel::testDamper(double x, double &z1, double &z2) {
-    if(pairedHammer->pairedKey->piano->test_sustainPedal_active) {
+    const KeyModel* key = pairedHammer->pairedKey;
+    const bool damperLiftedByKey = key->key_down;
+    const bool damperLiftedByPedal =
+        key->piano->test_sustainPedal_active;
+
+    // 真实钢琴中，按住某键会单独抬起该键制音器；延音踏板则抬起
+    // 全部制音器。只有键已松开且踏板未踩下时，制音器才接触弦。
+    if(damperLiftedByKey || damperLiftedByPedal) {
         z1 = 0.0;
         z2 = 0.0;
         return x;
@@ -439,4 +391,56 @@ double StringModel::testDamper(double x, double &z1, double &z2) {
     z2 = b2 * x - a2 * y;
 
     return loopGain * (dry * x + wet * y);
+}
+
+void StringModel::readIntegerHammerVelocityPair(
+    int relative_i,
+    float& v0,
+    float& vHalf
+) const {
+    // M 是 hammer 的相对击弦格点。为了半采样读速度，需要访问 M - 1 和 M + 1。
+    const int M = std::clamp(relative_i, 0, delay_index);
+    const int MMinus = std::max(M - 1, 0);
+    const int MPlus = std::min(M + 1, delay_index);
+
+    const float right_M = right[rToAIndex_r(M)];
+    const float left_M = left[rToAIndex_l(M)];
+
+    // v(nTs) = y+(n, M) + y-(n, M)
+    v0 = right_M + left_M;
+
+    // v(nTs + Ts/2) 使用半采样速度：
+    // 右行波取当前 M 与半步后会到达 M 的 M - 1 平均；
+    // 左行波取当前 M 与半步后会到达 M 的 M + 1 平均。
+    vHalf = 0.5f * (right_M + right[rToAIndex_r(MMinus)])
+          + 0.5f * (left_M + left[rToAIndex_l(MPlus)]);
+}
+
+void StringModel::readHammerVelocityPair(float& v0, float& vHalf) const {
+    float v0AtIndex0 = 0.0f;
+    float vHalfAtIndex0 = 0.0f;
+    readIntegerHammerVelocityPair(
+        strikePort.index0,
+        v0AtIndex0,
+        vHalfAtIndex0
+    );
+
+    if (strikePort.index1 == strikePort.index0) {
+        v0 = v0AtIndex0;
+        vHalf = vHalfAtIndex0;
+        return;
+    }
+
+    float v0AtIndex1 = 0.0f;
+    float vHalfAtIndex1 = 0.0f;
+    readIntegerHammerVelocityPair(
+        strikePort.index1,
+        v0AtIndex1,
+        vHalfAtIndex1
+    );
+
+    v0 = strikePort.weight0 * v0AtIndex0
+       + strikePort.weight1 * v0AtIndex1;
+    vHalf = strikePort.weight0 * vHalfAtIndex0
+          + strikePort.weight1 * vHalfAtIndex1;
 }

@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include "./Component/KeyModel.hpp"
+#include "./Component/BridgeModel.hpp"
 #include "./Component/PedalModel.hpp"
 #include "./Component/DamperModel.hpp"
 
@@ -33,6 +34,8 @@ public:
     // 88个键
     std::vector<std::unique_ptr<KeyModel>> pianoKeys;
     
+    std::vector<std::unique_ptr<BridgeModel>> bridges;
+
     DamperModel *damper;
     
     bool test_sustainPedal_active = false;
@@ -58,7 +61,7 @@ public:
     // --------------------------------------------
     // MARK: 状态值
     
-    std::vector<bool> activePianoKeys;
+//    std::vector<bool> activePianoKeys;
     
     // active 弦检测剪枝计数器
     mutable int activityCounter = 0;
@@ -82,8 +85,35 @@ public:
     // 从单根弦上传来的信息
     void updateActivity();
     
-    float getSample();
+    inline float getSample(){
+        float sum = 0.0f;
+        for(auto& key : pianoKeys) {
+            if(key->key_active) {
+                sum += key->getSample();
+            }
+        }
 
+        constexpr float masterGain = 1.0f;
+        return humanSafeSample(sum * masterGain);
+    }
+
+    inline float humanSafeSample(float x) {
+        if (!std::isfinite(x)) {
+            return 0.0f;
+        }
+
+        constexpr float ceiling = 0.98f;
+
+        if (x > ceiling) {
+            return ceiling;
+        }
+
+        if (x < -ceiling) {
+            return -ceiling;
+        }
+
+        return x;
+    }
 };
 
 

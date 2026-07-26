@@ -19,6 +19,8 @@
 // 在小集合中使用签名方式引用
 // 然后在逻辑中使用指针
 class PianoModel;
+class BridgeModel;
+
 
 class KeyModel{
     
@@ -31,6 +33,8 @@ public:
     KeyModel(PianoModel * piano, int _midi_n);
     
     PianoModel * piano;
+
+    BridgeModel * bridge;
         
     HammerModel *hammer;
         
@@ -41,6 +45,9 @@ public:
     // --------------------------------------------
     // MARK: 状态值
     
+    // 物理按键是否仍被按住。它与 key_active 不同：
+    // key_active 表示弦仍需运行，key_down 决定该键制音器是否抬起。
+    mutable bool key_down = false;
     mutable bool key_active = false;
     mutable bool lastStatus = false;
     
@@ -52,8 +59,7 @@ public:
     
     // 键的运动回合，每帧的调用接口
     void keyMovement();
-    
-    // 获取这一帧的振幅数据
+
     float getSample();
     
     void silence();

@@ -323,7 +323,7 @@ private:
 private:
     std::atomic<bool> running_ { false };
     std::atomic<int> baseNote_ { 60 };
-    std::atomic<int> noteDurationMs_ { 100 };
+    std::atomic<int> noteDurationMs_ { 650 };
 
     std::atomic<bool> softPedalDown_ { false };
     std::atomic<bool> harmonicPedalDown_ { false };

@@ -32,7 +32,23 @@
 			);
 			name = "Embed Frameworks";
 		};
+		144AF9AD301650AE00CE857C /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolder = None;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		147D71342FD6F9B6008F3BF8 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolder = None;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		14C3735430013841008B0937 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			dstPath = /usr/share/man/man1/;
 			dstSubfolder = None;
@@ -65,12 +81,15 @@
 		143FB6452FE4E182000091A3 /* bBpiano.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = bBpiano.md; sourceTree = "<group>"; };
 		143FB6462FE4E182000091A3 /* Doc */ = {isa = PBXFileReference; lastKnownFileType = text; path = Doc; sourceTree = "<group>"; };
 		143FB6472FE4E182000091A3 /* index.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = index.md; sourceTree = "<group>"; };
+		144AF9AF301650AE00CE857C /* bBsynth Lite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "bBsynth Lite"; sourceTree = BUILT_PRODUCTS_DIR; };
+		144AF9C23016547100CE857C /* bBsynth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bBsynth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14553D072FC14D60008E3CD7 /* DSP-Benchmark.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "DSP-Benchmark.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		146587D62FA42DAF009F5C08 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		146A412C2FDA96F900AF2C9C /* From PDE to PCM.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "From PDE to PCM.md"; sourceTree = "<group>"; };
 		147D71362FD6F9B6008F3BF8 /* bbpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbpl; sourceTree = BUILT_PRODUCTS_DIR; };
 		147D713E2FD6F9D7008F3BF8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		14B1A0022FE9000100BB0001 /* Test/bBpianoLitePerformanceTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test/bBpianoLitePerformanceTest.cpp; sourceTree = SOURCE_ROOT; };
+		14C3735630013841008B0937 /* Playground */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Playground; sourceTree = BUILT_PRODUCTS_DIR; };
 		14D55CDC2FD8273E00F009D7 /* bbps */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbps; sourceTree = BUILT_PRODUCTS_DIR; };
 		14E708362F78BE0C005C806C /* bBpiano.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bBpiano.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -96,6 +115,7 @@
 				"bBpiano Sonic/main.cpp",
 				"bBpiano Sonic/utils/src/LinearRegression.cpp",
 				"bBpiano Sonic/utils/src/MyPitch.cpp",
+				"bBsynth Lite/main.cpp",
 			);
 			target = 14E708352F78BE0C005C806C /* bBpiano */;
 		};
@@ -109,9 +129,27 @@
 			);
 			target = 14E708352F78BE0C005C806C /* bBpiano */;
 		};
+		144AF9BD301650DF00CE857C /* Exceptions for "Cli" folder in "bBsynth Lite" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"bBsynth Lite/main.cpp",
+			);
+			target = 144AF9AE301650AE00CE857C /* bBsynth Lite */;
+		};
+		144AF9FB301654E200CE857C /* Exceptions for "App" folder in "bBsynth" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				bBsynth/Assets.xcassets,
+				bBsynth/bBsynthApp.swift,
+				bBsynth/ContentView.swift,
+			);
+			target = 144AF9C13016547100CE857C /* bBsynth */;
+		};
 		144E33982FB7448C00DA9F38 /* Exceptions for "App" folder in "bBpiano" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				bBsynth/bBsynthApp.swift,
+				bBsynth/ContentView.swift,
 				"Fancy's playground/Interaction View/AftertouchView.swift",
 				"Fancy's playground/Interaction View/MainEditorView.swift",
 				"Fancy's playground/Interaction View/NoteOffView.swift",
@@ -133,6 +171,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"bBpiano Lite/core/controller.cpp",
+				"bBpiano Lite/core/piano/Component/Src/BridgeModel.cpp",
 				"bBpiano Lite/core/piano/Component/Src/DamperModel.cpp",
 				"bBpiano Lite/core/piano/Component/Src/HammerModel.cpp",
 				"bBpiano Lite/core/piano/Component/Src/KeyModel.cpp",
@@ -181,14 +220,33 @@
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		144AF9FC301654E200CE857C /* Exceptions for "App" folder in "Compile Sources" phase from "bBsynth" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 144AF9BE3016547100CE857C /* Sources */;
+			membershipExceptions = (
+				bBsynth/bBsynth.xcdatamodeld,
+			);
+		};
+		14E40BFE2FECB63F004FDB9B /* Exceptions for "Cli" folder in "Compile Sources" phase from "bBpiano" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 14E708322F78BE0C005C806C /* Sources */;
+			membershipExceptions = (
+				"bBpiano Sonic/data/wav_snippet/auto-bbpl-midi-generate.txt",
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		142C184B2FD502E100685F41 /* Cli */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				142C18652FD5133400685F41 /* Exceptions for "Cli" folder in "bBpiano" target */,
+				14E40BFE2FECB63F004FDB9B /* Exceptions for "Cli" folder in "Compile Sources" phase from "bBpiano" target */,
 				14D6D5182FE8C1C500DB26CC /* Exceptions for "Cli" folder in "DSP-Benchmark" target */,
 				147D714F2FD6FA1C008F3BF8 /* Exceptions for "Cli" folder in "bBpiano Lite" target */,
 				14D55CE42FD8274800F009D7 /* Exceptions for "Cli" folder in "bBpiano Sonic" target */,
+				144AF9BD301650DF00CE857C /* Exceptions for "Cli" folder in "bBsynth Lite" target */,
 			);
 			path = Cli;
 			sourceTree = "<group>";
@@ -202,10 +260,17 @@
 			path = Test;
 			sourceTree = "<group>";
 		};
+		14C3735730013841008B0937 /* Playground */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Playground;
+			sourceTree = "<group>";
+		};
 		14E708382F78BE0C005C806C /* App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				144E33982FB7448C00DA9F38 /* Exceptions for "App" folder in "bBpiano" target */,
+				144AF9FB301654E200CE857C /* Exceptions for "App" folder in "bBsynth" target */,
+				144AF9FC301654E200CE857C /* Exceptions for "App" folder in "Compile Sources" phase from "bBsynth" target */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -236,6 +301,16 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		144AF9AC301650AE00CE857C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		144AF9BF3016547100CE857C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
 		14553D042FC14D60008E3CD7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
@@ -248,6 +323,11 @@
 				147D71412FD6F9F9008F3BF8 /* CoreMIDI.framework in Frameworks */,
 				147D713D2FD6F9CB008F3BF8 /* CoreAudio.framework in Frameworks */,
 				147D71502FD70102008F3BF8 /* AudioToolbox.framework in Frameworks */,
+			);
+		};
+		14C3735330013841008B0937 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
 			);
 		};
 		14D55CD92FD8273E00F009D7 /* Frameworks */ = {
@@ -335,6 +415,7 @@
 				14E709AA2F7E3F01005C806C /* Core */,
 				14E7092E2F7D43C4005C806C /* Doc */,
 				14E708382F78BE0C005C806C /* App */,
+				14C3735730013841008B0937 /* Playground */,
 				142C18C22FD52A2A00685F41 /* Frameworks */,
 				14E708372F78BE0C005C806C /* Products */,
 				146A412C2FDA96F900AF2C9C /* From PDE to PCM.md */,
@@ -350,6 +431,9 @@
 				14553D072FC14D60008E3CD7 /* DSP-Benchmark.xctest */,
 				147D71362FD6F9B6008F3BF8 /* bbpl */,
 				14D55CDC2FD8273E00F009D7 /* bbps */,
+				14C3735630013841008B0937 /* Playground */,
+				144AF9AF301650AE00CE857C /* bBsynth Lite */,
+				144AF9C23016547100CE857C /* bBsynth.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -357,6 +441,36 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		144AF9AE301650AE00CE857C /* bBsynth Lite */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 144AF9B3301650AE00CE857C /* Build configuration list for PBXNativeTarget "bBsynth Lite" */;
+			buildPhases = (
+				144AF9AB301650AE00CE857C /* Sources */,
+				144AF9AC301650AE00CE857C /* Frameworks */,
+				144AF9AD301650AE00CE857C /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			name = "bBsynth Lite";
+			productName = "bBsynth Lite";
+			productReference = 144AF9AF301650AE00CE857C /* bBsynth Lite */;
+			productType = "com.apple.product-type.tool";
+		};
+		144AF9C13016547100CE857C /* bBsynth */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 144AF9E53016547300CE857C /* Build configuration list for PBXNativeTarget "bBsynth" */;
+			buildPhases = (
+				144AF9BE3016547100CE857C /* Sources */,
+				144AF9BF3016547100CE857C /* Frameworks */,
+				144AF9C03016547100CE857C /* Resources */,
+			);
+			buildRules = (
+			);
+			name = bBsynth;
+			productName = bBsynth;
+			productReference = 144AF9C23016547100CE857C /* bBsynth.app */;
+			productType = "com.apple.product-type.application";
+		};
 		14553D062FC14D60008E3CD7 /* DSP-Benchmark */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 14553D0D2FC14D61008E3CD7 /* Build configuration list for PBXNativeTarget "DSP-Benchmark" */;
@@ -388,6 +502,24 @@
 			name = "bBpiano Lite";
 			productName = "bBpiano Lite";
 			productReference = 147D71362FD6F9B6008F3BF8 /* bbpl */;
+			productType = "com.apple.product-type.tool";
+		};
+		14C3735530013841008B0937 /* Playground */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 14C3735C30013841008B0937 /* Build configuration list for PBXNativeTarget "Playground" */;
+			buildPhases = (
+				14C3735230013841008B0937 /* Sources */,
+				14C3735330013841008B0937 /* Frameworks */,
+				14C3735430013841008B0937 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				14C3735730013841008B0937 /* Playground */,
+			);
+			name = Playground;
+			productName = Playground;
+			productReference = 14C3735630013841008B0937 /* Playground */;
 			productType = "com.apple.product-type.tool";
 		};
 		14D55CDB2FD8273E00F009D7 /* bBpiano Sonic */ = {
@@ -439,11 +571,20 @@
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					144AF9AE301650AE00CE857C = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					144AF9C13016547100CE857C = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					14553D062FC14D60008E3CD7 = {
 						CreatedOnToolsVersion = 26.2;
 						LastSwiftMigration = 2620;
 					};
 					147D71352FD6F9B6008F3BF8 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					14C3735530013841008B0937 = {
 						CreatedOnToolsVersion = 26.2;
 					};
 					14D55CDB2FD8273E00F009D7 = {
@@ -475,11 +616,19 @@
 				14553D062FC14D60008E3CD7 /* DSP-Benchmark */,
 				147D71352FD6F9B6008F3BF8 /* bBpiano Lite */,
 				14D55CDB2FD8273E00F009D7 /* bBpiano Sonic */,
+				14C3735530013841008B0937 /* Playground */,
+				144AF9AE301650AE00CE857C /* bBsynth Lite */,
+				144AF9C13016547100CE857C /* bBsynth */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		144AF9C03016547100CE857C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
 		14553D052FC14D60008E3CD7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
@@ -504,12 +653,27 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		144AF9AB301650AE00CE857C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		144AF9BE3016547100CE857C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 		14553D032FC14D60008E3CD7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
 			);
 		};
 		147D71322FD6F9B6008F3BF8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		14C3735230013841008B0937 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
 			);
@@ -535,6 +699,99 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		144AF9B4301650AE00CE857C /* Debug configuration for PBXNativeTarget "bBsynth Lite" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = L746W9JTR3;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		144AF9B5301650AE00CE857C /* Release configuration for PBXNativeTarget "bBsynth Lite" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = L746W9JTR3;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		144AF9E63016547300CE857C /* Debug configuration for PBXNativeTarget "bBsynth" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L746W9JTR3;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.opusarc.bBsynth;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		144AF9E73016547300CE857C /* Release configuration for PBXNativeTarget "bBsynth" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L746W9JTR3;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.opusarc.bBsynth;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		14553D0E2FC14D61008E3CD7 /* Debug configuration for PBXNativeTarget "DSP-Benchmark" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -599,6 +856,30 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				PRODUCT_NAME = bbpl;
+			};
+			name = Release;
+		};
+		14C3735A30013841008B0937 /* Debug configuration for PBXNativeTarget "Playground" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = L746W9JTR3;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		14C3735B30013841008B0937 /* Release configuration for PBXNativeTarget "Playground" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = L746W9JTR3;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
@@ -840,6 +1121,22 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		144AF9B3301650AE00CE857C /* Build configuration list for PBXNativeTarget "bBsynth Lite" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				144AF9B4301650AE00CE857C /* Debug configuration for PBXNativeTarget "bBsynth Lite" */,
+				144AF9B5301650AE00CE857C /* Release configuration for PBXNativeTarget "bBsynth Lite" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		144AF9E53016547300CE857C /* Build configuration list for PBXNativeTarget "bBsynth" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				144AF9E63016547300CE857C /* Debug configuration for PBXNativeTarget "bBsynth" */,
+				144AF9E73016547300CE857C /* Release configuration for PBXNativeTarget "bBsynth" */,
+			);
+			defaultConfigurationName = Release;
+		};
 		14553D0D2FC14D61008E3CD7 /* Build configuration list for PBXNativeTarget "DSP-Benchmark" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -853,6 +1150,14 @@
 			buildConfigurations = (
 				147D713B2FD6F9B6008F3BF8 /* Debug configuration for PBXNativeTarget "bBpiano Lite" */,
 				147D713C2FD6F9B6008F3BF8 /* Release configuration for PBXNativeTarget "bBpiano Lite" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		14C3735C30013841008B0937 /* Build configuration list for PBXNativeTarget "Playground" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				14C3735A30013841008B0937 /* Debug configuration for PBXNativeTarget "Playground" */,
+				14C3735B30013841008B0937 /* Release configuration for PBXNativeTarget "Playground" */,
 			);
 			defaultConfigurationName = Release;
 		};
