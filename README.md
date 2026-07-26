@@ -15,6 +15,12 @@
   <a href="https://opus-arc.github.io/bBpiano/"><b>Primary Research Document</b>👁️</a>
 </div>
 
+> Every resonance eventually fades.  
+> What remains is the desire to keep creating, to keep moving, and perhaps, one day, to become as free as the bluebird.
+>
+> ***Bluebird** comes from David Bowie's final farewell, **Lazarus**:*
+> *"Just like that bluebird, I'll be free."*
+
 ##     1. Introduction
 
 bBpiano is a physical modeling piano synthesis project inspired by Pianoteq 9, currently in an active research and development stage. At its core is a physically modeled piano engine, designed to remain lightweight and responsive while capturing the immediacy, presence, and expressive vitality of a live instrument.

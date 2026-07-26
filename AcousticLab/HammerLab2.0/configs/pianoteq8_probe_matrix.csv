@@ -1,0 +1,16 @@
+case_id,midi_note,midi_velocity,note_name,pre_roll_seconds,hold_seconds,tail_seconds,comment
+pt8_n36_v032,36,32,C2,0.25,0.45,2.50,low register soft
+pt8_n36_v080,36,80,C2,0.25,0.45,2.50,low register medium
+pt8_n36_v120,36,120,C2,0.25,0.45,2.50,low register hard
+pt8_n48_v032,48,32,C3,0.25,0.45,2.25,lower mid soft
+pt8_n48_v080,48,80,C3,0.25,0.45,2.25,lower mid medium
+pt8_n48_v120,48,120,C3,0.25,0.45,2.25,lower mid hard
+pt8_n60_v032,60,32,C4,0.25,0.40,2.00,middle C soft
+pt8_n60_v080,60,80,C4,0.25,0.40,2.00,middle C medium
+pt8_n60_v120,60,120,C4,0.25,0.40,2.00,middle C hard
+pt8_n72_v032,72,32,C5,0.25,0.35,1.75,upper mid soft
+pt8_n72_v080,72,80,C5,0.25,0.35,1.75,upper mid medium
+pt8_n72_v120,72,120,C5,0.25,0.35,1.75,upper mid hard
+pt8_n84_v032,84,32,C6,0.25,0.30,1.50,high register soft
+pt8_n84_v080,84,80,C6,0.25,0.30,1.50,high register medium
+pt8_n84_v120,84,120,C6,0.25,0.30,1.50,high register hard

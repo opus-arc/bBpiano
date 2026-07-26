@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hammerlab.local/schemas/experiment.schema.json",
+  "title": "HammerLab2.0 experiment summary",
+  "type": "object",
+  "required": [
+    "schema_version", "case_id", "model_id", "load_id",
+    "sample_rate_hz", "oversample", "impact_velocity_mps",
+    "peak_force_n", "first_contact_ms", "finite", "solver_converged"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "case_id": {"type": "string", "minLength": 1},
+    "model_id": {"enum": ["power", "stulov", "prony2"]},
+    "load_id": {"enum": ["rigid", "resistive-port"]},
+    "sample_rate_hz": {"type": "number", "exclusiveMinimum": 0},
+    "oversample": {"type": "integer", "minimum": 1},
+    "impact_velocity_mps": {"type": "number", "exclusiveMinimum": 0},
+    "peak_force_n": {"type": "number", "minimum": 0},
+    "first_contact_ms": {"type": "number", "minimum": 0},
+    "finite": {"type": "boolean"},
+    "solver_converged": {"type": "boolean"}
+  },
+  "additionalProperties": true
+}
