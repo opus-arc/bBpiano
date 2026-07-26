@@ -6,6 +6,7 @@
 
 namespace Parameters::Tuning::D274LossPresets {
 
+
 struct LossBiquad { double b0, b1, b2, a1, a2; };
 inline constexpr int kD274LossMidiMin = 21;
 inline constexpr int kD274LossMidiMax = 108;

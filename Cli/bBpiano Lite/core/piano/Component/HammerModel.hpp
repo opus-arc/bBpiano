@@ -22,6 +22,7 @@ class HammerModel {
     
 public:
     
+    // --------------------------------------------
     // MARK: 组件与基本信息
     
     explicit HammerModel(KeyModel *_pairedKey, int _midi_n);
@@ -29,7 +30,7 @@ public:
     const KeyModel *pairedKey = nullptr;
     
     const int midi_n;
-    int string_count;
+    int string_count = 0;
     
     StringModel* pairedString_a = nullptr;
     StringModel* pairedString_b = nullptr;

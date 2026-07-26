@@ -8,7 +8,7 @@
 //
 
 
-#include "HammerModel.hpp"
+#include "../HammerModel.hpp"
 #include "../KeyModel.hpp"
 #include "../../Utils/MyCSVReader.hpp"
 
@@ -26,21 +26,10 @@ HammerModel::HammerModel(KeyModel *_pairedKey, int _midi_n) :
     K = hammerParameter.K;
     P = hammerParameter.P;
     m = hammerParameter.mass_kg;
-
-    // RT-425 provides a separate hammer coefficient RH in addition to KH and p.
-    // xH is the hammer strike position; RH is not xH/RHSP. The current force law
-    // below still uses only the conservative power-law part F = K * dy^P, so RH
-    // is stored here for the later dissipative / hysteretic hammer-felt term.
     RH = hammerParameter.R;
     
     const auto stringParameter = MyCSVReader::getRT425WrappedStringParameterByMidi(midi_n);
-    
     strikePoint = stringParameter.strike_ratio;
-    
-    std::cout<< "midi_n: " << midi_n <<
-        ", strikePoint: " << strikePoint << "\n";
-
-
     
     if(midi_n <= 30) {
         pairedString_a = new StringModel(this, midi_n, 1);
@@ -55,19 +44,10 @@ HammerModel::HammerModel(KeyModel *_pairedKey, int _midi_n) :
         pairedString_c = new StringModel(this, midi_n, 3);
         string_count = 3;
     }
-
     
     if (pairedString_a) {
         hammerTs = pairedString_a->Ts * 0.5;
-        
         strikeM = pairedString_a->strikePort.index0;
-        
-        std::cout
-        << "strikePort: " << pairedString_a->strikePort.index0
-        << "+" << pairedString_a->strikePort.weight1
-        << '\n';
-        
-        
     }
 }
 
@@ -83,7 +63,7 @@ float HammerModel::getSample(){
         return pairedString_a->pickupVelocity() + pairedString_b->pickupVelocity() + pairedString_c->pickupVelocity();
     }
     
-    return pairedString_a->pickupVelocity();
+    return pairedString_a ? pairedString_a->pickupVelocity() : 0.0f;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -166,20 +146,11 @@ double HammerModel::stulovFeltForce(double compression, double compressionVeloci
         return 0.0;
     }
 
-    // Stulov-style hammer felt relaxation:
-    //     F(t) = K * [1 - h_r(t)] * [compression(t)^P]
-    // where h_r(t) = epsilon / tau * exp(-t / tau).
-    // The convolution h_r * x is implemented as a one-pole leaky memory whose
-    // DC gain is epsilon. RT-425 RH has the same dimensional form as KH here, so
-    // RH / K is used as the dimensionless relaxation depth.
     const double x = std::pow(compression, P);
 
     const double epsilonRaw = (K > 0.0) ? (RH / K) : 0.0;
     const double epsilon = std::clamp(epsilonRaw, 0.0, 0.35);
 
-    // A short felt relaxation time keeps the memory inside the hammer-string
-    // contact window. Compression uses a slightly faster memory than release,
-    // which gives the force-compression loop a mild hysteretic area.
     const double tauCompress = 0.00035;
     const double tauRelease  = 0.00030;
     const double tau = (compressionVelocity >= 0.0) ? tauCompress : tauRelease;
@@ -220,13 +191,13 @@ void HammerModel::moveStrings() {
         pairedString_b->stringMovement();
         pairedString_c->stringMovement();
     }
+
 }
 
 void HammerModel::setVIn(double _v_in){
-    // _v_in 此处语义为 MIDI velocity 0~128，
-    // HammerModel 内部转换为物理 hammer impact velocity，单位 m/s。
+    // 每次新的 note_on 都是一轮新的 hammer-string 接触。
+    // 弦本身不清空，保留正在振动的能量；这里只重置锤子的接触状态。
     v_in = midiVelocityToHammerVelocity(_v_in);
-
     dy = 0.0;
     dv = 0.0;
     F = 0.0;
@@ -237,7 +208,6 @@ void HammerModel::setVIn(double _v_in){
 void HammerModel::setInactive(){
     pairedKey->key_active = false;
 }
-
 
 
 double HammerModel::midiVelocityToHammerVelocity(double midiVelocity) const {
