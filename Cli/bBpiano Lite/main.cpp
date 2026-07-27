@@ -1,19 +1,38 @@
+// ============================================================================
+// bBpiano Physical Modeling Engine
+// Backend Command Line Interface
 //
-//  main.cpp
-//  bBpiano Lite
+// Authorship:
+//   Ziyang Tan & Zhuoran Chen
 //
-//  Created by opus arc on 2026/6/7.
+// Design & Architecture:
+//   Ziyang Tan
 //
+// Conceptual Development & Engineering:
+//   Ziyang Tan & Zhuoran Chen
+//
+// AI Disclosure:
+//   AI tools were used for learning programming techniques and domain knowledge
+//   in physical modeling pianos and synthesizers.
+//
+//   CORE CLI IMPLEMENTATION:
+//   DESIGNED AND DEVELOPED WITHOUT AI-GENERATED CODE.
+//
+// Project Initiated:
+//   April 1, 2026
+// ============================================================================
 
-#include <iostream>
-#define VERSION "L0-Chaos"
-void printLogo() {
-    static constexpr const char* logo =
+
+// --------------------------------------------------------------------
+// MARK: version & logo
+
+#define VERSION "L0-Works"
+static constexpr const char* logo =
     R"(
         ┌────────────────────────────┐──╭────╮
         │                            │==│╲╱╲╱│
         │  bBpiano 0                 │==│╱╲╱╲│
-        │  L0-Chaos/260625           │==│╲╱╲╱│
+        │  L0-Works/260727           │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
         │  Physical Modeling Piano   │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
@@ -23,39 +42,43 @@ void printLogo() {
         │                            │==│╲╱╲╱│
         │  bBSonicLab                │==│╱╲╱╲│
         └────────────────────────────┘──╰────╯
-    
-        Bleed.
+
     )";
-    
-    std::cout << logo << "\n";
-}
 
-
+// cli 必须库
+#include <iostream>
 #include <csignal>
 
+
+// Service 库
 #include "./hardware/soundCard.hpp"
 #include "./hardware/midiService.hpp"
 #include "./hardware/midiKeyboard.hpp"
 #include "./hardware/pcKeyboard.hpp"
-
 #include "./hardware/midiRecorder.hpp"
 #include "./hardware/midiExporter.hpp"
-
 #include "./core/controller.hpp"
 
+// cli 必须函数
+void printLogo();
+void signalHandler(int);
 void help_zh();
 void help_en();
 void help_ja();
 
+// Service 函数
 void init_engine();
 void shotdown_engine();
-
-void signalHandler(int);
-
 int runEnginePerformanceTest();
 
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ---------------------------------------------------------------------------------------------------
+// MARK: MAIN
 int main(int argc, const char * argv[]) {
 
+    // --------------------------------------------------------------------
+    // MARK: 临时用于测试的 Argument Vector
+    
 //    const char* testArgv[] = {
 //        argv[0],
 //        "-e",
@@ -88,8 +111,16 @@ int main(int argc, const char * argv[]) {
 //    argc = 3;
 //    argv = testArgv;
     
+    
+    // --------------------------------------------------------------------
+    // MARK: 注册信号处理函数
+    
     std::signal(SIGINT, signalHandler);
     std::signal(SIGTERM, signalHandler);
+    
+    
+    // --------------------------------------------------------------------
+    // MARK: 分类处理指令
     
     if(argc < 2) {
         printLogo();
@@ -197,7 +228,13 @@ int main(int argc, const char * argv[]) {
     shotdown_engine();
     return EXIT_SUCCESS;
 }
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ---------------------------------------------------------------------------------------------------
 
+
+
+// --------------------------------------------------------------------
+// MARK: Service 函数的实现
 void init_engine() {
     bBpiano_init();
 }
@@ -212,13 +249,16 @@ void shotdown_engine() {
     MidiRecorder::stop();
 }
 
+// --------------------------------------------------------------------
+// MARK: cli 必须函数的实现
+void printLogo() {
+    std::cout << logo << "\n";
+}
 void signalHandler(int) {
+    // 退出前需要执行的函数
     shotdown_engine();
     std::exit(EXIT_SUCCESS);
 }
-
-
-
 void help_zh() {
     
     std::cout
@@ -281,3 +321,12 @@ void help_ja() {
         << "          -b    エンジンのリアルタイム性能を測定\n"
         << "\n";
 }
+
+
+
+//
+//  main.cpp
+//  bBpiano Lite
+//
+//  Created by opus arc on 2026/6/7.
+//
