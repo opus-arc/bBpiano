@@ -11,6 +11,7 @@ public:
         
         sampleRate = 44100.0;
         multiples = 1;
+        dt = 1.0 / (sampleRate * multiples);
         f0 = 261.626;
         
         left.assign(10000, 0);
@@ -27,6 +28,8 @@ public:
         pickupPosition = 6.0 / 7.0;
         strikePort = SpatialPort(strikePosition, delay_int);
         pickupPort = SpatialPort(pickupPosition, delay_int);
+        
+        strikeDisplacement = 0.0;
         
         // 弦长 m
         length = 0.65;
@@ -53,8 +56,10 @@ public:
     ~StringModel() = default;
     
     inline void stringMovement() {
-        for(int i = 0; i < multiples; i++)
-        propagate();
+        for(int i = 0; i < multiples; i++) {
+            propagate();
+            renewStrikeDisplacement();
+        }
     }
     
     inline float getSamples() {
@@ -69,11 +74,16 @@ public:
         }
     }
     
+    inline double getDisplacementAtStrike() {
+        return strikeDisplacement;
+    }
+    
     HammerModel *hammerModel;
     
 private:
     
     double sampleRate;
+    double dt;
     int multiples;
     
     double f0;
@@ -108,6 +118,8 @@ private:
     SpatialPort strikePort;
     SpatialPort pickupPort;
     
+    double strikeDisplacement;
+    
     // 弦长 m
     double length;
     // 弦直径 mm
@@ -129,11 +141,11 @@ private:
         // TODO: 是否要改成 -=
         right[head_i_r] += delta;
         
-        std::cout
-        << "F: " << F
-        << ", delta: " << delta
-        << ", index: " << origin_junctionIndex
-        << '\n';
+//        std::cout
+//        << "F: " << F
+//        << ", delta: " << delta
+//        << ", index: " << origin_junctionIndex
+//        << '\n';
     }
     
     // 0 <= i < delay_int !!!
@@ -171,10 +183,20 @@ private:
     
     inline void boundaryFilter(float& boundary_value, bool isLeft) {
         if(isLeft) {
-            boundary_value *= -1.0;
+            boundary_value *= -0.996;
         } else {
-            boundary_value *= -1.0;
+            boundary_value *= -0.996;
         }
+    }
+    
+    
+    inline float getVelocityAtStrike() {
+        return left[originIndexToHeadIndex_l(strikePort.index0)] * strikePort.weight0 + left[originIndexToHeadIndex_l(strikePort.index1)] * strikePort.weight1 + right[originIndexToHeadIndex_r(strikePort.index0)] * strikePort.weight0 + right[originIndexToHeadIndex_r(strikePort.index1)] * strikePort.weight1;
+    }
+    
+    inline void renewStrikeDisplacement() {
+        strikeDisplacement *= 0.999999; // 纠正某种漂移
+        strikeDisplacement += getVelocityAtStrike() * dt;
     }
     
     
