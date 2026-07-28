@@ -42,14 +42,13 @@ void KeyModel::keyMovement(){
 }
 
 float KeyModel::getSample(){
-    
-    
     return hammer->getSample();
-    
 }
 
-
 void KeyModel::silence() {
+    key_down = false;
+    key_active = false;
+
     auto clearString = [](auto* s) {
         if(!s) return;
         std::fill(s->left.begin(),  s->left.end(),  0.0);

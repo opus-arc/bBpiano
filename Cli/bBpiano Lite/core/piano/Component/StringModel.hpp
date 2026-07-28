@@ -41,21 +41,16 @@ private:
     //  初始化后固定的内容
     
 public:
-    struct FloatBiquadCoefficients {
-        float b0 = 0.0f;
-        float b1 = 0.0f;
-        float b2 = 0.0f;
-        float a1 = 0.0f;
-        float a2 = 0.0f;
-    };
-
     struct SpatialPort {
         int index0 = 0;
         int index1 = 0;
         float weight0 = 1.0f;
         float weight1 = 0.0f;
     };
-    
+
+    SpatialPort bridgePort;
+    float bridgeVelocity = 0.0;
+
     // 初始化
     // explicit 禁止隐式转换带来的语义污染
     explicit StringModel(HammerModel *_pairedHammer, int _midi_n, int _stringNum);
@@ -111,6 +106,7 @@ public:
     double delay_frac = 0.0;// 波导长度小数部分
     SpatialPort strikePort;
     SpatialPort pickupPort;
+
     double fractional_a1 = 0.0;
     mutable float fractional_x1_r = 0.0; // 上一次传入 allpass 的值
     mutable float fractional_y1_r = 0.0;
@@ -131,7 +127,7 @@ public:
     // dispersion filter
     Parameters::Tuning::D274DispersionPresets::DispersionPreset dispersionPreset;
     std::size_t dispersionSectionCount = 0;
-    std::array<FloatBiquadCoefficients, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersionCoefficients = {};
+    std::array<Parameters::Tuning::D274DispersionPresets::AllpassBiquad, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersionCoefficients = {};
     mutable std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersion_x1_r = {}; // 上一次传入 allpass 的值
     mutable std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersion_x2_r = {};
     mutable std::array<float, Parameters::Tuning::D274DispersionPresets::kRT425DispersionSectionCount> dispersion_y1_r = {};
@@ -162,7 +158,7 @@ public:
 
 public:
     
-    // Hammer-P 分数空间错位注入，将力分配到相邻 junction。
+    // Hammer-P 分数空间错位注入
     void injectForce(float F) const;
     
     // 传播
@@ -173,19 +169,57 @@ public:
     
 public:
     
-    
     // 弦的运动回合，每帧的调用接口
     void stringMovement() ;
     
     // 获取速度的方式
-    float velocityAt(double p) const ;
-    float pickupVelocity() const;
-    
+    bool isActive() const;
+
+    inline float velocityAt(double p) const {
+        // 边界条件
+        p = std::clamp(p, 0.0, 1.0);
+
+        int relative_i = std::floor(p * delay_index);
+
+        int absolute_i_l = (relative_i + delay_int + leftHead) % delay_int;
+        int absolute_i_r = (relative_i + delay_int + rightHead) % delay_int;
+
+        // 拾音点以数据为参考系位置不发生改变
+        return left[absolute_i_l] + right[absolute_i_r];
+    }
+
+    inline float bridgeIncidentVelocity() {
+        float incident = right[originIndexToHeadIndex_r(delay_index)];
+        const float reflectedPreview = BoundaryFilter_virtual(incident, false);
+        return bridgeVelocity - reflectedPreview;
+    }
+
+    inline float bridgeIncidentForce() {
+        if (!isActive())
+            return 0.0f;
+
+        return static_cast<float>(2.0 * Z * bridgeIncidentVelocity());
+    }
+
+    inline float bridgeCharacteristicImpedance() const {
+        if (!isActive())
+            return 0.0f;
+
+        return static_cast<float>(Z);
+    }
+
+    inline float getSamples() {
+        return bridgeIncidentForce();
+    }
+
+    inline float pickupVelocity() const {
+        return velocityAtPort(pickupPort);
+    }
+
     // Hammer-P 分数空间读速度接口：一次读出当前速度与半采样速度。
     void readHammerVelocityPair(float& v0, float& vHalf) const;
     
     float activityProbe() const;
-
     
     // --------------------------------------------
     // MARK: inline 小函数
@@ -197,19 +231,17 @@ public:
 
     static SpatialPort makeSpatialPort(double position, int maxIndex);
     float velocityAtPort(const SpatialPort& port) const;
-    void readIntegerHammerVelocityPair(int relative_i, float& v0, float& vHalf) const;
     void injectForceAtJunction(int junctionIndex, float F) const;
-
     
     // 0 <= i < Delay_Int !!!
-    inline int rToAIndex_l(int i) const {
+    inline int originIndexToHeadIndex_l(int i) const {
         int x = leftHead + i;
         if (x >= delay_int)
             x -= delay_int;
         return x;
     }
 
-    inline int rToAIndex_r(int i) const {
+    inline int originIndexToHeadIndex_r(int i) const {
         int x = rightHead + i;
         if (x >= delay_int)
             x -= delay_int;
@@ -227,14 +259,17 @@ public:
         x = y;
     }
 
-    // loss 每个完整 round trip 只经过一次。StringModel::delay 是半圈长度，
-    // 因此基频 phase-delay 补偿只能在每个半圈扣除一半。
+    // loss 每个完整 round trip 只经过一次。StringModel::delay 是半圈长度，因此基频 phase-delay 补偿只能在每个半圈扣除一半。
     inline double lossHalfLoopPhaseDelayCompensation() const {
         const double phaseDelay = lossPreset.phaseDelaySamples;
         return (std::isfinite(phaseDelay) && phaseDelay > 0.0)
             ? 0.5 * phaseDelay
             : 0.0;
     }
+
+    void readIntegerHammerVelocityPair(int relative_i,
+                                       float& v0,
+                                       float& vHalf) const;
 
     inline void lossFilter(
         float& x,
@@ -322,8 +357,7 @@ public:
 //            lossFilter(boundary_value, loss_x1_l, loss_x2_l, loss_y1_l, loss_y2_l);
         } else {
             fractionalFilter(boundary_value, fractional_x1_r, fractional_y1_r);
-//            if(midi_n < 83)
-                dispersionFilter(boundary_value, dispersion_x1_r, dispersion_x2_r, dispersion_y1_r, dispersion_y2_r);
+            dispersionFilter(boundary_value, dispersion_x1_r, dispersion_x2_r, dispersion_y1_r, dispersion_y2_r);
             lossFilter(boundary_value, loss_x1_r, loss_x2_r, loss_y1_r, loss_y2_r);
             
             boundary_value = static_cast<float>(
