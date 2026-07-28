@@ -2,26 +2,39 @@
 // MARK: 库与函数签名
 
 #include <iostream>
+#include <thread>
+#include <chrono>
 
-// --------------------------------------------------------------------
-// MARK: 
+#include "./core/PianoModel.hpp"
+#include "./core/HammerModel.hpp"
+#include "./hardware/soundCard.hpp"
 
-// 测试函数
-
-
-
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// ---------------------------------------------------------------------------------------------------
 // MARK: MAIN
 
 int main() {
-
     
+
+    PianoModel pianoModel;
+    
+    
+//    pianoModel.hammerModel->letsStrikeTheString();
+    
+    
+    
+    
+    
+    init(pianoModel);
+    
+    SoundCard::shared().start();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    pianoModel.hammerModel->letsStrikeTheString();
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    
+    SoundCard::shared().stop();
     
     return EXIT_SUCCESS;
 }
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// ---------------------------------------------------------------------------------------------------
+
 
 
 

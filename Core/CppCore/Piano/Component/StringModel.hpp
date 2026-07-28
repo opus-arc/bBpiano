@@ -175,14 +175,14 @@ public:
 
     
     // 0 <= i < Delay_Int !!!
-    inline int rToAIndex_l(int i) const {
+    inline int originIndexToHeadIndex_l(int i) const {
         int x = leftHead + i;
         if (x >= delay_int)
             x -= delay_int;
         return x;
     }
 
-    inline int rToAIndex_r(int i) const {
+    inline int originIndexToHeadIndex_r(int i) const {
         int x = rightHead + i;
         if (x >= delay_int)
             x -= delay_int;

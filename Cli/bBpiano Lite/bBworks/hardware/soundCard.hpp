@@ -8,7 +8,6 @@
 #ifndef soundCard_hpp
 #define soundCard_hpp
 
-#include "../core/controller.hpp"
 
 #include <AudioToolbox/AudioToolbox.h>
 
@@ -16,6 +15,8 @@
 #include <cstdint>
 #include <cstring>
 #include <stdexcept>
+
+#include "../core/Controller.hpp"
 
 class SoundCard {
 public:
