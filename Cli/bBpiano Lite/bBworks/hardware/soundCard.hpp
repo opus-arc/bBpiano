@@ -155,7 +155,7 @@ private:
         get_next_buffer(
             out,
             static_cast<int>(bufferFrames_),
-            1.0
+            0.9
         );
 
         buffer->mAudioDataByteSize = bufferByteSize_;

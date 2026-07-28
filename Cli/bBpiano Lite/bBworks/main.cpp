@@ -20,14 +20,11 @@ int main() {
 //    pianoModel.hammerModel->letsStrikeTheString();
     
     
-    
-    
-    
     init(pianoModel);
     
     SoundCard::shared().start();
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    pianoModel.hammerModel->setVIn(20);
+    pianoModel.hammerModel->setVIn(2.0);
     std::this_thread::sleep_for(std::chrono::seconds(3));
     
     SoundCard::shared().stop();

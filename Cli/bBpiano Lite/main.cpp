@@ -89,13 +89,13 @@ int main(int argc, const char * argv[]) {
 //    argv = testArgv;
     
     
-    const char* testArgv[] = {
-        argv[0],
-        "-k"
-    };
-    argc = 2;
-    argv = testArgv;
-    
+//    const char* testArgv[] = {
+//        argv[0],
+//        "-k"
+//    };
+//    argc = 2;
+//    argv = testArgv;
+//    
 //        const char* testArgv[] = {
 //            argv[0],
 //            "-b"
