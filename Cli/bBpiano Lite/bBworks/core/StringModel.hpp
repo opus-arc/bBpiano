@@ -37,12 +37,17 @@ public:
         d = 1.05;
         // 线密度 kg/m
         mu = 0.007;
-        // 弦张力 N
-        tension = 700;
+        // 弦张力 N。由 f0、弦长和线密度反推，使
+        // f0 = sqrt(tension / mu) / (2 * length) 与 waveguide 一致。
+        const double waveSpeed = 2.0 * length * f0;
+        tension = mu * waveSpeed * waveSpeed;
         
         // 特性阻抗系数
         z = std::sqrt(mu * tension);
         
+        // fractional filter
+        fractional_a1 = double(1 - delay_frac) / double(1 + delay_frac);
+
         std::cout
         << "delay: " << delay
         << ", f0: " << f0
@@ -57,8 +62,11 @@ public:
     
     inline void stringMovement() {
         for(int i = 0; i < multiples; i++) {
-            propagate();
+            // HammerModel injects force immediately before this call.
+            // Integrate the power-conjugate strike velocity before propagation
+            // moves the newly emitted waves away from the contact junction.
             renewStrikeDisplacement();
+            propagate();
         }
     }
     
@@ -107,11 +115,12 @@ private:
         SpatialPort(double position, int maxIndex) {
             position = std::clamp(position, 0.0, 1.0);
             maxIndex = std::max(maxIndex, 1);
-            double originalIndex = position * maxIndex;
+            const double originalIndex = position * maxIndex;
             index0 = std::floor(originalIndex);
-            index1 = std::ceil(originalIndex);
-            weight0 = originalIndex - index0;
-            weight1 = 1- weight0;
+            index1 = std::min(index0 + 1, maxIndex);
+            const double fraction = originalIndex - index0;
+            weight1 = index1 == index0 ? 0.0 : fraction;
+            weight0 = 1.0 - weight1;
         }
         SpatialPort() = default;
     };
@@ -132,6 +141,14 @@ private:
     double z;
     
     
+    // fractional filter
+    double fractional_a1 = 0.0;
+    mutable float fractional_x1_r = 0.0; // 上一次传入 allpass 的值
+    mutable float fractional_y1_r = 0.0;
+    mutable float fractional_x1_l = 0.0; // 上一次传入 allpass 的值
+    mutable float fractional_y1_l = 0.0;
+
+
     inline void injectForceAtJunction(int origin_junctionIndex, float F) {
         const int head_i_l = originIndexToHeadIndex_l(origin_junctionIndex);
         const int head_i_r = originIndexToHeadIndex_r(origin_junctionIndex + 1);
@@ -184,8 +201,18 @@ private:
     inline void boundaryFilter(float& boundary_value, bool isLeft) {
         if(isLeft) {
             boundary_value *= -0.996;
+            fractionalFilter(
+                boundary_value,
+                fractional_x1_l,
+                fractional_y1_l
+            );
         } else {
             boundary_value *= -0.996;
+            fractionalFilter(
+                boundary_value,
+                fractional_x1_r,
+                fractional_y1_r
+            );
         }
     }
     
@@ -195,9 +222,18 @@ private:
     }
     
     inline void renewStrikeDisplacement() {
-        strikeDisplacement *= 0.999999; // 纠正某种漂移
         strikeDisplacement += getVelocityAtStrike() * dt;
     }
     
-    
+    inline void fractionalFilter(float &x, float &x1, float &y1) const {
+        // y = a1 * x + x1 - a1 * y1;
+        float y = static_cast<float>(fractional_a1 * x)
+            + static_cast<float>(x1)
+            - static_cast<float>(fractional_a1 * y1);
+        y1 = y;
+        x1 = x;
+        x = y;
+    }
+
+
 };
