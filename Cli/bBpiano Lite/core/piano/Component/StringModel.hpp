@@ -189,7 +189,7 @@ public:
     }
 
     inline float bridgeIncidentVelocity() {
-        float incident = right[rToAIndex_r(delay_index)];
+        float incident = right[originIndexToHeadIndex_r(delay_index)];
         const float reflectedPreview = BoundaryFilter_virtual(incident, false);
         return bridgeVelocity - reflectedPreview;
     }
@@ -234,14 +234,14 @@ public:
     void injectForceAtJunction(int junctionIndex, float F) const;
     
     // 0 <= i < Delay_Int !!!
-    inline int rToAIndex_l(int i) const {
+    inline int originIndexToHeadIndex_l(int i) const {
         int x = leftHead + i;
         if (x >= delay_int)
             x -= delay_int;
         return x;
     }
 
-    inline int rToAIndex_r(int i) const {
+    inline int originIndexToHeadIndex_r(int i) const {
         int x = rightHead + i;
         if (x >= delay_int)
             x -= delay_int;
