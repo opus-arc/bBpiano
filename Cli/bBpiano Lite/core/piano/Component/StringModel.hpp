@@ -107,6 +107,7 @@ public:
     SpatialPort strikePort;
     SpatialPort pickupPort;
 
+    // fractional filter
     double fractional_a1 = 0.0;
     mutable float fractional_x1_r = 0.0; // 上一次传入 allpass 的值
     mutable float fractional_y1_r = 0.0;
