@@ -5,7 +5,8 @@ import argparse
 import csv
 import json
 import pathlib
-import wave
+
+from pianoteq8_renderer import inspect_pcm_wav
 
 
 def main() -> int:
@@ -37,21 +38,22 @@ def main() -> int:
 
     expected_rate = int(manifest.get("sample_rate_hz", 0))
     expected_channels = int(manifest.get("channels", 0))
+    expected_bit_depth = int(manifest.get("bit_depth", 0))
+    minimum_duration = float(manifest.get("minimum_duration_seconds", 0.05))
     for row in rows:
         path = args.audio_directory / f"{row['case_id']}.wav"
         if not path.is_file():
             errors.append(f"missing capture: {path.name}")
             continue
-        try:
-            with wave.open(str(path), "rb") as stream:
-                if stream.getframerate() != expected_rate:
-                    errors.append(f"{path.name}: sample rate mismatch")
-                if stream.getnchannels() != expected_channels:
-                    errors.append(f"{path.name}: channel count mismatch")
-                if stream.getnframes() == 0:
-                    errors.append(f"{path.name}: empty WAV")
-        except (wave.Error, EOFError) as error:
-            errors.append(f"{path.name}: invalid PCM WAV ({error})")
+        report = inspect_pcm_wav(
+            path,
+            expected_sample_rate_hz=expected_rate,
+            expected_bit_depth=expected_bit_depth,
+            expected_channels=expected_channels,
+            minimum_duration_seconds=minimum_duration,
+            reject_clipping=True,
+        )
+        errors.extend(f"{path.name}: {error}" for error in report["errors"])
 
     if errors:
         print("Pianoteq 8 capture validation FAILED")
