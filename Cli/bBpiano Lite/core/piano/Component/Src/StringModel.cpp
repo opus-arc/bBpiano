@@ -7,7 +7,7 @@
 //  This document is not AI-assisted.
 //
 
-#include "StringModel.hpp"
+#include "../StringModel.hpp"
 #include "../HammerModel.hpp"
 #include "../KeyModel.hpp"
 #include "../../PianoModel.hpp"
@@ -194,8 +194,8 @@ StringModel::SpatialPort StringModel::makeSpatialPort(
 
 void StringModel::injectForceAtJunction(int junctionIndex, float F) const {
     // Hammer-P 错位 junction：left[j] 和 right[j + 1]。
-    const int absolute_i_l = rToAIndex_l(junctionIndex);
-    const int absolute_i_r = rToAIndex_r(junctionIndex + 1);
+    const int absolute_i_l = originIndexToHeadIndex_l(junctionIndex);
+    const int absolute_i_r = originIndexToHeadIndex_r(junctionIndex + 1);
     const float delta = F / (2.0f * static_cast<float>(Z));
 
     left[absolute_i_l] += delta;
@@ -214,8 +214,8 @@ void StringModel::injectForce(float F) const {
 void StringModel::propagate() {
     
     // 先读边界
-    float r_r_boundary_value = right[rToAIndex_r(delay_index)];
-    float l_l_boundary_value = left[rToAIndex_l(0)];
+    float r_r_boundary_value = right[originIndexToHeadIndex_r(delay_index)];
+    float l_l_boundary_value = left[originIndexToHeadIndex_l(0)];
     
     BoundaryFilter(l_l_boundary_value, true);
     BoundaryFilter(r_r_boundary_value, false);
@@ -233,8 +233,8 @@ void StringModel::propagate() {
     }
     
     // 写入新边界
-    right[rToAIndex_r(0)] = -l_l_boundary_value;
-    left[rToAIndex_l(delay_index)] = bridgeVelocity - r_r_boundary_value;
+    right[originIndexToHeadIndex_r(0)] = -l_l_boundary_value;
+    left[originIndexToHeadIndex_l(delay_index)] = bridgeVelocity - r_r_boundary_value;
 
 }
 
@@ -246,16 +246,16 @@ bool StringModel::isActive() const {
 
 float StringModel::velocityAtPort(const SpatialPort& port) const {
     const float velocity0 =
-        left[rToAIndex_l(port.index0)]
-        + right[rToAIndex_r(port.index0)];
+        left[originIndexToHeadIndex_l(port.index0)]
+        + right[originIndexToHeadIndex_r(port.index0)];
 
     if (port.index1 == port.index0) {
         return velocity0;
     }
 
     const float velocity1 =
-        left[rToAIndex_l(port.index1)]
-        + right[rToAIndex_r(port.index1)];
+        left[originIndexToHeadIndex_l(port.index1)]
+        + right[originIndexToHeadIndex_r(port.index1)];
 
     return port.weight0 * velocity0 + port.weight1 * velocity1;
 }
@@ -328,8 +328,8 @@ float StringModel::activityProbe() const {
     for (int relative_idx : points) {
         relative_idx = std::clamp(relative_idx, 0, delay_index);
 
-        int absolute_idx_l = rToAIndex_l(relative_idx);
-        int absolute_idx_r = rToAIndex_r(relative_idx);
+        int absolute_idx_l = originIndexToHeadIndex_l(relative_idx);
+        int absolute_idx_r = originIndexToHeadIndex_r(relative_idx);
 
 
         float l = left[absolute_idx_l];
@@ -403,8 +403,8 @@ void StringModel::readIntegerHammerVelocityPair(
     const int MMinus = std::max(M - 1, 0);
     const int MPlus = std::min(M + 1, delay_index);
 
-    const float right_M = right[rToAIndex_r(M)];
-    const float left_M = left[rToAIndex_l(M)];
+    const float right_M = right[originIndexToHeadIndex_r(M)];
+    const float left_M = left[originIndexToHeadIndex_l(M)];
 
     // v(nTs) = y+(n, M) + y-(n, M)
     v0 = right_M + left_M;
@@ -412,8 +412,8 @@ void StringModel::readIntegerHammerVelocityPair(
     // v(nTs + Ts/2) 使用半采样速度：
     // 右行波取当前 M 与半步后会到达 M 的 M - 1 平均；
     // 左行波取当前 M 与半步后会到达 M 的 M + 1 平均。
-    vHalf = 0.5f * (right_M + right[rToAIndex_r(MMinus)])
-          + 0.5f * (left_M + left[rToAIndex_l(MPlus)]);
+    vHalf = 0.5f * (right_M + right[originIndexToHeadIndex_r(MMinus)])
+          + 0.5f * (left_M + left[originIndexToHeadIndex_l(MPlus)]);
 }
 
 void StringModel::readHammerVelocityPair(float& v0, float& vHalf) const {

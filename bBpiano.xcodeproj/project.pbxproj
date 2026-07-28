@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		144A058530175B3700CE857C /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C52FD52A3300685F41 /* CoreFoundation.framework */; };
+		144A058630175B3D00CE857C /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C92FD52A8600685F41 /* CoreMIDI.framework */; };
+		144A058730175B4B00CE857C /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C32FD52A2A00685F41 /* CoreAudio.framework */; };
+		144A058830175B5500CE857C /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C72FD52A3C00685F41 /* AudioToolbox.framework */; };
 		147D713D2FD6F9CB008F3BF8 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C32FD52A2A00685F41 /* CoreAudio.framework */; };
 		147D71402FD6F9F1008F3BF8 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C52FD52A3300685F41 /* CoreFoundation.framework */; };
 		147D71412FD6F9F9008F3BF8 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142C18C92FD52A8600685F41 /* CoreMIDI.framework */; };
@@ -98,6 +102,7 @@
 		142C18652FD5133400685F41 /* Exceptions for "Cli" folder in "bBpiano" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"bBpiano Lite/bBworks/core/src/Controller.cpp",
 				"bBpiano Lite/bBworks/core/src/HammerModel.cpp",
 				"bBpiano Lite/bBworks/core/src/StringModel.cpp",
 				"bBpiano Lite/bBworks/main.cpp",
@@ -135,7 +140,9 @@
 		144A056C30170A4B00CE857C /* Exceptions for "Cli" folder in "bBworks" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"bBpiano Lite/bBworks/core/src/Controller.cpp",
 				"bBpiano Lite/bBworks/core/src/HammerModel.cpp",
+				"bBpiano Lite/bBworks/core/src/PianoModel.cpp",
 				"bBpiano Lite/bBworks/core/src/StringModel.cpp",
 				"bBpiano Lite/bBworks/main.cpp",
 			);
@@ -306,6 +313,10 @@
 		144A055B30170A3100CE857C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				144A058830175B5500CE857C /* AudioToolbox.framework in Frameworks */,
+				144A058730175B4B00CE857C /* CoreAudio.framework in Frameworks */,
+				144A058630175B3D00CE857C /* CoreMIDI.framework in Frameworks */,
+				144A058530175B3700CE857C /* CoreFoundation.framework in Frameworks */,
 			);
 		};
 		144AF9AC301650AE00CE857C /* Frameworks */ = {
