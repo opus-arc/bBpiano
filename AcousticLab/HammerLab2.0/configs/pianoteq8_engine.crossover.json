@@ -1,0 +1,8 @@
+{
+  "wine_path": "/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/bin/wine",
+  "bottle": "pianoteq 8",
+  "executable_windows": "C:\\Program Files\\Modartt\\Pianoteq 8\\Pianoteq 8.exe",
+  "executable_native_path": "/Users/muzhi/Library/Application Support/CrossOver/Bottles/pianoteq 8/drive_c/Program Files/Modartt/Pianoteq 8/Pianoteq 8.exe",
+  "expected_version": "8.4.3/20250618",
+  "timeout_seconds": 120
+}
