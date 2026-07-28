@@ -15,6 +15,7 @@
 #include <array>
 #include <cmath>
 #include <complex>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -49,6 +50,7 @@ struct CouplingResult {
     double maximumTotalEnergyRatio = 0.0;
     double bridgeIncidentEnergyRatio = 0.0;
     double reboundVelocity = 0.0;
+    double forceWeightedStringForceSpread = 0.0;
     bool finite = true;
 };
 
@@ -197,11 +199,7 @@ CouplingResult runCase(
         resetString(*string);
     }
 
-    hammer.v_in = impactVelocity;
-    hammer.dy = 0.0;
-    hammer.dv = 0.0;
-    hammer.F = 0.0;
-    hammer.F_Last = 0.0;
+    hammer.setPhysicalImpactVelocity(impactVelocity);
     hammer.strings_active = true;
     hammer.activityCounter = 0;
     key.key_active = true;
@@ -217,6 +215,8 @@ CouplingResult runCase(
     double bridgeIncidentEnergy = 0.0;
     double maximumTotalEnergy = initialHammerEnergy;
     double stringEnergyAtRelease = 0.0;
+    double stringForceSpreadWeightedSum = 0.0;
+    double stringForceSpreadWeight = 0.0;
     std::vector<double> forceSignal;
     std::vector<double> stringEnergySignal;
     forceSignal.reserve(kObservationFrames);
@@ -235,15 +235,16 @@ CouplingResult runCase(
 
         const double hammerEnergy =
             0.5 * hammer.m * hammer.v_in * hammer.v_in;
-        const double feltEnergy = hammer.dy > 0.0
-            ? hammer.K * std::pow(hammer.dy, hammer.P + 1.0)
-                / (hammer.P + 1.0)
-            : 0.0;
         const double stringEnergy = waveEnergy(strings);
         stringEnergySignal.push_back(stringEnergy);
+
+        // A hereditary felt law needs its own thermodynamically consistent
+        // free-energy expression. Reusing the pure power-law spring energy
+        // would double-count relaxed material state, so this invariant uses
+        // only directly observable mechanical energy.
         maximumTotalEnergy = std::max(
             maximumTotalEnergy,
-            hammerEnergy + feltEnergy + stringEnergy
+            hammerEnergy + stringEnergy
         );
 
         result.finite = result.finite
@@ -252,6 +253,31 @@ CouplingResult runCase(
             && std::isfinite(hammer.dy)
             && std::isfinite(stringEnergy)
             && std::isfinite(maximumTotalEnergy);
+
+        if (hammer.string_count > 1 && force > 0.0) {
+            double minimumStringForce =
+                std::numeric_limits<double>::infinity();
+            double maximumStringForce = 0.0;
+            double stringForceSum = 0.0;
+            for (int i = 0; i < hammer.string_count; ++i) {
+                const double stringForce =
+                    hammer.stringForces[static_cast<std::size_t>(i)];
+                minimumStringForce =
+                    std::min(minimumStringForce, stringForce);
+                maximumStringForce =
+                    std::max(maximumStringForce, stringForce);
+                stringForceSum += stringForce;
+            }
+            const double meanStringForce =
+                stringForceSum / static_cast<double>(hammer.string_count);
+            if (meanStringForce > 0.0) {
+                const double spread =
+                    (maximumStringForce - minimumStringForce)
+                    / meanStringForce;
+                stringForceSpreadWeightedSum += spread * force;
+                stringForceSpreadWeight += force;
+            }
+        }
     }
 
     const double contactThreshold =
@@ -304,6 +330,10 @@ CouplingResult runCase(
     }
 
     result.forceCentroidHz = spectralCentroid(forceSignal);
+    if (stringForceSpreadWeight > 0.0) {
+        result.forceWeightedStringForceSpread =
+            stringForceSpreadWeightedSum / stringForceSpreadWeight;
+    }
     result.reboundVelocity = hammer.v_in;
     key.key_active = false;
     return result;
@@ -313,9 +343,9 @@ bool isNumericallySafe(const CouplingResult& result) {
     return result.finite
         && result.peakForceN > 0.0
         && result.contactDurationMs > 0.0
-        // Loss and dispersion cannot create mechanical energy. Five percent
-        // is already a generous allowance for the discrete energy proxy and
-        // for energy temporarily held in filter states.
+        // Loss, dispersion, and passive felt cannot create observable
+        // hammer-plus-string energy. Five percent allows for the discrete
+        // traveling-wave energy proxy and uncounted filter-state energy.
         && result.maximumTotalEnergyRatio < 1.05;
 }
 
@@ -336,9 +366,16 @@ const CouplingResult* findResult(
 std::filesystem::path writeResults(
     const std::vector<CouplingResult>& results
 ) {
+    const char* outputOverride =
+        std::getenv("BBPIANO_HAMMER_BENCHMARK_CSV");
     const std::filesystem::path outputPath =
-        std::filesystem::path(__FILE__).parent_path()
-        / "HammerStringCouplingResult.csv";
+        outputOverride && *outputOverride
+        ? std::filesystem::path(outputOverride)
+        : std::filesystem::path(__FILE__).parent_path()
+            / "HammerStringCouplingResult.csv";
+    if (outputPath.has_parent_path()) {
+        std::filesystem::create_directories(outputPath.parent_path());
+    }
     std::ofstream output(outputPath);
 
     output
@@ -347,7 +384,7 @@ std::filesystem::path writeResults(
         << "normalized_first_contact,contact_intervals,"
         << "force_centroid_hz,string_energy_at_release_ratio,"
         << "maximum_total_energy_ratio,first_pass_bridge_energy_ratio,"
-        << "rebound_velocity_m_s,finite\n";
+        << "rebound_velocity_m_s,force_weighted_string_force_spread,finite\n";
 
     output << std::setprecision(12);
     for (const auto& result : results) {
@@ -366,6 +403,7 @@ std::filesystem::path writeResults(
             << result.maximumTotalEnergyRatio << ','
             << result.bridgeIncidentEnergyRatio << ','
             << result.reboundVelocity << ','
+            << result.forceWeightedStringForceSpread << ','
             << (result.finite ? 1 : 0) << '\n';
     }
 

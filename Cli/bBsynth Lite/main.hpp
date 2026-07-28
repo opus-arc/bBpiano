@@ -1,13 +1,15 @@
 //
 //  main.hpp
-//  bBpiano Lite
+//  bBpiano
 //
-//  Created by opus arc on 2026/6/7.
+//  Created by opus arc on 2026/7/26.
 //
 
 #ifndef main_hpp
 #define main_hpp
 
-#include <stdio.h>
+#include <iostream>
+
+
 
 #endif /* main_hpp */
