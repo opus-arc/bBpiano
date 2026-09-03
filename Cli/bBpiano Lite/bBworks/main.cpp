@@ -24,7 +24,7 @@ int main() {
     
     SoundCard::shared().start();
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    pianoModel.hammerModel->setVIn(2.0);
+    pianoModel.hammerModel->setVIn(1.6266395205247568);
     std::this_thread::sleep_for(std::chrono::seconds(3));
     
     SoundCard::shared().stop();

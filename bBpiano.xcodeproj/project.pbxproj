@@ -94,6 +94,8 @@
 		147D71362FD6F9B6008F3BF8 /* bbpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbpl; sourceTree = BUILT_PRODUCTS_DIR; };
 		147D713E2FD6F9D7008F3BF8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		14B1A0022FE9000100BB0001 /* Test/bBpianoLitePerformanceTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test/bBpianoLitePerformanceTest.cpp; sourceTree = SOURCE_ROOT; };
+		14B72C5830491A3B007325C7 /* bBSynthesis.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBSynthesis.xcodeproj; sourceTree = "<group>"; };
+		14B72F5130491B55007325C7 /* bBSynthesis.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBSynthesis.xcodeproj; sourceTree = "<group>"; };
 		14D55CDC2FD8273E00F009D7 /* bbps */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbps; sourceTree = BUILT_PRODUCTS_DIR; };
 		14E708362F78BE0C005C806C /* bBpiano.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bBpiano.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -417,6 +419,20 @@
 			path = docs;
 			sourceTree = "<group>";
 		};
+		14B72C5E30491A48007325C7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		14B7306F30491B55007325C7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		14E7082D2F78BE0C005C806C = {
 			isa = PBXGroup;
 			children = (
@@ -619,6 +635,16 @@
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 14E708372F78BE0C005C806C /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 14B7306F30491B55007325C7 /* Products */;
+					ProjectRef = 14B72F5130491B55007325C7 /* bBSynthesis.xcodeproj */;
+				},
+				{
+					ProductGroup = 14B72C5E30491A48007325C7 /* Products */;
+					ProjectRef = 14B72C5830491A3B007325C7 /* bBSynthesis.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				14E708352F78BE0C005C806C /* bBpiano */,

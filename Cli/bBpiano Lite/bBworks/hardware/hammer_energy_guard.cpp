@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -47,6 +48,11 @@ double waveEnergy(const StringModel& string) {
 struct Arguments {
     double velocity = 2.0;
     std::filesystem::path forceLog = "hammer_energy_guard_force.txt";
+    std::optional<double> hardness;
+    std::optional<double> exponent;
+    std::optional<double> epsilon;
+    std::optional<double> tau0;
+    std::optional<double> linearDensity;
 };
 
 Arguments parseArguments(int argc, char** argv) {
@@ -57,15 +63,56 @@ Arguments parseArguments(int argc, char** argv) {
             arguments.velocity = std::stod(argv[++index]);
         } else if (option == "--force-log" && index + 1 < argc) {
             arguments.forceLog = argv[++index];
+        } else if (option == "--hardness" && index + 1 < argc) {
+            arguments.hardness = std::stod(argv[++index]);
+        } else if (option == "--p" && index + 1 < argc) {
+            arguments.exponent = std::stod(argv[++index]);
+        } else if (option == "--epsilon" && index + 1 < argc) {
+            arguments.epsilon = std::stod(argv[++index]);
+        } else if (option == "--tau0" && index + 1 < argc) {
+            arguments.tau0 = std::stod(argv[++index]);
+        } else if (
+            option == "--linear-density"
+            && index + 1 < argc
+        ) {
+            arguments.linearDensity = std::stod(argv[++index]);
         } else {
             throw std::runtime_error(
                 "Usage: hammer_energy_guard "
-                "[--velocity M_PER_S] [--force-log PATH]"
+                "[--velocity M_PER_S] [--force-log PATH] "
+                "[--hardness N_PER_MM_P] [--p EXPONENT] "
+                "[--epsilon VALUE] [--tau0 SECONDS] "
+                "[--linear-density KG_PER_M]"
             );
         }
     }
     if (!(arguments.velocity > 0.0)) {
         throw std::runtime_error("Velocity must be positive.");
+    }
+    if (arguments.hardness && !(*arguments.hardness > 0.0)) {
+        throw std::runtime_error("Hardness must be positive.");
+    }
+    if (arguments.exponent && !(*arguments.exponent > 0.0)) {
+        throw std::runtime_error("p must be positive.");
+    }
+    if (
+        arguments.epsilon
+        && !(*arguments.epsilon >= 0.0 && *arguments.epsilon < 1.0)
+    ) {
+        throw std::runtime_error(
+            "epsilon must be in the range [0, 1)."
+        );
+    }
+    if (arguments.tau0 && !(*arguments.tau0 > 0.0)) {
+        throw std::runtime_error("tau0 must be positive.");
+    }
+    if (
+        arguments.linearDensity
+        && !(*arguments.linearDensity > 0.0)
+    ) {
+        throw std::runtime_error(
+            "Linear density must be positive."
+        );
     }
     return arguments;
 }
@@ -87,8 +134,28 @@ int main(int argc, char** argv) {
         forceLog << std::setprecision(15);
 
         HammerModel hammer;
-        hammer.setVIn(arguments.velocity);
         StringModel& string = *hammer.string_a;
+        if (arguments.hardness) {
+            hammer.hardness = *arguments.hardness;
+        }
+        if (arguments.exponent) {
+            hammer.p = *arguments.exponent;
+        }
+        if (arguments.epsilon) {
+            hammer.epsilon = *arguments.epsilon;
+        }
+        if (arguments.tau0) {
+            hammer.tau0 = *arguments.tau0;
+        }
+        if (arguments.linearDensity) {
+            string.mu = *arguments.linearDensity;
+            const double waveSpeed =
+                2.0 * string.length * string.f0;
+            string.tension =
+                string.mu * waveSpeed * waveSpeed;
+            string.z = std::sqrt(string.mu * string.tension);
+        }
+        hammer.setVIn(arguments.velocity);
 
         const double initialHammerEnergy =
             0.5 * hammer.m * arguments.velocity * arguments.velocity;

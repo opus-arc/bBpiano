@@ -36,7 +36,7 @@ public:
         // 弦直径 mm
         d = 1.05;
         // 线密度 kg/m
-        mu = 0.007;
+        mu = 0.006751517084270981;
         // 弦张力 N。由 f0、弦长和线密度反推，使
         // f0 = sqrt(tension / mu) / (2 * length) 与 waveguide 一致。
         const double waveSpeed = 2.0 * length * f0;
@@ -149,20 +149,20 @@ private:
     mutable float fractional_y1_l = 0.0;
 
 
-    inline void injectForceAtJunction(int origin_junctionIndex, float F) {
-        const int head_i_l = originIndexToHeadIndex_l(origin_junctionIndex);
-        const int head_i_r = originIndexToHeadIndex_r(origin_junctionIndex + 1);
-        // TODO: 此处力转换为速度增量的公式
-        const float delta =  F / (2 * z);
+    inline void injectForceAtJunction(
+        int origin_junctionIndex,
+        float F
+    ) {
+        const int head_i_l =
+            originIndexToHeadIndex_l(origin_junctionIndex);
+
+        const int head_i_r =
+            originIndexToHeadIndex_r(origin_junctionIndex);
+
+        const float delta = F / (2 * z);
+
         left[head_i_l] += delta;
-        // TODO: 是否要改成 -=
         right[head_i_r] += delta;
-        
-//        std::cout
-//        << "F: " << F
-//        << ", delta: " << delta
-//        << ", index: " << origin_junctionIndex
-//        << '\n';
     }
     
     // 0 <= i < delay_int !!!
@@ -181,7 +181,14 @@ private:
     }
     
     inline void propagate() {
-        
+        // 在移动 head 之前，保存即将离开两个固定端的行波。
+        const float outgoingAtLeft =
+            left[originIndexToHeadIndex_l(0)];
+
+        const float outgoingAtRight =
+            right[originIndexToHeadIndex_r(delay_int - 1)];
+
+        // 正常传播两个 travelling-wave rail。
         if (rightHead == 0) {
             rightHead = delay_int - 1;
         } else {
@@ -189,13 +196,25 @@ private:
         }
 
         ++leftHead;
-        
         if (leftHead == delay_int) {
             leftHead = 0;
         }
-        
-        boundaryFilter(left[leftHead], true);
-        boundaryFilter(right[rightHead], false);
+
+        // 左端固定边界：
+        // 离开左端的左行波，负反射为右行波。
+        float reflectedFromLeft = outgoingAtLeft;
+        boundaryFilter(reflectedFromLeft, true);
+
+        right[originIndexToHeadIndex_r(0)] =
+            reflectedFromLeft;
+
+        // 右端固定边界：
+        // 离开右端的右行波，负反射为左行波。
+        float reflectedFromRight = outgoingAtRight;
+        boundaryFilter(reflectedFromRight, false);
+
+        left[originIndexToHeadIndex_l(delay_int - 1)] =
+            reflectedFromRight;
     }
     
     inline void boundaryFilter(float& boundary_value, bool isLeft) {
