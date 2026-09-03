@@ -120,8 +120,10 @@ python hammer_modal_benchmark.py \
   --paired-manifest paired_velocity_manifest.csv \
   --baseline-velocity 0.72 \
   --audio-kind microphone \
+  --frequency-mode measured \
+  --minimum-snr-db -20 \
   --f0 261.626 \
-  --modes 32 \
+  --modes 13 \
   --output-dir paired_benchmark
 ```
 
@@ -129,6 +131,12 @@ The primary result is modal-shape RMSE in dB after removing any per-file
 constant gain offset. Raw level RMSE and the detected gain offset are also
 reported. Do not normalize, compress, limit, denoise, or apply automatic gain
 control to individual recordings.
+
+`--frequency-mode measured` estimates one fixed modal-frequency grid from the
+baseline/reference WAV and reuses it for every velocity. This avoids treating
+small tuning or inharmonicity offsets as hammer-model error. Use
+`--frequency-mode harmonic` for synthetic self-tests or when the target is
+known to be exactly harmonic.
 
 ### Exploratory single-WAV proxy
 
@@ -142,9 +150,9 @@ python hammer_modal_benchmark.py \
   --output-dir benchmark
 ```
 
-The WAV must be uncompressed PCM. The analyzer detects the onset, skips the
-hammer contact region, and estimates all ideal harmonic partial amplitudes
-together with a windowed least-squares sinusoidal fit.
+The WAV must be uncompressed PCM or IEEE-float WAV. The analyzer detects the
+onset, skips the hammer contact region, and estimates the selected partial
+amplitudes together with a windowed least-squares sinusoidal fit.
 
 The single-WAV `--audio-kind microphone` result is only an acoustic proxy. A microphone recording
 contains the soundboard transfer function, radiation, room, microphone

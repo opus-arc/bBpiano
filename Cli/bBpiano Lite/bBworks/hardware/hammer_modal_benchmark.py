@@ -45,6 +45,11 @@ import numpy as np
 from hammer_analyzer import load_force_file, select_first_contact
 
 try:
+    import soundfile as sf
+except ImportError:
+    sf = None
+
+try:
     import matplotlib.pyplot as plt
 except ImportError:
     plt = None
@@ -93,7 +98,7 @@ def _normalize_energy(energy, valid=None):
     return result
 
 
-def force_modal_fingerprint(path, spec):
+def force_modal_fingerprint(path, spec, modal_frequencies_hz=None):
     all_t, all_f = load_force_file(path)
     t, force, event_count = select_first_contact(all_t, all_f)
 
@@ -104,7 +109,21 @@ def force_modal_fingerprint(path, spec):
 
     dt = float(np.median(positive_delta))
     force_sample_rate = 1.0 / dt
-    highest_frequency = spec.mode_count * spec.f0
+    if modal_frequencies_hz is None:
+        modal_frequencies_hz = (
+            np.arange(1, spec.mode_count + 1, dtype=float) * spec.f0
+        )
+    else:
+        modal_frequencies_hz = np.asarray(
+            modal_frequencies_hz,
+            dtype=float,
+        )
+        if len(modal_frequencies_hz) != spec.mode_count:
+            raise RuntimeError(
+                "Measured frequency count does not match mode count."
+            )
+
+    highest_frequency = float(np.max(modal_frequencies_hz))
     if highest_frequency >= 0.49 * force_sample_rate:
         raise RuntimeError(
             "Requested modal range reaches the force-log Nyquist limit: "
@@ -119,7 +138,7 @@ def force_modal_fingerprint(path, spec):
     t = t - t[0]
 
     mode = np.arange(1, spec.mode_count + 1, dtype=float)
-    omega = 2.0 * np.pi * spec.f0 * mode
+    omega = 2.0 * np.pi * modal_frequencies_hz
     strike_shape = np.sin(np.pi * mode * spec.strike_position)
     phase = np.outer(t, omega)
 
@@ -201,6 +220,9 @@ def force_modal_fingerprint(path, spec):
             ),
             "closed_system_energy_budget_applicable": False,
             "energy_identity_max_relative_error": identity_relative_error,
+            "modal_frequencies_hz": _as_float_list(
+                modal_frequencies_hz
+            ),
         },
     }
 
@@ -215,8 +237,22 @@ def _decode_pcm_wav(path):
             compression = wav.getcomptype()
             raw = wav.readframes(frame_count)
     except wave.Error as error:
+        if sf is not None:
+            try:
+                samples, sample_rate = sf.read(
+                    str(path),
+                    dtype="float64",
+                    always_2d=True,
+                )
+            except (RuntimeError, TypeError) as soundfile_error:
+                raise RuntimeError(
+                    "Reference must be an uncompressed PCM or IEEE-float "
+                    "WAV file."
+                ) from soundfile_error
+            return sample_rate, np.mean(samples, axis=1)
         raise RuntimeError(
-            "Reference must be an uncompressed PCM WAV file."
+            "Reference must be an uncompressed PCM WAV file. Install "
+            "python-soundfile to read IEEE-float WAV files."
         ) from error
 
     if compression != "NONE":
@@ -272,6 +308,78 @@ def _detect_onset(samples, sample_rate):
     return int(candidates[0]) if len(candidates) else int(np.argmax(rms))
 
 
+def estimate_modal_frequencies(
+    path,
+    spec,
+    onset_ms=None,
+    post_contact_ms=5.0,
+    search_window_ms=500.0,
+):
+    """Estimate one fixed target frequency for each ideal mode index."""
+    sample_rate, samples = _decode_pcm_wav(path)
+    onset = (
+        int(round(onset_ms * 1e-3 * sample_rate))
+        if onset_ms is not None
+        else _detect_onset(samples, sample_rate)
+    )
+    start = onset + int(round(post_contact_ms * 1e-3 * sample_rate))
+    requested_length = int(round(search_window_ms * 1e-3 * sample_rate))
+    end = min(len(samples), start + requested_length)
+    segment = np.asarray(samples[start:end], dtype=float)
+    if len(segment) < max(256, requested_length // 2):
+        raise RuntimeError(
+            "Reference WAV is too short for measured-frequency analysis."
+        )
+
+    segment = segment - np.mean(segment)
+    segment *= np.hanning(len(segment))
+    fft_length = 1
+    while fft_length < 8 * len(segment):
+        fft_length *= 2
+    spectrum = np.abs(np.fft.rfft(segment, n=fft_length))
+    frequency_axis = np.fft.rfftfreq(fft_length, 1.0 / sample_rate)
+
+    frequencies = []
+    for mode in range(1, spec.mode_count + 1):
+        lower = max(1.0, (mode - 0.45) * spec.f0)
+        upper = min(
+            0.49 * sample_rate,
+            (mode + 0.45) * spec.f0,
+        )
+        candidates = np.flatnonzero(
+            (frequency_axis >= lower)
+            & (frequency_axis <= upper)
+        )
+        if not len(candidates):
+            raise RuntimeError(
+                f"No frequency-search bins for mode {mode}."
+            )
+        peak_index = int(
+            candidates[np.argmax(spectrum[candidates])]
+        )
+
+        # Sub-bin parabolic interpolation on log magnitude.
+        offset = 0.0
+        if 0 < peak_index < len(spectrum) - 1:
+            values = np.log(
+                np.maximum(
+                    spectrum[peak_index - 1:peak_index + 2],
+                    1e-30,
+                )
+            )
+            denominator = values[0] - 2.0 * values[1] + values[2]
+            if abs(denominator) > 1e-15:
+                offset = float(
+                    0.5 * (values[0] - values[2]) / denominator
+                )
+                offset = float(np.clip(offset, -0.5, 0.5))
+        frequencies.append(
+            (peak_index + offset) * sample_rate / fft_length
+        )
+
+    return np.asarray(frequencies, dtype=float)
+
+
 def _least_squares_partial_amplitudes(samples, sample_rate, frequencies):
     sample_count = len(samples)
     if sample_count < 32:
@@ -315,6 +423,7 @@ def audio_modal_fingerprint(
     onset_ms=None,
     post_contact_ms=5.0,
     window_ms=100.0,
+    modal_frequencies_hz=None,
 ):
     sample_rate, samples = _decode_pcm_wav(path)
     onset = (
@@ -332,7 +441,15 @@ def audio_modal_fingerprint(
 
     segment = samples[start:end]
     mode = np.arange(1, spec.mode_count + 1, dtype=float)
-    frequencies = mode * spec.f0
+    frequencies = (
+        mode * spec.f0
+        if modal_frequencies_hz is None
+        else np.asarray(modal_frequencies_hz, dtype=float)
+    )
+    if len(frequencies) != spec.mode_count:
+        raise RuntimeError(
+            "Measured frequency count does not match mode count."
+        )
     if frequencies[-1] >= 0.49 * sample_rate:
         raise RuntimeError("Requested mode range reaches WAV Nyquist.")
 
@@ -390,6 +507,7 @@ def audio_modal_fingerprint(
             "audio_kind": audio_kind,
             "residual_rms": residual_rms,
             "physical_energy_comparison": audio_kind != "microphone",
+            "modal_frequencies_hz": _as_float_list(frequencies),
         },
     }
 
@@ -459,6 +577,7 @@ def paired_velocity_benchmark(
     post_contact_ms=5.0,
     window_ms=100.0,
     minimum_snr_db=10.0,
+    frequency_mode="harmonic",
 ):
     manifest_path = Path(manifest_path)
     with manifest_path.open(encoding="utf-8") as fp:
@@ -476,33 +595,26 @@ def paired_velocity_benchmark(
             + ", ".join(sorted(missing))
         )
 
-    runs = []
+    parsed_rows = []
     for row in rows:
         velocity = float(row["velocity_m_s"])
-        run_spec = replace(spec, impact_velocity_m_s=velocity)
         force_path = (manifest_path.parent / row["force_log"]).resolve()
         wav_path = (manifest_path.parent / row["reference_wav"]).resolve()
         onset_text = row.get("onset_ms", "").strip()
         onset_ms = float(onset_text) if onset_text else None
-        runs.append({
+        parsed_rows.append({
             "velocity_m_s": velocity,
-            "candidate": force_modal_fingerprint(force_path, run_spec),
-            "target": audio_modal_fingerprint(
-                wav_path,
-                run_spec,
-                audio_kind,
-                onset_ms=onset_ms,
-                post_contact_ms=post_contact_ms,
-                window_ms=window_ms,
-            ),
+            "force_path": force_path,
+            "wav_path": wav_path,
+            "onset_ms": onset_ms,
         })
 
-    runs.sort(key=lambda run: run["velocity_m_s"])
+    parsed_rows.sort(key=lambda run: run["velocity_m_s"])
     if baseline_velocity is None:
-        baseline = runs[0]
+        baseline_row = parsed_rows[0]
     else:
         candidates = [
-            run for run in runs
+            run for run in parsed_rows
             if math.isclose(
                 run["velocity_m_s"],
                 baseline_velocity,
@@ -514,7 +626,52 @@ def paired_velocity_benchmark(
             raise RuntimeError(
                 f"Baseline velocity {baseline_velocity:g} is not in manifest."
             )
-        baseline = candidates[0]
+        baseline_row = candidates[0]
+
+    modal_frequencies_hz = None
+    if frequency_mode == "measured":
+        modal_frequencies_hz = estimate_modal_frequencies(
+            baseline_row["wav_path"],
+            spec,
+            onset_ms=baseline_row["onset_ms"],
+            post_contact_ms=post_contact_ms,
+        )
+    elif frequency_mode != "harmonic":
+        raise RuntimeError(
+            "frequency_mode must be harmonic or measured."
+        )
+
+    runs = []
+    for row in parsed_rows:
+        velocity = row["velocity_m_s"]
+        run_spec = replace(spec, impact_velocity_m_s=velocity)
+        runs.append({
+            "velocity_m_s": velocity,
+            "candidate": force_modal_fingerprint(
+                row["force_path"],
+                run_spec,
+                modal_frequencies_hz=modal_frequencies_hz,
+            ),
+            "target": audio_modal_fingerprint(
+                row["wav_path"],
+                run_spec,
+                audio_kind,
+                onset_ms=row["onset_ms"],
+                post_contact_ms=post_contact_ms,
+                window_ms=window_ms,
+                modal_frequencies_hz=modal_frequencies_hz,
+            ),
+        })
+
+    baseline = next(
+        run for run in runs
+        if math.isclose(
+            run["velocity_m_s"],
+            baseline_row["velocity_m_s"],
+            rel_tol=0.0,
+            abs_tol=1e-9,
+        )
+    )
 
     base_force = np.asarray(
         baseline["candidate"]["modal_energy_J"],
@@ -634,6 +791,14 @@ def paired_velocity_benchmark(
         "audio_kind": audio_kind,
         "baseline_velocity_m_s": baseline["velocity_m_s"],
         "minimum_snr_db": minimum_snr_db,
+        "frequency_mode": frequency_mode,
+        "modal_frequencies_hz": (
+            _as_float_list(modal_frequencies_hz)
+            if modal_frequencies_hz is not None
+            else _as_float_list(
+                np.arange(1, spec.mode_count + 1) * spec.f0
+            )
+        ),
         "run_count": len(runs),
         "comparison_count": len(per_velocity),
         "overall_shape_rmse_db": float(
@@ -885,6 +1050,12 @@ def build_parser():
     parser.add_argument("--window-ms", type=float, default=100.0)
     parser.add_argument("--baseline-velocity", type=float)
     parser.add_argument("--minimum-snr-db", type=float, default=10.0)
+    parser.add_argument(
+        "--frequency-mode",
+        choices=["harmonic", "measured"],
+        default="harmonic",
+    )
+    parser.add_argument("--frequency-reference-wav")
     parser.add_argument("--sample-rate", type=float, default=44100.0)
     parser.add_argument("--f0", type=float, default=261.626)
     parser.add_argument("--length-m", type=float, default=0.65)
@@ -927,6 +1098,7 @@ def main():
             post_contact_ms=args.post_contact_ms,
             window_ms=args.window_ms,
             minimum_snr_db=args.minimum_snr_db,
+            frequency_mode=args.frequency_mode,
         )
         outputs = write_paired_outputs(args.output_dir, result)
         summary = {
@@ -938,15 +1110,44 @@ def main():
         print(json.dumps(summary, indent=2, ensure_ascii=False))
         return
 
-    candidate = force_modal_fingerprint(args.force_log, spec)
+    modal_frequencies_hz = None
+    if args.frequency_mode == "measured":
+        frequency_reference = (
+            args.frequency_reference_wav or args.reference_wav
+        )
+        if not frequency_reference:
+            raise RuntimeError(
+                "Measured frequency mode needs --frequency-reference-wav "
+                "or --reference-wav."
+            )
+        modal_frequencies_hz = estimate_modal_frequencies(
+            frequency_reference,
+            spec,
+            onset_ms=args.reference_onset_ms,
+            post_contact_ms=args.post_contact_ms,
+        )
+
+    candidate = force_modal_fingerprint(
+        args.force_log,
+        spec,
+        modal_frequencies_hz=modal_frequencies_hz,
+    )
 
     self_test_result = None
     if args.self_test:
+        if modal_frequencies_hz is not None:
+            raise RuntimeError(
+                "--self-test currently requires harmonic frequency mode."
+            )
         self_test_result = self_test(candidate, spec)
 
     target = None
     if args.target_force_log:
-        target = force_modal_fingerprint(args.target_force_log, spec)
+        target = force_modal_fingerprint(
+            args.target_force_log,
+            spec,
+            modal_frequencies_hz=modal_frequencies_hz,
+        )
     elif args.reference_wav:
         target = audio_modal_fingerprint(
             args.reference_wav,
@@ -955,6 +1156,7 @@ def main():
             onset_ms=args.reference_onset_ms,
             post_contact_ms=args.post_contact_ms,
             window_ms=args.window_ms,
+            modal_frequencies_hz=modal_frequencies_hz,
         )
 
     distance = (
