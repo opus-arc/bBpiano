@@ -24,3 +24,17 @@ AcousticLab/HammerLab/.Generated/
 
 
 /Cli/bBpiano Sonic/data/wav_snippet/SF2 Grand Piano/SpessaSynth-LocalEdition/
+
+# Local hardware research artifacts; never commit these directories.
+/Cli/bBpiano Lite/bBworks/hardware/__pycache__/
+/Cli/bBpiano Lite/bBworks/hardware/energy_guard_results/
+/Cli/bBpiano Lite/bBworks/hardware/hammer_parameter_optimization/
+/Cli/bBpiano Lite/bBworks/hardware/parameter_benchmark_results/
+/Cli/bBpiano Lite/bBworks/hardware/reference_copies/
+
+# Local root-level research and generated artifacts.
+/analysis/
+/hammer_benchmark/
+/hammer_fit/
+/tmp/
+/cipher_analysis.txt
