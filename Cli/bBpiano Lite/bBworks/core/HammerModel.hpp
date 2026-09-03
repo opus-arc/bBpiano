@@ -122,16 +122,16 @@ private:
     double acceleration = 0.0;
     
     // N / mm^p
-    double hardness = 400.0; // measured Renner A1
+    double hardness = 109.87459216355096;
     
     // 非线性指数
-    double p = 2.4; // measured Renner A1
+    double p = 1.5;
     
     // 控制加载和卸载是否一样
-    double epsilon = 0.51; // measured Renner A1
+    double epsilon = 0.8104484280879438;
     
     // 松弛时间，单位 s
-    double tau0 = 0.0004; // measured Renner A1
+    double tau0 = 8.741820760093148e-06;
     
     // 历史压缩 毛毡记忆
     double history = 0.0;

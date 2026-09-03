@@ -26,13 +26,13 @@
 // --------------------------------------------------------------------
 // MARK: version & logo
 
-#define VERSION "L0-Works"
+#define VERSION "L0-Synthesis"
 static constexpr const char* logo =
     R"(
         ┌────────────────────────────┐──╭────╮
         │                            │==│╲╱╲╱│
         │  bBpiano 0                 │==│╱╲╱╲│
-        │  L0-Works/260727           │==│╲╱╲╱│
+        │  L0-Synthesis/260903       │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
         │  Physical Modeling Piano   │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
