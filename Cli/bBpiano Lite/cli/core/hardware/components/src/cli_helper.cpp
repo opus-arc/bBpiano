@@ -26,6 +26,8 @@
 #include <string>
 #include <utility>
 
+#include "../cli_helper.hpp"
+#include "../../controller_hardware.hpp"
 
 // ======================== ======================== ========================
 // Internal declarations
@@ -69,14 +71,14 @@ int cli_helper(int argc, char* argv[], const char* version, const char* logo) {
     // ------------------------ ------------------------
     static const option long_options[] = {
         // ------------------------
-        // Basic CLI commands
-        // 基本cli命令
+        // CLI commands
+        // Cli命令
         // ------------------------
         {"help",     no_argument,       nullptr, 'h'},
         {"version",  no_argument,       nullptr, 'v'},
         // ------------------------
-        // Basic service commands
-        // 基本service命令
+        // Service commands
+        // Service命令
         // ------------------------
         {"midi",     required_argument, nullptr, 'm'},// midi_path
         {"piano",    no_argument,       nullptr, 'p'},
@@ -98,14 +100,14 @@ int cli_helper(int argc, char* argv[], const char* version, const char* logo) {
     // ------------------------
     struct CliOptions {
         // ------------------------
-        // Basic CLI commands
-        // 基本cli命令
+        // CLI commands
+        // Cli命令
         // ------------------------
         bool help = false;
         bool version = false;
         // ------------------------
-        // Basic service commands
-        // 基本service命令
+        // Service commands
+        // Service命令
         // ------------------------
         std::optional<std::string> midi = "";
         bool piano = false;
@@ -120,8 +122,8 @@ int cli_helper(int argc, char* argv[], const char* version, const char* logo) {
     while ((opt = getopt_long(argc, argv, "hvm:pke:rti", long_options, nullptr)) != -1) {
         switch (opt) {
             // ------------------------
-            // Basic CLI commands
-            // 基本cli命令
+            // CLI commands
+            // Cli命令
             // ------------------------
             case 'h':
                 options.help = true;
@@ -130,8 +132,8 @@ int cli_helper(int argc, char* argv[], const char* version, const char* logo) {
                 options.version = true;
                 break;
             // ------------------------
-            // Basic service commands
-            // 基本service命令
+            // Service commands
+            // Service命令
             // ------------------------
             case 'm':
                 options.midi = optarg;
@@ -155,8 +157,6 @@ int cli_helper(int argc, char* argv[], const char* version, const char* logo) {
                 options.internal_test = true;
                 break;
             default:
-                print_logo_and_version(version, logo);
-                help();
                 return EXIT_FAILURE;
         }
     }
@@ -175,8 +175,8 @@ int cli_helper(int argc, char* argv[], const char* version, const char* logo) {
         return EXIT_FAILURE;
     }
     // ------------------------
-    // Basic CLI commands
-    // 基本cli命令
+    // CLI commands
+    // Cli命令
     // ------------------------
     if (options.help) {
         help();
@@ -187,42 +187,42 @@ int cli_helper(int argc, char* argv[], const char* version, const char* logo) {
         return EXIT_SUCCESS;
     }
     // ------------------------
-    // Basic service commands
-    // 基本service命令
+    // Service commands
+    // Service命令
     // ------------------------
     init_engine();
     if (options.midi) {
-        
+        midi_service(*options.midi);
         shutdown_engine();
         return EXIT_SUCCESS;
     }
     if (options.piano) {
-        
+        piano_service();
         shutdown_engine();
         return EXIT_SUCCESS;
     }
     if (options.keyboard) {
-        
+        keyboard_service();
         shutdown_engine();
         return EXIT_SUCCESS;
     }
     if (options.export_path) {
-        
+        export_service(*options.export_path);
         shutdown_engine();
         return EXIT_SUCCESS;
     }
     if (options.record) {
-        
+        record_service();
         shutdown_engine();
         return EXIT_SUCCESS;
     }
     if (options.test) {
-        
+        test_service();
         shutdown_engine();
         return EXIT_SUCCESS;
     }
     if (options.internal_test) {
-        
+        internal_test_service();
         shutdown_engine();
         return EXIT_SUCCESS;
     }
