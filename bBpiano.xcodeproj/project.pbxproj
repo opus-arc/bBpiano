@@ -75,6 +75,7 @@
 		142C18C52FD52A3300685F41 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		142C18C72FD52A3C00685F41 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		142C18C92FD52A8600685F41 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
+		142C9A9C304AED1D00EA4790 /* bBSynthesis.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBSynthesis.xcodeproj; sourceTree = "<group>"; };
 		143FB63B2FE4E182000091A3 /* L0-100c Op.101.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "L0-100c Op.101.mp3"; sourceTree = "<group>"; };
 		143FB63C2FE4E182000091A3 /* L0-beta k.141.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "L0-beta k.141.mp3"; sourceTree = "<group>"; };
 		143FB63D2FE4E182000091A3 /* Pianoteq 9 "From the Street".mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Pianoteq 9 \"From the Street\".mp3"; sourceTree = "<group>"; };
@@ -378,6 +379,13 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		142C9BBA304AED1D00EA4790 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		143FB6402FE4E182000091A3 /* examples */ = {
 			isa = PBXGroup;
 			children = (
@@ -639,6 +647,10 @@
 				{
 					ProductGroup = 14B7306F30491B55007325C7 /* Products */;
 					ProjectRef = 14B72F5130491B55007325C7 /* bBSynthesis.xcodeproj */;
+				},
+				{
+					ProductGroup = 142C9BBA304AED1D00EA4790 /* Products */;
+					ProjectRef = 142C9A9C304AED1D00EA4790 /* bBSynthesis.xcodeproj */;
 				},
 				{
 					ProductGroup = 14B72C5E30491A48007325C7 /* Products */;

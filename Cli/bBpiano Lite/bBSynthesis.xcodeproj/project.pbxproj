@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		14B73B53304AE994007325C7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14B73B52304AE994007325C7 /* AudioToolbox.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		14B72C4C30491A3A007325C7 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -20,13 +24,17 @@
 
 /* Begin PBXFileReference section */
 		14B72C4E30491A3A007325C7 /* bBSynthesis */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bBSynthesis; sourceTree = BUILT_PRODUCTS_DIR; };
+		14B73B52304AE994007325C7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		14B72C6830491B4D007325C7 /* Exceptions for "cli" folder in "bBSynthesis" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				hardware/src/cli_helper.cpp,
+				core/hardware/components/src/cli_helper.cpp,
+				core/hardware/components/src/soundcard_helper.cpp,
+				core/hardware/controller_hardware.cpp,
+				core/piano/controller_piano.cpp,
 				main.cpp,
 			);
 			target = 14B72C4D30491A3A007325C7 /* bBSynthesis */;
@@ -49,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				14B73B53304AE994007325C7 /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				14B72C6430491AF3007325C7 /* cli */,
+				14B73B51304AE994007325C7 /* Frameworks */,
 				14B72C4F30491A3A007325C7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -69,6 +79,14 @@
 				14B72C4E30491A3A007325C7 /* bBSynthesis */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		14B73B51304AE994007325C7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				14B73B52304AE994007325C7 /* AudioToolbox.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
