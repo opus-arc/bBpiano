@@ -21,6 +21,8 @@
 #define piano_model_hpp
 
 #include <iostream>
+#include "./key_model.hpp"
+
 
 class PianoModel {
 public:

@@ -71,6 +71,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		141CF90F3050678E00E2B2A1 /* bBSynthesis.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBSynthesis.xcodeproj; sourceTree = "<group>"; };
 		142C18C32FD52A2A00685F41 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		142C18C52FD52A3300685F41 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		142C18C72FD52A3C00685F41 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -367,6 +368,13 @@
 			name = "Recovered References";
 			sourceTree = "<group>";
 		};
+		141CFA2D3050678E00E2B2A1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		142C18C22FD52A2A00685F41 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -647,6 +655,10 @@
 				{
 					ProductGroup = 14B7306F30491B55007325C7 /* Products */;
 					ProjectRef = 14B72F5130491B55007325C7 /* bBSynthesis.xcodeproj */;
+				},
+				{
+					ProductGroup = 141CFA2D3050678E00E2B2A1 /* Products */;
+					ProjectRef = 141CF90F3050678E00E2B2A1 /* bBSynthesis.xcodeproj */;
 				},
 				{
 					ProductGroup = 142C9BBA304AED1D00EA4790 /* Products */;
