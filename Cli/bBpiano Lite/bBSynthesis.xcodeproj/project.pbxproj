@@ -42,6 +42,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		141C03F23050683200E2B2A1 /* eval */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = eval;
+			sourceTree = "<group>";
+		};
 		14B72C6430491AF3007325C7 /* cli */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -67,6 +72,7 @@
 		14B72C4530491A3A007325C7 = {
 			isa = PBXGroup;
 			children = (
+				141C03F23050683200E2B2A1 /* eval */,
 				14B72C6430491AF3007325C7 /* cli */,
 				14B73B51304AE994007325C7 /* Frameworks */,
 				14B72C4F30491A3A007325C7 /* Products */,

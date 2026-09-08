@@ -26,6 +26,8 @@ class HammerModel;
 
 class StringModel {
     
+    // 3D Timoshenko beam
+    // 铁木辛柯梁
     
 public:
     

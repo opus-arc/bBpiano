@@ -19,6 +19,7 @@
 #ifndef controller_piano_hpp
 #define controller_piano_hpp
 
+#include "./components/piano_model.hpp"
 
 void bbpiano_init();
 void bbpiano_shutdown();
