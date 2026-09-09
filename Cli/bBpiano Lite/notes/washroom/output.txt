@@ -1,0 +1,24 @@
+    if (options.help) {
+
+        print_help();
+
+        return true;
+
+    }
+
+    if (options.version) {
+
+        print_logo_and_version(version);
+
+        return true;
+
+    }
+
+    if (options.test) {
+
+        run_test(*options.test);
+
+        return true;
+
+    }
+
