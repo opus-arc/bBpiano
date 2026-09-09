@@ -17,7 +17,7 @@
 // 2026-09-04
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#include "controller_piano.hpp"
+#include "./controller_piano.hpp"
 
 float get_next_buffer() {
     

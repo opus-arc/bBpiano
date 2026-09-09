@@ -19,6 +19,8 @@
 #ifndef key_model_hpp
 #define key_model_hpp
 
+#include <array>
+
 #include "./string_model.hpp"
 #include "./hammer_model.hpp"
 
@@ -28,17 +30,45 @@ class KeyModel {
     
 public:
     
-    double f0;
+    double samplerate = 0.0;
+    
+    int midi_n;
     int string_count = 3;
     
     HammerModel hammer;
-    std::vector<StringModel> strings;
+    std::array<StringModel, 3> strings;
+    
+    std::array<double, 3> string_vs = {0.0, 0.0, 0.0};
     
     bool key_down = false;
     bool key_active = false;
     
-    KeyModel(int samplarate, int string_count);
-    void key_movement();
+    KeyModel(int midi_n, double samplerate, int string_count) :
+        midi_n(midi_n),
+        string_count(string_count),
+        samplerate(samplerate),
+        hammer(samplerate, string_count),
+        strings{StringModel(samplerate, 438.0),
+        StringModel(samplerate, 440.0),
+        StringModel(samplerate, 442.0)} {
+        
+    }
+    
+    void key_movement() {
+
+        for(int i = 0; i < string_count; i++) {
+            string_vs[i] = strings[i].get_string_vs();
+        }
+        hammer.hammer_movement(string_vs);
+        for(int i = 0; i < string_count; i++) {
+            strings[i].string_movement(hammer.get_force_strings()[i]);
+        }
+        
+    }
+    
+    void trigger(double velocity_mps) {
+        hammer.hammer_launch(velocity_mps);
+    }
     
 };
 
