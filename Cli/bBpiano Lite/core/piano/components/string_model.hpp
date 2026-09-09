@@ -16,24 +16,27 @@
 // Ziyang Tan
 // 2026-09-04
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#ifndef key_model_hpp
-#define key_model_hpp
 
-#include "./string_model.hpp"
-#include "./hammer_model.hpp"
+#ifndef string_model_hpp
+#define string_model_hpp
 
-class KeyModel {
+#include <iostream>
+
+class HammerModel;
+
+class StringModel {
+    
+    
     
 public:
     
-    HammerModel hammer;
-    StringModel string_a;
-    StringModel string_b;
-    StringModel string_c;
     
-    bool key_down = false;
-    bool key_active = false;
+public:
+    
+    StringModel(double f0);
+
+    float string_movement();
     
 };
 
-#endif /* key_model_hpp */
+#endif /* string_model_hpp */

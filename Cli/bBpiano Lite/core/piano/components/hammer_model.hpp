@@ -25,8 +25,8 @@
 #include <cmath>
 #include <stdexcept>
 #include <string>
-
-class StringModel;
+#include <array>
+#include <vector>
 
 class HammerModel {
     
@@ -134,54 +134,43 @@ public:
     // Layers
     // 层
     // ======================== ======================== ========================
+    // ======================== ========================
+    // String Side Felt Layer
+    // 弦侧毛毡层
+    // ======================== ========================
     struct StringSideFeltLayer {
-        GeneralizedMaxwell generalized_maxwell_model_a;
-        GeneralizedMaxwell generalized_maxwell_model_b;
-        GeneralizedMaxwell generalized_maxwell_model_c;
+        
+        int string_count = 3;
+        std::array<GeneralizedMaxwell, 3> generalized_maxwell_models;
         double force = 0.0;
+        std::array<double, 3> force_strings = {0.0, 0.0, 0.0};
         
-        StringSideFeltLayer(double ts)
-            : generalized_maxwell_model_a(
-                  6.6499201608e19,  // K∞ = 566 N/mm^5.69
-                                   //    = 6.6499201608e19 N/m^5.69
-
-                  3.3249600804e20,  // K = 2830 N/mm^5.69
-                                   //   = 3.3249600804e20 N/m^5.69
-
-                  1.0e-5,           // relaxation_time_s
-
-                  0.8,              // beta，无单位
-
-                  5.69,             // p，无单位
-
-                  ts),              // time_step_s
-
-              generalized_maxwell_model_b(
-                  6.6499201608e19,   // N/m^5.69
-                  3.3249600804e20,   // N/m^5.69
-                  1.0e-5,            // s
-                  0.8,               // 无单位
-                  5.69,              // 无单位
-                  ts),               // s
-
-              generalized_maxwell_model_c(
-                  6.6499201608e19,   // N/m^5.69
-                  3.3249600804e20,   // N/m^5.69
-                  1.0e-5,            // s
-                  0.8,               // 无单位
-                  5.69,              // 无单位
-                  ts) {              // s
+        StringSideFeltLayer(double ts, int string_count)
+            : string_count(string_count),
+                generalized_maxwell_models({
+                GeneralizedMaxwell(6.6499201608e19,  // K∞ = 566 N/mm^5.69 = 6.6499201608e19 N/m^5.69
+                                   3.3249600804e20,  // K = 2830 N/mm^5.69 = 3.3249600804e20 N/m^5.69
+                                   1.0e-5,           // relaxation_time_s
+                                   0.8,              // beta
+                                   5.69,             // p
+                                   ts),              // time_step_s
+                GeneralizedMaxwell(6.6499201608e19, 3.3249600804e20, 1.0e-5, 0.8, 5.69, ts),
+                GeneralizedMaxwell(6.6499201608e19, 3.3249600804e20, 1.0e-5, 0.8, 5.69, ts)}) {
+                    if(string_count < 1 || string_count > 3) throw std::runtime_error("hammer_model: string_count is: " + std::to_string(string_count));
         }
         
-        inline void movement(double string_a_x, double string_b_x, double string_c_x) {
-            generalized_maxwell_model_a.movement(string_a_x);
-            generalized_maxwell_model_b.movement(string_b_x);
-            generalized_maxwell_model_c.movement(string_c_x);
+        inline void movement(const std::array<double, 3>& string_xs) {
             
-            force = generalized_maxwell_model_a.get_force() +
-            generalized_maxwell_model_b.get_force() +
-            generalized_maxwell_model_c.get_force();
+            force = 0.0;
+            std::fill(force_strings.begin(), force_strings.end(), 0.0);
+            
+            for(int i = 0; i < string_count; i++) {
+                generalized_maxwell_models[i].movement(string_xs[i]);
+                force_strings[i] = generalized_maxwell_models[i].get_force();
+                force += force_strings[i];
+            }
         }
+        
         inline double get_force() {
             return force;
         }
@@ -191,39 +180,18 @@ public:
         // 常数算子
         // ======================== ========================
         inline double get_a() {
-            return generalized_maxwell_model_a.get_a() +
-            generalized_maxwell_model_b.get_a() +
-            generalized_maxwell_model_c.get_a();
-        }
-        inline double get_b1() {
-            return generalized_maxwell_model_a.get_b();
-        }
-        inline double get_b2() {
-            return generalized_maxwell_model_b.get_b();
-        }
-        inline double get_b3() {
-            return generalized_maxwell_model_c.get_b();
-        }
-        inline double get_c1_part() {
-            return generalized_maxwell_model_a.get_c_part();
-        }
-        inline double get_c2_part() {
-            return generalized_maxwell_model_b.get_c_part();
-        }
-        inline double get_c3_part() {
-            return generalized_maxwell_model_c.get_c_part();
-        }
-        inline double get_d1() {
-            return generalized_maxwell_model_a.get_d();
-        }
-        inline double get_d2() {
-            return generalized_maxwell_model_b.get_d();
-        }
-        inline double get_d3() {
-            return generalized_maxwell_model_c.get_d();
+            double a = 0;
+            for(int i = 0; i < string_count; i++) {
+                a += generalized_maxwell_models[i].get_a();
+            }
+            return a;
         }
     };
     
+    // ======================== ========================
+    // Core Side Felt Layer
+    // 木质击锤核心侧毛毡层
+    // ======================== ========================
     struct CoreSideFeltLayer {
         MaxwellModel maxwell_model_a;
         MaxwellModel maxwell_model_b;
@@ -232,33 +200,13 @@ public:
         
         CoreSideFeltLayer(double ts)
             : maxwell_model_a(
-                  8.52e9,   // K = 8520 N/mm²
-                             //   = 8.52e9 N/m²
-
+                  8.52e9,   // K = 8520 N/mm² = 8.52e9 N/m²
                   1.0e-5,   // relaxation_time_s
-
-                  0.5,      // beta_1，无单位
-
-                  2.0,      // p，无单位
-
+                  0.5,      // beta_1
+                  2.0,      // p
                   ts),      // time_step_s
-
-              maxwell_model_b(
-                  8.52e9,   // N/m²
-
-                  5.0e-6,   // relaxation_time_s
-
-                  0.2,      // beta_2，无单位
-
-                  2.0,      // p，无单位
-
-                  ts),      // time_step_s
-
-              k(2.556e9) {  // K∞ = 8520 × (1 - 0.5 - 0.2)
-                            //    = 2556 N/mm²
-                            //    = 2.556e9 N/m²
+              maxwell_model_b(8.52e9, 5.0e-6, 0.2, 2.0, ts), k(2.556e9) {
         }
-            
         
         inline void movement(double _x) {
             maxwell_model_a.movement(_x);
@@ -292,105 +240,135 @@ public:
         }
     };
     
-public:
+private:
+    
+    int string_count = 3;
+
+    double hammer_force = 0.0;
+    
     double samplerate = 44100.0;
     double ts = 1 / samplerate;
     
-    double hammer_force = 0.0;
-    
     double hammer_m_kg = 9.12e-3;
-    double hammer_a_mms2 = 0.0;
-    double hammer_v_mms = 0.0;
+    double hammer_a_mps2 = 0.0;
+    double hammer_v_mps = 0.0;
     
     StringSideFeltLayer string_side_felt_layer;
     CoreSideFeltLayer core_side_felt_layer;
     double middle_v = 0.0;
-    double string_side_felt_layer_a_x = 0.0;
-    double string_side_felt_layer_b_x = 0.0;
-    double string_side_felt_layer_c_x = 0.0;
+    std::array<double, 3> string_side_felt_layer_xs = {0.0, 0.0, 0.0};
     double core_side_felt_layer_x = 0.0;
-    StringModel* string = nullptr;
     
 public:
     
-    HammerModel(double samplerate) : samplerate(samplerate),
-    string_side_felt_layer(1 / samplerate), core_side_felt_layer(1 / samplerate) {
+    HammerModel(double samplerate, int string_count) :
+    samplerate(samplerate),
+    string_count(string_count),
+    string_side_felt_layer(1 / samplerate, string_count),
+    core_side_felt_layer(1 / samplerate) {
+        if(string_count < 1 || string_count > 3) throw std::runtime_error("hammer_model: string_count is: " + std::to_string(string_count));
     }
     
     inline void hammer_lanuch(double hammer_v_lanuch) {
-        hammer_v_mms = hammer_v_lanuch;
+        hammer_v_mps = hammer_v_lanuch;
     }
     
-    inline void hammer_movement(double string_a_v, double string_b_v, double string_c_v) {
+    inline void hammer_movement(const std::vector<double>& string_vs) {
+        if(string_vs.size() != string_count)
+            throw std::runtime_error("hammer_model: string_count has problems");
+        
         // ======================== ========================
         // Solve for the velocity of the intermediate layer
         // 解出中间层速度
         // ======================== ========================
-        middle_v = solve_middle_v(string_a_v,
-                                  string_b_v,
-                                  string_c_v,
-                                  hammer_v_mms);
+        middle_v = solve_middle_v(string_vs,
+                                  hammer_v_mps);
         
         // ======================== ========================
         // Calculate the compression
         // 计算压缩量
         // ======================== ========================
-        string_side_felt_layer_a_x = (middle_v - string_a_v) * ts + string_side_felt_layer.generalized_maxwell_model_a.maxwell_model.x_1;
-        string_side_felt_layer_b_x = (middle_v - string_b_v) * ts + string_side_felt_layer.generalized_maxwell_model_b.maxwell_model.x_1;
-        string_side_felt_layer_c_x = (middle_v - string_c_v) * ts + string_side_felt_layer.generalized_maxwell_model_c.maxwell_model.x_1;
-        
-        core_side_felt_layer_x = (hammer_v_mms - middle_v) * ts + core_side_felt_layer.maxwell_model_a.x_1;
+        for(int i = 0; i < string_count; i++)
+            string_side_felt_layer_xs[i] = (middle_v - string_vs[i]) * ts + string_side_felt_layer.generalized_maxwell_models[i].maxwell_model.x_1;
+        core_side_felt_layer_x = (hammer_v_mps - middle_v) * ts + core_side_felt_layer.maxwell_model_a.x_1;
         
         // ======================== ========================
         // Movements of two layers
         // 上下层的运动
         // ======================== ========================
-        string_side_felt_layer.movement(string_side_felt_layer_a_x,
-                                        string_side_felt_layer_b_x,
-                                        string_side_felt_layer_c_x);
+        string_side_felt_layer.movement(string_side_felt_layer_xs);
         
         core_side_felt_layer.movement(core_side_felt_layer_x);
+        
+        // ======================== ========================
+        // Update the force
+        // 更新力
+        // ======================== ========================
+        hammer_force = core_side_felt_layer.get_force();
         
         // ======================== ========================
         // Reaction force on the hammer
         // 对击锤的反作用力
         // ======================== ========================
-        hammer_a_mms2 = -(core_side_felt_layer.force / hammer_m_kg);
-        hammer_v_mms += hammer_a_mms2 * ts;
+        hammer_a_mps2 = -(core_side_felt_layer.force / hammer_m_kg);
+        hammer_v_mps += hammer_a_mps2 * ts;
     }
+    
+    inline std::array<double, 3> get_force_strings() {
+        return string_side_felt_layer.force_strings;
+    }
+    
+private:
 
-    inline double solve_middle_v(double string_a_v, double string_b_v, double string_c_v, double hammer_v) {
+    inline double solve_middle_v(const std::vector<double>& string_vs, double hammer_v) {
         double a = string_side_felt_layer.get_a();
-        double b1 = string_side_felt_layer.get_b1();
-        double b2 = string_side_felt_layer.get_b2();
-        double b3 = string_side_felt_layer.get_b3();
-        double c1 = string_a_v - string_side_felt_layer.get_c1_part();
-        double c2 = string_b_v - string_side_felt_layer.get_c2_part();
-        double c3 = string_c_v - string_side_felt_layer.get_c3_part();
-        double d1 = string_side_felt_layer.get_d1();
-        double d2 = string_side_felt_layer.get_d2();
-        double d3 = string_side_felt_layer.get_d3();
         double e = core_side_felt_layer.get_e();
         double f = core_side_felt_layer.get_f();
         double g = hammer_v + core_side_felt_layer.get_g_part();
         double h = core_side_felt_layer.get_h();
         
+        // ======================== ========================
+        // Calculate the search range
+        // 计算搜索范围
+        // ======================== ========================
         double upper_limit_i = g;
-        double lower_limit_i = std::max({c1, c2, c3});
+        double lower_limit_i = string_vs[0] - string_side_felt_layer.generalized_maxwell_models[0].get_c_part();
+        for (int i = 1; i < string_count; ++i) {
+            double c =
+                string_vs[i] -
+                string_side_felt_layer.generalized_maxwell_models[i].get_c_part();
+
+            lower_limit_i = std::max(lower_limit_i, c);
+        }
+        
         double middle_v_i = (upper_limit_i + lower_limit_i) / 2;
         
+        // ======================== ========================
+        // Standard bisection method check
+        // 标准二分法检查 a > b
+        // ======================== ========================
         if (lower_limit_i > upper_limit_i) {
             throw std::runtime_error("hammer_model: lower_limit_i > upper_limit_i, lower_limit: " + std::to_string(lower_limit_i) + ", upper_limit_i: " + std::to_string(upper_limit_i));
         }
-        
+
+        // ======================== ========================
+        // Bisection method
+        // 二分法计算
+        // ======================== ========================
         constexpr int cycle_count = 24;
         
         for(int i = 1; i <= cycle_count; i++) {
             middle_v_i = (lower_limit_i + upper_limit_i) * 0.5;
-            double f_a = a +
-            b1 * std::pow((middle_v_i - c1), d1) +
-            b2 * std::pow((middle_v_i - c2), d2) +
-            b3 * std::pow((middle_v_i - c3), d3);
+            
+            double f_a_part = 0.0;
+            for(int i = 0; i < string_count; i++) {
+                double b = string_side_felt_layer.generalized_maxwell_models[i].get_b();
+                double c = string_vs[i] - string_side_felt_layer.generalized_maxwell_models[i].get_c_part();
+                double d = string_side_felt_layer.generalized_maxwell_models[i].get_d();
+                f_a_part += b * std::pow(middle_v_i - c, d);
+            }
+            
+            double f_a = a + f_a_part;
             double f_b = e + f * std::pow(g - middle_v_i, h);
             double diff = f_a - f_b;
             if(diff > 0.0) {

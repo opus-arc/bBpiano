@@ -91,10 +91,12 @@
 		144AF9AF301650AE00CE857C /* bBsynth Lite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "bBsynth Lite"; sourceTree = BUILT_PRODUCTS_DIR; };
 		144AF9C23016547100CE857C /* bBsynth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bBsynth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14553D072FC14D60008E3CD7 /* DSP-Benchmark.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "DSP-Benchmark.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		146492B930510CB900285A00 /* bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bbpl.xcodeproj; sourceTree = "<group>"; };
 		146587D62FA42DAF009F5C08 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		146A412C2FDA96F900AF2C9C /* From PDE to PCM.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "From PDE to PCM.md"; sourceTree = "<group>"; };
 		147D71362FD6F9B6008F3BF8 /* bbpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbpl; sourceTree = BUILT_PRODUCTS_DIR; };
 		147D713E2FD6F9D7008F3BF8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		149ED3C930511BAE00C45ADC /* bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bbpl.xcodeproj; sourceTree = "<group>"; };
 		14B1A0022FE9000100BB0001 /* Test/bBpianoLitePerformanceTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test/bBpianoLitePerformanceTest.cpp; sourceTree = SOURCE_ROOT; };
 		14B72C5830491A3B007325C7 /* bBSynthesis.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBSynthesis.xcodeproj; sourceTree = "<group>"; };
 		14B72F5130491B55007325C7 /* bBSynthesis.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBSynthesis.xcodeproj; sourceTree = "<group>"; };
@@ -106,19 +108,20 @@
 		142C18652FD5133400685F41 /* Exceptions for "Cli" folder in "bBpiano" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/core/controller.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/core/piano/Component/Src/BridgeModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/core/piano/Component/Src/DamperModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/core/piano/Component/Src/HammerModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/core/piano/Component/Src/KeyModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/core/piano/Component/Src/PedalModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/core/piano/Component/Src/StringModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/core/piano/PianoModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/core/piano/Utils/MyCSVReader.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/main.cpp",
 				"bBpiano Lite/bBworks/core/src/Controller.cpp",
 				"bBpiano Lite/bBworks/core/src/HammerModel.cpp",
 				"bBpiano Lite/bBworks/core/src/StringModel.cpp",
 				"bBpiano Lite/bBworks/main.cpp",
-				"bBpiano Lite/core/controller.cpp",
-				"bBpiano Lite/core/piano/Component/Src/DamperModel.cpp",
-				"bBpiano Lite/core/piano/Component/Src/HammerModel.cpp",
-				"bBpiano Lite/core/piano/Component/Src/KeyModel.cpp",
-				"bBpiano Lite/core/piano/Component/Src/PedalModel.cpp",
-				"bBpiano Lite/core/piano/Component/Src/StringModel.cpp",
-				"bBpiano Lite/core/piano/PianoModel.cpp",
-				"bBpiano Lite/core/piano/Utils/MyCSVReader.cpp",
-				"bBpiano Lite/main.cpp",
 				"bBpiano Sonic/external/fft/kfc.c",
 				"bBpiano Sonic/external/fft/kiss_fft.c",
 				"bBpiano Sonic/external/fft/kiss_fftnd.c",
@@ -195,17 +198,7 @@
 		147D714F2FD6FA1C008F3BF8 /* Exceptions for "Cli" folder in "bBpiano Lite" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"bBpiano Lite/core/controller.cpp",
-				"bBpiano Lite/core/piano/Component/Src/BridgeModel.cpp",
-				"bBpiano Lite/core/piano/Component/Src/DamperModel.cpp",
-				"bBpiano Lite/core/piano/Component/Src/HammerModel.cpp",
-				"bBpiano Lite/core/piano/Component/Src/KeyModel.cpp",
-				"bBpiano Lite/core/piano/Component/Src/PedalModel.cpp",
-				"bBpiano Lite/core/piano/Component/Src/StringModel.cpp",
-				"bBpiano Lite/core/piano/PianoModel.cpp",
-				"bBpiano Lite/core/piano/Utils/MyCSVReader.cpp",
 				"bBpiano Lite/hardware/DSP-Benchmark.cpp",
-				"bBpiano Lite/main.cpp",
 			);
 			target = 147D71352FD6F9B6008F3BF8 /* bBpiano Lite */;
 		};
@@ -230,19 +223,6 @@
 			);
 			target = 14D55CDB2FD8273E00F009D7 /* bBpiano Sonic */;
 		};
-		14D6D5182FE8C1C500DB26CC /* Exceptions for "Cli" folder in "DSP-Benchmark" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"bBpiano Lite/core/piano/Component/Src/DamperModel.cpp",
-				"bBpiano Lite/core/piano/Component/Src/HammerModel.cpp",
-				"bBpiano Lite/core/piano/Component/Src/KeyModel.cpp",
-				"bBpiano Lite/core/piano/Component/Src/PedalModel.cpp",
-				"bBpiano Lite/core/piano/Component/Src/StringModel.cpp",
-				"bBpiano Lite/core/piano/PianoModel.cpp",
-				"bBpiano Lite/core/piano/Utils/MyCSVReader.cpp",
-			);
-			target = 14553D062FC14D60008E3CD7 /* DSP-Benchmark */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
@@ -261,7 +241,6 @@
 			exceptions = (
 				142C18652FD5133400685F41 /* Exceptions for "Cli" folder in "bBpiano" target */,
 				14E40BFE2FECB63F004FDB9B /* Exceptions for "Cli" folder in "Compile Sources" phase from "bBpiano" target */,
-				14D6D5182FE8C1C500DB26CC /* Exceptions for "Cli" folder in "DSP-Benchmark" target */,
 				147D714F2FD6FA1C008F3BF8 /* Exceptions for "Cli" folder in "bBpiano Lite" target */,
 				14D55CE42FD8274800F009D7 /* Exceptions for "Cli" folder in "bBpiano Sonic" target */,
 				144AF9BD301650DF00CE857C /* Exceptions for "Cli" folder in "bBsynth Lite" target */,
@@ -433,6 +412,20 @@
 				143FB6472FE4E182000091A3 /* index.md */,
 			);
 			path = docs;
+			sourceTree = "<group>";
+		};
+		146493D730510CB900285A00 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		149ED4E730511BAE00C45ADC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		14B72C5E30491A48007325C7 /* Products */ = {
@@ -652,6 +645,14 @@
 			productRefGroup = 14E708372F78BE0C005C806C /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = 146493D730510CB900285A00 /* Products */;
+					ProjectRef = 146492B930510CB900285A00 /* bbpl.xcodeproj */;
+				},
+				{
+					ProductGroup = 149ED4E730511BAE00C45ADC /* Products */;
+					ProjectRef = 149ED3C930511BAE00C45ADC /* bbpl.xcodeproj */;
+				},
 				{
 					ProductGroup = 14B7306F30491B55007325C7 /* Products */;
 					ProjectRef = 14B72F5130491B55007325C7 /* bBSynthesis.xcodeproj */;

@@ -16,5 +16,30 @@
 // Ziyang Tan
 // 2026-09-04
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#ifndef key_model_hpp
+#define key_model_hpp
 
-#include "./piano_model.hpp"
+#include "./string_model.hpp"
+#include "./hammer_model.hpp"
+
+class KeyModel {
+    
+    // 弦锤耦合与tunning
+    
+public:
+    
+    double f0;
+    int string_count = 3;
+    
+    HammerModel hammer;
+    std::vector<StringModel> strings;
+    
+    bool key_down = false;
+    bool key_active = false;
+    
+    KeyModel(int samplarate, int string_count);
+    void key_movement();
+    
+};
+
+#endif /* key_model_hpp */

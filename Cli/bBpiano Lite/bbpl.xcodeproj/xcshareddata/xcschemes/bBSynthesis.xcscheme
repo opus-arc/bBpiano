@@ -74,6 +74,7 @@
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
+      customArchiveName = "bbpl"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>
