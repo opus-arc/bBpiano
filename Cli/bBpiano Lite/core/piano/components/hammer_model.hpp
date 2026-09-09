@@ -52,21 +52,39 @@ public:
         
         double x = 0.0;
         double x_1 = 0.0;
+        double delta_x = 0.0; // 用于计算压缩方向的
         
         double force = 0.0;
         double force_1 = 0.0;
         
+        double k_spring = 0.0;
+        
+        // ------------------------
+        // Precomputed discrete-time coefficients
+        // 预计算被因式分解提取出的重复使用的消耗大的离散时间系数
+        // ------------------------
+        double y = 0.0;
+        double alpha = 0.0;
+        double f = 0.0;
+        double b = 0.0;
+        
         // TODO: 压缩量是否会超出界限？
         
-        MaxwellModel(double k, double relaxation_time, double beta, double p, double ts) :
-        k(k), relaxation_time(relaxation_time), beta(beta), p(p), ts(ts) {
+        MaxwellModel(double k_spring, double k, double relaxation_time, double beta, double p, double ts) :
+        k_spring(k_spring), k(k), relaxation_time(relaxation_time), beta(beta), p(p), ts(ts) {
             if (k <= 0.0 || relaxation_time <= 0.0 || beta <= 0.0 || p <= 0.0 || ts <= 0.0)
                 throw std::runtime_error("MaxwellModel: some constants are too small!");
+            
+            alpha = std::exp(-ts / relaxation_time);
+            y = k * beta * relaxation_time / ts * (1 - alpha);
+            f = y * std::pow(ts, p);
+            b = std::pow(ts, p) * (k_spring + y);
         }
         
         inline void movement(double _x) {
             x = _x;
-            force = (1 - ts / relaxation_time) * force_1 + k * beta * (std::pow(x, p) - std::pow(x_1, p));
+            force = alpha * force_1 + y * (std::pow(x, p) - std::pow(x_1, p));
+            delta_x = x - x_1;
             x_1 = x;
             force_1 = force;
         }
@@ -75,10 +93,10 @@ public:
             return force;
         }
         inline double get_e() {
-            return (1 - ts / relaxation_time) * force_1 - beta * k * std::pow(x_1, p);
+            return alpha * force_1 - y * std::pow(x_1, p);
         }
         inline double get_f() {
-            return std::pow(ts, p) * k * beta;
+            return f;
         }
         inline double get_g_part() {
             return x_1 / ts;
@@ -95,15 +113,15 @@ public:
     struct GeneralizedMaxwell {
         
         MaxwellModel maxwell_model;
-        double k = 0.0;
+        double k_spring = 0.0;
         double force = 0.0;
         
         GeneralizedMaxwell(double k_spring, double k, double relaxation_time, double beta, double p, double ts)
-        : k(k_spring) , maxwell_model(k, relaxation_time, beta, p, ts) {}
+        : k_spring(k_spring) , maxwell_model(k_spring, k, relaxation_time, beta, p, ts) {}
         
         inline void movement(double _x) {
             maxwell_model.movement(_x);
-            force = k * std::pow(_x, maxwell_model.p) + maxwell_model.get_force();
+            force = k_spring * std::pow(_x, maxwell_model.p) + maxwell_model.get_force();
         }
         
         inline double get_force() {
@@ -115,11 +133,11 @@ public:
         // 常数算子
         // ========================
         inline double get_a() {
-            return (1 - maxwell_model.ts / maxwell_model.relaxation_time) * maxwell_model.force_1 -
-            maxwell_model.beta * maxwell_model.k * std::pow(maxwell_model.x_1, maxwell_model.p);
+            return maxwell_model.alpha * maxwell_model.force_1 -
+            maxwell_model.y * std::pow(maxwell_model.x_1, maxwell_model.p);
         }
         inline double get_b() {
-            return std::pow(maxwell_model.ts, maxwell_model.p) * (maxwell_model.k * maxwell_model.beta + k);
+            return maxwell_model.b;
         }
         inline double get_c_part() {
             return maxwell_model.x_1 / maxwell_model.ts;
@@ -193,19 +211,21 @@ public:
     // 木质击锤核心侧毛毡层
     // ======================== ========================
     struct CoreSideFeltLayer {
+        double k = 0.0; // 这里的k的声明顺序需要放在前侧，这样初始化时也能优先
         MaxwellModel maxwell_model_a;
         MaxwellModel maxwell_model_b;
-        double k = 0.0;
         double force = 0.0;
         
         CoreSideFeltLayer(double ts)
-            : maxwell_model_a(
+            : k(2.556e9),
+              maxwell_model_a(
+                  k,
                   8.52e9,   // K = 8520 N/mm² = 8.52e9 N/m²
                   1.0e-5,   // relaxation_time_s
                   0.5,      // beta_1
                   2.0,      // p
                   ts),      // time_step_s
-              maxwell_model_b(8.52e9, 5.0e-6, 0.2, 2.0, ts), k(2.556e9) {
+              maxwell_model_b(k, 8.52e9, 5.0e-6, 0.2, 2.0, ts){
         }
         
         inline void movement(double _x) {
@@ -241,6 +261,7 @@ public:
     };
     
 private:
+    bool is_contacting = false;
     
     int string_count = 3;
 
@@ -250,7 +271,8 @@ private:
     double ts = 1 / samplerate;
     
     double hammer_m_kg = 9.12e-3;
-    double hammer_a_mps2 = 0.0;
+    constexpr static double g = 9.8;
+    double hammer_a_mps2 = 0;
     double hammer_v_mps = 0.0;
     
     StringSideFeltLayer string_side_felt_layer;
@@ -261,28 +283,48 @@ private:
     
 public:
     
+    // ======================== ======================== ========================
+    // Initial
+    // 初始化
+    // ======================== ======================== ========================
     HammerModel(double samplerate, int string_count) :
     samplerate(samplerate),
     string_count(string_count),
     string_side_felt_layer(1 / samplerate, string_count),
     core_side_felt_layer(1 / samplerate) {
-        if(string_count < 1 || string_count > 3) throw std::runtime_error("hammer_model: string_count is: " + std::to_string(string_count));
+        if(string_count < 1 || string_count > 3)
+            throw std::runtime_error("hammer_model: string_count is: " + std::to_string(string_count));
     }
     
-    inline void hammer_lanuch(double hammer_v_lanuch) {
-        hammer_v_mps = hammer_v_lanuch;
+    // ======================== ======================== ========================
+    // Lanuch
+    // 激发
+    // ======================== ======================== ========================
+    inline void hammer_launch(double hammer_v_launch) {
+        is_contacting = true;
+        hammer_a_mps2 = -g;
+        hammer_v_mps = hammer_v_launch;
     }
     
-    inline void hammer_movement(const std::vector<double>& string_vs) {
-        if(string_vs.size() != string_count)
-            throw std::runtime_error("hammer_model: string_count has problems");
+    // ======================== ======================== ========================
+    // Movements
+    // 运动
+    // ======================== ======================== ========================
+    inline void hammer_movement(const std::array<double, 3>& string_vs) {
+        // ======================== ========================
+        // Check the contact
+        // 检查是否在接触
+        // ======================== ========================
+        if(!is_contacting) {
+            system_reset();
+            return ;
+        }
         
         // ======================== ========================
         // Solve for the velocity of the intermediate layer
         // 解出中间层速度
         // ======================== ========================
-        middle_v = solve_middle_v(string_vs,
-                                  hammer_v_mps);
+        middle_v = solve_middle_v(string_vs, hammer_v_mps);
         
         // ======================== ========================
         // Calculate the compression
@@ -310,17 +352,68 @@ public:
         // Reaction force on the hammer
         // 对击锤的反作用力
         // ======================== ========================
-        hammer_a_mps2 = -(core_side_felt_layer.force / hammer_m_kg);
+        hammer_a_mps2 = -(core_side_felt_layer.force / hammer_m_kg) - g;
         hammer_v_mps += hammer_a_mps2 * ts;
+        
+        // ======================== ========================
+        // Check the contact
+        // 检查是否还在接触
+        // ======================== ========================
+        if(is_contacting) // trigger 只有 launch
+            check_the_contact_state(); // 停止只有 check_the_contact_state
+        else {
+            system_reset();
+            return ;
+        }
     }
     
+    // ======================== ======================== ========================
+    // Strings Force Output
+    // 输出对弦的力
+    // ======================== ======================== ========================
     inline std::array<double, 3> get_force_strings() {
         return string_side_felt_layer.force_strings;
     }
     
+    // ======================== ======================== ========================
+    // Is it still contacting?
+    // 是否还在与弦相互耦合
+    // ======================== ======================== ========================
+    inline bool get_contact_state() {
+        return is_contacting;
+    }
+    
 private:
+    inline void check_the_contact_state() {
+        // TODO: 这里还可以试着检查对弦力F是否小于0
+        // TODO: is contacting 应该是一根弦一个 不然中间层速度有可能无解
+        int inactive_strings_num = 0;
+        for(int i = 0; i < string_count; i++) {
+            bool condition_1 = string_side_felt_layer_xs[i] < 1e-15;// 毛毡的压缩量极小
+            bool condition_2 = string_side_felt_layer.generalized_maxwell_models[i].maxwell_model.delta_x <= 1e-15; // 并且毛毡向弦方向释放
+            if(condition_1 && condition_2)
+                inactive_strings_num++;
+        }
+        if(inactive_strings_num == string_count)
+            is_contacting = false;
+    }
+    
+    inline void system_reset() {
+        hammer_a_mps2 = 0.0;
+        hammer_v_mps = 0.0;
+        for(int i = 0; i < string_count; i++) {
+            string_side_felt_layer
+                .generalized_maxwell_models[i].maxwell_model.force = 0;
+            string_side_felt_layer
+                .generalized_maxwell_models[i].maxwell_model.force_1 = 0;
+            string_side_felt_layer
+                .generalized_maxwell_models[i].maxwell_model.x = 0;
+            string_side_felt_layer
+                .generalized_maxwell_models[i].maxwell_model.x_1 = 0;
+        }
+    }
 
-    inline double solve_middle_v(const std::vector<double>& string_vs, double hammer_v) {
+    inline double solve_middle_v(const std::array<double, 3>& string_vs, double hammer_v) {
         double a = string_side_felt_layer.get_a();
         double e = core_side_felt_layer.get_e();
         double f = core_side_felt_layer.get_f();
