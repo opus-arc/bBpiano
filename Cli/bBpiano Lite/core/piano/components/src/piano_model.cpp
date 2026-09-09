@@ -17,28 +17,4 @@
 // 2026-09-04
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#ifndef string_model_hpp
-#define string_model_hpp
-
-#include <iostream>
-
-class HammerModel;
-
-class StringModel {
-    
-    // 3D Timoshenko beam
-    // 铁木辛柯梁
-    
-public:
-    
-    
-public:
-    
-    StringModel();
-    
-    float get_sample();
-    float string_movement();
-    
-};
-
-#endif /* string_model_hpp */
+#include "../piano_model.hpp"
