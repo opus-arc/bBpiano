@@ -14,31 +14,14 @@
 // 本文件承载作者认为必须亲自理解、能够逐行解释并为之负责的核心逻辑，因此刻意保持完全人工实现。
 //
 // Ziyang Tan
-// 2026-09-03
+// 2026-09-04
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#ifndef soundcard_helper_hpp
-#define soundcard_helper_hpp
+#ifndef configuration_hpp
+#define configuration_hpp
 
-#include <AudioToolbox/AudioToolbox.h>
 #include <iostream>
 
-class Soundcard {
-    
-public:
-};
-
-#endif /* soundcard_helper_hpp */
 
 
-
-
-
-
-
-
-
-
-
-
-
+#endif /* configuration_hpp */

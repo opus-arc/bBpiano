@@ -16,10 +16,34 @@
 // Ziyang Tan
 // 2026-09-04
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#ifndef controller_hardware_hpp
+#define controller_hardware_hpp
 
-#include "./controller_piano.hpp"
+#include <iostream>
 
-float get_next_buffer() {
-    
-    return 0.0;
-}
+// ======================== ======================== ========================
+// Basic configurations
+// 基础设置
+// ======================== ======================== ========================
+static constexpr double sample_rate = 44100.0;
+
+
+// ======================== ======================== ========================
+// Basic support
+// 基础支持
+// ======================== ======================== ========================
+int cli_entry(int argc, char* argv[], const char* version, const char* logo);
+
+// ======================== ======================== ========================
+// Services
+// 服务
+// ======================== ======================== ========================
+void midi_service(std::string midi_path_string);
+void piano_service();
+void keyboard_service();
+void export_service(std::string export_midi_path_string);
+void record_service();
+void test_service();
+void internal_test_service();
+
+#endif /* controller_hardware_hpp */

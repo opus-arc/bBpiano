@@ -15,4 +15,12 @@
 # 260909
 ## cpp 类的成员初始化顺序都是按照类中成员的声明的顺序来的，无论在初始化中如何排序，都会按照声明顺序来
 
-
+# 260910
+## 扩容或者内存分配会比较花时间，并且有可能突然因为硬件的原因卡死，
+## 故能reverse的就reverse，能array就不要vector
+## 尽量连续存储对象，改善数据布局和 cache locality
+## 利用 SIMD
+## std::optional<std::string> midi = std::nullopt; （optional的初始化方式）
+## std::make_unique<PianoModel>(sample_rate); 是初始化全局单例的方式
+## 成员变量只有跨函数保存的才写出来，成员变量远比重复声明更重，
+## 赋值与声明的成本差不多，但是成员变量还要占据一定内存
