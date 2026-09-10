@@ -69,8 +69,8 @@ static constexpr const char* logo =
 // --------------------------------------------------------------------
 // MARK: library
 // cli entry
-#include "./core/hardware/controller_hardware.hpp"
-#include "./core/piano/controller_piano.hpp"
+#include "./core/service_controller.hpp"
+#include "./core/bbpl/piano_controller.hpp"
 
 
 int main(int argc, char* argv[]) {
@@ -79,10 +79,9 @@ int main(int argc, char* argv[]) {
     // MARK: arg tmp test
     char* testArgv[] = {
         argv[0],
-        "-m",
-        "123123"
+        "-i"
     };
-    argc = 3;
+    argc = 2;
     argv = testArgv;
     
     

@@ -25,9 +25,19 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <mutex>
+#include <pthread.h>
+#include <signal.h>
+#include <stop_token>
+#include <system_error>
+#include <thread>
+#include <unistd.h>
 
 #include "../cli_helper.hpp"
-#include "../../controller_hardware.hpp"
+#include "../soundcard_helper.hpp"
+
+#include "../../../service_controller.hpp"
+#include "../../piano_controller.hpp"
 
 // ======================== ======================== ========================
 // Internal declarations
@@ -62,8 +72,14 @@ int cli_helper(int argc, char* argv[], const char* version, const char* logo) {
     // Register a signal handler
     // 注册信号处理函数
     // ------------------------ ------------------------
-    std::signal(SIGINT, signal_handler);
-    std::signal(SIGTERM, signal_handler);
+    // std::signal(SIGINT, signal_handler);
+    // std::signal(SIGTERM, signal_handler);
+    sigset_t signals;
+    sigemptyset(&signals);
+    sigaddset(&signals, SIGINT);
+    sigaddset(&signals, SIGTERM);
+    pthread_sigmask(SIG_BLOCK, &signals, nullptr);
+    int received_signal = 0;
     
     // ------------------------ ------------------------
     // Parse
@@ -109,10 +125,10 @@ int cli_helper(int argc, char* argv[], const char* version, const char* logo) {
         // Service commands
         // Service命令
         // ------------------------
-        std::optional<std::string> midi = "";
+        std::optional<std::string> midi = std::nullopt;
         bool piano = false;
         bool keyboard = false;
-        std::optional<std::string> export_path = "";
+        std::optional<std::string> export_path = std::nullopt;
         bool record = false;
         bool test = false;
         bool internal_test = false;
@@ -190,39 +206,52 @@ int cli_helper(int argc, char* argv[], const char* version, const char* logo) {
     // Service commands
     // Service命令
     // ------------------------
-    init_engine();
+    try {
+        init_engine();
+    } catch(const std::exception& e) {
+        std::cout<< e.what() <<"\n";
+        return EXIT_FAILURE;
+    }
+    
     if (options.midi) {
         midi_service(*options.midi);
+        sigwait(&signals, &received_signal);
         shutdown_engine();
         return EXIT_SUCCESS;
     }
     if (options.piano) {
         piano_service();
+        sigwait(&signals, &received_signal);
         shutdown_engine();
         return EXIT_SUCCESS;
     }
     if (options.keyboard) {
         keyboard_service();
+        sigwait(&signals, &received_signal);
         shutdown_engine();
         return EXIT_SUCCESS;
     }
     if (options.export_path) {
         export_service(*options.export_path);
+        sigwait(&signals, &received_signal);
         shutdown_engine();
         return EXIT_SUCCESS;
     }
     if (options.record) {
         record_service();
+        sigwait(&signals, &received_signal);
         shutdown_engine();
         return EXIT_SUCCESS;
     }
     if (options.test) {
         test_service();
+        sigwait(&signals, &received_signal);
         shutdown_engine();
         return EXIT_SUCCESS;
     }
     if (options.internal_test) {
         internal_test_service();
+        sigwait(&signals, &received_signal);
         shutdown_engine();
         return EXIT_SUCCESS;
     }
@@ -269,10 +298,43 @@ void help() {
 // Engine 函数
 // ------------------------ ------------------------
 void init_engine() {
+    // ------------------------
+    // Initialize bbpl
+    // 初始化 bbpl
+    // ------------------------
+    try {
+        bbpiano_init(sample_rate);
+    } catch(const std::exception& e) {
+        bbpiano_shutdown();
+        throw std::runtime_error(e.what());
+    }
     
+    // ------------------------
+    // Initialize eval
+    // 初始化 eval
+    // ------------------------
+    try {
+        eval_init(sample_rate);
+    } catch(const std::exception& e) {
+        eval_shutdown();
+        throw std::runtime_error(e.what());
+    }
+
+    // ------------------------
+    // Initialize soundcard
+    // 初始化声卡驱动
+    // ------------------------
+    try {
+        soundcard_init(sample_rate);
+    } catch(const std::exception& e) {
+        soundcard_shutdown();
+        throw std::runtime_error(e.what());
+    }
 }
 void shutdown_engine() {
-    
+    soundcard_shutdown();
+    eval_shutdown();
+    bbpiano_shutdown();
 }
 
 

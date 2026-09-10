@@ -43,14 +43,14 @@ public:
     bool key_down = false;
     bool key_active = false;
     
-    KeyModel(int midi_n, double samplerate, int string_count) :
+    KeyModel(int midi_n, double sample_rate, int string_count) :
         midi_n(midi_n),
         string_count(string_count),
-        samplerate(samplerate),
-        hammer(samplerate, string_count),
-        strings{StringModel(samplerate, 438.0),
-        StringModel(samplerate, 440.0),
-        StringModel(samplerate, 442.0)} {
+        samplerate(sample_rate),
+        hammer(sample_rate, string_count),
+        strings{StringModel(sample_rate, 438.0),
+        StringModel(sample_rate, 440.0),
+        StringModel(sample_rate, 442.0)} {
         
     }
     
@@ -68,6 +68,14 @@ public:
     
     void trigger(double velocity_mps) {
         hammer.hammer_launch(velocity_mps);
+    }
+    
+    float get_sample() {
+        float result = 0.0;
+        for(auto& string : strings) {
+            result += string.get_sample();
+        }
+        return result;
     }
     
 };

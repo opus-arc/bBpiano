@@ -16,26 +16,5 @@
 // Ziyang Tan
 // 2026-09-04
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#ifndef controller_piano_hpp
-#define controller_piano_hpp
 
-#include "./components/piano_model.hpp"
-
-void bbpiano_init();
-void bbpiano_shutdown();
-
-void get_next_buffer(float* out, int frame_count, double amplitude_limiter);
-void note_on(int midi_n, double velocity);
-void note_off(int midi_n, double velocity);
-void note_aftertouch(int midi_n, double pressure);
-
-void softpedal_control(double depth);
-void harmonicpedal_control(double depth);
-void sostenutopedal_control(double depth);
-void sustainpedal_control(double depth);
-
-double get_engineRate();
-
-void all_silence();
-
-#endif /* controller_piano_hpp */
+#include "./configuration.hpp"
