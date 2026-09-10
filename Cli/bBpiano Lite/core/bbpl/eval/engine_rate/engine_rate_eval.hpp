@@ -16,27 +16,38 @@
 // Ziyang Tan
 // 2026-09-04
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#ifndef controller_hardware_hpp
-#define controller_hardware_hpp
 
-#include <iostream>
+#ifndef engine_rate_eval_hpp
+#define engine_rate_eval_hpp
 
-// ======================== ======================== ========================
-// Basic support
-// 基础支持
-// ======================== ======================== ========================
-int cli_entry(int argc, char* argv[], const char* version, const char* logo);
+class EngineEval {
 
-// ======================== ======================== ========================
-// Services
-// 服务
-// ======================== ======================== ========================
-void midi_service(std::string midi_path_string);
-void piano_service();
-void keyboard_service();
-void export_service(std::string export_midi_path_string);
-void record_service();
-void test_service();
-void internal_test_service();
+    uint64_t start_ = 0;
+    uint64_t end_ = 0;
+    uint64_t actualNs_ = 0;
+    double bufferNs_ = 0.0;
+    double sample_rate_ = 44100.0;
+    
+    double instant_rate = 0.0;
+public:
+    
+    explicit EngineEval(double sample_rate) : sample_rate_(sample_rate) {}
+    
+    inline void start_timing() noexcept {
+        start_ = clock_gettime_nsec_np(CLOCK_UPTIME_RAW);
+    }
+    inline void end_timing(int frame_count) noexcept {
+        end_ = clock_gettime_nsec_np(CLOCK_UPTIME_RAW);
+        actualNs_ = end_ - start_;
+        bufferNs_ = 1'000'000'000.0 * double(frame_count) / double(sample_rate_);
+        const double current_rate = actualNs_ / bufferNs_;
+        
+        // 指数平滑
+        instant_rate = 0.9 * instant_rate + 0.1 * current_rate;
+    }
+    inline double engine_rate() const noexcept {
+        return instant_rate;
+    }
+};
 
-#endif /* controller_hardware_hpp */
+#endif /* engine_rate_eval_hpp */

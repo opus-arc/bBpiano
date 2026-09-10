@@ -17,15 +17,49 @@
 // 2026-09-04
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#ifndef piano_model_hpp
-#define piano_model_hpp
+#include "./service_controller.hpp"
+#include "./bbpl/piano_controller.hpp"
 
-#include <iostream>
-#include "./key_model.hpp"
+#include "./bbpl/hardware/cli_helper.hpp"
+#include "./bbpl/hardware/soundcard_helper.hpp"
 
+#include "./bbpl/piano/key_model.hpp"
 
-class PianoModel {
-public:
-};
+// ======================== ======================== ========================
+// Basic support
+// 基础支持
+// ======================== ======================== ========================
+int cli_entry(int argc, char* argv[], const char* version, const char* logo) {
+    return cli_helper(argc, argv, version, logo);
+}
 
-#endif /* piano_model_hpp */
+// ======================== ======================== ========================
+// Services
+// 服务
+// ======================== ======================== ========================
+void midi_service(std::string midi_path_string) {
+    std::cout<<"MIDI: " + midi_path_string<<"\n";
+}
+void piano_service() {
+    
+}
+void keyboard_service() {
+    
+}
+void export_service(std::string export_midi_path_string) {
+    
+}
+void record_service() {
+    
+}
+void test_service() {
+
+    std::cout<<"Test" <<"\n\n";
+    
+}
+void internal_test_service() {
+    std::cout<<"Internal Test" <<"\n\n";
+    note_on(59, 2.0);
+
+}
+

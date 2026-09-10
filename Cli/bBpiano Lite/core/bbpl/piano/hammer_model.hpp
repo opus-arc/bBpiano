@@ -30,7 +30,6 @@
 
 class HammerModel {
     
-    
 public:
     
     // ======================== ======================== ========================
@@ -166,14 +165,14 @@ public:
         StringSideFeltLayer(double ts, int string_count)
             : string_count(string_count),
                 generalized_maxwell_models({
-                GeneralizedMaxwell(6.6499201608e19,  // K∞ = 566 N/mm^5.69 = 6.6499201608e19 N/m^5.69
-                                   3.3249600804e20,  // K = 2830 N/mm^5.69 = 3.3249600804e20 N/m^5.69
+                GeneralizedMaxwell(566,  // K∞ = k_s = 566 N/mm^5.69 = 6.6499201608e19 N/m^5.69
+                                   2830,  // K = 2830 N/mm^5.69 = 3.3249600804e20 N/m^5.69
                                    1.0e-5,           // relaxation_time_s
                                    0.8,              // beta
                                    5.69,             // p
                                    ts),              // time_step_s
-                GeneralizedMaxwell(6.6499201608e19, 3.3249600804e20, 1.0e-5, 0.8, 5.69, ts),
-                GeneralizedMaxwell(6.6499201608e19, 3.3249600804e20, 1.0e-5, 0.8, 5.69, ts)}) {
+                GeneralizedMaxwell(566, 2830, 1.0e-5, 0.8, 5.69, ts),
+                GeneralizedMaxwell(566, 2830, 1.0e-5, 0.8, 5.69, ts)}) {
                     if(string_count < 1 || string_count > 3) throw std::runtime_error("hammer_model: string_count is: " + std::to_string(string_count));
         }
         
@@ -217,15 +216,15 @@ public:
         double force = 0.0;
         
         CoreSideFeltLayer(double ts)
-            : k(2.556e9),
+            : k(2556),
               maxwell_model_a(
                   k,
-                  8.52e9,   // K = 8520 N/mm² = 8.52e9 N/m²
+                  8520,   // K = 8520 N/mm² = 8.52e9 N/m²
                   1.0e-5,   // relaxation_time_s
                   0.5,      // beta_1
                   2.0,      // p
                   ts),      // time_step_s
-              maxwell_model_b(k, 8.52e9, 5.0e-6, 0.2, 2.0, ts){
+              maxwell_model_b(k, 8520, 1.0e-5, 0.2, 2.0, ts) {
         }
         
         inline void movement(double _x) {
@@ -261,6 +260,7 @@ public:
     };
     
 private:
+    
     bool is_contacting = false;
     
     int string_count = 3;
@@ -288,10 +288,11 @@ public:
     // 初始化
     // ======================== ======================== ========================
     HammerModel(double samplerate, int string_count) :
-    samplerate(samplerate),
-    string_count(string_count),
-    string_side_felt_layer(1 / samplerate, string_count),
-    core_side_felt_layer(1 / samplerate) {
+        samplerate(samplerate),
+        string_count(string_count),
+        string_side_felt_layer(1 / samplerate, string_count),
+        core_side_felt_layer(1 / samplerate)
+    {
         if(string_count < 1 || string_count > 3)
             throw std::runtime_error("hammer_model: string_count is: " + std::to_string(string_count));
     }
@@ -355,6 +356,8 @@ public:
         hammer_a_mps2 = -(core_side_felt_layer.force / hammer_m_kg) - g;
         hammer_v_mps += hammer_a_mps2 * ts;
         
+//        std::cout << "hammer_force: " << hammer_force << "\n";
+        
         // ======================== ========================
         // Check the contact
         // 检查是否还在接触
@@ -385,8 +388,10 @@ public:
     
 private:
     inline void check_the_contact_state() {
-        // TODO: 这里还可以试着检查对弦力F是否小于0
         // TODO: is contacting 应该是一根弦一个 不然中间层速度有可能无解
+        if(hammer_force < 0)
+            is_contacting = false;
+        
         int inactive_strings_num = 0;
         for(int i = 0; i < string_count; i++) {
             bool condition_1 = string_side_felt_layer_xs[i] < 1e-15;// 毛毡的压缩量极小
@@ -424,25 +429,29 @@ private:
         // Calculate the search range
         // 计算搜索范围
         // ======================== ========================
-        double upper_limit_i = g;
-        double lower_limit_i = string_vs[0] - string_side_felt_layer.generalized_maxwell_models[0].get_c_part();
-        for (int i = 1; i < string_count; ++i) {
-            double c =
-                string_vs[i] -
-                string_side_felt_layer.generalized_maxwell_models[i].get_c_part();
-
-            lower_limit_i = std::max(lower_limit_i, c);
-        }
+//        double upper_limit_i = g;
+//        double lower_limit_i = string_vs[0] - string_side_felt_layer.generalized_maxwell_models[0].get_c_part();
+//        for (int i = 1; i < string_count; ++i) {
+//            double c =
+//                string_vs[i] -
+//                string_side_felt_layer.generalized_maxwell_models[i].get_c_part();
+//
+//            lower_limit_i = std::max(lower_limit_i, c);
+//        }
+//        
+//        double middle_v_i = (upper_limit_i + lower_limit_i) / 2;
         
+        double upper_limit_i = 200;
+        double lower_limit_i = 10;
         double middle_v_i = (upper_limit_i + lower_limit_i) / 2;
         
         // ======================== ========================
         // Standard bisection method check
         // 标准二分法检查 a > b
         // ======================== ========================
-        if (lower_limit_i > upper_limit_i) {
-            throw std::runtime_error("hammer_model: lower_limit_i > upper_limit_i, lower_limit: " + std::to_string(lower_limit_i) + ", upper_limit_i: " + std::to_string(upper_limit_i));
-        }
+//        if (lower_limit_i > upper_limit_i) {
+//            throw std::runtime_error("hammer_model: lower_limit_i > upper_limit_i, lower_limit: " + std::to_string(lower_limit_i) + ", upper_limit_i: " + std::to_string(upper_limit_i));
+//        }
 
         // ======================== ========================
         // Bisection method
@@ -473,6 +482,15 @@ private:
             }
         }
          
+        
+        std::cout
+        << "a: " << a
+        << ", b: " << string_side_felt_layer.generalized_maxwell_models[0].get_b()
+        << ", c: " << string_vs[0] - string_side_felt_layer.generalized_maxwell_models[0].get_c_part()
+        << ", d: " << string_side_felt_layer.generalized_maxwell_models[0].get_d()
+        << ", string_vs[0]: " << string_vs[0]
+        << '\n';
+        
         return (lower_limit_i + upper_limit_i) * 0.5;;
     }
 };
