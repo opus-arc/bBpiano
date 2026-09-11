@@ -41,6 +41,7 @@
 				bbpl/piano/src/fractional_filter.cpp,
 				bbpl/piano/src/hammer_model.cpp,
 				bbpl/piano/src/key_model.cpp,
+				bbpl/piano/src/loss_filter.cpp,
 				bbpl/piano/src/piano_model.cpp,
 				bbpl/piano/src/string_model.cpp,
 				service_controller.cpp,

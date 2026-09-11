@@ -17,43 +17,4 @@
 // 2026-09-04
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#ifndef piano_model_hpp
-#define piano_model_hpp
-
-#include <iostream>
-#include <array>
-#include "./key_model.hpp"
-
-
-class PianoModel {
-    // 禁止资源拥有类复制
-    PianoModel(const PianoModel&) = delete;
-    PianoModel& operator=(const PianoModel&) = delete;
-public:
-//    std::array<KeyModel*, 88> piano_keys;
-    
-    KeyModel* test_key_a4;
-    
-    PianoModel(double sample_rate) {
-        test_key_a4 = new KeyModel(59, sample_rate, 1);
-        
-        
-//        for(int i = 0; i < 88; i++) {
-//            piano_keys[i] = new KeyModel(i + 21, sample_rate, 3);
-//        }
-    }
-    
-    void piano_movement() {
-        test_key_a4->key_movement();
-    }
-    
-    float get_sample() {
-        return test_key_a4->get_sample();
-    }
-    
-    ~PianoModel() noexcept {
-        delete test_key_a4;
-    }
-};
-
-#endif /* piano_model_hpp */
+#include "../hammer_model.hpp"

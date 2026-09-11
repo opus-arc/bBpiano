@@ -47,7 +47,7 @@ public:
         midi_n(midi_n),
         string_count(string_count),
         samplerate(sample_rate),
-        hammer(sample_rate, string_count),
+        hammer(sample_rate),
         strings{StringModel(sample_rate, 438.0),
         StringModel(sample_rate, 440.0),
         StringModel(sample_rate, 442.0)} {
@@ -59,15 +59,19 @@ public:
         for(int i = 0; i < string_count; i++) {
             string_vs[i] = strings[i].get_string_vs();
         }
-        hammer.hammer_movement(string_vs);
+        
+        double hammer_force = hammer.hammer_movement(string_vs[0]);
+        
+        std::cout << "hammer_force: " << hammer_force << "\n";
+        
         for(int i = 0; i < string_count; i++) {
-            strings[i].string_movement(hammer.get_force_strings()[i]);
+            strings[i].string_movement(hammer_force / double(string_count));
         }
         
     }
     
     void trigger(double velocity_mps) {
-        hammer.hammer_launch(velocity_mps);
+        hammer.trigger(velocity_mps);
     }
     
     float get_sample() {
