@@ -23,6 +23,10 @@
 
 #include "./string_model.hpp"
 #include "./hammer_model.hpp"
+#include "./bridge_model.hpp"
+#include "./soundboard_model.hpp"
+
+#include "../configuration/configuration.hpp"
 
 class KeyModel {
     
@@ -30,58 +34,137 @@ class KeyModel {
     
 public:
     
-    double samplerate = 0.0;
+    double samplerate_ = 0.0;
     
-    int midi_n;
-    int string_count = 3;
+    int midi_n_;
+    int string_count_ = 3;
     
-    HammerModel hammer;
-    std::array<StringModel, 3> strings;
+    const BridgeModel *bridge_;
+    const SoundboardModel *soundboard_;
+    HammerModel hammer_;
+    std::array<StringModel, 3> strings_;
     
-    std::array<double, 3> string_vs = {0.0, 0.0, 0.0};
+    std::array<double, 3> string_vs_ = {0.0, 0.0, 0.0};
     
-    bool key_down = false;
-    bool key_active = false;
+    bool key_down_ = false;
+    bool key_active_ = false;
     
-    KeyModel(int midi_n, double sample_rate, int string_count) :
-        midi_n(midi_n),
-        string_count(string_count),
-        samplerate(sample_rate),
-        hammer(sample_rate),
-        strings{StringModel(sample_rate, 438.0),
-        StringModel(sample_rate, 440.0),
-        StringModel(sample_rate, 442.0)} {
-        
-    }
+    bool sustainpedal_active_ = false;
+    
+    const Configuration *configuration_ = nullptr;
+    
+    KeyModel(int midi_n,
+             double sample_rate,
+             int string_count,
+             TunningPresets::Temperament temperament,
+             const SoundboardModel *soundboard,
+             const BridgeModel *bridge,
+             const Configuration *configuration) :
+        midi_n_(midi_n),
+        string_count_(string_count),
+        samplerate_(sample_rate),
+        hammer_(sample_rate, midi_n, configuration),
+        strings_{
+            StringModel(sample_rate,
+                        midi_n,
+                        temperament,
+                        TunningPresets::StringIndex::left,
+                        configuration),
+            StringModel(sample_rate,
+                        midi_n,
+                        temperament,
+                        TunningPresets::StringIndex::center,
+                        configuration),
+            StringModel(sample_rate,
+                        midi_n,
+                        temperament,
+                        TunningPresets::StringIndex::right,
+                        configuration),
+        },
+        soundboard_(soundboard),
+        bridge_(bridge),
+        configuration_(configuration)
+    {}
     
     void key_movement() {
+        
+        sustainpedal_controller();
+        
+        double total_impedance = 0.0;
+        double weighted_string_velocity = 0.0;
+        
+        for (int i = 0; i < string_count_; ++i) {
+            string_vs_[i] = strings_[i].get_string_vs();
 
-        for(int i = 0; i < string_count; i++) {
-            string_vs[i] = strings[i].get_string_vs();
+            total_impedance += strings_[i].z_;
+
+            weighted_string_velocity += strings_[i].z_ * string_vs_[i];
         }
         
-        double hammer_force = hammer.hammer_movement(string_vs[0]);
+        double contact_string_velocity = 0.0;
         
-        std::cout << "hammer_force: " << hammer_force << "\n";
-        
-        for(int i = 0; i < string_count; i++) {
-            strings[i].string_movement(hammer_force / double(string_count));
+        if (total_impedance > 0.0) {
+            contact_string_velocity = weighted_string_velocity / total_impedance;
         }
+        
+        double hammer_force = hammer_.hammer_movement(contact_string_velocity);
+        
+        for(int i = 0; i < string_count_; i++) {
+            const double force_ratio = strings_[i].z_ / total_impedance;
+            const double string_force = hammer_force * force_ratio;
+            strings_[i].string_movement(string_force);
+            // bridge_->process(strings_[i].right_boundary_point);
+        }
+        
+        update_bridge_force();
+        
+        check_active();
         
     }
     
     void trigger(double velocity_mps) {
-        hammer.trigger(velocity_mps);
-    }
-    
-    float get_sample() {
-        float result = 0.0;
-        for(auto& string : strings) {
-            result += string.get_sample();
+        for(int i = 0; i < string_count_; i++) {
+            strings_[i].is_active = true;
+            string_vs_[i] = 0.0;
         }
-        return result;
+        hammer_.trigger(velocity_mps);
     }
     
+    void update_bridge_force() {
+        float result = 0.0;
+        for(int i = 0; i < string_count_; i++) {
+            result += strings_[i].get_bridge_force();
+        }
+        soundboard_->bridge_force[midi_n_ - 21] = result;
+    }
+    
+    void system_reset() {
+        for(int i = 0; i < string_count_; i++) {
+            strings_[i].system_reset();
+        }
+        hammer_.system_reset();
+        key_down_ = false;
+        key_active_ = false;
+        string_vs_.fill(0.0);
+        sustainpedal_active_ = false;
+    }
+    
+private:
+    inline void check_active() {
+        key_active_ = hammer_.is_contacting_;
+
+        for (int i = 0; i < string_count_; ++i) {
+            key_active_ = key_active_ || strings_[i].is_active;
+        }
+    }
+    
+    void sustainpedal_controller() {
+        // key 抬起且延音踏板未踩下则启动制音器
+        const bool damper_should_touch = !key_down_ && !sustainpedal_active_;
+        for (int index = 0; index < string_count_; ++index) {
+            strings_[index].damper_active = damper_should_touch;
+        }
+    }
 };
 
 #endif /* key_model_hpp */

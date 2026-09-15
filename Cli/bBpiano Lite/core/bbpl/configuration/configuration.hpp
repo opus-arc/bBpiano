@@ -22,6 +22,23 @@
 
 #include <iostream>
 
+#include "./details/tunning_preset.hpp"
+#include "./details/hammer_preset.hpp"
+#include "./details/string_impedance_preset.hpp"
+
+class Configuration {
+    Configuration(const Configuration&) = delete;
+    Configuration& operator=(const Configuration&) = delete;
+public:
+    
+    static constexpr TunningPresets tuning_presets{};
+    static constexpr HammerPresets hammer_presets{};
+    static constexpr StringImpedancePresets string_impedance_presets{};
+
+    constexpr Configuration() noexcept = default;
+    
+};
+
 
 
 #endif /* configuration_hpp */
