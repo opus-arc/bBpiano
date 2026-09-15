@@ -25,9 +25,13 @@
 #include <vector>
 #include <stdexcept>
 #include <cmath>
+#include <numbers>
 
+#include "./damper_model.hpp"
 #include "./fractional_filter.hpp"
 #include "./loss_filter.hpp"
+
+#include "../configuration/configuration.hpp"
 
 class StringModel {
     
@@ -58,17 +62,29 @@ public:
             weight_a = accurate_index - index_b;
             weight_b = 1 - weight_a;
         }
-        
     };
     
 public:
     // ======================== ========================
+    // Configuration
+    // 配置
+    // ======================== ========================
+    const Configuration *configuration_ = nullptr;
+    
+    // ======================== ========================
     // Basic member value
     // 基础成员变量
     // ======================== ========================
-    int midi_n = 59;
+    int midi_n_ = 69;
     double f0 = 440.0;
     double samplerate = 44100.0;
+    
+    // ======================== ========================
+    // Filters
+    // 滤波器 (为了计算 group delay 放在前面)
+    // ======================== ========================
+    LossFilter loss_filter;
+    double loss_phase_delay = 0.0;
     
     // ======================== ========================
     // Delay data
@@ -94,44 +110,67 @@ public:
     // Frac position
     // 分数格点
     // ======================== ========================
-    double strike_point = 1.0 / 9.0;
-    double pickup_point = 7.0 / 9.0;
+    double strike_point = 1.0 / 9.4;
     SpatialPort strike_port;
-    SpatialPort pickup_port;
     
     // ======================== ========================
     // Fine-tuning coefficient
     // 微调系数
     // 弦特性阻抗
     // ======================== ========================
-    double z = 0.0;
+    double z_ = 0.0;
+    
+    // ======================== ========================
+    // Damper
+    // 制音器
+    // ======================== ========================
+    Damper damper;
+    bool damper_active = false;
     
     // ======================== ========================
     // Filters
     // 滤波器
     // ======================== ========================
     FractionalFilter fractional_filter;
-    LossFilter loss_filter;
+    
+    // ======================== ========================
+    // State
+    // 状态
+    // ======================== ========================
+    bool is_active = false;
+
     
 public:
     
-    StringModel(double samplerate, double f0) :
-        delay(samplerate / (2 * f0)),
-        delay_int(delay),
-        delay_frac(delay - delay_int),
+    StringModel(double sample_rate,
+                int midi_n,
+                TunningPresets::Temperament temperament,
+                TunningPresets::StringIndex string_index,
+                const Configuration* configuration) :
+        configuration_(configuration),
+        midi_n_(midi_n),
+        f0(configuration->tuning_presets
+           .get_frequency(midi_n_,
+                          temperament,
+                          string_index)),
+        samplerate(sample_rate),
+        loss_filter(midi_n_),
+        loss_phase_delay(loss_filter.get_phase_delay(sample_rate, f0)),
+        delay((sample_rate / f0 - loss_phase_delay) / 2.0),
+        // delay_int 是数组节点数；真实单程整数延迟为 delay_int - 1。
+        delay_int(static_cast<int>(std::floor(delay)) + 1),
+        // fractional filter 每圈一次，因此承担完整 round-trip residual。
+        delay_frac(2.0 * (delay - std::floor(delay))),
         traveling_wave_max_index(delay_int - 1),
-        samplerate(samplerate),
-        f0(f0),
         strike_port(delay_int, strike_point),
-        pickup_port(delay_int, pickup_point),
-        fractional_filter(delay_frac),
-        loss_filter(midi_n)
+        fractional_filter(delay_frac, 2.0 * std::numbers::pi_v<double> * f0 / sample_rate)
     {
-        if(delay_int < 6)
+        
+        if(delay_int < 4)
             throw std::runtime_error("string_model: delay_int is too small: " + std::to_string(delay_int));
         
-        left.resize(delay_int, 0.0);
-        right.resize(delay_int, 0.0);
+        left.resize(delay_int, 0.0f);
+        right.resize(delay_int, 0.0f);
             
         left_head = 0;
         right_head = 0;
@@ -139,7 +178,7 @@ public:
         left_boundary_point = &left[left_head];
         right_boundary_point = &right[get_i(traveling_wave_max_index, right_head)];
         
-        z = 2.31;
+        z_ = configuration->string_impedance_presets.get_characteristic_impedance(midi_n_);
     }
     
     inline void propagate() {
@@ -175,15 +214,25 @@ public:
     inline int get_i(int real_index, int head) {
         return real_index + head <= traveling_wave_max_index ?
                real_index + head :
-        real_index + head - delay_int;
+               real_index + head - delay_int;
     }
 
-    inline float string_movement(double hammer_force) {
-        float inject_v = hammer_force / (2 * z); // 关于 hammer_force 的函数
-        inject(inject_v);
+    inline void string_movement(double hammer_force) {
+
+        const bool excited = hammer_force > 0.0;
+
+        if (excited) {
+            inject(hammer_force / (2 * z_));
+        }
+
         propagate();
         filter();
-        return 0.0;
+
+        check_active();
+
+        if (excited) {
+            is_active = true;
+        }
     }
     
     inline void inject(double inject_v) {
@@ -193,17 +242,87 @@ public:
         right[get_i(strike_port.index_b, right_head)] += inject_v * strike_port.weight_b;
     }
     
+    inline double get_bridge_force() {
+        return -2.0 * z_ * static_cast<double>(*right_boundary_point);
+    }
+    
     inline double get_string_vs() {
         return strike_port.weight_a * left[get_i(strike_port.index_a, left_head)] + strike_port.weight_b * left[get_i(strike_port.index_b, left_head)] + strike_port.weight_a * right[get_i(strike_port.index_a, right_head)] + strike_port.weight_b * right[get_i(strike_port.index_b, right_head)];
     }
-    
-    inline float get_sample() {
-        return pickup_port.weight_a * left[get_i(pickup_port.index_a, left_head)] +         pickup_port.weight_b * left[get_i(pickup_port.index_b, left_head)] + pickup_port.weight_a * right[get_i(pickup_port.index_a, right_head)] + pickup_port.weight_b * right[get_i(pickup_port.index_b, right_head)];
+
+    inline void system_reset() {
+        left_head = 0;
+        right_head = 0;
+
+        is_active = false;
+        damper_active = false;
+
+        inactive_probe_count_ = 0;
+        activity_probe_counter_ = 0;
+
+        std::fill(left.begin(), left.end(), 0.0f);
+        std::fill(right.begin(), right.end(), 0.0f);
+
+        left_boundary_point = &left[left_head];
+        right_boundary_point = &right[get_i(traveling_wave_max_index, right_head)];
+
+        loss_filter.system_reset();
+        fractional_filter.system_reset();
+        damper.system_reset();
     }
     
+
+private:
     inline void filter() {
         fractional_filter.process(*left_boundary_point);
         loss_filter.process(*left_boundary_point);
+        if(damper_active) {
+            damper.process(*left_boundary_point);
+        }
+    }
+    
+    int inactive_probe_count_ = 0;
+    int activity_probe_counter_ = 0;
+    inline void check_active() {
+        constexpr int kProbeInterval = 64;
+        constexpr int kInactiveProbeCount = 8;
+
+        if (++activity_probe_counter_ < kProbeInterval) {
+            return;
+        }
+
+        activity_probe_counter_ = 0;
+
+        constexpr float kVelocityThreshold = 1.0e-6f;
+        constexpr float kEnergyThreshold = kVelocityThreshold * kVelocityThreshold;
+
+        if (activity_probe() < kEnergyThreshold) {
+            if (++inactive_probe_count_ >= kInactiveProbeCount) {
+                is_active = false;
+                system_reset();
+            }
+        } else {
+            inactive_probe_count_ = 0;
+            is_active = true;
+        }
+    }
+
+    inline float activity_probe() {
+        constexpr int kProbeCount = 8;
+
+        float energy = 0.0f;
+
+        for (int i = 1; i <= kProbeCount; ++i) {
+            const int index =
+                (traveling_wave_max_index * i) / (kProbeCount + 1);
+
+            const float& l = left[get_i(index, left_head)];
+            const float& r = right[get_i(index, right_head)];
+
+            energy += l * l + r * r;
+        }
+
+        return energy / static_cast<float>(kProbeCount);
     }
     
 };

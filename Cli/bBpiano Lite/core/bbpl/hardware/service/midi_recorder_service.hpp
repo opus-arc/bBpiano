@@ -1,352 +1,314 @@
-//
-//  midiRecorder.hpp
-//  bBpiano
-//
-//  Created by opus arc on 2026/6/8.
-//
+#ifndef BBPL_MIDI_RECORDER_SERVICE_HPP
+#define BBPL_MIDI_RECORDER_SERVICE_HPP
 
-#ifndef midiRecorder_hpp
-#define midiRecorder_hpp
-
-#include "midiInputHub.hpp"
-
-#include <chrono>
-#include <condition_variable>
-#include <cstdint>
-#include <fstream>
-#include <mutex>
-#include <string>
-#include <vector>
-#include <ctime>
-#include <iomanip>
-#include <sstream>
 #include <algorithm>
+#include <array>
+#include <chrono>
+#include <cstdint>
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
+#include <limits>
+#include <mutex>
+#include <optional>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "midi_inputhub_service.hpp"
 
 class MidiRecorder {
-public:
-    struct Event {
-        uint64_t timeUs = 0;
-        std::vector<uint8_t> message;
-    };
+ public:
+  struct Event {
+    std::uint64_t time_microseconds = 0;
+    std::array<std::uint8_t, 3> message{};
+    std::uint8_t message_size = 0;
+  };
 
-    MidiRecorder() = delete;
+  explicit MidiRecorder(MidiInputHub& input_hub) noexcept
+      : input_hub_(input_hub) {}
 
-    static void start(const std::string& filePath) {
-        if (isRecording()) {
-            return;
-        }
+  MidiRecorder(const MidiRecorder&) = delete;
+  MidiRecorder& operator=(const MidiRecorder&) = delete;
+  MidiRecorder(MidiRecorder&&) = delete;
+  MidiRecorder& operator=(MidiRecorder&&) = delete;
 
-        filePath_ = filePath;
-        events_.clear();
-        startTime_ = Clock::now();
+  ~MidiRecorder() { cancel(); }
 
-        MidiInputHub::start();
-
-        handlerToken_ = MidiInputHub::addHandler(
-            [](MidiInputHub::MidiMessage message) {
-                recordMessage(message);
-            }
-        );
-
-        {
-            std::lock_guard<std::mutex> lock(mutex_);
-            recording_ = true;
-        }
+  // Empty output_path selects a deterministic timestamped name in the current
+  // working directory. MidiInputHub lifecycle remains coordinator-owned.
+  void start(std::filesystem::path output_path = {}) {
+    std::lock_guard lifecycle_lock(lifecycle_mutex_);
+    if (subscription_) {
+      return;
     }
 
-    static void stop() {
-        {
-            std::lock_guard<std::mutex> lock(mutex_);
-            if (!recording_) {
-                return;
-            }
-        }
-
-        if (handlerToken_ != 0) {
-            MidiInputHub::removeHandler(handlerToken_);
-            handlerToken_ = 0;
-        }
-
-        writeMidiFile();
-
-        if (!MidiInputHub::hasHandlers()) {
-            MidiInputHub::stop();
-        }
-
-        {
-            std::lock_guard<std::mutex> lock(mutex_);
-            recording_ = false;
-        }
-
-        condition_.notify_all();
+    {
+      std::lock_guard event_lock(event_mutex_);
+      events_.clear();
+      events_.reserve(4096);
+      output_path_ = std::move(output_path);
+      start_time_ = Clock::now();
     }
 
-    static bool isRecording() {
-        std::lock_guard<std::mutex> lock(mutex_);
-        return recording_;
+    subscription_.emplace(
+        input_hub_.subscribe([this](MidiInputHub::MidiMessage message) {
+          record_message(message);
+        }));
+  }
+
+  // Stops capture first, then writes on the coordinator thread. No file I/O
+  // happens in the CoreMIDI callback.
+  std::filesystem::path stop() {
+    std::lock_guard lifecycle_lock(lifecycle_mutex_);
+    const bool was_recording = subscription_.has_value();
+    if (subscription_) {
+      subscription_->reset();
+      subscription_.reset();
     }
 
-    static void waitUntilStopped() {
-        std::unique_lock<std::mutex> lock(mutex_);
-        condition_.wait(lock, [](){ return !recording_; });
+    std::vector<Event> snapshot;
+    std::filesystem::path requested_path;
+    {
+      std::lock_guard event_lock(event_mutex_);
+      snapshot = events_;
+      requested_path = output_path_;
+    }
+    if (!was_recording && snapshot.empty()) {
+      return last_output_path_;
     }
 
-private:
-    using Clock = std::chrono::steady_clock;
+    const std::filesystem::path final_path =
+        requested_path.empty() ? std::filesystem::current_path() /
+                                     build_default_file_name(snapshot)
+                               : requested_path;
+    write_midi_file(final_path, snapshot);
 
-    static void recordMessage(MidiInputHub::MidiMessage message) {
-        if (message.empty()) {
-            return;
-        }
+    {
+      std::lock_guard event_lock(event_mutex_);
+      events_.clear();
+      output_path_.clear();
+      last_output_path_ = final_path;
+    }
+    return final_path;
+  }
 
-        Event event;
-        event.timeUs = static_cast<uint64_t>(
-            std::chrono::duration_cast<std::chrono::microseconds>(
-                Clock::now() - startTime_
-            ).count()
-        );
-        event.message.assign(message.begin(), message.end());
+  // Cancels without creating a file; used only for rollback/destruction.
+  void cancel() noexcept {
+    std::lock_guard lifecycle_lock(lifecycle_mutex_);
+    if (subscription_) {
+      subscription_->reset();
+      subscription_.reset();
+    }
+    std::lock_guard event_lock(event_mutex_);
+    events_.clear();
+    output_path_.clear();
+  }
 
-        std::lock_guard<std::mutex> lock(eventMutex_);
-        events_.push_back(std::move(event));
+  bool is_recording() const noexcept {
+    std::lock_guard lock(lifecycle_mutex_);
+    return subscription_.has_value();
+  }
+
+ private:
+  using Clock = std::chrono::steady_clock;
+  static constexpr std::uint16_t k_ticks_per_quarter = 480;
+  static constexpr std::uint32_t k_microseconds_per_quarter = 500'000;
+
+  void record_message(MidiInputHub::MidiMessage message) {
+    if (!is_supported_message(message)) {
+      return;
     }
 
-    static std::string buildDefaultFileName() {
-        const std::time_t now = std::time(nullptr);
-        std::tm localTime = *std::localtime(&now);
+    Event event;
+    event.time_microseconds = static_cast<std::uint64_t>(
+        std::chrono::duration_cast<std::chrono::microseconds>(Clock::now() -
+                                                              start_time_)
+            .count());
+    event.message_size = static_cast<std::uint8_t>(message.size());
+    std::copy(message.begin(), message.end(), event.message.begin());
 
-        uint64_t durationSeconds = 0;
-        size_t noteCount = 0;
-        size_t pedalEventCount = 0;
+    std::lock_guard lock(event_mutex_);
+    events_.push_back(std::move(event));
+  }
 
-        {
-            std::lock_guard<std::mutex> lock(eventMutex_);
+  static bool is_supported_message(MidiInputHub::MidiMessage message) noexcept {
+    if (message.empty() || message[0] >= 0xF0) {
+      return false;
+    }
+    switch (message[0] & 0xF0) {
+      case 0x80:
+      case 0x90:
+      case 0xA0:
+      case 0xB0:
+      case 0xE0:
+        return message.size() == 3;
+      case 0xC0:
+      case 0xD0:
+        return message.size() == 2;
+      default:
+        return false;
+    }
+  }
 
-            if (!events_.empty()) {
-                durationSeconds = events_.back().timeUs / 1000000ULL;
-            }
+  static std::string build_default_file_name(const std::vector<Event>& events) {
+    const std::time_t now = std::time(nullptr);
+    std::tm local_time{};
+    localtime_r(&now, &local_time);
 
-            for (const Event& event : events_) {
-                if (event.message.size() >= 3) {
-                    const uint8_t status = event.message[0] & 0xF0;
-                    if (status == 0x90 && event.message[2] > 0) {
-                        ++noteCount;
-                    } else if (isPedalControlChange(event.message)) {
-                        ++pedalEventCount;
-                    }
-                }
-            }
-        }
+    std::size_t note_count = 0;
+    std::size_t pedal_count = 0;
+    for (const Event& event : events) {
+      if (event.message_size < 3) {
+        continue;
+      }
+      const std::uint8_t type = event.message[0] & 0xF0;
+      if (type == 0x90 && event.message[2] != 0) {
+        ++note_count;
+      } else if (type == 0xB0 && is_pedal_controller(event.message[1])) {
+        ++pedal_count;
+      }
+    }
+    const std::uint64_t seconds =
+        events.empty() ? 0 : events.back().time_microseconds / 1'000'000ULL;
 
-        static const char* weekdays[] = {
-            "Sunday", "Monday", "Tuesday", "Wednesday",
-            "Thursday", "Friday", "Saturday"
-        };
+    std::ostringstream name;
+    name << std::put_time(&local_time, "%Y-%m-%d_%H-%M-%S") << "_" << note_count
+         << "-notes_" << pedal_count << "-pedals_" << seconds << "-seconds.mid";
+    return name.str();
+  }
 
-        std::ostringstream oss;
-        oss
-            << std::put_time(&localTime, "%Y-%m-%d %H-%M")
-            << " (" << weekdays[localTime.tm_wday] << ") "
-            << noteCount
-            << " notes, "
-            << pedalEventCount
-            << " pedal events, "
-            << durationSeconds
-            << " seconds.mid";
+  static bool is_pedal_controller(std::uint8_t controller) noexcept {
+    return controller == MidiInputHub::k_sustain_pedal_controller ||
+           controller == MidiInputHub::k_sostenuto_pedal_controller ||
+           controller == MidiInputHub::k_soft_pedal_controller ||
+           controller == MidiInputHub::k_harmonic_pedal_controller;
+  }
 
-        return oss.str();
+  static void append_variable_length(std::vector<std::uint8_t>& output,
+                                     std::uint32_t value) {
+    std::uint8_t bytes[5]{};
+    int index = 4;
+    bytes[index] = static_cast<std::uint8_t>(value & 0x7F);
+    while ((value >>= 7) != 0 && index > 0) {
+      bytes[--index] = static_cast<std::uint8_t>((value & 0x7F) | 0x80);
+    }
+    for (; index < 5; ++index) {
+      output.push_back(bytes[index]);
+    }
+  }
+
+  static std::uint32_t time_to_ticks(std::uint64_t microseconds) noexcept {
+    const long double ticks = static_cast<long double>(microseconds) *
+                              k_ticks_per_quarter / k_microseconds_per_quarter;
+    return ticks >= std::numeric_limits<std::uint32_t>::max()
+               ? std::numeric_limits<std::uint32_t>::max()
+               : static_cast<std::uint32_t>(ticks);
+  }
+
+  static void append_pedal_releases(std::vector<std::uint8_t>& track) {
+    const std::uint8_t controllers[] = {
+        MidiInputHub::k_sustain_pedal_controller,
+        MidiInputHub::k_sostenuto_pedal_controller,
+        MidiInputHub::k_soft_pedal_controller,
+        MidiInputHub::k_harmonic_pedal_controller};
+    for (std::uint8_t controller : controllers) {
+      append_variable_length(track, 0);
+      track.insert(track.end(), {0xB0, controller, 0});
+    }
+  }
+
+  static void write_uint16_be(std::ostream& output, std::uint16_t value) {
+    output.put(static_cast<char>((value >> 8) & 0xFF));
+    output.put(static_cast<char>(value & 0xFF));
+  }
+
+  static void write_uint32_be(std::ostream& output, std::uint32_t value) {
+    output.put(static_cast<char>((value >> 24) & 0xFF));
+    output.put(static_cast<char>((value >> 16) & 0xFF));
+    output.put(static_cast<char>((value >> 8) & 0xFF));
+    output.put(static_cast<char>(value & 0xFF));
+  }
+
+  static void write_midi_file(const std::filesystem::path& output_path,
+                              std::vector<Event> events) {
+    std::stable_sort(events.begin(), events.end(),
+                     [](const Event& left, const Event& right) {
+                       return left.time_microseconds < right.time_microseconds;
+                     });
+
+    std::vector<std::uint8_t> track;
+    track.reserve(events.size() * 4 + 32);
+    track.insert(track.end(), {0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20});
+    std::uint32_t previous_tick = 0;
+    for (const Event& event : events) {
+      const std::uint32_t tick = time_to_ticks(event.time_microseconds);
+      append_variable_length(track, tick - previous_tick);
+      previous_tick = tick;
+      track.insert(track.end(), event.message.begin(),
+                   event.message.begin() + event.message_size);
+    }
+    append_pedal_releases(track);
+    track.insert(track.end(), {0x00, 0xFF, 0x2F, 0x00});
+
+    if (track.size() > std::numeric_limits<std::uint32_t>::max()) {
+      throw std::runtime_error("Recorded MIDI track is too large.");
+    }
+    if (!output_path.parent_path().empty() &&
+        !std::filesystem::exists(output_path.parent_path())) {
+      throw std::runtime_error("MIDI output directory does not exist: " +
+                               output_path.parent_path().string());
+    }
+    if (std::filesystem::exists(output_path)) {
+      throw std::runtime_error("Refusing to overwrite existing MIDI file: " +
+                               output_path.string());
     }
 
-    static void writeUInt16BE(std::ofstream& file, uint16_t value) {
-        file.put(static_cast<char>((value >> 8) & 0xFF));
-        file.put(static_cast<char>(value & 0xFF));
+    std::filesystem::path temporary_path = output_path;
+    temporary_path += ".bbpl-part";
+    if (std::filesystem::exists(temporary_path)) {
+      throw std::runtime_error("Temporary MIDI output already exists: " +
+                               temporary_path.string());
     }
 
-    static void writeUInt32BE(std::ofstream& file, uint32_t value) {
-        file.put(static_cast<char>((value >> 24) & 0xFF));
-        file.put(static_cast<char>((value >> 16) & 0xFF));
-        file.put(static_cast<char>((value >> 8) & 0xFF));
-        file.put(static_cast<char>(value & 0xFF));
+    try {
+      std::ofstream output(temporary_path, std::ios::binary);
+      if (!output) {
+        throw std::runtime_error("Cannot create MIDI output: " +
+                                 output_path.string());
+      }
+      output.write("MThd", 4);
+      write_uint32_be(output, 6);
+      write_uint16_be(output, 0);
+      write_uint16_be(output, 1);
+      write_uint16_be(output, k_ticks_per_quarter);
+      output.write("MTrk", 4);
+      write_uint32_be(output, static_cast<std::uint32_t>(track.size()));
+      output.write(reinterpret_cast<const char*>(track.data()),
+                   static_cast<std::streamsize>(track.size()));
+      output.close();
+      if (!output) {
+        throw std::runtime_error("Failed while writing MIDI output: " +
+                                 output_path.string());
+      }
+      std::filesystem::rename(temporary_path, output_path);
+    } catch (...) {
+      std::error_code ignored;
+      std::filesystem::remove(temporary_path, ignored);
+      throw;
     }
+  }
 
-    static void appendUInt32BE(std::vector<uint8_t>& out, uint32_t value) {
-        out.push_back(static_cast<uint8_t>((value >> 24) & 0xFF));
-        out.push_back(static_cast<uint8_t>((value >> 16) & 0xFF));
-        out.push_back(static_cast<uint8_t>((value >> 8) & 0xFF));
-        out.push_back(static_cast<uint8_t>(value & 0xFF));
-    }
-
-    static void appendVariableLengthQuantity(std::vector<uint8_t>& out, uint32_t value) {
-        uint8_t buffer[5] {};
-        int index = 4;
-
-        buffer[index] = static_cast<uint8_t>(value & 0x7F);
-        value >>= 7;
-
-        while (value > 0 && index > 0) {
-            --index;
-            buffer[index] = static_cast<uint8_t>((value & 0x7F) | 0x80);
-            value >>= 7;
-        }
-
-        for (; index < 5; ++index) {
-            out.push_back(buffer[index]);
-        }
-    }
-
-    static uint32_t microsecondsToTicks(uint64_t timeUs) {
-        return static_cast<uint32_t>((timeUs * ticksPerQuarterNote_) / microsecondsPerQuarterNote_);
-    }
-
-    static bool isSupportedMidiMessage(const std::vector<uint8_t>& message) {
-        if (message.empty()) {
-            return false;
-        }
-
-        const uint8_t status = message[0];
-        const uint8_t statusType = status & 0xF0;
-
-        switch (statusType) {
-            case 0x80:
-            case 0x90:
-            case 0xA0:
-            case 0xB0:
-            case 0xE0:
-                return message.size() >= 3;
-
-            case 0xC0:
-            case 0xD0:
-                return message.size() >= 2;
-
-            default:
-                return false;
-        }
-    }
-
-    static bool isPedalControlChange(const std::vector<uint8_t>& message) {
-        if (message.size() < 3) {
-            return false;
-        }
-
-        if ((message[0] & 0xF0) != 0xB0) {
-            return false;
-        }
-
-        switch (message[1]) {
-            case MidiInputHub::kSustainPedalController:
-            case MidiInputHub::kSostenutoPedalController:
-            case MidiInputHub::kSoftPedalController:
-            case MidiInputHub::kHarmonicPedalController:
-                return true;
-
-            default:
-                return false;
-        }
-    }
-
-    static void appendPedalResetEvents(std::vector<uint8_t>& track) {
-        constexpr uint8_t channelZeroControlChange = 0xB0;
-        constexpr uint8_t releasedValue = 0;
-
-        const uint8_t controllers[] = {
-            MidiInputHub::kSustainPedalController,
-            MidiInputHub::kSostenutoPedalController,
-            MidiInputHub::kSoftPedalController,
-            MidiInputHub::kHarmonicPedalController
-        };
-
-        for (uint8_t controller : controllers) {
-            appendVariableLengthQuantity(track, 0);
-            track.push_back(channelZeroControlChange);
-            track.push_back(controller);
-            track.push_back(releasedValue);
-        }
-    }
-
-    static void writeMidiFile() {
-        if (filePath_.empty()) {
-            filePath_ = buildDefaultFileName();
-        }
-
-        std::vector<Event> events;
-        {
-            std::lock_guard<std::mutex> lock(eventMutex_);
-            events = events_;
-        }
-
-        std::sort(
-            events.begin(),
-            events.end(),
-            [](const Event& lhs, const Event& rhs) {
-                return lhs.timeUs < rhs.timeUs;
-            }
-        );
-
-        std::vector<uint8_t> track;
-
-        // Tempo meta event: 120 BPM = 500000 microseconds per quarter note.
-        appendVariableLengthQuantity(track, 0);
-        track.push_back(0xFF);
-        track.push_back(0x51);
-        track.push_back(0x03);
-        track.push_back(static_cast<uint8_t>((microsecondsPerQuarterNote_ >> 16) & 0xFF));
-        track.push_back(static_cast<uint8_t>((microsecondsPerQuarterNote_ >> 8) & 0xFF));
-        track.push_back(static_cast<uint8_t>(microsecondsPerQuarterNote_ & 0xFF));
-
-        uint32_t previousTick = 0;
-
-        for (const Event& event : events) {
-            if (!isSupportedMidiMessage(event.message)) {
-                continue;
-            }
-
-            const uint32_t currentTick = microsecondsToTicks(event.timeUs);
-            const uint32_t deltaTick = currentTick >= previousTick ? currentTick - previousTick : 0;
-            previousTick = currentTick;
-
-            appendVariableLengthQuantity(track, deltaTick);
-            track.insert(track.end(), event.message.begin(), event.message.end());
-        }
-
-        // Ensure pedal state is released before End of Track.
-        appendPedalResetEvents(track);
-
-        // End of Track meta event.
-        appendVariableLengthQuantity(track, 0);
-        track.push_back(0xFF);
-        track.push_back(0x2F);
-        track.push_back(0x00);
-
-        std::ofstream file(filePath_, std::ios::binary);
-        if (!file) {
-            return;
-        }
-
-        file.write("MThd", 4);
-        writeUInt32BE(file, 6);
-        writeUInt16BE(file, 0); // format 0
-        writeUInt16BE(file, 1); // one track
-        writeUInt16BE(file, ticksPerQuarterNote_);
-
-        file.write("MTrk", 4);
-        writeUInt32BE(file, static_cast<uint32_t>(track.size()));
-        file.write(reinterpret_cast<const char*>(track.data()), static_cast<std::streamsize>(track.size()));
-    }
-
-    static constexpr uint16_t ticksPerQuarterNote_ = 480;
-    static constexpr uint32_t microsecondsPerQuarterNote_ = 500000;
-
-private:
-    inline static std::mutex mutex_;
-    inline static std::condition_variable condition_;
-    inline static bool recording_ = false;
-
-    inline static std::mutex eventMutex_;
-    inline static std::vector<Event> events_;
-
-    inline static int handlerToken_ = 0;
-    inline static std::string filePath_;
-    inline static Clock::time_point startTime_;
+  MidiInputHub& input_hub_;
+  mutable std::mutex lifecycle_mutex_;
+  mutable std::mutex event_mutex_;
+  std::optional<MidiInputHub::Subscription> subscription_;
+  std::vector<Event> events_;
+  std::filesystem::path output_path_;
+  std::filesystem::path last_output_path_;
+  Clock::time_point start_time_{};
 };
 
-#endif /* midiRecorder_hpp */
+#endif

@@ -17,32 +17,4 @@
 // 2026-09-15
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#ifndef bridge_model_hpp
-#define bridge_model_hpp
-
-#include <iostream>
-#include "./string_model.hpp"
-
-class BridgeModel {
-    
-    
-    
-public:
-    BridgeModel () {
-        
-        
-    }
-    
-    void process() const {
-
-//        const float z = boundary_point->z;
-//        const float y = boundary_point->y;
-//
-//        boundary_point->z = 0.999848f * z - 0.017452f * y;
-//
-//        boundary_point->y = 0.017452f * z + 0.999848f * y;
-    }
-    
-};
-
-#endif /* bridge_model_hpp */
+#include "../bridge_model.hpp"

@@ -1,13 +1,48 @@
+// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+// [ZERO AI-GENERATED CODE]
+// Every line in this file is written and understood by its author. Every result is
+// reproducible, every assumption is open to inspection, and every implementation
+// stands open to criticism and challenge.
+// AI may be used for non-core, replaceable, engineering work;
+// this file, however, contains core logic that the author considers
+// necessary to understand firsthand, explain line by line, and take full responsibility for,
+// and is therefore implemented entirely by hand.
+// ---------------------------------------------------------------------------
+// [本文件承诺不含任何 AI 生成代码]
+// 每一行代码均由作者亲自编写，并确知其意义。一切结果可以复现，一切假设可经受检验，一切实现经得起批评与质疑。
+// AI 可用于非核心、可替代的工程工作；
+// 本文件承载作者认为必须亲自理解、能够逐行解释并为之负责的核心逻辑，因此刻意保持完全人工实现。
 //
-//  soundboard_model.hpp
-//  bbpl
-//
-//  Created by opus arc on 2026/9/13.
-//
+// Ziyang Tan
+// 2026-09-04
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 #ifndef soundboard_model_hpp
 #define soundboard_model_hpp
 
-#include <stdio.h>
+#include <array>
+
+class SoundboardModel {
+    SoundboardModel(const SoundboardModel&) = delete;
+    SoundboardModel& operator=(const SoundboardModel&) = delete;
+public:
+    mutable std::array<double, 88> bridge_force{};
+    
+    explicit SoundboardModel() {
+        
+    }
+    
+    inline float get_sample() {
+        float sum = 0.0f;
+        for(int i = 0; i < bridge_force.size(); i++) {
+            sum += bridge_force[i];
+        }
+        return sum;
+    }
+    
+    inline void system_reset() {
+        bridge_force.fill(0.0f);
+    }
+};
 
 #endif /* soundboard_model_hpp */

@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		14648F9430510CB700285A00 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14648F8F30510CB700285A00 /* main.cpp */; };
+		149EE044305529F900C45ADC /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 149EE043305529F900C45ADC /* CoreMIDI.framework */; };
+		149EE04A30552DE400C45ADC /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 149EE04930552DE400C45ADC /* CoreFoundation.framework */; };
 		14B73B53304AE994007325C7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14B73B52304AE994007325C7 /* AudioToolbox.framework */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +27,8 @@
 
 /* Begin PBXFileReference section */
 		14648F8F30510CB700285A00 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		149EE043305529F900C45ADC /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
+		149EE04930552DE400C45ADC /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		14B72C4E30491A3A007325C7 /* bbpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbpl; sourceTree = BUILT_PRODUCTS_DIR; };
 		14B73B52304AE994007325C7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -34,15 +38,20 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				bbpl/configuration/configuration.cpp,
+				bbpl/configuration/details/src/hammer_preset.cpp,
+				bbpl/configuration/details/src/string_impedance_preset.cpp,
+				bbpl/configuration/details/src/tunning_preset.cpp,
 				bbpl/hardware/src/cli_helper.cpp,
 				bbpl/hardware/src/soundcard_helper.cpp,
 				bbpl/piano_controller.cpp,
+				bbpl/piano/src/bridge_model.cpp,
 				bbpl/piano/src/damper_model.cpp,
 				bbpl/piano/src/fractional_filter.cpp,
 				bbpl/piano/src/hammer_model.cpp,
 				bbpl/piano/src/key_model.cpp,
 				bbpl/piano/src/loss_filter.cpp,
 				bbpl/piano/src/piano_model.cpp,
+				bbpl/piano/src/soundboard_model.cpp,
 				bbpl/piano/src/string_model.cpp,
 				service_controller.cpp,
 			);
@@ -64,6 +73,11 @@
 			path = notes;
 			sourceTree = "<group>";
 		};
+		149EE04C30552E5700C45ADC /* dist */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = dist;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +85,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				149EE04A30552DE400C45ADC /* CoreFoundation.framework in Frameworks */,
+				149EE044305529F900C45ADC /* CoreMIDI.framework in Frameworks */,
 				14B73B53304AE994007325C7 /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -81,6 +97,7 @@
 		14B72C4530491A3A007325C7 = {
 			isa = PBXGroup;
 			children = (
+				149EE04C30552E5700C45ADC /* dist */,
 				14B73B51304AE994007325C7 /* Frameworks */,
 				14B72C4F30491A3A007325C7 /* Products */,
 				14649DD530510CCE00285A00 /* core */,
@@ -100,6 +117,8 @@
 		14B73B51304AE994007325C7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				149EE04930552DE400C45ADC /* CoreFoundation.framework */,
+				149EE043305529F900C45ADC /* CoreMIDI.framework */,
 				14B73B52304AE994007325C7 /* AudioToolbox.framework */,
 			);
 			name = Frameworks;

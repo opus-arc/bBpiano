@@ -68,25 +68,55 @@ static constexpr const char* logo =
 
 // --------------------------------------------------------------------
 // MARK: library
-// cli entry
+
 #include "./core/service_controller.hpp"
 #include "./core/bbpl/piano_controller.hpp"
 
+#include <cstdlib>
+#include <exception>
+#include <iostream>
+
 
 int main(int argc, char* argv[]) {
-    
     // --------------------------------------------------------------------
     // MARK: arg tmp test
-    char* testArgv[] = {
-        argv[0],
-        "-i"
-    };
-    argc = 2;
-    argv = testArgv;
+        char* testArgv[] = {
+            argv[0],
+            "-i"
+        };
+        argc = 2;
+        argv = testArgv;    
     
+//            char* testArgv[] = {
+//                argv[0],
+//                "-m",
+//                "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/core/bbpl/resource/midi_samples/Fancy's selection/midi/Piano Sonata 1. X. 1905 _From the Street__2018.midi"
+//            };
+//            argc = 3;
+//            argv = testArgv;
+//    char* testArgv[] = {
+//                argv[0],
+//                "-m",
+//                "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/core/bbpl/resource/midi_samples/Fancy's selection/midi/Sonata No. 28 in A Major, Op. 101 (Complete)_2014.midi"
+//            };
+//            argc = 3;
+//            argv = testArgv;
     
-    return cli_entry(argc, argv, version, logo);
-    
+    try {
+        
+      return cli_entry(argc, argv, version, logo);
+        
+    } catch (const std::exception& error) {
+        
+      std::cerr << "bbpl: " << error.what() << '\n';
+      return EXIT_FAILURE;
+        
+    } catch (...) {
+        
+      std::cerr << "bbpl: unknown fatal error.\n";
+      return EXIT_FAILURE;
+        
+    }
 }
 
 

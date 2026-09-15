@@ -1,14 +1,38 @@
+// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+// [AI-ASSISTED, HUMAN-UNDERSTOOD CODE]
+// This file may have been written with the assistance of AI for explanation,
+// discussion, review, implementation guidance, or non-critical engineering suggestions.
 //
-//  loss_filter.hpp
-//  bbpl
+// However, every line included in this file has been reviewed, understood,
+// and accepted by its author. Every implementation is expected to be explainable,
+// reproducible, open to inspection, and subject to criticism and revision.
 //
-//  Created by opus arc on 2026/9/11.
+// AI is treated as an engineering assistant rather than an authority:
+// the author remains responsible for the design decisions, assumptions,
+// correctness, and final implementation contained in this file.
+// —————————————————————————
+// [本文件包含 AI 辅助下完成的代码]
+// 本文件在编写过程中可能使用 AI 进行原理讲解、讨论、代码审阅、实现指导，
+// 或提供非关键性的工程建议。
 //
+// 但最终保留在本文件中的每一行代码，均由作者亲自审阅、理解并确认。
+// 所有实现都应能够由作者解释、复现、检查，并接受批评、修改与质疑。
+//
+// AI 在此仅作为工程辅助工具，而非技术权威；
+// 本文件中的设计选择、假设、正确性以及最终实现，均由作者本人承担责任。
+//
+// Ziyang Tan
+// 2026-04-06
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 #ifndef loss_filter_hpp
 #define loss_filter_hpp
 
 #include <iostream>
+#include <numbers>
+#include <complex>
+#include <array>
+#include <algorithm>
 
 class LossFilter {
 public:
@@ -35,10 +59,10 @@ public:
     };
     
     LossPreset lossPreset;
-    std::array<float, kD274LossSectionCount> x1;
-    std::array<float, kD274LossSectionCount> x2;
-    std::array<float, kD274LossSectionCount> y1;
-    std::array<float, kD274LossSectionCount> y2;
+    std::array<float, kD274LossSectionCount> x1{};
+    std::array<float, kD274LossSectionCount> x2{};
+    std::array<float, kD274LossSectionCount> y1{};
+    std::array<float, kD274LossSectionCount> y2{};
     
     LossFilter(int midi_n) {
         const int m = std::clamp(midi_n, kD274LossMidiMin, kD274LossMidiMax);
@@ -46,18 +70,43 @@ public:
             static_cast<std::size_t>(m - kD274LossMidiMin)];
     }
     
-    inline constexpr const LossPreset& getD274LossPreset(int midi) {
-        const int m = std::clamp(
-            midi, kD274LossMidiMin, kD274LossMidiMax);
-        return kD274LossPresets[
-            static_cast<std::size_t>(m - kD274LossMidiMin)];
+    inline double get_group_delay() {
+        return lossPreset.groupDelaySamples;
     }
+    inline double get_phase_delay(double sample_rate,
+                                  double frequency) const {
+        const double omega =
+            2.0 * std::numbers::pi_v<double> *
+            frequency / sample_rate;
 
-    inline constexpr const LossPreset& getD274LossPreset(
-        int midi, int /*stringIndex*/) {
-        return getD274LossPreset(midi);
+        const std::complex<double> z1 =
+            std::polar(1.0, -omega);
+        const std::complex<double> z2 = z1 * z1;
+
+        std::complex<double> response{1.0, 0.0};
+
+        const std::size_t section_count =
+            std::min<std::size_t>(
+                static_cast<std::size_t>(lossPreset.sectionCount),
+                lossPreset.sections.size());
+
+        for (std::size_t i = 0; i < section_count; ++i) {
+            const auto& c = lossPreset.sections[i];
+
+            // 与 process() 的实际 float 系数一致。
+            const double b0 = static_cast<float>(c.b0);
+            const double b1 = static_cast<float>(c.b1);
+            const double b2 = static_cast<float>(c.b2);
+            const double a1 = static_cast<float>(c.a1);
+            const double a2 = static_cast<float>(c.a2);
+
+            response *=
+                (b0 + b1 * z1 + b2 * z2) /
+                (1.0 + a1 * z1 + a2 * z2);
+        }
+
+        return -std::arg(response) / omega;
     }
-    
     
     inline void process(float& x) {
         
@@ -97,6 +146,28 @@ public:
         }
     }
 
+    
+    inline void system_reset() {
+        x1.fill(0.0f);
+        x2.fill(0.0f);
+        y1.fill(0.0f);
+        y2.fill(0.0f);
+    }
+
+private:
+    
+    inline constexpr const LossPreset& getD274LossPreset(int midi) {
+        const int m = std::clamp(
+            midi, kD274LossMidiMin, kD274LossMidiMax);
+        return kD274LossPresets[
+            static_cast<std::size_t>(m - kD274LossMidiMin)];
+    }
+
+    inline constexpr const LossPreset& getD274LossPreset(
+        int midi, int /*stringIndex*/) {
+        return getD274LossPreset(midi);
+    }
+    
     
     
     inline static constexpr std::array<LossPreset, 88> kD274LossPresets = {{

@@ -14,7 +14,7 @@
 // 本文件承载作者认为必须亲自理解、能够逐行解释并为之负责的核心逻辑，因此刻意保持完全人工实现。
 //
 // Ziyang Tan
-// 2026-09-04
+// 2026-04-06
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
@@ -24,32 +24,49 @@
 #include <iostream>
 
 
-double Damper(double x, double &z1, double &z2) {
-    // ==========================
-    // Temporary Damper Controls
-    // ==========================
-    constexpr double lowLoss   = 0.020; // 低频耗散：0.020~0.070
-    constexpr double highLoss  = 0.25;  // 高频抓取：0.25~0.70
-    constexpr double damperMix = 0.38;  // 毛毡低通占比：0.30~0.70
+class Damper {
+    
+    double z1 = 0.0;
+    double z2 = 0.0;
 
-    const double loopGain = 1.0 - lowLoss;
-    const double wet = damperMix * highLoss;
-    const double dry = 1.0 - wet;
+public:
+    
+    inline void process(float &x) {
+        // ==========================
+        // Temporary Damper Controls
+        // ==========================
+        constexpr float lowLoss   = 0.020; // 低频耗散：0.020~0.070
+        constexpr float highLoss  = 0.25;  // 高频抓取：0.25~0.70
+        constexpr float damperMix = 0.38;  // 毛毡低通占比：0.30~0.70
 
-    // Gentle second-order low-pass damper color.
-    constexpr double b0 = 0.292893218813;
-    constexpr double b1 = 0.585786437627;
-    constexpr double b2 = 0.292893218813;
+        const float loopGain = 1.0 - lowLoss;
+        const float wet = damperMix * highLoss;
+        const float dry = 1.0 - wet;
 
-    constexpr double a1 = 0.000000000000;
-    constexpr double a2 = 0.171572875254;
+        // Gentle second-order low-pass damper color.
+        constexpr float b0 = 0.292893218813;
+        constexpr float b1 = 0.585786437627;
+        constexpr float b2 = 0.292893218813;
 
-    const double y = b0 * x + z1;
+        constexpr float a1 = 0.000000000000;
+        constexpr float a2 = 0.171572875254;
 
-    z1 = b1 * x - a1 * y + z2;
-    z2 = b2 * x - a2 * y;
+        const float y = b0 * x + z1;
 
-    return loopGain * (dry * x + wet * y);
-}
+        z1 = b1 * x - a1 * y + z2;
+        z2 = b2 * x - a2 * y;
+
+        x = loopGain * (dry * x + wet * y);
+    }
+    
+    inline void system_reset() noexcept {
+      z1 = 0.0;
+      z2 = 0.0;
+    }
+    
+};
+
+
+
 
 #endif /* damper_model_hpp */
