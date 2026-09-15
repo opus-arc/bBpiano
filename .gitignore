@@ -1,4 +1,3 @@
-*.wav
 *.mp3
 *.m4a
 .DS_Store
@@ -38,3 +37,9 @@ AcousticLab/HammerLab/.Generated/
 /hammer_fit/
 /tmp/
 /cipher_analysis.txt
+
+# Local MIDI/audio assets; keep generated and reference media out of Git.
+# Keep these after the Doc allow rules above so they apply everywhere.
+*.[mM][iI][dD]
+*.[mM][iI][dD][iI]
+*.[wW][aA][vV]

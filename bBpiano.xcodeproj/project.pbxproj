@@ -198,7 +198,7 @@
 		147D714F2FD6FA1C008F3BF8 /* Exceptions for "Cli" folder in "bBpiano Lite" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"bBpiano Lite/hardware/DSP-Benchmark.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/hardware/DSP-Benchmark.cpp",
 			);
 			target = 147D71352FD6F9B6008F3BF8 /* bBpiano Lite */;
 		};

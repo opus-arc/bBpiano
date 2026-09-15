@@ -19,7 +19,8 @@
 #ifndef controller_hardware_hpp
 #define controller_hardware_hpp
 
-#include <iostream>
+#include <stop_token>
+#include <string>
 
 // ======================== ======================== ========================
 // Basic configurations
@@ -38,12 +39,12 @@ int cli_entry(int argc, char* argv[], const char* version, const char* logo);
 // Services
 // 服务
 // ======================== ======================== ========================
-void midi_service(std::string midi_path_string);
-void piano_service();
-void keyboard_service();
-void export_service(std::string export_midi_path_string);
-void record_service();
-void test_service();
-void internal_test_service();
+void midi_service(const std::string& midi_path, std::stop_token stop_token);
+void piano_service(std::stop_token stop_token);
+void keyboard_service(std::stop_token stop_token);
+void export_service(std::string export_midi_path_string, std::stop_token stop_token);
+void record_service(std::stop_token stop_token);
+void test_service(std::stop_token stop_token);
+void internal_test_service(std::stop_token stop_token);
 
 #endif /* controller_hardware_hpp */

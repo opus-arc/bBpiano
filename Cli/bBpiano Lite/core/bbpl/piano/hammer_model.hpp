@@ -23,25 +23,35 @@
 #include <iostream>
 #include <cmath>
 
+#include "../configuration/configuration.hpp"
+
 class HammerModel {
     
-    static constexpr double k_a = 6000;
-    static constexpr double k_b = 6000;
+public: // 暂时 public
     
-    static constexpr double c_a = 2;
-    static constexpr double c_b = 3;
+    // ======================== ======================== ========================
+    // 双层 Kelvin–Voigt
+    // ======================== ======================== ========================
     
-    static constexpr double p1 = 2.0;
-    static constexpr double p2 = 2.0;
-    static constexpr double p3 = 2.0;
-    static constexpr double p4 = 2.0;
+    // ======================== ========================
+    // Basic parameters
+    // 基本参数
+    // ======================== ========================
+    int midi_n_ = 69;
     
-    static constexpr double hammer_m_ = 9e-3; // 9g
-    static constexpr double release_threshold = -5e-3; // 5mm
+    // ======================== ========================
+    // Degrees of freedom of parameters
+    // 参数自由度
+    // ======================== ========================
+    const Parameters::Hammer::LegacyFit::HammerPreset* hammer_presets = nullptr;
+    static constexpr double compression_max_a = 1e-3;
+    static constexpr double compression_max_b = 1e-3;
     
-    // --------------------------------------
+    // ======================== ========================
+    // Cross-function update volume
+    // 跨函数更新量
+    // ======================== ========================
     
-
     
     double ts_ = 0.0;
     
@@ -53,12 +63,17 @@ class HammerModel {
     double release_distance = 0.0;
     
     bool is_contacting_ = false;
-    
 
     
 public:
     
-    HammerModel(double sample_rate) : ts_(1.0 / sample_rate) {}
+    HammerModel(double sample_rate,
+                int midi_n,
+                const Configuration* configuration) :
+        ts_(1.0 / sample_rate),
+        midi_n_(midi_n),
+        hammer_presets(configuration->hammer_presets.find_preset(midi_n_))
+    {}
     
     inline double hammer_movement(double string_v) {
         if(!is_contacting_)
@@ -66,6 +81,14 @@ public:
         
         // 算 f (解出 middle_v)
         double hammer_force = solve_f(string_v);
+        
+        // 无根、NaN、零力或负力：接触结束。
+        if (!std::isfinite(hammer_force) ||
+            hammer_force <= 0.0) {
+            system_reset();
+            return 0.0;
+        }
+        
         // 击锤的空间移动
         if(hammer_v_ < 0 || release_distance < 0.0) {
             release_distance += hammer_v_ * ts_;
@@ -74,7 +97,7 @@ public:
             }
         }
         // 检查是否接触结束
-        if(release_distance < release_threshold) {
+        if(release_distance < hammer_presets->release_threshold_m) {
             system_reset();
             return 0.0;
         }
@@ -83,8 +106,27 @@ public:
         w_a_1_ = w_a_1_ + (middle_v_ - string_v) * ts_;
         w_b_1_ = w_b_1_ + (hammer_v_ - middle_v_) * ts_;
         
+        constexpr double compression_tolerance = 1.0e-12;
+
+        // 任意一层将进入拉伸状态，说明单边接触已经结束。
+        if (!std::isfinite(w_a_1_) ||
+            !std::isfinite(w_b_1_) ||
+            w_a_1_ < -compression_tolerance ||
+            w_b_1_ < -compression_tolerance) {
+
+            system_reset();
+            return 0.0;
+        }
+
+        // 只消除舍入产生的极小负数。
+        w_a_1_ = std::max(0.0, w_a_1_);
+        w_b_1_ = std::max(0.0, w_b_1_);
+        
         // 更新击锤的速度
-        hammer_v_ -= (hammer_force / hammer_m_) * ts_;
+        // 负力不更新！
+        if(hammer_force > 0.0)
+            hammer_v_ -= (hammer_force / hammer_presets->mass_kg) * ts_;
+       
         
         return hammer_force;
     }
@@ -97,8 +139,6 @@ public:
         hammer_v_ = hammer_v;
         is_contacting_ = true;
     }
-
-private:
     
     inline void system_reset() {
         w_a_1_ = 0.0;
@@ -109,13 +149,33 @@ private:
         is_contacting_ = false;
     }
 
+private:
+    
+    inline double signed_pow(double x, double p) {
+        return x >= 0 ? std::pow(x, p) : -std::pow(-x, p);
+    }
+    inline double scope_pow_a(double exponent) {
+        w_a_1_ = std::clamp(w_a_1_, 0.0, compression_max_a);
+        return std::pow(w_a_1_, exponent);
+    }
+    inline double scope_pow_b(double exponent) {
+        w_b_1_ =  std::clamp(w_b_1_, 0.0, compression_max_b);
+        return std::pow(w_b_1_, exponent);
+    }
+    
     inline double solve_f(double string_v) {
-        double upper_limit = 20;
-        double lower_limit = -20;
+        double upper_limit = 20.0;
+        double lower_limit = -20.0;
         double middle_v_suppose = (upper_limit + lower_limit) / 2.0;
+        
         for(int i = 0; i < 20; i++) {
-            if((k_a * std::pow(w_a_1_, p1) + c_a *  signed_pow(middle_v_suppose - string_v, p2) -
-                (k_b * std::pow(w_b_1_, p3) + c_b * signed_pow(hammer_v_ - middle_v_suppose, p4))) > 0) {
+            
+            double f_a = hammer_presets->k_a * scope_pow_a(hammer_presets->p1) +
+            hammer_presets->c_a *  signed_pow(middle_v_suppose - string_v, hammer_presets->p2);
+            double f_b = hammer_presets->k_b * scope_pow_b(hammer_presets->p3) +
+            hammer_presets->c_b * signed_pow(hammer_v_ - middle_v_suppose, hammer_presets->p4);
+            
+            if(f_a - f_b > 0) {
                 upper_limit = middle_v_suppose;
             } else {
                 lower_limit = middle_v_suppose;
@@ -123,11 +183,12 @@ private:
             middle_v_suppose = (upper_limit + lower_limit) / 2.0;
         }
         middle_v_ = middle_v_suppose;
-        return k_a * std::pow(w_a_1_, p1) + c_a * signed_pow(middle_v_ - string_v, p2);
-    }
-    
-    inline double signed_pow(double x, double p) {
-        return x >= 0 ? std::pow(x, p) : -std::pow(-x, p);
+        
+     
+        return hammer_presets->k_a * scope_pow_a(hammer_presets->p1) +
+            hammer_presets->c_a *  signed_pow(middle_v_suppose - string_v, hammer_presets->p2);
+            
+        
     }
 };
 

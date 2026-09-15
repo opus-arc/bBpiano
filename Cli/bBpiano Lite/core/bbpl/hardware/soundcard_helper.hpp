@@ -32,11 +32,15 @@
 #include <stdexcept>
 
 
-
+#include "./service/audio_callback_gate.hpp"
 
 class Soundcard {
     
+    Soundcard(Soundcard&&) = delete;
+    Soundcard& operator=(Soundcard&&) = delete;
+    
     AudioUnit audio_unit_ = nullptr;
+    AudioCallbackGate callback_gate_;
     bool running_ = false;
     
 public:
@@ -44,131 +48,136 @@ public:
     Soundcard(const Soundcard&) = delete;
     Soundcard& operator=(const Soundcard&) = delete;
     
-    Soundcard(double sample_rate) {
-        // ======================== ======================== ========================
-        // Initialize audio_unit_
-        // 创建 audio_unit_
-        // ======================== ======================== ========================
-        // ======================== ========================
-        // Audio Component Description
-        // ”我要描述我想找什么样的音频组件？“
-        /// (这里所写的就是搜索音频组建的过滤条件)
-        // ======================== ========================
-        AudioComponentDescription description{};
-        // 我要找一个“输出类型”的 Audio Unit:
-        /// (kAudioUnitType_ 还有很多其他功能的 audio unit, 下同)
-        description.componentType = kAudioUnitType_Output;
-        // 输出设备为 macOS 当前的默认输出设备
-        description.componentSubType = kAudioUnitSubType_DefaultOutput;
-        // 我要 Apple 提供的这个 Audio Unit
-        /// (这是因为 macOS 的 Audio Unit 系统理论上也允许第三方厂商注册自己的 Audio Unit)
-        description.componentManufacturer = kAudioUnitManufacturer_Apple;
-        
-        // 以上三句话连在一起就是：
-        /// “我要找 Apple 制造的 Output 类型的 Default Output 的 Audio Unit”
-        
-        // 以下两句话的意思就是：
-        /// “我没有额外的过滤条件了”
-        description.componentFlags = 0;
-        description.componentFlagsMask = 0;
-        
-        // ======================== ========================
-        // Audio Component FindNext
-        // ”根据 description，帮我在系统里找到符合条件的 Audio Component“
-        // ======================== ========================
-        // nullptr 表示：从搜索结果列表里的第一个开始找
-        /// 这说明支持从指定的某一项开始往下找，这样也会更便捷
-        AudioComponent component = AudioComponentFindNext(nullptr, &description);
-        if (component == nullptr) {
-            throw std::runtime_error("Failed to find audio component.");
+    explicit Soundcard(double sample_rate) {
+        try {
+            // ======================== ======================== ========================
+            // Initialize audio_unit_
+            // 创建 audio_unit_
+            // ======================== ======================== ========================
+            // ======================== ========================
+            // Audio Component Description
+            // ”我要描述我想找什么样的音频组件？“
+            /// (这里所写的就是搜索音频组建的过滤条件)
+            // ======================== ========================
+            AudioComponentDescription description{};
+            // 我要找一个“输出类型”的 Audio Unit:
+            /// (kAudioUnitType_ 还有很多其他功能的 audio unit, 下同)
+            description.componentType = kAudioUnitType_Output;
+            // 输出设备为 macOS 当前的默认输出设备
+            description.componentSubType = kAudioUnitSubType_DefaultOutput;
+            // 我要 Apple 提供的这个 Audio Unit
+            /// (这是因为 macOS 的 Audio Unit 系统理论上也允许第三方厂商注册自己的 Audio Unit)
+            description.componentManufacturer = kAudioUnitManufacturer_Apple;
+            
+            // 以上三句话连在一起就是：
+            /// “我要找 Apple 制造的 Output 类型的 Default Output 的 Audio Unit”
+            
+            // 以下两句话的意思就是：
+            /// “我没有额外的过滤条件了”
+            description.componentFlags = 0;
+            description.componentFlagsMask = 0;
+            
+            // ======================== ========================
+            // Audio Component FindNext
+            // ”根据 description，帮我在系统里找到符合条件的 Audio Component“
+            // ======================== ========================
+            // nullptr 表示：从搜索结果列表里的第一个开始找
+            /// 这说明支持从指定的某一项开始往下找，这样也会更便捷
+            AudioComponent component = AudioComponentFindNext(nullptr, &description);
+            if (component == nullptr) {
+                throw std::runtime_error("Failed to find audio component.");
+            }
+            
+            // ======================== ========================
+            // Audio Component InstanceNew
+            // “根据刚刚找到的 AudioComponent，创建一个真正能使用的 AudioUnit 实例”
+            // ======================== ========================
+            /// 这里的末尾的 _ 代表是类成员变量，这样就能和入参区分出来
+            OSStatus status_creatAudioUnit = AudioComponentInstanceNew(component, &audio_unit_);
+            if (status_creatAudioUnit != noErr) {
+                throw std::runtime_error("Failed to create audio unit.");
+            }
+            
+            // ======================== ======================== ========================
+            // The descriptions of PCM
+            // 对 PCM 格式的描述
+            // ======================== ======================== ========================
+            // ======================== ========================
+            // Audio Stream Basic Description
+            // ”我要描述我想要什么样格式的 PCM？“
+            // ======================== ========================
+            AudioStreamBasicDescription format{};
+            
+            // 采样率
+            format.mSampleRate = sample_rate;
+            // 数据格式
+            /// 未经 MP3、AAC 之类压缩的原始采样值
+            format.mFormatID = kAudioFormatLinearPCM;
+            // 进一步说明 PCM 的具体类型
+            /// Float32 float -1.0 ~ +1.0
+            format.mFormatFlags = kAudioFormatFlagsNativeFloatPacked;
+            // 一个 sample 占：32 bit = 4 byte
+            /// 32比特等于4字节，一个字节8比特
+            format.mBitsPerChannel = 32;
+            // 双声道 stereo
+            // mono 单声道
+            format.mChannelsPerFrame = 1;
+            // 计算一frame分配多少bytes(字节)
+            // sizeof(Float32) == 4; mChannelsPerFrame == 2;
+            // 因此 mBytesPerFrame == 8;
+            format.mBytesPerFrame = sizeof(Float32) * format.mChannelsPerFrame;
+            // 对于压缩形式来说一般多frames会被压进一个packet里面
+            // 但纯pcm作为非压缩格式一般一帧为一个packet
+            format.mFramesPerPacket = 1;
+            // 计算一个packet分配多少bytes(字节)
+            format.mBytesPerPacket = format.mBytesPerFrame * format.mFramesPerPacket;
+            // Apple 开发时所做的预留字段
+            format.mReserved = 0;
+            
+            // ======================== ========================
+            // Give the PCM format to audio_unit_
+            // ”把 PCM format 交给 audio_unit_“
+            // ======================== ========================
+            // "给 audio_unit_ 的某个属性设置一个值"
+            OSStatus status_StreamFormat = AudioUnitSetProperty(
+                audio_unit_,
+                kAudioUnitProperty_StreamFormat,// 我要修改它的“音频流格式”属性。
+                kAudioUnitScope_Input,// 我将要送进这个 Output Unit 的 PCM 是什么格式？
+                0,// HAL Output 我设置哪一个 bus 0 (主输出 bus)
+                &format,
+                sizeof(format));
+            // 上文的意思是：
+            /// “对 audio_unit_，把它第 0 个输入端口的 Stream Format 设置成 format 描述的格式。”
+            if (status_StreamFormat != noErr) {
+                throw std::runtime_error("Failed to set stream format.");
+            }
+            
+            // ======================== ======================== ========================
+            // Register for callback
+            // 注册 Render Callback
+            // ======================== ======================== ========================
+            AURenderCallbackStruct callback{};
+            // Core Audio是 C 风格 API, 成员函数不隐含"this"指针
+            // 故使用不绑定具体对象的静态函数更接近 C 风格的普通函数
+            callback.inputProc = &Soundcard::render_callback;
+            // 但是使用静态函数指针回传给 C API 导致 C 无法访问 this
+            // 所以下面这个变量就多传回一个 this
+            callback.inputProcRefCon = this;
+            OSStatus status_SetRenderCallback = AudioUnitSetProperty(
+                audio_unit_,
+                kAudioUnitProperty_SetRenderCallback,
+                kAudioUnitScope_Input,
+                0,
+                &callback,
+                sizeof(callback));
+            if (status_SetRenderCallback != noErr) {
+                throw std::runtime_error("Failed to set render callback.");
+            }
+        } catch (...) {
+            AudioComponentInstanceDispose(audio_unit_);
+            audio_unit_ = nullptr;
+            throw;
         }
-        
-        // ======================== ========================
-        // Audio Component InstanceNew
-        // “根据刚刚找到的 AudioComponent，创建一个真正能使用的 AudioUnit 实例”
-        // ======================== ========================
-        /// 这里的末尾的 _ 代表是类成员变量，这样就能和入参区分出来
-        OSStatus status_creatAudioUnit = AudioComponentInstanceNew(component, &audio_unit_);
-        if (status_creatAudioUnit != noErr) {
-            throw std::runtime_error("Failed to create audio unit.");
-        }
-        
-        // ======================== ======================== ========================
-        // The descriptions of PCM
-        // 对 PCM 格式的描述
-        // ======================== ======================== ========================
-        // ======================== ========================
-        // Audio Stream Basic Description
-        // ”我要描述我想要什么样格式的 PCM？“
-        // ======================== ========================
-        AudioStreamBasicDescription format{};
-        
-        // 采样率
-        format.mSampleRate = sample_rate;
-        // 数据格式
-        /// 未经 MP3、AAC 之类压缩的原始采样值
-        format.mFormatID = kAudioFormatLinearPCM;
-        // 进一步说明 PCM 的具体类型
-        /// Float32 float -1.0 ~ +1.0
-        format.mFormatFlags = kAudioFormatFlagsNativeFloatPacked;
-        // 一个 sample 占：32 bit = 4 byte
-        /// 32比特等于4字节，一个字节8比特
-        format.mBitsPerChannel = 32;
-        // 双声道 stereo
-        // mono 单声道
-        format.mChannelsPerFrame = 1;
-        // 计算一frame分配多少bytes(字节)
-        // sizeof(Float32) == 4; mChannelsPerFrame == 2;
-        // 因此 mBytesPerFrame == 8;
-        format.mBytesPerFrame = sizeof(Float32) * format.mChannelsPerFrame;
-        // 对于压缩形式来说一般多frames会被压进一个packet里面
-        // 但纯pcm作为非压缩格式一般一帧为一个packet
-        format.mFramesPerPacket = 1;
-        // 计算一个packet分配多少bytes(字节)
-        format.mBytesPerPacket = format.mBytesPerFrame * format.mFramesPerPacket;
-        // Apple 开发时所做的预留字段
-        format.mReserved = 0;
-        
-        // ======================== ========================
-        // Give the PCM format to audio_unit_
-        // ”把 PCM format 交给 audio_unit_“
-        // ======================== ========================
-        // "给 audio_unit_ 的某个属性设置一个值"
-        OSStatus status_StreamFormat = AudioUnitSetProperty(
-            audio_unit_,
-            kAudioUnitProperty_StreamFormat,// 我要修改它的“音频流格式”属性。
-            kAudioUnitScope_Input,// 我将要送进这个 Output Unit 的 PCM 是什么格式？
-            0,// HAL Output 我设置哪一个 bus 0 (主输出 bus)
-            &format,
-            sizeof(format));
-        // 上文的意思是：
-        /// “对 audio_unit_，把它第 0 个输入端口的 Stream Format 设置成 format 描述的格式。”
-        if (status_StreamFormat != noErr) {
-            throw std::runtime_error("Failed to set stream format.");
-        }
-        
-        // ======================== ======================== ========================
-        // Register for callback
-        // 注册 Render Callback
-        // ======================== ======================== ========================
-        AURenderCallbackStruct callback{};
-        // Core Audio是 C 风格 API, 成员函数不隐含"this"指针
-        // 故使用不绑定具体对象的静态函数更接近 C 风格的普通函数
-        callback.inputProc = &Soundcard::render_callback;
-        // 但是使用静态函数指针回传给 C API 导致 C 无法访问 this
-        // 所以下面这个变量就多传回一个 this
-        callback.inputProcRefCon = this;
-        OSStatus status_SetRenderCallback = AudioUnitSetProperty(
-            audio_unit_,
-            kAudioUnitProperty_SetRenderCallback,
-            kAudioUnitScope_Input,
-            0,
-            &callback,
-            sizeof(callback));
-        if (status_SetRenderCallback != noErr) {
-            throw std::runtime_error("Failed to set render callback.");
-        }
-
     }
     
     // ======================== ======================== ========================
@@ -195,13 +204,25 @@ public:
         UInt32 in_number_frames,
         // Core Audio 给的 PCM 内存
         /// Core Audio 给的 音频缓冲区列表及其描述信息
-        AudioBufferList* io_data)
+        AudioBufferList* io_data) noexcept
     {
         // 恢复指针类型，从万用指针 void* 变成 Soundcard*
         auto* soundcard = static_cast<Soundcard*>(input_proc_ref_con);
         
+        if(soundcard == nullptr || io_data == nullptr) {
+            return kAudio_ParamError;
+        }
+        
+        AudioCallbackGate::Guard callback_guard(soundcard->callback_gate_);
+        
+        if(!callback_guard) {
+            clear_output(io_action_flags, io_data);
+            return noErr;
+        }
+        
         // 恢复之后就能直接调用 Soundcard 类下面的 render 函数
         return soundcard->render(
+            io_action_flags,
             in_number_frames,
             io_data);
     }
@@ -210,7 +231,9 @@ public:
     // Fill the buffer
     // 用 PCM 填充 Core Audio 给的音频缓冲区
     // ======================== ======================== ========================
-    OSStatus render(UInt32 frames_count, AudioBufferList* data);
+    OSStatus render(AudioUnitRenderActionFlags* io_action_flags,
+                    UInt32 frames_count,
+                    AudioBufferList* data) noexcept ;
     
     void start() {
         // 函数幂等化：
@@ -222,8 +245,14 @@ public:
         if (status != noErr) {
             throw std::runtime_error("Failed to initialize audio unit.");
         }
+        
+        // 从这里开始允许 callback 访问 PianoModel。
+        callback_gate_.open();
+        
         status = AudioOutputUnitStart(audio_unit_);
+        
         if (status != noErr) {
+            callback_gate_.close_and_wait();
             AudioUnitUninitialize(audio_unit_);
             throw std::runtime_error("Failed to start audio unit.");
         }
@@ -238,11 +267,17 @@ public:
         if(!running_)
             return ;
         
+        // 阻止新 callback 进入，并等待已经进入的 callback 退出。
+        callback_gate_.close_and_wait();
+        
         AudioOutputUnitStop(audio_unit_);
         AudioUnitUninitialize(audio_unit_);
         
         running_ = false;
     }
+    
+    static void clear_output(AudioUnitRenderActionFlags* io_action_flags,
+                             AudioBufferList* data) noexcept;
     
     ~Soundcard() noexcept {
         stop();

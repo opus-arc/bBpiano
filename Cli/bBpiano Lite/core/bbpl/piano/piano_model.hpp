@@ -22,37 +22,80 @@
 
 #include <iostream>
 #include <array>
+
 #include "./key_model.hpp"
+#include "./bridge_model.hpp"
+#include "./soundboard_model.hpp"
+#include "../configuration/configuration.hpp"
 
 
 class PianoModel {
-    // 禁止资源拥有类复制
     PianoModel(const PianoModel&) = delete;
     PianoModel& operator=(const PianoModel&) = delete;
 public:
-//    std::array<KeyModel*, 88> piano_keys;
     
-    KeyModel* test_key_a4;
+    static constexpr Configuration configuration{};
+    BridgeModel bridge_;
+    SoundboardModel soundboard_;
+    std::array<KeyModel*, 88> piano_keys;
     
     PianoModel(double sample_rate) {
-        test_key_a4 = new KeyModel(59, sample_rate, 1);
-        
-        
-//        for(int i = 0; i < 88; i++) {
-//            piano_keys[i] = new KeyModel(i + 21, sample_rate, 3);
-//        }
+        for (std::size_t index = 0; index < piano_keys.size(); ++index) {
+            const int midi_n = static_cast<int>(index) + 21;
+
+            int string_count = 1;
+            if (midi_n >= 34) {
+                string_count = 3;
+            } else if (midi_n >= 29) {
+                string_count = 2;
+            }
+            
+            piano_keys[index] = new KeyModel(midi_n,
+                                             sample_rate,
+                                             string_count,
+                                             TunningPresets::Temperament::equal,
+                                             &soundboard_,
+                                             &bridge_,
+                                             &configuration);
+        }
     }
     
-    void piano_movement() {
-        test_key_a4->key_movement();
+    inline void piano_movement() {
+        for(int i = 0; i < piano_keys.size(); i++) {
+            if(piano_keys[i]->key_active_)
+                piano_keys[i]->key_movement();
+        }
+        
+//        piano_keys[69-21]->key_movement();
     }
     
-    float get_sample() {
-        return test_key_a4->get_sample();
+    inline float get_sample() {
+        return 0.01 * soundboard_.get_sample();
+    }
+    
+    inline void sustainpedal_control(bool is_active) {
+        if(is_active) {
+            for(int i = 0; i < piano_keys.size(); i++) {
+                piano_keys[i]->sustainpedal_active_ = true;
+            }
+        } else {
+            for(int i = 0; i < piano_keys.size(); i++) {
+                piano_keys[i]->sustainpedal_active_ = false;
+            }
+        }
+    }
+    
+    inline void system_reset() {
+        for(int i = 0; i < piano_keys.size(); i++) {
+            piano_keys[i]->system_reset();
+        }
+        soundboard_.system_reset();
     }
     
     ~PianoModel() noexcept {
-        delete test_key_a4;
+        for(int i = 0; i < piano_keys.size(); i++) {
+            delete piano_keys[i];
+        }
     }
 };
 
