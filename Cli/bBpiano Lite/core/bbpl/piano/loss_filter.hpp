@@ -35,18 +35,19 @@
 #include <algorithm>
 
 class LossFilter {
+    std::size_t section_count_ = 0;
 public:
-    
     inline static constexpr int kD274LossMidiMin = 21;
     inline static constexpr int kD274LossMidiMax = 108;
     inline static constexpr int kD274LossSectionCount = 4;
+
     
     struct LossBiquad {
-        double b0 = 0.0;
-        double b1 = 0.0;
-        double b2 = 0.0;
-        double a1 = 0.0;
-        double a2 = 0.0;
+        float b0 = 0.0;
+        float b1 = 0.0;
+        float b2 = 0.0;
+        float a1 = 0.0;
+        float a2 = 0.0;
     };
     struct LossPreset {
         int midi;
@@ -59,15 +60,19 @@ public:
     };
     
     LossPreset lossPreset;
-    std::array<float, kD274LossSectionCount> x1{};
-    std::array<float, kD274LossSectionCount> x2{};
-    std::array<float, kD274LossSectionCount> y1{};
-    std::array<float, kD274LossSectionCount> y2{};
+    // Transposed Direct Form II: two states per biquad instead of four.
+    std::array<float, kD274LossSectionCount> s1{};
+    std::array<float, kD274LossSectionCount> s2{};
     
     LossFilter(int midi_n) {
         const int m = std::clamp(midi_n, kD274LossMidiMin, kD274LossMidiMax);
         lossPreset = kD274LossPresets[
             static_cast<std::size_t>(m - kD274LossMidiMin)];
+        
+        section_count_ =
+            std::min<std::size_t>(
+                static_cast<std::size_t>(lossPreset.sectionCount),
+                lossPreset.sections.size());
     }
     
     inline double get_group_delay() {
@@ -85,20 +90,15 @@ public:
 
         std::complex<double> response{1.0, 0.0};
 
-        const std::size_t section_count =
-            std::min<std::size_t>(
-                static_cast<std::size_t>(lossPreset.sectionCount),
-                lossPreset.sections.size());
-
-        for (std::size_t i = 0; i < section_count; ++i) {
+        for (std::size_t i = 0; i < section_count_; ++i) {
             const auto& c = lossPreset.sections[i];
 
             // 与 process() 的实际 float 系数一致。
-            const double b0 = static_cast<float>(c.b0);
-            const double b1 = static_cast<float>(c.b1);
-            const double b2 = static_cast<float>(c.b2);
-            const double a1 = static_cast<float>(c.a1);
-            const double a2 = static_cast<float>(c.a2);
+            const double b0 = static_cast<double>(c.b0);
+            const double b1 = static_cast<double>(c.b1);
+            const double b2 = static_cast<double>(c.b2);
+            const double a1 = static_cast<double>(c.a1);
+            const double a2 = static_cast<double>(c.a2);
 
             response *=
                 (b0 + b1 * z1 + b2 * z2) /
@@ -109,49 +109,22 @@ public:
     }
     
     inline void process(float& x) {
-        
-        const std::size_t sectionCount = std::min<std::size_t>(
-            static_cast<std::size_t>(lossPreset.sectionCount),
-            lossPreset.sections.size()
-        );
-
-        for (std::size_t i = 0; i < sectionCount; ++i) {
+        for (std::size_t i = 0; i < section_count_; ++i) {
             const auto& c = lossPreset.sections[i];
 
-            const float b0 = static_cast<float>(c.b0);
-            const float b1 = static_cast<float>(c.b1);
-            const float b2 = static_cast<float>(c.b2);
-            const float a1 = static_cast<float>(c.a1);
-            const float a2 = static_cast<float>(c.a2);
-
-            // H(z) = (b0 + b1 z^-1 + b2 z^-2)
-            //      / (1  + a1 z^-1 + a2 z^-2)
-            // Difference equation:
-            // y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2]
-            //      - a1*y[n-1] - a2*y[n-2]
-
-            const float y = b0 * x
-                + b1 * x1[i]
-                + b2 * x2[i]
-                - a1 * y1[i]
-                - a2 * y2[i];
-
-            x2[i] = x1[i];
-            x1[i] = x;
-
-            y2[i] = y1[i];
-            y1[i] = y;
-
+            // Transposed Direct Form II (DF2T), mathematically equivalent
+            // to the original generic biquad while using only two states.
+            const float y = c.b0 * x + s1[i];
+            s1[i] = c.b1 * x - c.a1 * y + s2[i];
+            s2[i] = c.b2 * x - c.a2 * y;
             x = y;
         }
     }
 
     
     inline void system_reset() {
-        x1.fill(0.0f);
-        x2.fill(0.0f);
-        y1.fill(0.0f);
-        y2.fill(0.0f);
+        s1.fill(0.0f);
+        s2.fill(0.0f);
     }
 
 private:

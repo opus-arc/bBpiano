@@ -30,6 +30,7 @@
 #include "./damper_model.hpp"
 #include "./fractional_filter.hpp"
 #include "./loss_filter.hpp"
+#include "./dispersion_filter.hpp"
 
 #include "../configuration/configuration.hpp"
 
@@ -77,14 +78,16 @@ public:
     // ======================== ========================
     int midi_n_ = 69;
     double f0 = 440.0;
-    double samplerate = 44100.0;
+    double sample_rate_ = 44100.0;
     
     // ======================== ========================
     // Filters
     // 滤波器 (为了计算 group delay 放在前面)
     // ======================== ========================
     LossFilter loss_filter;
+    DispersionFilter dispersion_filter;
     double loss_phase_delay = 0.0;
+    double dispersion_phase_delay = 0.0;
     
     // ======================== ========================
     // Delay data
@@ -138,6 +141,12 @@ public:
     // 状态
     // ======================== ========================
     bool is_active = false;
+    
+    // ======================== ========================
+    // Pre-compute
+    // 预计算
+    // ======================== ========================
+    double c_z = 0.0;
 
     
 public:
@@ -153,18 +162,21 @@ public:
            .get_frequency(midi_n_,
                           temperament,
                           string_index)),
-        samplerate(sample_rate),
+        sample_rate_(sample_rate),
         loss_filter(midi_n_),
+        dispersion_filter(f0),
         // loss_filter.get_phase_delay(sample_rate, f0)
-        loss_phase_delay(loss_filter.get_phase_delay(sample_rate, f0)),
-        delay((sample_rate / f0 - loss_phase_delay) / 2.0),
+        loss_phase_delay(loss_filter.get_phase_delay(sample_rate_, f0)),
+        dispersion_phase_delay(dispersion_filter.get_phase_delay(sample_rate_, f0)),
+        delay((sample_rate_ / f0 - loss_phase_delay) / 2.0),
+//        delay((sample_rate_ / f0 - loss_phase_delay - dispersion_phase_delay) / 2.0),
         // delay_int 是数组节点数；真实单程整数延迟为 delay_int - 1。
         delay_int(static_cast<int>(std::floor(delay)) + 1),
         // fractional filter 每圈一次，因此承担完整 round-trip residual。
         delay_frac(2.0 * (delay - std::floor(delay))),
         traveling_wave_max_index(delay_int - 1),
         strike_port(delay_int, strike_point),
-        fractional_filter(delay_frac, 2.0 * std::numbers::pi_v<double> * f0 / sample_rate)
+        fractional_filter(delay_frac, 2.0 * std::numbers::pi_v<double> * f0 / sample_rate_)
     {
         
         if(delay_int < 4)
@@ -184,6 +196,7 @@ public:
         right_boundary_point = &right[get_i(traveling_wave_max_index, right_head)];
         
         z_ = configuration->string_impedance_presets.get_characteristic_impedance(midi_n_);
+        c_z = 1.0 / (2.0 * z_);
     }
     
     inline void propagate() {
@@ -227,7 +240,7 @@ public:
         const bool excited = hammer_force > 0.0;
 
         if (excited) {
-            inject(hammer_force / (2 * z_));
+            inject(hammer_force * c_z); // inject(hammer_force / (2 * z_));
         }
 
         propagate();
@@ -254,15 +267,6 @@ public:
     inline double get_string_vs() {
         return strike_port.weight_a * left[get_i(strike_port.index_a, left_head)] + strike_port.weight_b * left[get_i(strike_port.index_b, left_head)] + strike_port.weight_a * right[get_i(strike_port.index_a, right_head)] + strike_port.weight_b * right[get_i(strike_port.index_b, right_head)];
     }
-    // 线性预测
-//    inline double get_next_half_string_vs() {
-//        float next_string_vs = strike_port.weight_a * left[get_i(strike_port.index_a + 1, left_head)] +
-//                                strike_port.weight_b * left[get_i(strike_port.index_b + 1, left_head)] +
-//                                strike_port.weight_a * right[get_i(strike_port.index_a - 1, right_head)] +
-//                                strike_port.weight_b * right[get_i(strike_port.index_b - 1, right_head)];
-//        
-//        return (get_string_vs() + next_string_vs) / 2.0f;
-//    }
 
     inline void system_reset() {
         left_head = 0;
@@ -290,6 +294,7 @@ private:
     inline void filter() {
         fractional_filter.process(*left_boundary_point);
         loss_filter.process(*left_boundary_point);
+//        dispersion_filter.process(*left_boundary_point);
         if(damper_active) {
             damper.process(*left_boundary_point);
         }
@@ -307,7 +312,7 @@ private:
 
         activity_probe_counter_ = 0;
 
-        constexpr float kVelocityThreshold = 1.0e-6f;
+        constexpr float kVelocityThreshold = 1.0e-2f;
         constexpr float kEnergyThreshold = kVelocityThreshold * kVelocityThreshold;
 
         if (activity_probe() < kEnergyThreshold) {

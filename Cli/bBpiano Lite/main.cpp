@@ -90,7 +90,15 @@ int main(int argc, char* argv[]) {
 //            char* testArgv[] = {
 //                argv[0],
 //                "-m",
-//                "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/core/bbpl/resource/midi_samples/Fancy's selection/midi/Piano Sonata 1. X. 1905 _From the Street__2018.midi"
+//                "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/core/bbpl/resource/midi_samples/Fancy's selection/midi/Sonata in D Minor, K. 141_2018.midi"
+//            };
+//            argc = 3;
+//            argv = testArgv;
+    
+//            char* testArgv[] = {
+//                argv[0],
+//                "-m",
+//                "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/core/bbpl/resource/midi_samples/Fancy's selection/midi/Sonata in B Min._2006.midi"
 //            };
 //            argc = 3;
 //            argv = testArgv;
@@ -103,7 +111,7 @@ int main(int argc, char* argv[]) {
 //            argv = testArgv;
 //    
     try {
-        
+            
       return cli_entry(argc, argv, version, logo);
         
     } catch (const std::exception& error) {

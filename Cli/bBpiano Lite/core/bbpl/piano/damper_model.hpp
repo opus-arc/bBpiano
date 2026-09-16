@@ -26,8 +26,8 @@
 
 class Damper {
     
-    double z1 = 0.0;
-    double z2 = 0.0;
+    float z1 = 0.0f;
+    float z2 = 0.0f;
 
 public:
     
@@ -35,35 +35,35 @@ public:
         // ==========================
         // Temporary Damper Controls
         // ==========================
-        constexpr float lowLoss   = 0.020; // 低频耗散：0.020~0.070
-        constexpr float highLoss  = 0.25;  // 高频抓取：0.25~0.70
-        constexpr float damperMix = 0.38;  // 毛毡低通占比：0.30~0.70
+        constexpr float lowLoss   = 0.020f; // 低频耗散：0.020~0.070
+        constexpr float highLoss  = 0.25f;  // 高频抓取：0.25~0.70
+        constexpr float damperMix = 0.38f;  // 毛毡低通占比：0.30~0.70
 
-        const float loopGain = 1.0 - lowLoss;
-        const float wet = damperMix * highLoss;
-        const float dry = 1.0 - wet;
+        constexpr float loopGain = 1.0f - lowLoss;
+        constexpr float wet = damperMix * highLoss;
+        constexpr float dry = 1.0f - wet;
+
+        constexpr float dryGain = loopGain * dry;
+        constexpr float wetGain = loopGain * wet;
 
         // Gentle second-order low-pass damper color.
-        constexpr float b0 = 0.292893218813;
-        constexpr float b1 = 0.585786437627;
-        constexpr float b2 = 0.292893218813;
-
-        constexpr float a1 = 0.000000000000;
-        constexpr float a2 = 0.171572875254;
+        constexpr float b0 = 0.292893218813f;
+        constexpr float b1 = 0.585786437627f;
+        constexpr float b2 = 0.292893218813f;
+        constexpr float a2 = 0.171572875254f;
 
         const float y = b0 * x + z1;
 
-        z1 = b1 * x - a1 * y + z2;
+        z1 = b1 * x + z2;
         z2 = b2 * x - a2 * y;
 
-        x = loopGain * (dry * x + wet * y);
+        x = dryGain * x + wetGain * y;
     }
     
     inline void system_reset() noexcept {
-      z1 = 0.0;
-      z2 = 0.0;
+        z1 = 0.0f;
+        z2 = 0.0f;
     }
-    
 };
 
 

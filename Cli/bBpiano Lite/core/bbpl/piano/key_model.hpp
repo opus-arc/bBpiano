@@ -16,6 +16,7 @@
 // Ziyang Tan
 // 2026-09-04
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 #ifndef key_model_hpp
 #define key_model_hpp
 
@@ -53,6 +54,12 @@ public:
     
     const Configuration *configuration_ = nullptr;
     
+    // 构造后琴弦阻抗不再变化，因此提前计算
+    double total_impedance_ = 0.0;
+    double inverse_total_impedance_ = 0.0;
+    double inverse_double_total_impedance_ = 0.0;
+    std::array<double, 3> force_ratios_ = {0.0, 0.0, 0.0};
+    
     KeyModel(int midi_n,
              double sample_rate,
              int string_count,
@@ -84,36 +91,52 @@ public:
         soundboard_(soundboard),
         bridge_(bridge),
         configuration_(configuration)
-    {}
+    {
+        for (int i = 0; i < string_count_; ++i) {
+            total_impedance_ += strings_[i].z_;
+        }
+        
+        if (total_impedance_ > 0.0) {
+            inverse_total_impedance_ = 1.0 / total_impedance_;
+            inverse_double_total_impedance_ =
+                1.0 / (total_impedance_ * 2.0);
+            
+            for (int i = 0; i < string_count_; ++i) {
+                force_ratios_[i] =
+                    strings_[i].z_ * inverse_total_impedance_;
+            }
+        }
+    }
     
-    void key_movement() {
+    inline void key_movement() {
         
         sustainpedal_controller();
         
-        double total_impedance = 0.0;
-        double weighted_string_velocity = 0.0;
+        double contact_string_velocity = 0.0;
         
         for (int i = 0; i < string_count_; ++i) {
             string_vs_[i] = strings_[i].get_string_vs();
-
-            total_impedance += strings_[i].z_;
-
-            weighted_string_velocity += strings_[i].z_ * string_vs_[i];
+            
+            contact_string_velocity +=
+                force_ratios_[i] * string_vs_[i];
         }
         
-        double contact_string_velocity = 0.0;
+        double hammer_force_1 =
+            hammer_.hammer_movement(contact_string_velocity);
         
-        if (total_impedance > 0.0) {
-            contact_string_velocity = weighted_string_velocity / total_impedance;
-        }
+        double hammer_force_2 =
+            hammer_.hammer_movement(
+                contact_string_velocity +
+                hammer_force_1 * inverse_double_total_impedance_
+            );
         
-        double hammer_force_1 = hammer_.hammer_movement(contact_string_velocity);
-        double hammer_force_2 = hammer_.hammer_movement(contact_string_velocity + hammer_force_1 / (total_impedance * 2.0));
-        double hammer_force = (hammer_force_1 + hammer_force_2) / 2.0;
+        double hammer_force =
+            (hammer_force_1 + hammer_force_2) / 2.0;
         
-        for(int i = 0; i < string_count_; i++) {
-            const double force_ratio = strings_[i].z_ / total_impedance;
-            const double string_force = hammer_force * force_ratio;
+        for (int i = 0; i < string_count_; i++) {
+            const double string_force =
+                hammer_force * force_ratios_[i];
+            
             strings_[i].string_movement(string_force);
             // bridge_->process(strings_[i].right_boundary_point);
         }
@@ -124,24 +147,24 @@ public:
         
     }
     
-    void trigger(double velocity_mps) {
-        for(int i = 0; i < string_count_; i++) {
+    inline void trigger(double velocity_mps) {
+        for (int i = 0; i < string_count_; i++) {
             strings_[i].is_active = true;
             string_vs_[i] = 0.0;
         }
         hammer_.trigger(velocity_mps);
     }
     
-    void update_bridge_force() {
+    inline void update_bridge_force() {
         float result = 0.0;
-        for(int i = 0; i < string_count_; i++) {
+        for (int i = 0; i < string_count_; i++) {
             result += strings_[i].get_bridge_force();
         }
         soundboard_->bridge_force[midi_n_ - 21] = result;
     }
     
-    void system_reset() {
-        for(int i = 0; i < string_count_; i++) {
+    inline void system_reset() {
+        for (int i = 0; i < string_count_; i++) {
             strings_[i].system_reset();
         }
         hammer_.system_reset();
@@ -152,21 +175,26 @@ public:
     }
     
 private:
+    
     inline void check_active() {
         key_active_ = hammer_.is_contacting_;
-
+        
         for (int i = 0; i < string_count_; ++i) {
             key_active_ = key_active_ || strings_[i].is_active;
         }
     }
     
-    void sustainpedal_controller() {
+    inline void sustainpedal_controller() {
         // key 抬起且延音踏板未踩下则启动制音器
-        const bool damper_should_touch = !key_down_ && !sustainpedal_active_;
+        const bool damper_should_touch =
+            !key_down_ && !sustainpedal_active_;
+        
         for (int index = 0; index < string_count_; ++index) {
-            strings_[index].damper_active = damper_should_touch;
+            strings_[index].damper_active =
+                damper_should_touch;
         }
     }
 };
 
 #endif /* key_model_hpp */
+
