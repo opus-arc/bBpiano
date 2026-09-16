@@ -155,7 +155,8 @@ public:
                           string_index)),
         samplerate(sample_rate),
         loss_filter(midi_n_),
-        loss_phase_delay(0.0),// loss_filter.get_phase_delay(sample_rate, f0)
+        // loss_filter.get_phase_delay(sample_rate, f0)
+        loss_phase_delay(loss_filter.get_phase_delay(sample_rate, f0)),
         delay((sample_rate / f0 - loss_phase_delay) / 2.0),
         // delay_int 是数组节点数；真实单程整数延迟为 delay_int - 1。
         delay_int(static_cast<int>(std::floor(delay)) + 1),
@@ -203,9 +204,9 @@ public:
         // Boundary reflection
         // 边界反射
         // ======================== ========================
-        right[get_i(0, right_head)] = -0.996 * left[get_i(0, left_head)];
+        right[get_i(0, right_head)] = -left[get_i(0, left_head)];
         left[get_i(traveling_wave_max_index, left_head)] =
-            -0.996 * right[get_i(traveling_wave_max_index, right_head)];
+            -right[get_i(traveling_wave_max_index, right_head)];
         
         // ======================== ========================
         // Update boundary point
@@ -253,14 +254,15 @@ public:
     inline double get_string_vs() {
         return strike_port.weight_a * left[get_i(strike_port.index_a, left_head)] + strike_port.weight_b * left[get_i(strike_port.index_b, left_head)] + strike_port.weight_a * right[get_i(strike_port.index_a, right_head)] + strike_port.weight_b * right[get_i(strike_port.index_b, right_head)];
     }
-    inline double get_next_half_string_vs() {
-        float next_string_vs = strike_port.weight_a * left[get_i(strike_port.index_a + 1, left_head)] +
-                                strike_port.weight_b * left[get_i(strike_port.index_b + 1, left_head)] +
-                                strike_port.weight_a * right[get_i(strike_port.index_a - 1, right_head)] +
-                                strike_port.weight_b * right[get_i(strike_port.index_b - 1, right_head)];
-        
-        return (get_string_vs() + next_string_vs) / 2.0f;
-    }
+    // 线性预测
+//    inline double get_next_half_string_vs() {
+//        float next_string_vs = strike_port.weight_a * left[get_i(strike_port.index_a + 1, left_head)] +
+//                                strike_port.weight_b * left[get_i(strike_port.index_b + 1, left_head)] +
+//                                strike_port.weight_a * right[get_i(strike_port.index_a - 1, right_head)] +
+//                                strike_port.weight_b * right[get_i(strike_port.index_b - 1, right_head)];
+//        
+//        return (get_string_vs() + next_string_vs) / 2.0f;
+//    }
 
     inline void system_reset() {
         left_head = 0;
@@ -287,7 +289,7 @@ public:
 private:
     inline void filter() {
         fractional_filter.process(*left_boundary_point);
-//        loss_filter.process(*left_boundary_point);
+        loss_filter.process(*left_boundary_point);
         if(damper_active) {
             damper.process(*left_boundary_point);
         }

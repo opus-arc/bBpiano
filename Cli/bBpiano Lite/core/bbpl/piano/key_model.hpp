@@ -107,7 +107,9 @@ public:
             contact_string_velocity = weighted_string_velocity / total_impedance;
         }
         
-        double hammer_force = hammer_.hammer_movement(contact_string_velocity);
+        double hammer_force_1 = hammer_.hammer_movement(contact_string_velocity);
+        double hammer_force_2 = hammer_.hammer_movement(contact_string_velocity + hammer_force_1 / (total_impedance * 2.0));
+        double hammer_force = (hammer_force_1 + hammer_force_2) / 2.0;
         
         for(int i = 0; i < string_count_; i++) {
             const double force_ratio = strings_[i].z_ / total_impedance;

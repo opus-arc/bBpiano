@@ -73,11 +73,6 @@
 			path = notes;
 			sourceTree = "<group>";
 		};
-		149EE04C30552E5700C45ADC /* dist */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = dist;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,7 +92,6 @@
 		14B72C4530491A3A007325C7 = {
 			isa = PBXGroup;
 			children = (
-				149EE04C30552E5700C45ADC /* dist */,
 				14B73B51304AE994007325C7 /* Frameworks */,
 				14B72C4F30491A3A007325C7 /* Products */,
 				14649DD530510CCE00285A00 /* core */,
