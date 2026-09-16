@@ -44,8 +44,6 @@ public: // 暂时 public
     // 参数自由度
     // ======================== ========================
     const Parameters::Hammer::LegacyFit::HammerPreset* hammer_presets = nullptr;
-    static constexpr double compression_max_a = 1e-3;
-    static constexpr double compression_max_b = 1e-3;
     
     // ======================== ========================
     // Cross-function update volume
@@ -78,6 +76,11 @@ public:
     inline double hammer_movement(double string_v) {
         if(!is_contacting_)
             return 0.0;
+
+        if(w_a_1_ < 0.0 || w_b_1_ < 0.0) {
+            system_reset();
+            return 0.0;
+        }
         
         // 算 f (解出 middle_v)
         double hammer_force = solve_f(string_v);
@@ -154,38 +157,55 @@ private:
     inline double signed_pow(double x, double p) {
         return x >= 0 ? std::pow(x, p) : -std::pow(-x, p);
     }
-    inline double scope_pow_a(double exponent) {
-        w_a_1_ = std::clamp(w_a_1_, 0.0, compression_max_a);
-        return std::pow(w_a_1_, exponent);
+    inline double scope_pow(double w, double exponent) {
+        return std::pow(w > 0.0 ? w : 0.0, exponent);
     }
-    inline double scope_pow_b(double exponent) {
-        w_b_1_ =  std::clamp(w_b_1_, 0.0, compression_max_b);
-        return std::pow(w_b_1_, exponent);
-    }
-    
+
     inline double solve_f(double string_v) {
-        double upper_limit = 20.0;
-        double lower_limit = -20.0;
+        double lower_limit = string_v - w_a_1_ / ts_;
+        double upper_limit = hammer_v_ + w_b_1_ / ts_;
         double middle_v_suppose = (upper_limit + lower_limit) / 2.0;
         
+        // 与 middle_v 无关的弹簧提出来
+        const double spring_a = hammer_presets->k_a * scope_pow(w_a_1_, hammer_presets->p1);
+        const double spring_b = hammer_presets->k_b * scope_pow(w_b_1_, hammer_presets->p3);
+        
+        const auto residual = [&](double middle_v) {
+            const double f_a =
+                spring_a + hammer_presets->c_a * signed_pow(middle_v - string_v, hammer_presets->p2);
+
+            const double f_b =
+                spring_b + hammer_presets->c_b * signed_pow(hammer_v_ - middle_v, hammer_presets->p4);
+
+            return f_a - f_b;
+        };
+        
+        if (!(lower_limit <= upper_limit)) {
+            return 0.0;
+        }
+        
+        const double residual_lower = residual(lower_limit);
+        const double residual_upper = residual(upper_limit);
+
+        if (!std::isfinite(residual_lower) ||
+            !std::isfinite(residual_upper) ||
+            residual_lower > 0.0 ||
+            residual_upper < 0.0) {
+            return 0.0;
+        }
+        
         for(int i = 0; i < 20; i++) {
-            
-            double f_a = hammer_presets->k_a * scope_pow_a(hammer_presets->p1) +
-            hammer_presets->c_a *  signed_pow(middle_v_suppose - string_v, hammer_presets->p2);
-            double f_b = hammer_presets->k_b * scope_pow_b(hammer_presets->p3) +
-            hammer_presets->c_b * signed_pow(hammer_v_ - middle_v_suppose, hammer_presets->p4);
-            
-            if(f_a - f_b > 0) {
+            if(residual(middle_v_suppose) > 0) {
                 upper_limit = middle_v_suppose;
             } else {
                 lower_limit = middle_v_suppose;
             }
             middle_v_suppose = (upper_limit + lower_limit) / 2.0;
         }
+        
         middle_v_ = middle_v_suppose;
         
-     
-        return hammer_presets->k_a * scope_pow_a(hammer_presets->p1) +
+        return hammer_presets->k_a * scope_pow(w_a_1_, hammer_presets->p1) +
             hammer_presets->c_a *  signed_pow(middle_v_suppose - string_v, hammer_presets->p2);
             
         
