@@ -44,13 +44,13 @@
 // --------------------------------------------------------------------
 // MARK: version & logo
 
-static constexpr const char* version = "L0-Coda";
+static constexpr const char* version = "L0-Redesign";
 static constexpr const char* logo =
     R"(
         ┌────────────────────────────┐──╭────╮
         │                            │==│╲╱╲╱│
         │  bBpiano 0                 │==│╱╲╱╲│
-        │  L0-Coda/260903            │==│╲╱╲╱│
+        │  L0-Redesign/260903           │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
         │  Physical Modeling Piano   │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
@@ -80,12 +80,12 @@ static constexpr const char* logo =
 int main(int argc, char* argv[]) {
     // --------------------------------------------------------------------
     // MARK: arg tmp test
-        char* testArgv[] = {
-            argv[0],
-            "-i"
-        };
-        argc = 2;
-        argv = testArgv;    
+//        char* testArgv[] = {
+//            argv[0],
+//            "-k"
+//        };
+//        argc = 2;
+//        argv = testArgv;    
     
 //            char* testArgv[] = {
 //                argv[0],
@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
 //            };
 //            argc = 3;
 //            argv = testArgv;
-    
+//    
     try {
         
       return cli_entry(argc, argv, version, logo);
