@@ -26,7 +26,7 @@ class SoundboardModel {
     SoundboardModel(const SoundboardModel&) = delete;
     SoundboardModel& operator=(const SoundboardModel&) = delete;
 public:
-    mutable std::array<double, 88> bridge_force{};
+    mutable std::array<float, 88> bridge_force{};
     
     explicit SoundboardModel() {
         

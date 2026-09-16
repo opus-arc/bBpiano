@@ -54,18 +54,18 @@ public:
         a1 = static_cast<float>(coefficient);
     }
     
-    inline void process(float &x) {
+    inline void process(float& x) {
         if (bypass) {
             return;
         }
-         // y = a1 * x + x1 - a1 * y1;
-         float y = static_cast<float>(a1 * x)
-             + static_cast<float>(x1)
-             - static_cast<float>(a1 * y1);
-         x1 = x;
-         y1 = y;
-         x = y;
-     }
+        // y = a1 * x + x1 - a1 * y1;
+        const float y =
+            x1 + a1 * (x - y1);
+
+        x1 = x;
+        y1 = y;
+        x = y;
+    }
     
     inline void system_reset() {
         x1 = 0.0;
