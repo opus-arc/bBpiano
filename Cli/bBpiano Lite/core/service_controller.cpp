@@ -117,7 +117,7 @@ void test_service(std::stop_token stop_token) {
 void internal_test_service(std::stop_token stop_token) {
     std::cout << "Internal test started (Ctrl-C exits).\n";
     sustainpedal_control(0.6);
-    note_on(69, 128.0);
+    note_on(69, 110);
     wait_for_stop(stop_token);
 //    note_off(69, 0.0);
     all_silence();
