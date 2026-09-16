@@ -93,6 +93,7 @@
 		14553D072FC14D60008E3CD7 /* DSP-Benchmark.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "DSP-Benchmark.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		146492B930510CB900285A00 /* bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bbpl.xcodeproj; sourceTree = "<group>"; };
 		146587D62FA42DAF009F5C08 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		1468F08B305A5A7700716D97 /* bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bbpl.xcodeproj; sourceTree = "<group>"; };
 		146A412C2FDA96F900AF2C9C /* From PDE to PCM.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "From PDE to PCM.md"; sourceTree = "<group>"; };
 		147D71362FD6F9B6008F3BF8 /* bbpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbpl; sourceTree = BUILT_PRODUCTS_DIR; };
 		147D713E2FD6F9D7008F3BF8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -422,6 +423,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		1468F1A9305A5A7700716D97 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		149ED4E730511BAE00C45ADC /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -664,6 +672,10 @@
 				{
 					ProductGroup = 149ED4E730511BAE00C45ADC /* Products */;
 					ProjectRef = 149ED3C930511BAE00C45ADC /* bbpl.xcodeproj */;
+				},
+				{
+					ProductGroup = 1468F1A9305A5A7700716D97 /* Products */;
+					ProjectRef = 1468F08B305A5A7700716D97 /* bbpl.xcodeproj */;
 				},
 				{
 					ProductGroup = 14B7306F30491B55007325C7 /* Products */;

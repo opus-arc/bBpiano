@@ -49,8 +49,6 @@ public: // 暂时 public
     // Cross-function update volume
     // 跨函数更新量
     // ======================== ========================
-    
-    
     double ts_ = 0.0;
     
     double w_a_1_ = 0.0;
@@ -61,7 +59,12 @@ public: // 暂时 public
     double release_distance = 0.0;
     
     bool is_contacting_ = false;
-
+    
+    // ======================== ========================
+    // Pre-conpute
+    // 预计算
+    // ======================== ========================
+    double inv_mass_ = 0.0;
     
 public:
     
@@ -71,7 +74,9 @@ public:
         ts_((1.0 / 2.0)/ sample_rate),
         midi_n_(midi_n),
         hammer_presets(configuration->hammer_presets.find_preset(midi_n_))
-    {}
+    {
+        inv_mass_ = ts_ / hammer_presets->mass_kg;
+    }
     
     inline double hammer_movement(double string_v) {
         if(!is_contacting_)
@@ -128,7 +133,8 @@ public:
         // 更新击锤的速度
         // 负力不更新！
         if(hammer_force > 0.0)
-            hammer_v_ -= (hammer_force / hammer_presets->mass_kg) * ts_;
+            // hammer_v_ -= (hammer_force / hammer_presets->mass_kg) * ts_;
+            hammer_v_ -= hammer_force * inv_mass_;
        
         
         return hammer_force;
@@ -160,33 +166,53 @@ private:
     inline double scope_pow(double w, double exponent) {
         return std::pow(w > 0.0 ? w : 0.0, exponent);
     }
-
+    
     inline double solve_f(double string_v) {
         double lower_limit = string_v - w_a_1_ / ts_;
         double upper_limit = hammer_v_ + w_b_1_ / ts_;
-        double middle_v_suppose = (upper_limit + lower_limit) / 2.0;
-        
-        // 与 middle_v 无关的弹簧提出来
-        const double spring_a = hammer_presets->k_a * scope_pow(w_a_1_, hammer_presets->p1);
-        const double spring_b = hammer_presets->k_b * scope_pow(w_b_1_, hammer_presets->p3);
-        
-        const auto residual = [&](double middle_v) {
-            const double f_a =
-                spring_a + hammer_presets->c_a * signed_pow(middle_v - string_v, hammer_presets->p2);
-
-            const double f_b =
-                spring_b + hammer_presets->c_b * signed_pow(hammer_v_ - middle_v, hammer_presets->p4);
-
-            return f_a - f_b;
-        };
         
         if (!(lower_limit <= upper_limit)) {
             return 0.0;
         }
         
+        // 与 middle_v 无关的弹簧力提前计算
+        const double spring_a =
+            hammer_presets->k_a *
+            scope_pow(w_a_1_, hammer_presets->p1);
+        
+        const double spring_b =
+            hammer_presets->k_b *
+            scope_pow(w_b_1_, hammer_presets->p3);
+        
+        const double c_a = hammer_presets->c_a;
+        const double c_b = hammer_presets->c_b;
+        
+        const double p2 = hammer_presets->p2;
+        const double p4 = hammer_presets->p4;
+        
+        // 只计算 residual。
+        const auto residual = [&](double middle_v) {
+            const double f_a =
+                spring_a +
+                c_a * signed_pow(
+                    middle_v - string_v,
+                    p2
+                );
+            
+            const double f_b =
+                spring_b +
+                c_b * signed_pow(
+                    hammer_v_ - middle_v,
+                    p4
+                );
+            
+            return f_a - f_b;
+        };
+        
+        // 首先确认根仍然被包含在物理解区间内。
         const double residual_lower = residual(lower_limit);
         const double residual_upper = residual(upper_limit);
-
+        
         if (!std::isfinite(residual_lower) ||
             !std::isfinite(residual_upper) ||
             residual_lower > 0.0 ||
@@ -194,22 +220,194 @@ private:
             return 0.0;
         }
         
-        for(int i = 0; i < 20; i++) {
-            if(residual(middle_v_suppose) > 0) {
+        // 上一时间步的 middle_v 通常非常接近当前时间步的根。
+        // 如果超出当前物理解区间，则限制回区间内部。
+        double middle_v_suppose =
+            std::clamp(
+                middle_v_,
+                lower_limit,
+                upper_limit
+            );
+        
+        constexpr int max_iterations = 8;
+        constexpr double residual_tolerance = 1.0e-10;
+        constexpr double velocity_tolerance = 1.0e-10;
+        constexpr double derivative_tolerance = 1.0e-14;
+        
+        double final_force = 0.0;
+        
+        for (int i = 0; i < max_iterations; ++i) {
+            
+            const double velocity_a =
+                middle_v_suppose - string_v;
+            
+            const double velocity_b =
+                hammer_v_ - middle_v_suppose;
+            
+            const double abs_velocity_a =
+                std::abs(velocity_a);
+            
+            const double abs_velocity_b =
+                std::abs(velocity_b);
+            
+            // 每层只做一次主要幂运算。
+            const double power_a =
+                std::pow(abs_velocity_a, p2);
+            
+            const double power_b =
+                std::pow(abs_velocity_b, p4);
+            
+            const double damping_a =
+                std::copysign(power_a, velocity_a);
+            
+            const double damping_b =
+                std::copysign(power_b, velocity_b);
+            
+            const double f_a =
+                spring_a + c_a * damping_a;
+            
+            const double f_b =
+                spring_b + c_b * damping_b;
+            
+            const double r = f_a - f_b;
+            
+            if (!std::isfinite(r)) {
+                return 0.0;
+            }
+            
+            final_force = f_a;
+            
+            // 当前点同时用于缩小安全区间。
+            if (r > 0.0) {
                 upper_limit = middle_v_suppose;
             } else {
                 lower_limit = middle_v_suppose;
             }
-            middle_v_suppose = (upper_limit + lower_limit) / 2.0;
+            
+            // 力已经足够平衡。
+            if (std::abs(r) <= residual_tolerance) {
+                break;
+            }
+            
+            // 区间已经足够小。
+            if ((upper_limit - lower_limit)
+                <= velocity_tolerance) {
+                break;
+            }
+            
+            // -------------------------------------------------
+            // residual 的解析导数
+            //
+            // d/dv [sgn(v)|v|^p]
+            //     = p |v|^(p - 1)
+            //
+            // 已经计算过 |v|^p，因此使用
+            //
+            // |v|^(p - 1) = |v|^p / |v|
+            //
+            // 避免额外的 pow。
+            // -------------------------------------------------
+            
+            double derivative = 0.0;
+            
+            if (abs_velocity_a > 0.0) {
+                derivative +=
+                    c_a * p2 *
+                    (power_a / abs_velocity_a);
+            }
+            
+            if (abs_velocity_b > 0.0) {
+                derivative +=
+                    c_b * p4 *
+                    (power_b / abs_velocity_b);
+            }
+            
+            double next_middle_v;
+            
+            // 优先 Newton。
+            if (std::isfinite(derivative) &&
+                derivative > derivative_tolerance) {
+                
+                const double newton =
+                    middle_v_suppose - r / derivative;
+                
+                // Newton 必须留在当前有根区间内。
+                if (std::isfinite(newton) &&
+                    newton > lower_limit &&
+                    newton < upper_limit) {
+                    
+                    next_middle_v = newton;
+                    
+                } else {
+                    
+                    // Newton 不可信时退回二分。
+                    next_middle_v =
+                        (lower_limit + upper_limit) * 0.5;
+                }
+                
+            } else {
+                
+                // 导数过小或异常时退回二分。
+                next_middle_v =
+                    (lower_limit + upper_limit) * 0.5;
+            }
+            
+            middle_v_suppose = next_middle_v;
         }
         
         middle_v_ = middle_v_suppose;
         
-        return hammer_presets->k_a * scope_pow(w_a_1_, hammer_presets->p1) +
-            hammer_presets->c_a *  signed_pow(middle_v_suppose - string_v, hammer_presets->p2);
-            
-        
+        return final_force;
     }
+
+//    inline double solve_f(double string_v) {
+//        double lower_limit = string_v - w_a_1_ / ts_;
+//        double upper_limit = hammer_v_ + w_b_1_ / ts_;
+//        double middle_v_suppose = (upper_limit + lower_limit) / 2.0;
+//        
+//        // 与 middle_v 无关的弹簧提出来
+//        const double spring_a = hammer_presets->k_a * scope_pow(w_a_1_, hammer_presets->p1);
+//        const double spring_b = hammer_presets->k_b * scope_pow(w_b_1_, hammer_presets->p3);
+//        
+//        const auto residual = [&](double middle_v) {
+//            const double f_a =
+//                spring_a + hammer_presets->c_a * signed_pow(middle_v - string_v, hammer_presets->p2);
+//
+//            const double f_b =
+//                spring_b + hammer_presets->c_b * signed_pow(hammer_v_ - middle_v, hammer_presets->p4);
+//
+//            return f_a - f_b;
+//        };
+//        
+//        if (!(lower_limit <= upper_limit)) {
+//            return 0.0;
+//        }
+//        
+//        const double residual_lower = residual(lower_limit);
+//        const double residual_upper = residual(upper_limit);
+//
+//        if (!std::isfinite(residual_lower) ||
+//            !std::isfinite(residual_upper) ||
+//            residual_lower > 0.0 ||
+//            residual_upper < 0.0) {
+//            return 0.0;
+//        }
+//        
+//        for(int i = 0; i < 20; i++) {
+//            if(residual(middle_v_suppose) > 0) {
+//                upper_limit = middle_v_suppose;
+//            } else {
+//                lower_limit = middle_v_suppose;
+//            }
+//            middle_v_suppose = (upper_limit + lower_limit) / 2.0;
+//        }
+//        
+//        middle_v_ = middle_v_suppose;
+//        
+//        return spring_a + hammer_presets->c_a *  signed_pow(middle_v_suppose - string_v, hammer_presets->p2);
+//            
+//        
+//    }
 };
 
 #endif /* hammer_model_hpp */
