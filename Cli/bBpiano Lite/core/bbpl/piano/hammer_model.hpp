@@ -68,7 +68,7 @@ public:
     HammerModel(double sample_rate,
                 int midi_n,
                 const Configuration* configuration) :
-        ts_(1.0 / sample_rate),
+        ts_((1.0 / 2.0)/ sample_rate),
         midi_n_(midi_n),
         hammer_presets(configuration->hammer_presets.find_preset(midi_n_))
     {}
