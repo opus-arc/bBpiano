@@ -95,6 +95,7 @@
 		146587D62FA42DAF009F5C08 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		146800F8305A818500716D97 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
 		146810B4305A8AC800716D97 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
+		1468171A305BBF8200716D97 /* L1-Clavier B Minor.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "L1-Clavier B Minor.mp3"; sourceTree = "<group>"; };
 		1468F08B305A5A7700716D97 /* bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bbpl.xcodeproj; sourceTree = "<group>"; };
 		146A412C2FDA96F900AF2C9C /* From PDE to PCM.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "From PDE to PCM.md"; sourceTree = "<group>"; };
 		147D71362FD6F9B6008F3BF8 /* bbpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbpl; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -530,6 +531,7 @@
 		143FB6402FE4E182000091A3 /* examples */ = {
 			isa = PBXGroup;
 			children = (
+				1468171A305BBF8200716D97 /* L1-Clavier B Minor.mp3 */,
 				143FB63B2FE4E182000091A3 /* L0-100c Op.101.mp3 */,
 				143FB63C2FE4E182000091A3 /* L0-beta k.141.mp3 */,
 				143FB63D2FE4E182000091A3 /* Pianoteq 9 "From the Street".mp3 */,
