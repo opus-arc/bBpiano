@@ -13,9 +13,10 @@ jobs:
 
     env:
       BBPL_PROJECT: "Cli/bBpiano Lite/bbpl.xcodeproj"
-      BBPL_SCHEME: "bBpiano Lite"
+      BBPL_SCHEME: "bbpl"
 
-      # CI runner 用于回归检测，不作为绝对硬件性能基准。
+      # GitHub Actions runners are used for regression tracking,
+      # not as an absolute hardware-performance reference.
       MAX_88_KEY_OCCUPANCY_PERCENT: "130.0"
 
     steps:
@@ -52,7 +53,9 @@ jobs:
             echo "bbpl executable not found."
             echo
             echo "Release products:"
-            find "$PWD/build/Build/Products/Release" -maxdepth 5 -print || true
+            find "$PWD/build/Build/Products/Release" \
+              -maxdepth 5 \
+              -print || true
             exit 1
           fi
 
@@ -71,7 +74,10 @@ jobs:
 
           echo "BENCHMARK_EXIT=$BENCHMARK_EXIT" >> "$GITHUB_ENV"
 
-      - name: Write engine evaluation summary
+          echo
+          echo "bbpl benchmark exit code: $BENCHMARK_EXIT"
+
+      - name: Write engine evaluation summary and enforce threshold
         shell: bash
         run: |
           python3 - <<'PY'
@@ -81,6 +87,10 @@ jobs:
 
           max_88 = float(
               os.environ["MAX_88_KEY_OCCUPANCY_PERCENT"]
+          )
+
+          benchmark_exit = int(
+              os.environ.get("BENCHMARK_EXIT", "1")
           )
 
           with open(
@@ -106,19 +116,14 @@ jobs:
           results = {}
 
           for match in pattern.finditer(log):
-              frame_us = float(match.group(1))
-              budget_us = float(match.group(2))
-              occupancy = float(match.group(3))
-              speed = float(match.group(4))
               name = match.group(5)
-              realtime_result = match.group(6)
 
               results[name] = {
-                  "frame_us": frame_us,
-                  "budget_us": budget_us,
-                  "occupancy": occupancy,
-                  "speed": speed,
-                  "result": realtime_result,
+                  "frame_us": float(match.group(1)),
+                  "budget_us": float(match.group(2)),
+                  "occupancy": float(match.group(3)),
+                  "speed": float(match.group(4)),
+                  "result": match.group(6),
               }
 
           expected = [
@@ -140,13 +145,19 @@ jobs:
                   + ", ".join(missing)
               )
               print()
+              print("Raw benchmark output:")
               print(log)
               sys.exit(1)
 
-          result_88 = results["88-keys"]
-          occupancy_88 = result_88["occupancy"]
+          occupancy_88 = results["88-keys"]["occupancy"]
 
-          ci_passed = occupancy_88 <= max_88
+          threshold_passed = (
+              occupancy_88 <= max_88
+          )
+
+          benchmark_completed = (
+              benchmark_exit == 0
+          )
 
           with open(
               os.environ["GITHUB_STEP_SUMMARY"],
@@ -155,8 +166,14 @@ jobs:
           ) as f:
               f.write("# bBpiano Engine Evaluation\n\n")
 
-              f.write("| Range | Frame | Budget | Occupancy | Speed | Realtime |\n")
-              f.write("|---|---:|---:|---:|---:|:---:|\n")
+              f.write(
+                  "| Range | Frame | Budget | Occupancy | "
+                  "Speed | Realtime |\n"
+              )
+
+              f.write(
+                  "|---|---:|---:|---:|---:|:---:|\n"
+              )
 
               for name in expected:
                   r = results[name]
@@ -171,48 +188,69 @@ jobs:
                   )
 
               f.write("\n")
+
               f.write(
-                  f"**CI maximum allowed 88-key occupancy:** "
+                  f"**88-key CI occupancy limit:** "
                   f"{max_88:.2f}%\n\n"
               )
+
+              if threshold_passed:
+                  f.write(
+                      "**Performance regression gate:** PASS\n\n"
+                  )
+              else:
+                  f.write(
+                      "**Performance regression gate:** FAIL\n\n"
+                  )
 
               f.write(
                   "GitHub Actions macOS runners are used for "
                   "performance-regression tracking rather than "
-                  "absolute hardware benchmarking. "
-                  "Only the 88-key occupancy is currently used "
-                  "as the CI performance gate.\n"
+                  "absolute hardware benchmarking. The individual "
+                  "register measurements are diagnostic; the "
+                  "88-key occupancy is used as the CI performance "
+                  "gate.\n"
               )
 
           print()
-          print("Parsed engine evaluation:")
+          print("bBpiano Engine Evaluation")
+          print()
 
           for name in expected:
               r = results[name]
 
               print(
-                  f"{name:10s} "
+                  f"{name:10s}  "
+                  f"{r['frame_us']:7.2f} us  "
                   f"{r['occupancy']:7.2f}%  "
                   f"{r['speed']:5.2f}x  "
                   f"{r['result']}"
               )
 
           print()
+          print(
+              f"88-key CI limit: {max_88:.2f}%"
+          )
 
-          if not ci_passed:
+          if not benchmark_completed:
+              print(
+                  f"bbpl -t exited with code "
+                  f"{benchmark_exit}."
+              )
+              sys.exit(1)
+
+          if not threshold_passed:
               print(
                   f"88-key occupancy "
-                  f"{occupancy_88:.2f}% "
-                  f"exceeded CI limit "
-                  f"{max_88:.2f}%."
+                  f"{occupancy_88:.2f}% exceeded "
+                  f"the CI limit of {max_88:.2f}%."
               )
               sys.exit(1)
 
           print(
               f"88-key occupancy "
-              f"{occupancy_88:.2f}% "
-              f"is within CI limit "
-              f"{max_88:.2f}%."
+              f"{occupancy_88:.2f}% is within "
+              f"the CI limit of {max_88:.2f}%."
           )
           PY
 
