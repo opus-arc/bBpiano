@@ -42,7 +42,7 @@ public:
         int size = 0;
         int max_index = 0;
         double position = 0.0;
-        double accurate_index = 0.0;;
+        double accurate_index = 0.0;
         
         int index_a = 0;
         int index_b = 0;
@@ -79,6 +79,7 @@ public:
     int midi_n_ = 69;
     double f0 = 440.0;
     double sample_rate_ = 44100.0;
+    double internal_sample_rate_ = 44100.0;
     
     // ======================== ========================
     // Filters
@@ -163,20 +164,23 @@ public:
                           temperament,
                           string_index)),
         sample_rate_(sample_rate),
+        internal_sample_rate_(midi_n_ >= 96 ? 2.0 * sample_rate_ : sample_rate_),
         loss_filter(midi_n_),
         dispersion_filter(f0),
         // loss_filter.get_phase_delay(sample_rate, f0)
-        loss_phase_delay(loss_filter.get_phase_delay(sample_rate_, f0)),
-        dispersion_phase_delay(dispersion_filter.get_phase_delay(sample_rate_, f0)),
-        delay((sample_rate_ / f0 - loss_phase_delay) / 2.0),
+        loss_phase_delay(loss_filter.get_phase_delay(internal_sample_rate_, f0)),
+//        dispersion_phase_delay(dispersion_filter.get_phase_delay(sample_rate_, f0)),
+//        delay((internal_sample_rate_ / f0 - loss_phase_delay) / 2.0),
 //        delay((sample_rate_ / f0 - loss_phase_delay - dispersion_phase_delay) / 2.0),
+        delay(dispersion_filter.get_loop_delay_samples() / 2.0),
         // delay_int 是数组节点数；真实单程整数延迟为 delay_int - 1。
         delay_int(static_cast<int>(std::floor(delay)) + 1),
         // fractional filter 每圈一次，因此承担完整 round-trip residual。
         delay_frac(2.0 * (delay - std::floor(delay))),
         traveling_wave_max_index(delay_int - 1),
         strike_port(delay_int, strike_point),
-        fractional_filter(delay_frac, 2.0 * std::numbers::pi_v<double> * f0 / sample_rate_)
+        fractional_filter(delay_frac, 2.0 *
+                          std::numbers::pi_v<double> * f0 / internal_sample_rate_)
     {
         
         if(delay_int < 4)
@@ -185,7 +189,14 @@ public:
            strike_port.index_a - 1 < 0) {
             throw std::runtime_error("string_model: next_index doesn't exist: " + std::to_string(delay_int));
         }
+        if (std::abs(dispersion_filter.design_sample_rate() - internal_sample_rate_) > 0.5) {
+            throw std::runtime_error("string_model: dispersion preset sample rate mismatch");
+        }
         
+//        std::cout
+//        << "midi_n: " << midi_n_
+//        << ", delay: " << delay << '\n';
+
         left.resize(delay_int, 0.0f);
         right.resize(delay_int, 0.0f);
             
@@ -287,6 +298,7 @@ public:
         loss_filter.system_reset();
         fractional_filter.system_reset();
         damper.system_reset();
+        dispersion_filter.system_reset();
     }
     
 
@@ -294,7 +306,7 @@ private:
     inline void filter() {
         fractional_filter.process(*left_boundary_point);
         loss_filter.process(*left_boundary_point);
-//        dispersion_filter.process(*left_boundary_point);
+        dispersion_filter.process(*left_boundary_point);
         if(damper_active) {
             damper.process(*left_boundary_point);
         }
@@ -303,20 +315,20 @@ private:
     int inactive_probe_count_ = 0;
     int activity_probe_counter_ = 0;
     inline void check_active() {
-        constexpr int kProbeInterval = 64;
-        constexpr int kInactiveProbeCount = 8;
+        const int probe_interval = midi_n_ >= 96 ? 128 : 64;
+        constexpr int k_inactive_probe_count = 8;
 
-        if (++activity_probe_counter_ < kProbeInterval) {
+        if (++activity_probe_counter_ < probe_interval) {
             return;
         }
 
         activity_probe_counter_ = 0;
 
-        constexpr float kVelocityThreshold = 1.0e-2f;
+        constexpr float kVelocityThreshold = 1.0e-5f;
         constexpr float kEnergyThreshold = kVelocityThreshold * kVelocityThreshold;
 
         if (activity_probe() < kEnergyThreshold) {
-            if (++inactive_probe_count_ >= kInactiveProbeCount) {
+            if (++inactive_probe_count_ >= k_inactive_probe_count) {
                 is_active = false;
                 system_reset();
             }
@@ -326,22 +338,28 @@ private:
         }
     }
 
+
     inline float activity_probe() {
-        constexpr int kProbeCount = 8;
+        float rail_energy = 0.0f;
+        for (int index = 0; index < delay_int; ++index) {
+            rail_energy +=
+                left[static_cast<std::size_t>(index)] *
+                    left[static_cast<std::size_t>(index)]
+                + right[static_cast<std::size_t>(index)] *
+                    right[static_cast<std::size_t>(index)];
+        }
+        rail_energy /= static_cast<float>(2 * delay_int);
 
-        float energy = 0.0f;
-
-        for (int i = 1; i <= kProbeCount; ++i) {
-            const int index =
-                (traveling_wave_max_index * i) / (kProbeCount + 1);
-
-            const float& l = left[get_i(index, left_head)];
-            const float& r = right[get_i(index, right_head)];
-
-            energy += l * l + r * r;
+        float state_energy = std::max(
+            loss_filter.state_energy(),
+            fractional_filter.state_energy());
+        state_energy = std::max(state_energy,
+                                static_cast<float>(dispersion_filter.state_energy()));
+        if (damper_active) {
+            state_energy = std::max(state_energy, damper.state_energy());
         }
 
-        return energy / static_cast<float>(kProbeCount);
+        return std::max(rail_energy, state_energy);
     }
     
 };

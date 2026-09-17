@@ -22,6 +22,8 @@
 #include <filesystem>
 #include <iostream>
 #include <mutex>
+#include <chrono>
+#include <thread>
 
 #include "./service_controller.hpp"
 #include "./bbpl/piano_controller.hpp"
@@ -111,11 +113,26 @@ void record_service(std::stop_token stop_token) {
     std::cout << "Recorded MIDI: " << output_path << '\n';
 }
 void test_service(std::stop_token stop_token) {
-  std::cout << "Test service started (Ctrl-C exits).\n";
-  wait_for_stop(stop_token);
+    std::cout << "Test service started.\n\n";
+
+
+
+    for (int midi = 21; midi <= 108; ++midi) {
+        note_on(midi, 110.0);
+    }
+
+    std::this_thread::sleep_for(
+        std::chrono::milliseconds(500)
+    );
+
+    print_engine_rate();
+
+//    wait_for_stop(stop_token);
 }
+
 void internal_test_service(std::stop_token stop_token) {
     std::cout << "Internal test started (Ctrl-C exits).\n";
+    
     sustainpedal_control(0.6);
     note_on(69, 110);
     wait_for_stop(stop_token);

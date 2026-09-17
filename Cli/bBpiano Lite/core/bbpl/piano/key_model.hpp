@@ -60,6 +60,12 @@ public:
     double inverse_double_total_impedance_ = 0.0;
     std::array<double, 3> force_ratios_ = {0.0, 0.0, 0.0};
     
+    // ======================== ========================
+    // Compute
+    // midi_n_ > 96
+    // ======================== ========================
+    std::array<float, 3> last_bridge_force_96{};
+    
     KeyModel(int midi_n,
              double sample_rate,
              int string_count,
@@ -117,8 +123,7 @@ public:
         for (int i = 0; i < string_count_; ++i) {
             string_vs_[i] = strings_[i].get_string_vs();
             
-            contact_string_velocity +=
-                force_ratios_[i] * string_vs_[i];
+            contact_string_velocity += force_ratios_[i] * string_vs_[i];
         }
         
         double hammer_force_1 =
@@ -134,16 +139,25 @@ public:
             (hammer_force_1 + hammer_force_2) / 2.0;
         
         for (int i = 0; i < string_count_; i++) {
-            const double string_force =
-                hammer_force * force_ratios_[i];
+            if(strings_[i].midi_n_ < 96) {
+                strings_[i].string_movement(hammer_force * force_ratios_[i]);
+            } else {
+                strings_[i].string_movement(hammer_force_1 * force_ratios_[i]);
+                last_bridge_force_96[i] = strings_[i].get_bridge_force();
+                strings_[i].string_movement(hammer_force_2 * force_ratios_[i]);
+            }
             
-            strings_[i].string_movement(string_force);
             // bridge_->process(strings_[i].right_boundary_point);
         }
         
         update_bridge_force();
         
         check_active();
+        
+        if (!key_active_) {
+            soundboard_->bridge_force[midi_n_ - 21] = 0.0f;
+            last_bridge_force_96.fill(0.0f);
+        }
         
     }
     
@@ -158,7 +172,12 @@ public:
     inline void update_bridge_force() {
         float result = 0.0;
         for (int i = 0; i < string_count_; i++) {
-            result += strings_[i].get_bridge_force();
+            if(strings_[i].midi_n_ < 96) {
+                result += strings_[i].get_bridge_force();
+            } else {
+                result += (strings_[i].get_bridge_force() + last_bridge_force_96[i]) / 2.0;
+            }
+            
         }
         soundboard_->bridge_force[midi_n_ - 21] = result;
     }

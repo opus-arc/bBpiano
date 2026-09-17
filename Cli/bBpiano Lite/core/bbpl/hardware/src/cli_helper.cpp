@@ -240,8 +240,10 @@ int cli_helper(int argc, char* argv[], const char* version, const char* logo) {
     std::stop_source service_stop;
     const std::stop_token stop_token = service_stop.get_token();
     
-    // 在导出模式之外都启动声卡
-    const bool start_soundcard = !options.export_path.has_value();
+    // 在导出以及测试模式之外都启动声卡
+    const bool start_soundcard =
+        !options.export_path.has_value() &&
+        !options.test;
     EngineLifetime engine(start_soundcard);
     
     // 信号等待线程：
@@ -287,18 +289,25 @@ int cli_helper(int argc, char* argv[], const char* version, const char* logo) {
 
     try {
         if (options.midi) {
+            print_logo_and_version(version, logo);
             midi_service(*options.midi, stop_token);
         } else if (options.piano) {
+            print_logo_and_version(version, logo);
             piano_service(stop_token);
         } else if (options.keyboard) {
+            print_logo_and_version(version, logo);
             keyboard_service(stop_token);
         } else if (options.export_path) {
+            print_logo_and_version(version, logo);
             export_service(*options.export_path, stop_token);
         } else if (options.record) {
+            print_logo_and_version(version, logo);
             record_service(stop_token);
         } else if (options.test) {
+            print_logo_and_version(version, logo);
             test_service(stop_token);
         } else if (options.internal_test) {
+            print_logo_and_version(version, logo);
             internal_test_service(stop_token);
         }
     } catch (...) {
