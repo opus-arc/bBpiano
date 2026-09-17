@@ -3,58 +3,75 @@ name: bBpiano Engine Evaluation
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   performance:
     runs-on: macos-26
 
     env:
-      MAX_ALLOWED_OCCUPANCY_PERCENT: "130.0"
+      BBPL_PROJECT: "Cli/bBpiano Lite/bbpl.xcodeproj"
+      BBPL_SCHEME: "bBpiano Lite"
+
+      # CI runner 用于回归检测，不作为绝对硬件性能基准。
+      MAX_88_KEY_OCCUPANCY_PERCENT: "130.0"
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Build bBpiano Lite
+      - name: Build bbpl
         shell: bash
         run: |
-          set -o pipefail
+          set -euo pipefail
 
           xcodebuild build \
-            -scheme "bBpiano Lite" \
+            -project "$BBPL_PROJECT" \
+            -scheme "$BBPL_SCHEME" \
             -configuration Release \
             -derivedDataPath "$PWD/build" \
             -destination 'platform=macOS' \
             CODE_SIGNING_ALLOWED=NO \
             | tee engine-build.log
 
-      - name: Run engine benchmark
+      - name: Locate bbpl executable
         shell: bash
         run: |
-          set -o pipefail
+          set -euo pipefail
 
-          BBPL_PATH="$PWD/build/Build/Products/Release/bbpl"
+          BBPL_PATH="$(find "$PWD/build/Build/Products/Release" \
+            -type f \
+            -name bbpl \
+            -perm -111 \
+            -print \
+            -quit)"
 
-          if [ ! -x "$BBPL_PATH" ]; then
-            echo "bbpl executable not found at: $BBPL_PATH"
+          if [ -z "$BBPL_PATH" ]; then
+            echo "bbpl executable not found."
             echo
             echo "Release products:"
-            find "$PWD/build/Build/Products/Release" -maxdepth 4 -print || true
+            find "$PWD/build/Build/Products/Release" -maxdepth 5 -print || true
             exit 1
           fi
 
           echo "Using executable: $BBPL_PATH"
+          echo "BBPL_PATH=$BBPL_PATH" >> "$GITHUB_ENV"
+
+      - name: Run engine evaluation
+        shell: bash
+        run: |
+          set -o pipefail
 
           set +e
-          "$BBPL_PATH" -b | tee engine-evaluation.log
+          "$BBPL_PATH" -t | tee engine-evaluation.log
           BENCHMARK_EXIT=${PIPESTATUS[0]}
           set -e
 
           echo "BENCHMARK_EXIT=$BENCHMARK_EXIT" >> "$GITHUB_ENV"
 
-      - name: Write engine evaluation summary and enforce CI threshold
+      - name: Write engine evaluation summary
         shell: bash
         run: |
           python3 - <<'PY'
@@ -62,36 +79,141 @@ jobs:
           import re
           import sys
 
-          max_allowed = float(os.environ["MAX_ALLOWED_OCCUPANCY_PERCENT"])
+          max_88 = float(
+              os.environ["MAX_88_KEY_OCCUPANCY_PERCENT"]
+          )
 
-          with open("engine-evaluation.log", "r", encoding="utf-8") as f:
+          with open(
+              "engine-evaluation.log",
+              "r",
+              encoding="utf-8"
+          ) as f:
               log = f.read()
 
-          match = re.search(r"occupancy\s+([0-9]+(?:\.[0-9]+)?)%", log)
-          if not match:
-              print("Could not parse occupancy from engine-evaluation.log")
+          pattern = re.compile(
+              r"Frame:\s*"
+              r"([0-9]+(?:\.[0-9]+)?)\s*us\s*/\s*"
+              r"([0-9]+(?:\.[0-9]+)?)\s*us\s*"
+              r"Occupancy:\s*"
+              r"([0-9]+(?:\.[0-9]+)?)%\s*"
+              r"Speed:\s*"
+              r"([0-9]+(?:\.[0-9]+)?)x realtime\s*"
+              r"(High-range|Mid-range|Bass-range|88-keys) realtime:\s*"
+              r"(PASS|FAIL)",
+              re.MULTILINE
+          )
+
+          results = {}
+
+          for match in pattern.finditer(log):
+              frame_us = float(match.group(1))
+              budget_us = float(match.group(2))
+              occupancy = float(match.group(3))
+              speed = float(match.group(4))
+              name = match.group(5)
+              realtime_result = match.group(6)
+
+              results[name] = {
+                  "frame_us": frame_us,
+                  "budget_us": budget_us,
+                  "occupancy": occupancy,
+                  "speed": speed,
+                  "result": realtime_result,
+              }
+
+          expected = [
+              "High-range",
+              "Mid-range",
+              "Bass-range",
+              "88-keys",
+          ]
+
+          missing = [
+              name
+              for name in expected
+              if name not in results
+          ]
+
+          if missing:
+              print(
+                  "Could not parse benchmark result(s): "
+                  + ", ".join(missing)
+              )
+              print()
+              print(log)
               sys.exit(1)
 
-          occupancy = float(match.group(1))
-          passed = occupancy <= max_allowed
+          result_88 = results["88-keys"]
+          occupancy_88 = result_88["occupancy"]
 
-          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+          ci_passed = occupancy_88 <= max_88
+
+          with open(
+              os.environ["GITHUB_STEP_SUMMARY"],
+              "a",
+              encoding="utf-8"
+          ) as f:
               f.write("# bBpiano Engine Evaluation\n\n")
-              f.write("```\n")
-              f.write(log.rstrip())
-              f.write("\n```\n\n")
-              f.write(f"**CI maximum allowed engine occupancy:** {max_allowed:.2f}%\n\n")
+
+              f.write("| Range | Frame | Budget | Occupancy | Speed | Realtime |\n")
+              f.write("|---|---:|---:|---:|---:|:---:|\n")
+
+              for name in expected:
+                  r = results[name]
+
+                  f.write(
+                      f"| {name} "
+                      f"| {r['frame_us']:.2f} µs "
+                      f"| {r['budget_us']:.2f} µs "
+                      f"| {r['occupancy']:.2f}% "
+                      f"| {r['speed']:.2f}× "
+                      f"| {r['result']} |\n"
+                  )
+
+              f.write("\n")
               f.write(
-                  "Note: GitHub Actions macOS runners are virtualized Apple Silicon machines; "
-                  "CI results are for regression tracking, not absolute hardware benchmarking. "
-                  f"The CI pass threshold is therefore set to {max_allowed:.2f}% occupancy.\n"
+                  f"**CI maximum allowed 88-key occupancy:** "
+                  f"{max_88:.2f}%\n\n"
               )
 
-          if not passed:
-              print(f"Engine occupancy {occupancy:.2f}% exceeded CI limit {max_allowed:.2f}%")
+              f.write(
+                  "GitHub Actions macOS runners are used for "
+                  "performance-regression tracking rather than "
+                  "absolute hardware benchmarking. "
+                  "Only the 88-key occupancy is currently used "
+                  "as the CI performance gate.\n"
+              )
+
+          print()
+          print("Parsed engine evaluation:")
+
+          for name in expected:
+              r = results[name]
+
+              print(
+                  f"{name:10s} "
+                  f"{r['occupancy']:7.2f}%  "
+                  f"{r['speed']:5.2f}x  "
+                  f"{r['result']}"
+              )
+
+          print()
+
+          if not ci_passed:
+              print(
+                  f"88-key occupancy "
+                  f"{occupancy_88:.2f}% "
+                  f"exceeded CI limit "
+                  f"{max_88:.2f}%."
+              )
               sys.exit(1)
 
-          print(f"Engine occupancy {occupancy:.2f}% is within CI limit {max_allowed:.2f}%")
+          print(
+              f"88-key occupancy "
+              f"{occupancy_88:.2f}% "
+              f"is within CI limit "
+              f"{max_88:.2f}%."
+          )
           PY
 
       - name: Upload engine evaluation logs
