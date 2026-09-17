@@ -44,13 +44,13 @@
 // --------------------------------------------------------------------
 // MARK: version & logo
 
-static constexpr const char* version = "L1-Redesign";
+static constexpr const char* version = "L1-Clavier";
 static constexpr const char* logo =
     R"(
         ┌────────────────────────────┐──╭────╮
         │                            │==│╲╱╲╱│
         │  bBpiano 1                 │==│╱╲╱╲│
-        │  L1-Redesign/260903           │==│╲╱╲╱│
+        │  L1-Clavier/260903         │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
         │  Physical Modeling Piano   │==│╲╱╲╱│
         │                            │==│╱╲╱╲│

@@ -93,6 +93,8 @@
 		14553D072FC14D60008E3CD7 /* DSP-Benchmark.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "DSP-Benchmark.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		146492B930510CB900285A00 /* bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bbpl.xcodeproj; sourceTree = "<group>"; };
 		146587D62FA42DAF009F5C08 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		146800F8305A818500716D97 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
+		146810B4305A8AC800716D97 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
 		1468F08B305A5A7700716D97 /* bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bbpl.xcodeproj; sourceTree = "<group>"; };
 		146A412C2FDA96F900AF2C9C /* From PDE to PCM.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "From PDE to PCM.md"; sourceTree = "<group>"; };
 		147D71362FD6F9B6008F3BF8 /* bbpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbpl; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -110,6 +112,156 @@
 		142C18652FD5133400685F41 /* Exceptions for "Cli" folder in "bBpiano" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/AcousticLab/main__.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/AcousticLab/StringFilterLab/Core/Src/BankStringFilterDesigner.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/AcousticLab/StringFilterLab/Core/Src/DispersionDesigner.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/AcousticLab/StringFilterLab/Core/Src/LossDesigner.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/AcousticLab/StringFilterLab/Utils/Src/LinearRegression.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/AcousticLab/StringFilterLab/Utils/Src/MyCSVReader.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/AcousticLab/StringFilterLab/Utils/Src/MyDrWav.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/AcousticLab/StringFilterLab/Utils/Src/MyFFT.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/AcousticLab/StringFilterLab/Utils/Src/MyFile.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/AcousticLab/StringFilterLab/Utils/Src/MyPitch.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/AcousticLab/StringFilterLab/Utils/Src/PartialSpectrumAnalyzer.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/blueBird.xcdatamodeld",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/blueBirdApp.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/ContentView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Fancy's playground/Interaction View/AftertouchView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Fancy's playground/Interaction View/MainEditorView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Fancy's playground/Interaction View/NoteOffView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Fancy's playground/Interaction View/PedalCurveView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Fancy's playground/Interaction View/SharedComponents.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Fancy's playground/Interaction View/VelocityView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/AnalysisPanel/AnalysisPanelView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/AnalysisPanel/FancyCurvesView/Component/AftertouchView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/AnalysisPanel/FancyCurvesView/Component/NoteOffView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/AnalysisPanel/FancyCurvesView/Component/PedalCurveView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/AnalysisPanel/FancyCurvesView/Component/VelocityView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/AnalysisPanel/FancyCurvesView/MainCurvesView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/AnalysisPanel/FancyCurvesView/SharedComponents.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/AnalysisPanel/Pedal/Pedal.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/AnalysisPanel/Pedal/PedalFrame.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/PianoPanel/FrontRailFelt/FrontRailFelt.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/PianoPanel/Keyboard/Component/MidiCompiler.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/PianoPanel/Keyboard/Component/VKController.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/PianoPanel/Keyboard/Keyboard.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/PianoPanel/PianoFrame/PianoFrame.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/PianoPanel/PianoPanelView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/TransportPanel/CPUMeterView/CPUMeterView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/TransportPanel/TransportControls/TransportControl.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/TransportPanel/TransportControls/TransportControls.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Features/TransportPanel/TransportPanelView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/App/Persistence.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Cli/bBpiano Lite 1.0.0/core/controller.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Cli/bBpiano Lite 1.0.0/core/piano/Component/Src/DamperModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Cli/bBpiano Lite 1.0.0/core/piano/Component/Src/HammerModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Cli/bBpiano Lite 1.0.0/core/piano/Component/Src/KeyModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Cli/bBpiano Lite 1.0.0/core/piano/Component/Src/PedalModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Cli/bBpiano Lite 1.0.0/core/piano/Component/Src/StringModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Cli/bBpiano Lite 1.0.0/core/piano/ModelParameters/ModelParameters.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Cli/bBpiano Lite 1.0.0/core/piano/ModelParameters/PrecomputedValue.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Cli/bBpiano Lite 1.0.0/core/piano/PianoModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Cli/bBpiano Lite 1.0.0/core/piano/Utils/MyCSVReader.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Cli/bBpiano Lite 1.0.0/external/RtAudio.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Cli/bBpiano Lite 1.0.0/external/RtMidi.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Cli/bBpiano Lite 1.0.0/main.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/CppCore/main.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/CppCore/ModelParameters/ModelParameters.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/CppCore/ModelParameters/PrecomputedValue.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/CppCore/Piano/Component/Src/DamperModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/CppCore/Piano/Component/Src/HammerModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/CppCore/Piano/Component/Src/KeyModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/CppCore/Piano/Component/Src/PedalModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/CppCore/Piano/Component/Src/StringModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/CppCore/Piano/PianoModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/main_.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/SwiftCore/bBpianoCore.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/SwiftCore/Hardware/MidiService.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/SwiftCore/Hardware/SoundCard.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/SwiftCore/Hardware/WavRecorder.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/SwiftCore/ParametersManager/ParametersManager.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Core/SwiftCore/ParametersManager/ParametersStruct.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/External/fft/kfc.c",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/External/fft/kiss_fft.c",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/External/fft/kiss_fftnd.c",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/External/fft/kiss_fftndr.c",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/External/fft/kiss_fftr.c",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Test/HammerStringEvaluationTests/HammerStringEvaluationTests.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-alpha/bBpiano-L0-alpha/Test/HammerStringEvaluationTests/HammerStringTest.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/AcousticLab/main__.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/AcousticLab/StringFilterLab/Core/Src/BankStringFilterDesigner.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/AcousticLab/StringFilterLab/Core/Src/DispersionDesigner.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/AcousticLab/StringFilterLab/Core/Src/LossDesigner.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/AcousticLab/StringFilterLab/Utils/Src/LinearRegression.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/AcousticLab/StringFilterLab/Utils/Src/MyCSVReader.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/AcousticLab/StringFilterLab/Utils/Src/MyDrWav.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/AcousticLab/StringFilterLab/Utils/Src/MyFFT.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/AcousticLab/StringFilterLab/Utils/Src/MyFile.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/AcousticLab/StringFilterLab/Utils/Src/MyPitch.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/AcousticLab/StringFilterLab/Utils/Src/PartialSpectrumAnalyzer.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/blueBird.xcdatamodeld",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/blueBirdApp.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/ContentView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Fancy's playground/Interaction View/AftertouchView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Fancy's playground/Interaction View/MainEditorView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Fancy's playground/Interaction View/NoteOffView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Fancy's playground/Interaction View/PedalCurveView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Fancy's playground/Interaction View/SharedComponents.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Fancy's playground/Interaction View/VelocityView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/AnalysisPanel/AnalysisPanelView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/AnalysisPanel/FancyCurvesView/Component/AftertouchView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/AnalysisPanel/FancyCurvesView/Component/NoteOffView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/AnalysisPanel/FancyCurvesView/Component/PedalCurveView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/AnalysisPanel/FancyCurvesView/Component/VelocityView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/AnalysisPanel/FancyCurvesView/MainCurvesView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/AnalysisPanel/FancyCurvesView/SharedComponents.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/AnalysisPanel/Pedal/Pedal.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/AnalysisPanel/Pedal/PedalFrame.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/PianoPanel/FrontRailFelt/FrontRailFelt.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/PianoPanel/Keyboard/Component/MidiCompiler.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/PianoPanel/Keyboard/Component/VKController.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/PianoPanel/Keyboard/Keyboard.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/PianoPanel/PianoFrame/PianoFrame.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/PianoPanel/PianoPanelView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/TransportPanel/CPUMeterView/CPUMeterView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/TransportPanel/TransportControls/TransportControl.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/TransportPanel/TransportControls/TransportControls.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Features/TransportPanel/TransportPanelView.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/App/Persistence.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Cli/bBpiano L0-beta/core/controller.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Cli/bBpiano L0-beta/core/piano/Component/Src/DamperModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Cli/bBpiano L0-beta/core/piano/Component/Src/HammerModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Cli/bBpiano L0-beta/core/piano/Component/Src/KeyModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Cli/bBpiano L0-beta/core/piano/Component/Src/PedalModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Cli/bBpiano L0-beta/core/piano/Component/Src/StringModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Cli/bBpiano L0-beta/core/piano/ModelParameters/ModelParameters.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Cli/bBpiano L0-beta/core/piano/ModelParameters/PrecomputedValue.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Cli/bBpiano L0-beta/core/piano/PianoModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Cli/bBpiano L0-beta/core/piano/Utils/MyCSVReader.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Cli/bBpiano L0-beta/main.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/CppCore/main.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/CppCore/ModelParameters/ModelParameters.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/CppCore/ModelParameters/PrecomputedValue.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/CppCore/Piano/Component/Src/DamperModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/CppCore/Piano/Component/Src/HammerModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/CppCore/Piano/Component/Src/KeyModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/CppCore/Piano/Component/Src/PedalModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/CppCore/Piano/Component/Src/StringModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/CppCore/Piano/PianoModel.cpp",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/main_.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/SwiftCore/bBpianoCore.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/SwiftCore/Hardware/MidiService.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/SwiftCore/Hardware/SoundCard.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/SwiftCore/Hardware/WavRecorder.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/SwiftCore/ParametersManager/ParametersManager.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Core/SwiftCore/ParametersManager/ParametersStruct.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/External/fft/kfc.c",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/External/fft/kiss_fft.c",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/External/fft/kiss_fftnd.c",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/External/fft/kiss_fftndr.c",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/External/fft/kiss_fftr.c",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Test/HammerStringEvaluationTests/HammerStringEvaluationTests.swift",
+				"bBpiano Lite/_archive_local/bBpiano L0-beta/bBpiano-L0-beta/Test/HammerStringEvaluationTests/HammerStringTest.cpp",
 				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/core/controller.cpp",
 				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/core/piano/Component/Src/BridgeModel.cpp",
 				"bBpiano Lite/_archive_local/bBpiano L0-Pizzicato/core/piano/Component/Src/DamperModel.cpp",
@@ -423,6 +575,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		14680101305A818500716D97 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		146810BD305A8AC800716D97 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		1468F1A9305A5A7700716D97 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -662,12 +828,16 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 14ACA2D730599BD800508A59 /* Products */;
-					ProjectRef = 14ACA1B930599BD800508A59 /* bbpl.xcodeproj */;
+					ProductGroup = 146810BD305A8AC800716D97 /* Products */;
+					ProjectRef = 146810B4305A8AC800716D97 /* bBpiano.xcodeproj */;
 				},
 				{
-					ProductGroup = 146493D730510CB900285A00 /* Products */;
-					ProjectRef = 146492B930510CB900285A00 /* bbpl.xcodeproj */;
+					ProductGroup = 14680101305A818500716D97 /* Products */;
+					ProjectRef = 146800F8305A818500716D97 /* bBpiano.xcodeproj */;
+				},
+				{
+					ProductGroup = 14ACA2D730599BD800508A59 /* Products */;
+					ProjectRef = 14ACA1B930599BD800508A59 /* bbpl.xcodeproj */;
 				},
 				{
 					ProductGroup = 149ED4E730511BAE00C45ADC /* Products */;
@@ -678,8 +848,8 @@
 					ProjectRef = 1468F08B305A5A7700716D97 /* bbpl.xcodeproj */;
 				},
 				{
-					ProductGroup = 14B7306F30491B55007325C7 /* Products */;
-					ProjectRef = 14B72F5130491B55007325C7 /* bBSynthesis.xcodeproj */;
+					ProductGroup = 146493D730510CB900285A00 /* Products */;
+					ProjectRef = 146492B930510CB900285A00 /* bbpl.xcodeproj */;
 				},
 				{
 					ProductGroup = 141CFA2D3050678E00E2B2A1 /* Products */;
@@ -692,6 +862,10 @@
 				{
 					ProductGroup = 14B72C5E30491A48007325C7 /* Products */;
 					ProjectRef = 14B72C5830491A3B007325C7 /* bBSynthesis.xcodeproj */;
+				},
+				{
+					ProductGroup = 14B7306F30491B55007325C7 /* Products */;
+					ProjectRef = 14B72F5130491B55007325C7 /* bBSynthesis.xcodeproj */;
 				},
 			);
 			projectRoot = "";

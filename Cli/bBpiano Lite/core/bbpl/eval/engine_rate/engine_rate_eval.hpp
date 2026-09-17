@@ -1,53 +1,191 @@
-// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-// [ZERO AI-GENERATED CODE]
-// Every line in this file is written and understood by its author. Every result is
-// reproducible, every assumption is open to inspection, and every implementation
-// stands open to criticism and challenge.
-// AI may be used for non-core, replaceable, engineering work;
-// this file, however, contains core logic that the author considers
-// necessary to understand firsthand, explain line by line, and take full responsibility for,
-// and is therefore implemented entirely by hand.
-// ---------------------------------------------------------------------------
-// [本文件承诺不含任何 AI 生成代码]
-// 每一行代码均由作者亲自编写，并确知其意义。一切结果可以复现，一切假设可经受检验，一切实现经得起批评与质疑。
-// AI 可用于非核心、可替代的工程工作；
-// 本文件承载作者认为必须亲自理解、能够逐行解释并为之负责的核心逻辑，因此刻意保持完全人工实现。
-//
-// Ziyang Tan
-// 2026-09-04
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 #ifndef engine_rate_eval_hpp
 #define engine_rate_eval_hpp
 
-class EngineEval {
+#include <cstdint>
+#include <iomanip>
+#include <iostream>
 
+#include <mach/mach_time.h>
+
+class EngineEval {
+private:
     uint64_t start_ = 0;
-    uint64_t end_ = 0;
-    uint64_t actualNs_ = 0;
-    double bufferNs_ = 0.0;
+
     double sample_rate_ = 44100.0;
-    
-    double instant_rate = 0.0;
+    double instant_rate_ = 0.0;
+
 public:
-    
-    explicit EngineEval(double sample_rate) : sample_rate_(sample_rate) {}
-    
+    explicit EngineEval(double sample_rate)
+        : sample_rate_(sample_rate) {}
+
     inline void start_timing() noexcept {
-        start_ = clock_gettime_nsec_np(CLOCK_UPTIME_RAW);
+        start_ =
+            clock_gettime_nsec_np(CLOCK_UPTIME_RAW);
     }
+
     inline void end_timing(int frame_count) noexcept {
-        end_ = clock_gettime_nsec_np(CLOCK_UPTIME_RAW);
-        actualNs_ = end_ - start_;
-        bufferNs_ = 1'000'000'000.0 * double(frame_count) / double(sample_rate_);
-        const double current_rate = actualNs_ / bufferNs_;
-        
-        // 指数平滑
-        instant_rate = 0.9 * instant_rate + 0.1 * current_rate;
+        const uint64_t end =
+            clock_gettime_nsec_np(CLOCK_UPTIME_RAW);
+
+        const uint64_t actual_ns =
+            end - start_;
+
+        const double buffer_ns =
+            1'000'000'000.0 *
+            static_cast<double>(frame_count) /
+            sample_rate_;
+
+        const double current_rate =
+            static_cast<double>(actual_ns) /
+            buffer_ns;
+
+        instant_rate_ =
+            0.9 * instant_rate_ +
+            0.1 * current_rate;
     }
+
+    [[nodiscard]]
     inline double engine_rate() const noexcept {
-        return instant_rate;
+        return instant_rate_;
     }
+
+    [[nodiscard]]
+    inline double engine_rate_percent() const noexcept {
+        return instant_rate_ * 100.0;
+    }
+
+    [[nodiscard]]
+    inline double realtime_multiple() const noexcept {
+        if (instant_rate_ <= 0.0) {
+            return 0.0;
+        }
+
+        return 1.0 / instant_rate_;
+    }
+
+    [[nodiscard]]
+    inline bool realtime_capable() const noexcept {
+        return instant_rate_ <= 1.0;
+    }
+
+    [[nodiscard]]
+    double benchmark(
+        std::unique_ptr<PianoModel>& piano,
+        int warmup_frames = 512,
+        int measure_frames = 8192,
+        int repetitions = 5
+    ) const {
+
+        constexpr int kMaxRepetitions = 31;
+
+        repetitions =
+            std::clamp(repetitions, 1, kMaxRepetitions);
+
+        std::array<double, kMaxRepetitions> results{};
+
+        volatile float sample_sink = 0.0f;
+
+        for (int repetition = 0;
+             repetition < repetitions;
+             ++repetition) {
+
+            for (int frame = 0;
+                 frame < warmup_frames;
+                 ++frame) {
+
+                piano->piano_movement();
+
+                sample_sink =
+                    sample_sink +
+                    piano->get_sample();
+            }
+
+            const uint64_t start =
+                clock_gettime_nsec_np(
+                    CLOCK_UPTIME_RAW
+                );
+
+            for (int frame = 0;
+                 frame < measure_frames;
+                 ++frame) {
+
+                piano->piano_movement();
+
+                sample_sink =
+                    sample_sink +
+                    piano->get_sample();
+            }
+
+            const uint64_t end =
+                clock_gettime_nsec_np(
+                    CLOCK_UPTIME_RAW
+                );
+
+            const double actual_ns =
+                static_cast<double>(end - start);
+
+            const double rendered_ns =
+                1'000'000'000.0 *
+                static_cast<double>(measure_frames) /
+                sample_rate_;
+
+            results[repetition] =
+                actual_ns / rendered_ns;
+        }
+
+        std::sort(
+            results.begin(),
+            results.begin() + repetitions
+        );
+
+        return results[
+            static_cast<std::size_t>(
+                repetitions / 2
+            )
+        ];
+    }
+    
+    inline void reset() noexcept {
+        instant_rate_ = 0.0;
+    }
+    void print_benchmark(std::unique_ptr<PianoModel>& piano, std::string range) const {
+        const double rate =
+            benchmark(piano);
+
+        const double frame_budget_us =
+            1'000'000.0 / sample_rate_;
+
+        const double frame_cost_us =
+            frame_budget_us * rate;
+
+        std::cout
+            << std::fixed
+            << std::setprecision(2)
+
+//            << "bbpl L1 DSP benchmark\n"
+//            << "Sample rate: "
+//            << sample_rate_
+//            << " Hz\n"
+
+            << "    Frame: "
+            << frame_cost_us
+            << " us / "
+            << frame_budget_us
+            << " us\n"
+
+            << "    Occupancy: "
+            << rate * 100.0
+            << "%\n"
+
+            << "    Speed: "
+            << (1.0 / rate)
+            << "x realtime\n"
+
+            <<  "    " + range + " realtime: "
+            << (rate <= 1.0 ? "PASS" : "FAIL")
+            << "\n\n";
+    }
+    
 };
 
-#endif /* engine_rate_eval_hpp */
+#endif

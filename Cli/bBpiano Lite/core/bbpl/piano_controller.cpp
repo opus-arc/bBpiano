@@ -147,8 +147,8 @@ void soundcard_shutdown() noexcept {
 }
 
 // ======================== ======================== ========================
-// Hardware callback and test
-// 硬件回调与测试
+// Hardware callback
+// 硬件回调
 // ======================== ======================== ========================
 void get_next_buffer(float* out, int frameCount, double amplitudeLimiter) {
     
@@ -199,11 +199,7 @@ void get_next_buffer(float* out, int frameCount, double amplitudeLimiter) {
     engine_eval->end_timing(frameCount);
     
 }
-double get_engine_rate() noexcept {
-    return engine_eval
-        ? engine_eval->engine_rate()
-        : 0.0;
-}
+
 
 // ======================== ======================== ========================
 // Piano gesture
@@ -306,4 +302,93 @@ bool wait_for_stop_or_audio_failure(
     }
 
     return audio_render_failed();
+}
+
+
+// ======================== ======================== ========================
+// Test
+// 测试
+// ======================== ======================== ========================
+void print_engine_rate() {
+    if (!bBpiano || !engine_eval) {
+        throw std::logic_error(
+            "Piano engine is not initialized."
+        );
+    }
+    
+    // 保证测试从完全确定的状态开始。
+    piano_commands.clear();
+    bBpiano->system_reset();
+    
+    // 激活 High-range。
+    for (int midi = 79;
+         midi <= k_highest_midi_note;
+         ++midi) {
+
+        apply_piano_command({
+            PianoCommandType::note_on,
+            midi,
+            110.0
+        });
+    }
+    
+    engine_eval->print_benchmark(bBpiano, "High-range");
+    
+
+    // 保证测试从完全确定的状态开始。
+    piano_commands.clear();
+    bBpiano->system_reset();
+
+    // 激活 Mid-range。
+    for (int midi = 48;
+         midi <= 78;
+         ++midi) {
+
+        apply_piano_command({
+            PianoCommandType::note_on,
+            midi,
+            110.0
+        });
+    }
+
+    engine_eval->print_benchmark(bBpiano, "Mid-range");
+    
+    // 保证测试从完全确定的状态开始。
+    piano_commands.clear();
+    bBpiano->system_reset();
+
+    // 激活 Bass-range。
+    for (int midi = k_lowest_midi_note;
+         midi <= 47;
+         ++midi) {
+
+        apply_piano_command({
+            PianoCommandType::note_on,
+            midi,
+            110.0
+        });
+    }
+
+    engine_eval->print_benchmark(bBpiano, "Bass-range");
+    
+    // 保证测试从完全确定的状态开始。
+    piano_commands.clear();
+    bBpiano->system_reset();
+
+    // 激活全部 88 个键。
+    for (int midi = k_lowest_midi_note;
+         midi <= k_highest_midi_note;
+         ++midi) {
+
+        apply_piano_command({
+            PianoCommandType::note_on,
+            midi,
+            110.0
+        });
+    }
+
+    engine_eval->print_benchmark(bBpiano, "88-keys");
+    
+
+    bBpiano->system_reset();
 }

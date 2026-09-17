@@ -7,6 +7,8 @@
 #include <cstddef>
 
 class SoundboardModel {
+    static constexpr bool soundboard_active_ = true;
+    
     SoundboardModel(const SoundboardModel&) = delete;
     SoundboardModel& operator=(const SoundboardModel&) = delete;
 
@@ -211,6 +213,13 @@ public:
     // ================================================================
 
     inline float get_sample() noexcept {
+        if(!soundboard_active_) {
+            float sum = 0.0;
+            for(int i = 0; i < bridge_force.size(); i++) {
+                sum += bridge_force[i];
+            }
+            return sum;
+        }
 
         // ------------------------------------------------------------
         // 1. Spatial bridge-force reduction
