@@ -211,22 +211,22 @@ Can the soul of an acoustic instrument be reconstructed through mathematics and 
        ┌──────── Per-roundtrip Loop ────────┐
        │                                    │
        │  First-order Fractional Allpass    │
-       │  一阶分数延迟全通滤波器             │
-       │  承担 round-trip residual delay    │
+       │  一阶分数延迟全通滤波器                │
+       │  承担 round-trip residual delay     │
        │                 │                  │
        │                 ▼                  │
        │  Four-SOS Loss Filter Bank         │
-       │  四段二阶损耗滤波器                 │
-       │  控制逐模态衰减与 T60               │
+       │  四段二阶损耗滤波器                   │
+       │  控制逐模态衰减与 T60                 │
        │                 │                  │
        │                 ▼                  │
        │  Dispersion Allpass Network        │
-       │  色散全通网络                       │
-       │  模拟钢琴弦非谐性                   │
+       │  色散全通网络                        │
+       │  模拟钢琴弦非谐性                     │
        │                 │                  │
        │                 ▼                  │
        │  Damper Filter, when active        │
-       │  制音器滤波器                       │
+       │  制音器滤波器                        │
        │                                    │
        └────────────────────────────────────┘
 
@@ -242,9 +242,7 @@ Can the soul of an acoustic instrument be reconstructed through mathematics and 
            88-key Bridge-force Field
               88 键音桥激励场
 
-                 注意：
-     当前 BridgeModel::process() 没有实际参与耦合
-       因此这里不是物理音桥反馈模型
+
                        │
                        ▼
              Soundboard Radiation Model
