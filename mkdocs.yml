@@ -43,7 +43,9 @@ markdown_extensions:
       custom_fences:
         - name: math
           class: arithmatex
-          format: !!python/name:pymdownx.arithmatex.fence_generic_format
+          format: !!python/object/apply:pymdownx.arithmatex.arithmatex_fenced_format
+            kwds:
+              mode: generic
 
 extra_javascript:
   - javascripts/mathjax.js
