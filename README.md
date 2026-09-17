@@ -35,17 +35,6 @@ bBpiano is a physical modeling piano synthesis project inspired by Pianoteq 9, c
 
 bBpiano是一个受Pianoteq 9启发的物理建模钢琴合成项目，目前处于积极的研发阶段。 其核心是一个物理建模的钢琴引擎，旨在保持轻巧和响应，同时捕捉现场乐器的即时性、存在感和表现力。
 
-> [!IMPORTANT]
-> Readers are strongly encouraged to begin with [**From PDE to PCM: Physical Modeling in the Digital Domain**][].
-> The report documents the theoretical foundations, mathematical derivations, engineering implementation process, and design rationale behind bBpiano, providing a complete path from physical equations to a working piano synthesis engine.
->
-> Read Online: https://opus-arc.github.io/bBpiano/
->
-> 强烈鼓励读者从从PDE到PCM：数字领域的物理建模开始。
->
-> 该报告记录了bBpiano背后的理论基础、数学推导、工程实施过程和设计理由，提供了从物理方程到工作钢琴合成引擎的完整路径。
->
-> 在线阅读：https://opus-arc.github.io/bBpiano/
 
 ### **A Note from bBSonicLab**
 
@@ -178,83 +167,124 @@ Can the soul of an acoustic instrument be reconstructed through mathematics and 
 ## 3. bBpiano Physical Modeling Pipeline
 
 ```text
-       Physics Domain
-────────────────────────────
+            Control / Event Domain
+────────────────────────────────────────────────────────
 
-            MIDI
-          演奏动作
-             ↓
+        MIDI Keyboard / PC Keyboard / MIDI File
+                MIDI 演奏事件
+                       │
+                       ▼
+              PianoCommandQueue
+        每个音频 buffer 开始时消费命令
+                       │
+                       ▼
+       MIDI Velocity → Hammer Launch Velocity
+          vₕ = 2^((velocity - 52) / 25) m/s
 
-    Hammer Launch Velocity
-   	  锤体对弦的激励速度
-   
-             ↓
 
-   Tominaga–Sato 2026 
-   two-layer nonlinear Maxwell-type impact hammer model
-   
-   Tominaga–Sato 2026 
-   双层非线性麦克斯韦击锤模型
-   
-             ↓
+            Physics / DSP Domain
+────────────────────────────────────────────────────────
 
-     String Waveguide
-     			波导弦
-     			
-             ↓
-              
-    			 FIR
-   	有限长单位冲激响应
-   （Finite Impulse Response）滤波器
-    用于微调不同泛音的能量
-    钢琴音符整体存在较稳定的泛音能量频谱曲线
-    
-             ↓
-     
-     Loss Biquid Filter
-       二阶损失滤波器
-   
-             ↓
-     
-     Fractional Delay
-     计算Group Delay
-     修复FIR与Biquid带来的相位差
-             ↓
+                       ▼
+       Tominaga–Sato-inspired Two-layer
+        Nonlinear Maxwell-type Hammer
+         双层非线性麦克斯韦型击锤模型
 
-     Dispersion Network
-        模拟色散网络
+       每个采样点进行两次 hammer 求解
+      predictor / corrector 式接触力估计
+                       │
+                       ▼
+       Impedance-weighted String Contact
+        阻抗加权的多弦接触速度与力分配
+                       │
+                       ▼
+            1 / 2 / 3 Unison Strings
+              单弦 / 双弦 / 三弦
+                       │
+                       ▼
+          Bidirectional String Waveguide
+               双向行波波导弦
 
-             ↓
+       力注入 F/(2Z) + 固定端反射 + 传播
+                       │
+                       ▼
+       ┌──────── Per-roundtrip Loop ────────┐
+       │                                    │
+       │  First-order Fractional Allpass    │
+       │  一阶分数延迟全通滤波器             │
+       │  承担 round-trip residual delay    │
+       │                 │                  │
+       │                 ▼                  │
+       │  Four-SOS Loss Filter Bank         │
+       │  四段二阶损耗滤波器                 │
+       │  控制逐模态衰减与 T60               │
+       │                 │                  │
+       │                 ▼                  │
+       │  Dispersion Allpass Network        │
+       │  色散全通网络                       │
+       │  模拟钢琴弦非谐性                   │
+       │                 │                  │
+       │                 ▼                  │
+       │  Damper Filter, when active        │
+       │  制音器滤波器                       │
+       │                                    │
+       └────────────────────────────────────┘
 
-       Bridge Coupling
-          音桥耦合
-           
-             ↓
+       MIDI 21–95：44.1 kHz 内部弦更新
+       MIDI 96–108：88.2 kHz 双步弦更新
+                       │
+                       ▼
+        Bridge-end Force Readout
+        + Unison String Force Sum
+        桥端力读取与同音弦求和
+                       │
+                       ▼
+           88-key Bridge-force Field
+              88 键音桥激励场
 
-        Soundboard
-      模拟音板修整波形
-       			
-       			↓
-       			
-   Multiple pole pitch correction
-   复极点副波峰模拟
-  		
-  					↓
-  					
-  	  PCM
-  		Pulse Code Modulation
-  		脉冲编码调制
-  		离散数字信号
-  		
-  					↓
-  					
-  		Soundcard ouput
-  		声卡输出
-  			
-  					↓
-  					
-  	The sound of the piano
-  		类似钢琴的声响
+                 注意：
+     当前 BridgeModel::process() 没有实际参与耦合
+       因此这里不是物理音桥反馈模型
+                       │
+                       ▼
+             Soundboard Radiation Model
+                 音板辐射模型
+
+        Bass / Middle / Treble Region Shapers
+             低音 / 中音 / 高音区域整形
+                       │
+                       ▼
+          Shared 8-delay-line FDN
+      共享八延迟线反馈延迟网络
+
+       · 每条延迟线包含一阶频率相关损耗
+       · 移位 Householder 正交反馈矩阵
+       · 正负交替的输出向量
+       · 直接声分量 direct path
+                       │
+                       ▼
+        Dense Modal Radiation Proxy
+           高模态密度辐射近似
+                       │
+                       ▼
+             Master Gain × 0.01
+                       │
+                       ▼
+             Finite-value Guard
+                       │
+                       ▼
+          Output Gain / Limiter × 0.90
+                       │
+                       ▼
+            Mono Float32 Linear PCM
+                 单声道浮点 PCM
+                       │
+                       ▼
+              Core Audio Soundcard
+                       │
+                       ▼
+             Synthesized Piano Sound
+                 合成钢琴声音
        			
 ```
 

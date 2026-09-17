@@ -7,6 +7,36 @@ different piano engines and the Yamaha Disklavier reference recordings.
 
 ## bBpiano L1-Clavier
 
+### Mozart — Sonata in D Major, K.576, I. Allegro
+
+**Soundboard ON**
+
+<audio controls preload="metadata">
+  <source src="examples/L1-Clavier%20Mozart%20K.576%20Soundboard%20ON.mp3" type="audio/mpeg">
+</audio>
+
+**Soundboard OFF**
+
+<audio controls preload="metadata">
+  <source src="examples/L1-Clavier%20Mozart%20K.576%20Soundboard%20OFF.mp3" type="audio/mpeg">
+</audio>
+
+### Bach — Prelude and Fugue in D Major, BWV 874
+
+**Soundboard ON**
+
+<audio controls preload="metadata">
+  <source src="examples/L1-Clavier%20Bach%20BWV%20874%20Soundboard%20ON.mp3" type="audio/mpeg">
+</audio>
+
+**Soundboard OFF**
+
+<audio controls preload="metadata">
+  <source src="examples/L1-Clavier%20Bach%20BWV%20874%20Soundboard%20OFF.mp3" type="audio/mpeg">
+</audio>
+
+### Sonata in B Minor
+
 <audio controls preload="metadata">
   <source src="examples/L1-Clavier%20B%20Minor.mp3" type="audio/mpeg">
 </audio>
