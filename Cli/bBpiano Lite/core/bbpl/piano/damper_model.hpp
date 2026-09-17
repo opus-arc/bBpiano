@@ -64,6 +64,10 @@ public:
         z1 = 0.0f;
         z2 = 0.0f;
     }
+    
+    inline float state_energy() const noexcept {
+        return 0.5f * (z1 * z1 + z2 * z2);
+    }
 };
 
 

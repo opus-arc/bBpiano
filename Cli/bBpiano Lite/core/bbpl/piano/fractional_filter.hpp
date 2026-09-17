@@ -71,6 +71,10 @@ public:
         x1 = 0.0;
         y1 = 0.0;
     }
+    
+    inline float state_energy() const noexcept {
+        return 0.5f * (x1 * x1 + y1 * y1);
+    }
 };
 
 

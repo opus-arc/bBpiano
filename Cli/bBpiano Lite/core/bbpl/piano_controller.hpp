@@ -41,7 +41,7 @@ void soundcard_shutdown() noexcept;
 // 硬件回调与测试
 // ======================== ======================== ========================
 void get_next_buffer(float* out, int frame_count, double amplitude_limiter);
-double get_engine_rate() noexcept;
+void print_engine_rate();
 
 // ======================== ======================== ========================
 // Piano gesture
