@@ -1,96 +1,179 @@
-# PolyForm Internal Use License 1.0.0
+# bBpiano CLI Use and Extension License 1.0
 
-<https://polyformproject.org/licenses/internal-use/1.0.0>
+Copyright (c) 2026 Ziyang Tan. All rights reserved.
 
-## Acceptance
+This license applies to the bBpiano source code, command-line program,
+compiled binaries, and associated files made available in this repository or
+in an official bBpiano distribution (the "Licensed Software"), except for any
+file or component that carries a separate license notice.
 
-In order to get any license under these terms, you must agree
-to them as both strict obligations and conditions to all
-your licenses.
+This is a proprietary source-available license. It is not an open-source
+license.
 
-## Copyright License
+## 1. Acceptance
 
-The licensor grants you a copyright license for the software
-to do everything you might do with the software that would
-otherwise infringe the licensor's copyright in it for any
-permitted purpose.  However, you may only make changes or
-new works based on the software according to [Changes and New
-Works License](#changes-and-new-works-license), and you may
-not distribute the software.
+By downloading, installing, copying, building, or running the Licensed
+Software, You agree to this license. If You do not agree, do not use the
+Licensed Software.
 
-## Changes and New Works License
+## 2. Definitions
 
-The licensor grants you an additional copyright license to
-make changes and new works based on the software for any
-permitted purpose.
+"Licensor" means Ziyang Tan or a successor copyright holder who offers the
+Licensed Software under this license.
 
-## Patent License
+"You" means the individual or legal entity exercising rights under this
+license.
 
-The licensor grants you a patent license for the software that
-covers patent claims the licensor can license, or becomes able
-to license, that you would infringe by using the software.
+"Documentation" means documentation published by the Licensor for using the
+Licensed Software, including its command-line and operating-system interfaces.
 
-## Fair Use
+"Extension" means software independently written by You that invokes the
+Licensed Software only through interfaces described in the Documentation or
+through ordinary operating-system process interfaces.
 
-You may have "fair use" rights for the software under the
-law. These terms do not limit them.
+"Protected Implementation Information" means non-public or implementation-
+specific material embodied in or learned from the Licensed Software,
+including source or intermediate code, algorithms, architecture, digital
+signal processing and physical-modeling logic, coefficient tables, presets,
+constants, model parameters, calibration data, internal data structures, and
+implementation techniques.
 
-## Internal Business Use
+Access to readable source code does not grant permission to copy, reuse,
+disclose, or otherwise exploit Protected Implementation Information except as
+expressly permitted by this license.
 
-Use of the software for the internal business operations of
-you and your company is use for a permitted purpose.
+"Output" means audio or other content produced by running the Licensed
+Software in compliance with this license. Output does not include the
+Licensed Software, an Extension, or Protected Implementation Information.
 
-## No Other Rights
+## 3. License Grant
 
-These terms do not allow you to sublicense or transfer any of
-your licenses to anyone else, or prevent the licensor from
-granting licenses to anyone else.  These terms do not imply
-any other licenses.
+Subject to all terms of this license, the Licensor grants You a limited,
+revocable, non-exclusive, non-transferable, non-sublicensable license to:
 
-## Patent Defense
+1. download, install, make a reasonable number of backup copies of, and run
+   the Licensed Software for lawful personal, educational, research, artistic,
+   and internal business purposes;
+2. build the unmodified Licensed Software from the source supplied by the
+   Licensor solely for the permitted uses above;
+3. create, use, and distribute independent Extensions, provided that an
+   Extension:
+   - communicates with the Licensed Software only through the Documentation
+     or ordinary operating-system process interfaces;
+   - does not contain or disclose any portion of the Licensed Software or any
+     Protected Implementation Information; and
+   - requires each user to obtain the Licensed Software separately from an
+     official source designated by the Licensor; and
+4. use, reproduce, perform, publish, and distribute Output.
 
-If you make any written claim that the software infringes or
-contributes to infringement of any patent, your patent license
-for the software granted under these terms ends immediately. If
-your company makes such a claim, your patent license ends
-immediately for work on behalf of your company.
+No other rights are granted.
 
-## Violations
+## 4. Restrictions
 
-The first time you are notified in writing that you have
-violated any of these terms, or done anything with the software
-not covered by your licenses, your licenses can nonetheless
-continue if you come into full compliance with these terms,
-and take practical steps to correct past violations, within
-32 days of receiving notice.  Otherwise, all your licenses
-end immediately.
+Except to the extent that applicable law expressly requires otherwise, You
+must not, and must not assist another person to:
 
-## No Liability
+1. sell, rent, sublicense, publish, mirror, share, or redistribute the Licensed
+   Software, whether in source or binary form;
+2. modify, patch, translate, adapt, or create derivative works of the Licensed
+   Software;
+3. reverse engineer, decompile, disassemble, or otherwise inspect or analyze a
+   binary, or analyze source code, for the purpose of extracting, reusing, or
+   disclosing Protected Implementation Information;
+4. bypass, disable, or interfere with license checks, technical protections,
+   access controls, or notices;
+5. extract, estimate, reconstruct, publish, transfer, or reuse the Licensed
+   Software's parameters, coefficients, presets, algorithms, calibration,
+   architecture, physical-modeling logic, or other Protected Implementation
+   Information;
+6. conduct systematic probing, model extraction, behavioral cloning,
+   distillation, parameter fitting, or similar activity intended to reproduce
+   or approximate the implementation or behavior of the Licensed Software;
+7. use Protected Implementation Information to develop, train, improve, or
+   validate a product, model, library, plug-in, service, or implementation that
+   replicates, competes with, or substitutes for the Licensed Software;
+8. operate the Licensed Software as a hosted, shared, time-sharing, service-
+   bureau, cloud, or network service that exposes its synthesis capability to
+   third parties; or
+9. remove or alter copyright, license, attribution, or proprietary notices.
 
-***As far as the law allows, the software comes as is, without
-any warranty or condition, and the licensor will not be liable
-to you for any damages arising out of these terms or the use
-or nature of the software, under any kind of legal claim.***
+If applicable law gives You a non-waivable right to perform an otherwise
+restricted act, including an act strictly necessary to achieve
+interoperability, You may exercise only that right, only to the minimum extent
+required by law, and only after requesting the necessary interoperability
+information from the Licensor where the law permits that condition. Any
+information obtained may be used only for the legally permitted purpose and
+must not be used to create or market a substantially similar program.
 
-## Definitions
+## 5. Independent Development
 
-The **licensor** is the individual or entity offering these
-terms, and the **software** is the software the licensor makes
-available under these terms.
+This license does not restrict software developed independently without use of
+the Licensed Software, Protected Implementation Information, or prohibited
+acts. Compatibility achieved solely through the interfaces described in the
+Documentation is permitted as part of an Extension under Section 3.
 
-**You** refers to the individual or entity agreeing to these
-terms.
+## 6. Ownership
 
-**Your company** is any legal entity, sole proprietorship,
-or other kind of organization that you work for, plus all
-organizations that have control over, are under the control of,
-or are under common control with that organization.  **Control**
-means ownership of substantially all the assets of an entity,
-or the power to direct its management and policies by vote,
-contract, or otherwise.  Control can be direct or indirect.
+The Licensed Software is licensed, not sold. The Licensor and its licensors
+retain all title, copyright, patent, trade-secret, and other intellectual-
+property rights in the Licensed Software and Protected Implementation
+Information. This license grants no trademark rights and no patent license
+except to the minimum extent necessarily implied for the permitted operation
+of an unmodified official copy.
 
-**Your licenses** are all the licenses granted to you for the
-software under these terms.
+## 7. Third-Party Components
 
-**Use** means anything you do with the software requiring one
-of your licenses.
+Third-party components remain governed by their respective license terms. If
+a third-party license conflicts with this license for that component, the
+third-party license controls for that component only.
+
+## 8. Termination
+
+This license terminates automatically and immediately if You breach any term.
+On termination, You must stop using the Licensed Software and destroy all
+copies in Your possession or control. Sections 4 through 12 survive
+termination.
+
+## 9. Disclaimer of Warranty
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSED SOFTWARE IS PROVIDED
+"AS IS" AND "AS AVAILABLE," WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT,
+ACCURACY, OR RELIABILITY.
+
+## 10. Limitation of Liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSOR WILL NOT BE LIABLE FOR
+ANY INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, CONSEQUENTIAL, OR PUNITIVE
+DAMAGES, OR FOR LOSS OF DATA, PROFITS, REVENUE, BUSINESS, OR GOODWILL, ARISING
+FROM OR RELATED TO THE LICENSED SOFTWARE OR THIS LICENSE, UNDER ANY THEORY OF
+LIABILITY. THE LICENSOR'S TOTAL AGGREGATE LIABILITY WILL NOT EXCEED THE GREATER
+OF USD 10 OR THE AMOUNT YOU PAID THE LICENSOR FOR THE LICENSED SOFTWARE DURING
+THE TWELVE MONTHS BEFORE THE EVENT GIVING RISE TO LIABILITY.
+
+## 11. General
+
+If a provision is unenforceable, it will be modified only to the minimum
+extent necessary, and the remaining provisions will remain effective. A
+waiver must be in writing and applies only to the specific instance stated.
+You may not assign this license without the Licensor's prior written consent.
+This license is the entire agreement concerning the rights granted here and
+may be changed only in a writing issued or signed by the Licensor.
+
+## 12. Contact and Additional Permissions
+
+Commercial redistribution, source modification, hosted-service use, or other
+rights not granted here require a separate written license from the Licensor.
+Use the contact information published in the bBpiano repository to request
+additional permission.
+
+---
+
+## 非约束性中文摘要
+
+本软件允许用户下载、安装、运行未经修改的官方版本，也允许通过公开的 CLI
+或操作系统进程接口独立开发扩展，并允许使用和发布合规运行产生的音频输出。
+未经另行书面授权，不允许重新分发软件本体、修改源码或二进制、提取或复用实现
+逻辑与参数、逆向工程、系统性探测或行为克隆，也不允许把合成功能作为第三方托管
+服务提供。中文摘要仅为阅读便利；如与英文条款存在差异，以英文条款为准。
