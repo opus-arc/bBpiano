@@ -315,10 +315,21 @@ In addition to the MAESTRO Yamaha Disklavier dataset, selected evaluations also 
 | Type | Reference Recording | Physical Modeling | Sample-Based | Physical Modeling | **Physical Modeling** |
 | Size | 1–10 GB (test subset) | 380 KB | 36 MB | 641 KB | **298 KB** |
 | Real-Time Synthesis | ❌ | **✅** | ❌ | **✅** | **✅** |
-| Polyphony | N/A | **5 × 88** (M4) | N/A | 1.57 × 88 (M4) | **4.89 × 88** (M4, 2024) |
+| Polyphony | N/A | **5 × 88** (M4) | N/A | 1.57 × 88 (M4) | **5.58 × 88** (M4, 2024) |
 
 
-即使在 88 个琴键同时处于活动状态的测试中，L1-Clavier 在该 M4 平台上也仅占用约 **20.44% 的实时计算预算**，对应约 **4.89 倍实时速度**。
+即使在 88 个琴键同时处于活动状态的测试中，L1-Clavier 在该 M4 平台上平均占用约 **17.95% 的实时计算预算**，对应约 **5.58 倍实时速度**。
+
+The following L1-Clavier results are arithmetic means of **10 independent `bbpl -t` runs** on a 2024 Apple M4, Release build, at 44.1 kHz. Each run passed all four real-time checks.
+
+下表为 2024 Apple M4 平台、44.1 kHz、Release 构建下 **10 次独立 `bbpl -t` 测试**的算术平均值；每次测试的四项实时检查均为 PASS。
+
+| Range | Mean Frame | Frame Budget | Mean Occupancy | Mean Speed | Result |
+|:------|-----------:|-------------:|---------------:|-----------:|:------:|
+| High-range | 1.362 µs | 22.68 µs | 6.01% | 16.64× | PASS |
+| Mid-range | 1.154 µs | 22.68 µs | 5.08% | 19.68× | PASS |
+| Bass-range | 0.951 µs | 22.68 µs | 4.19% | 23.89× | PASS |
+| 88 keys | 4.070 µs | 22.68 µs | 17.95% | 5.58× | PASS |
 
 > [!NOTE]
 >
@@ -346,7 +357,7 @@ Scale 与 Polyphony 部分以 Pianoteq 9 作为参考标准，而 Performance �
 | bBpiano L0-Pizzicato | 2.2199 |
 | bBpiano L0-100c | 2.4260 |
 | bBpiano L0-beta | 2.3532 |
-| **bBpiano L1-Clavier** | **2.3363** |
+| **bBpiano L1-Clavier** | **2.4326** |
 
 #### **Pianoteq 8-Referenced Benchmark**
 
@@ -378,7 +389,7 @@ I believe the values provided by LAION-CLAP reflect more of an overall impressio
 | bBpiano L0-Pizzicato | 0.2261 |
 | bBpiano L0-100c | 0.3213 |
 | bBpiano L0-beta | 0.4628 |
-| **bBpiano L1-Clavier** | **0.6009** |
+| **bBpiano L1-Clavier** | **0.5833** |
 
 #### **Pianoteq 8-Referenced Benchmark**
 
@@ -399,9 +410,9 @@ In addition to the MAESTRO-referenced performance evaluation, bBpiano maintains 
 |:---------|:---------|---------:|---------:|---------:|---------:|---------:|
 | Engine | Binary Size | 1.04 MB | 1.04 MB | 1.1 MB | 641 KB | **298 KB** |
 | Engine | Real-Time Synthesis | ✅ | ✅ | ✅ | ✅ | **✅** |
-| Engine | Polyphony | 5.21 | 11.27 | 23.34 | 1.57 × 88 | **4.89 × 88** |
-| LAION-CLAP | Cosine Similarity (MAESTRO Reference) | - | 0.4628 | 0.3213 | 0.2261 | **0.6009** |
-| VISQOL | Mean (MAESTRO Reference) | - | 2.3532 | 2.4260 | 2.2199 | **2.3363** |
+| Engine | Polyphony | 5.21 | 11.27 | 23.34 | 1.57 × 88 | **5.58 × 88** |
+| LAION-CLAP | Cosine Similarity (MAESTRO Reference) | - | 0.4628 | 0.3213 | 0.2261 | **0.5833** |
+| VISQOL | Mean (MAESTRO Reference) | - | 2.3532 | 2.4260 | 2.2199 | **2.4326** |
 
 ## 6. License
 
@@ -441,10 +452,10 @@ Scales across different pitch ranges; the primary focus of the test is on subsys
 
 | Piece | SF2 Grand Piano | bBpiano L0-Pizzicato | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** |
 | :------------------------------------ | --------------: | -------------------: | --------------: | --------------: | --------------: |
-| Bass_scale | **3.258543816** | | 2.279772871 | 2.494259218 | **3.437442092** |
-| Tenor_scale | **2.294533822** | | 1.005804746 | 1.864653641 | **2.892494038** |
-| Middle_scale | **2.880688398** | | 2.400253359 | 2.182012820 | **2.444496814** |
-| Treble_scale | **2.836848379** | | 2.216778580 | 1.898298445 | **2.032333247** |
+| Bass_scale | **3.258543816** | | 2.279772871 | 2.494259218 | **3.371336762** |
+| Tenor_scale | **2.294533822** | | 1.005804746 | 1.864653641 | **2.862334516** |
+| Middle_scale | **2.880688398** | | 2.400253359 | 2.182012820 | **2.433165462** |
+| Treble_scale | **2.836848379** | | 2.216778580 | 1.898298445 | **2.241825189** |
 | High Treble_scale | **1.224602593** | | 1.047544827 | 1.093359043 | **1.000000000** |
 
 ### Polyphony:
@@ -455,11 +466,11 @@ Chords in different registers; the primary focus of the testing is the coupled s
 
 | Piece | SF2 Grand Piano | bBpiano L0-Pizzicato | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** |
 | :------------------------------------ | --------------: | -------------------: | --------------: | --------------: | --------------: |
-| Bass_chords | **2.534555915** | | 2.077254981 | 2.166119601 | **2.646609191** |
-| Tenor_chords | **2.672740293** | | 2.514874952 | 1.876183765 | **2.745489579** |
-| Middle_chords | **3.429775842** | | 2.862829766 | 2.503931537 | **2.250657391** |
-| Treble_chords | **2.521915846** | | 1.859617369 | 1.935985753 | **1.213214061** |
-| High Treble_chords | **1.482525693** | | 1.222981887 | 1.139869631 | **1.035962362** |
+| Bass_chords | **2.534555915** | | 2.077254981 | 2.166119601 | **2.702758894** |
+| Tenor_chords | **2.672740293** | | 2.514874952 | 1.876183765 | **2.114384760** |
+| Middle_chords | **3.429775842** | | 2.862829766 | 2.503931537 | **2.272731897** |
+| Treble_chords | **2.521915846** | | 1.859617369 | 1.935985753 | **1.554736190** |
+| High Treble_chords | **1.482525693** | | 1.222981887 | 1.139869631 | **1.000000000** |
 
 ### Perfomance:
 
@@ -469,18 +480,18 @@ This comprehensive test features performances selected from the MAESTRO dataset 
 
 | Piece | Pianoteq 9 | SF2 Grand Piano | bBpiano L0-Pizzicato | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** |
 | :------------------------------------ | ---------: | --------------: | -------------------: | --------------: | --------------: | --------------: |
-| Etude-Tableaux Op.39 No.5 | 2.9136 | **2.9863** | 2.285809614 | 2.6995 | 2.4852 | **2.400329770** |
-| Images, Book II "Poissons d'or" | **2.8029** | 2.7804 | 2.312521172 | 2.5644 | 2.3634 | **2.281958270** |
-| Piano Sonata "From the Street" | 2.9598 | **3.0255** | 2.091438597 | 2.4664 | 2.3462 | **2.436617715** |
-| Prel. Chor. Fug. | 2.9266 | **3.0012** | 2.199275409 | 2.5196 | 2.2769 | **2.415113650** |
-| Prelude and Fugue in A Minor, S.462/1 | 2.9671 | **3.0924** | 2.336302759 | 2.5948 | 2.4029 | **2.322713519** |
-| Prelude and Fugue in D Major, BWV 874 | **2.7859** | 2.6779 | 2.024254124 | 2.2438 | 2.2183 | **2.448434711** |
-| Sonata No.28 Op.101 | 2.8137 | **2.8996** | 2.166522251 | 2.3586 | 2.3095 | **2.354060463** |
-| Sonata No.4 Op.30 | 2.7626 | **2.8409** | 2.193601278 | 2.4185 | 2.2881 | **2.242947424** |
-| Sonata in B Minor | **2.8854** | 2.8354 | 2.213168591 | 2.3827 | 2.2733 | **2.333996544** |
-| Sonata in D Major K.576 | 2.8285 | **3.0614** | 2.207048216 | 2.0482 | 2.4669 | **2.228384656** |
-| Sonata in D Minor K.141 | **2.6867** | 2.5331 | 2.447243048 | 2.2945 | 2.4932 | **2.196139126** |
-| Sonata in F Minor Op.5 | 2.9342 | **2.9671** | 2.161659708 | 2.5207 | 2.3144 | **2.375493126** |
+| Etude-Tableaux Op.39 No.5 | 2.9136 | **2.9863** | 2.285809614 | 2.6995 | 2.4852 | **2.567014830** |
+| Images, Book II "Poissons d'or" | **2.8029** | 2.7804 | 2.312521172 | 2.5644 | 2.3634 | **2.360572665** |
+| Piano Sonata "From the Street" | 2.9598 | **3.0255** | 2.091438597 | 2.4664 | 2.3462 | **2.580950304** |
+| Prel. Chor. Fug. | 2.9266 | **3.0012** | 2.199275409 | 2.5196 | 2.2769 | **2.557200327** |
+| Prelude and Fugue in A Minor, S.462/1 | 2.9671 | **3.0924** | 2.336302759 | 2.5948 | 2.4029 | **2.378045542** |
+| Prelude and Fugue in D Major, BWV 874 | **2.7859** | 2.6779 | 2.024254124 | 2.2438 | 2.2183 | **2.547757825** |
+| Sonata No.28 Op.101 | 2.8137 | **2.8996** | 2.166522251 | 2.3586 | 2.3095 | **2.472213729** |
+| Sonata No.4 Op.30 | 2.7626 | **2.8409** | 2.193601278 | 2.4185 | 2.2881 | **2.321314186** |
+| Sonata in B Minor | **2.8854** | 2.8354 | 2.213168591 | 2.3827 | 2.2733 | **2.428109815** |
+| Sonata in D Major K.576 | 2.8285 | **3.0614** | 2.207048216 | 2.0482 | 2.4669 | **2.249377555** |
+| Sonata in D Minor K.141 | **2.6867** | 2.5331 | 2.447243048 | 2.2945 | 2.4932 | **2.240295448** |
+| Sonata in F Minor Op.5 | 2.9342 | **2.9671** | 2.161659708 | 2.5207 | 2.3144 | **2.487915857** |
 
 ## **A.2 Aggregate Statistics**
 
@@ -491,7 +502,7 @@ This comprehensive test features performances selected from the MAESTRO dataset 
 | bBpiano L0-Pizzicato | 2.2199 | 2.0243 | 2.4472 |
 | bBpiano L0-100c | 2.4260 | 2.0482 | 2.6995 |
 | bBpiano L0-beta | 2.3532 | 2.2183 | 2.4932 |
-| **bBpiano L1-Clavier** | **2.3363** | **2.1961** | **2.4484** |
+| **bBpiano L1-Clavier** | **2.4326** | **2.2403** | **2.5810** |
 
 ## **A.3 Reproducibility Notes**
 
@@ -543,11 +554,11 @@ Scales across different pitch ranges; the primary focus of the test is on subsys
 
 | Piece | SF2 Grand Piano | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** |
 | :------------------------------------ | --------------: | --------------: | --------------: | --------------: |
-| Bass_scale | 0.829674840 | 0.591492534 | 0.387630433 | **0.815756083** |
-| Tenor_scale | 0.896856070 | 0.371731043 | 0.300049216 | **0.692485631** |
-| Middle_scale | 0.720027626 | 0.233823359 | 0.168149158 | **0.688350379** |
-| Treble_scale | 0.718633533 | 0.192326903 | 0.166393086 | **0.557984769** |
-| High Treble_scale | 0.746628761 | 0.304847121 | 0.317520738 | **0.509192646** |
+| Bass_scale | 0.829674840 | 0.591492534 | 0.387630433 | **0.702944458** |
+| Tenor_scale | 0.896856070 | 0.371731043 | 0.300049216 | **0.716075599** |
+| Middle_scale | 0.720027626 | 0.233823359 | 0.168149158 | **0.619980037** |
+| Treble_scale | 0.718633533 | 0.192326903 | 0.166393086 | **0.524722159** |
+| High Treble_scale | 0.746628761 | 0.304847121 | 0.317520738 | **0.488264501** |
 
 ### Polyphony:
 
@@ -557,11 +568,11 @@ Chords in different registers; the primary focus of the testing is the coupled s
 
 | Piece | SF2 Grand Piano | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** |
 | :------------------------------------ | --------------: | --------------: | --------------: | --------------: |
-| Bass_chords | **0.737208426** | 0.712322891 | 0.491204530 | **0.807670593** |
-| Tenor_chords | **0.898284912** | 0.612981141 | 0.465305507 | **0.772069633** |
-| Middle_chords | **0.782639027** | 0.344589412 | 0.309159577 | **0.664555550** |
-| Treble_chords | **0.825937271** | 0.233994871 | 0.203228608 | **0.574430168** |
-| High Treble_chords | **0.679073453** | 0.220188931 | 0.261892319 | **0.472721756** |
+| Bass_chords | **0.737208426** | 0.712322891 | 0.491204530 | **0.901042461** |
+| Tenor_chords | **0.898284912** | 0.612981141 | 0.465305507 | **0.725399315** |
+| Middle_chords | **0.782639027** | 0.344589412 | 0.309159577 | **0.654511511** |
+| Treble_chords | **0.825937271** | 0.233994871 | 0.203228608 | **0.647006929** |
+| High Treble_chords | **0.679073453** | 0.220188931 | 0.261892319 | **0.536056995** |
 
 ### Perfomance:
 
@@ -571,18 +582,18 @@ This comprehensive test features performances selected from the MAESTRO dataset 
 
 | Piece | Pianoteq 9 | SF2 Grand Piano | bBpiano L0-Pizzicato | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** |
 | :------------------------------------ | ---------: | --------------: | -------------------: | --------------: | --------------: | --------------: |
-| Etude-Tableaux Op.39 No.5 | 0.7640 | **0.8494** | 0.244967222 | 0.3476 | 0.5452 | **0.545227885** |
-| Images, Book II "Poissons d'or" | **0.7816** | 0.7704 | 0.225847974 | 0.4385 | 0.4862 | **0.559184432** |
-| Piano Sonata "From the Street" | **0.8993** | 0.8060 | 0.159824803 | 0.1505 | 0.5820 | **0.625636399** |
-| Prel. Chor. Fug. | 0.7994 | **0.8852** | 0.284094602 | 0.4831 | 0.4735 | **0.644302905** |
-| Prelude and Fugue in A Minor, S.462/1 | **0.9413** | 0.8776 | 0.289103746 | 0.5253 | 0.6226 | **0.627999425** |
-| Prelude and Fugue in D Major, BWV 874 | 0.6436 | **0.8413** | 0.006589664 | 0.1691 | 0.4318 | **0.487403125** |
-| Sonata No.28 Op.101 | 0.7851 | **0.8338** | 0.252199650 | 0.3241 | 0.4066 | **0.638274312** |
-| Sonata No.4 Op.30 | 0.7962 | **0.8154** | 0.187488467 | 0.4225 | 0.5763 | **0.466570556** |
-| Sonata in B Minor | **0.7088** | 0.7059 | 0.316080213 | 0.2329 | 0.5579 | **0.526686430** |
-| Sonata in D Major K.576 | **0.8754** | 0.8503 | 0.239892751 | 0.2747 | 0.4318 | **0.722991407** |
-| Sonata in D Minor K.141 | **0.8897** | 0.8641 | 0.354716450 | 0.2403 | 0.2966 | **0.723593056** |
-| Sonata in F Minor Op.5 | 0.7701 | **0.8401** | 0.151858717 | 0.2468 | 0.1436 | **0.642526150** |
+| Etude-Tableaux Op.39 No.5 | 0.7640 | **0.8494** | 0.244967222 | 0.3476 | 0.5452 | **0.571054816** |
+| Images, Book II "Poissons d'or" | **0.7816** | 0.7704 | 0.225847974 | 0.4385 | 0.4862 | **0.544904232** |
+| Piano Sonata "From the Street" | **0.8993** | 0.8060 | 0.159824803 | 0.1505 | 0.5820 | **0.710870922** |
+| Prel. Chor. Fug. | 0.7994 | **0.8852** | 0.284094602 | 0.4831 | 0.4735 | **0.741906404** |
+| Prelude and Fugue in A Minor, S.462/1 | **0.9413** | 0.8776 | 0.289103746 | 0.5253 | 0.6226 | **0.509185374** |
+| Prelude and Fugue in D Major, BWV 874 | 0.6436 | **0.8413** | 0.006589664 | 0.1691 | 0.4318 | **0.545421720** |
+| Sonata No.28 Op.101 | 0.7851 | **0.8338** | 0.252199650 | 0.3241 | 0.4066 | **0.671635807** |
+| Sonata No.4 Op.30 | 0.7962 | **0.8154** | 0.187488467 | 0.4225 | 0.5763 | **0.514670193** |
+| Sonata in B Minor | **0.7088** | 0.7059 | 0.316080213 | 0.2329 | 0.5579 | **0.396069169** |
+| Sonata in D Major K.576 | **0.8754** | 0.8503 | 0.239892751 | 0.2747 | 0.4318 | **0.608233094** |
+| Sonata in D Minor K.141 | **0.8897** | 0.8641 | 0.354716450 | 0.2403 | 0.2966 | **0.544550717** |
+| Sonata in F Minor Op.5 | 0.7701 | **0.8401** | 0.151858717 | 0.2468 | 0.1436 | **0.641184807** |
 
 ## B.2 Aggregate Statistics
 
@@ -593,7 +604,7 @@ This comprehensive test features performances selected from the MAESTRO dataset 
 | bBpiano L0-Pizzicato | 0.2261 | 0.0066 | 0.3547 |
 | bBpiano L0-100c | 0.3213 | 0.1505 | 0.5253 |
 | bBpiano L0-beta | 0.4628 | 0.1436 | 0.6226 |
-| **bBpiano L1-Clavier** | **0.6009** | **0.4666** | **0.7236** |
+| **bBpiano L1-Clavier** | **0.5833** | **0.3961** | **0.7419** |
 
 ## B.3 Reproducibility Notes
 
@@ -601,6 +612,7 @@ This comprehensive test features performances selected from the MAESTRO dataset 
 - Number of excerpts: 12
 - Embedding model: LAION-CLAP
 - Similarity metric: cosine similarity
+- L1-Clavier render condition: `soundboard_active_ = true`
 
 Repeated evaluations indicate that CLAP exhibits measurable stochastic variation. Under identical conditions, fluctuations of approximately 5–10% are common, while deviations exceeding 30% have occasionally been observed. Consequently, CLAP scores should be interpreted as approximate perceptual indicators rather than absolute measures of acoustic realism.
 
@@ -619,7 +631,4 @@ Repeated evaluations indicate that CLAP exhibits measurable stochastic variation
 ![page_end](./Doc/assets/page_end.PNG)
 
  
-
-
-
 
