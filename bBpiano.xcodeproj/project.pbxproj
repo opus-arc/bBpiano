@@ -22,28 +22,23 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1407367E305EA25D00B289D6 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
+		14073C04305EA25D00B289D6 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
+		14073FAE305EA25D00B289D6 /* bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bbpl.xcodeproj; sourceTree = "<group>"; };
 		142C18C32FD52A2A00685F41 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		142C18C52FD52A3300685F41 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		142C18C72FD52A3C00685F41 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		142C18C92FD52A8600685F41 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
-		143FB63B2FE4E182000091A3 /* L0-100c Op.101.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "L0-100c Op.101.mp3"; sourceTree = "<group>"; };
-		143FB63C2FE4E182000091A3 /* L0-beta k.141.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "L0-beta k.141.mp3"; sourceTree = "<group>"; };
-		143FB63D2FE4E182000091A3 /* Pianoteq 9 "From the Street".mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Pianoteq 9 \"From the Street\".mp3"; sourceTree = "<group>"; };
-		143FB63E2FE4E182000091A3 /* SF2 Grand Piano BWV 874.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "SF2 Grand Piano BWV 874.mp3"; sourceTree = "<group>"; };
-		143FB63F2FE4E182000091A3 /* Yamaha Disklaviers B Minor.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Yamaha Disklaviers B Minor.mp3"; sourceTree = "<group>"; };
-		143FB6412FE4E182000091A3 /* Audio.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Audio.md; sourceTree = "<group>"; };
-		143FB6432FE4E182000091A3 /* mathjax.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = mathjax.js; sourceTree = "<group>"; };
-		143FB6452FE4E182000091A3 /* bBpiano.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = bBpiano.md; sourceTree = "<group>"; };
-		143FB6462FE4E182000091A3 /* Doc */ = {isa = PBXFileReference; lastKnownFileType = text; path = Doc; sourceTree = "<group>"; };
-		143FB6472FE4E182000091A3 /* index.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = index.md; sourceTree = "<group>"; };
+		1450206C305E9D4700EC80FF /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
+		145025F2305E9D4700EC80FF /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
+		1450299C305E9D4700EC80FF /* bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bbpl.xcodeproj; sourceTree = "<group>"; };
 		146587D62FA42DAF009F5C08 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		1468171A305BBF8200716D97 /* L1-Clavier B Minor.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "L1-Clavier B Minor.mp3"; sourceTree = "<group>"; };
-		146A412C2FDA96F900AF2C9C /* From PDE to PCM.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "From PDE to PCM.md"; sourceTree = "<group>"; };
+		14706904305EA0F100682FF9 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
+		14706E8A305EA0F100682FF9 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
+		14707234305EA0F100682FF9 /* bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bbpl.xcodeproj; sourceTree = "<group>"; };
 		147D713E2FD6F9D7008F3BF8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		14E708362F78BE0C005C806C /* bBpiano.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bBpiano.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		14EDA648305E899E008652D0 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
-		14EDABCE305E899E008652D0 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
-		14EDAF78305E899E008652D0 /* bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bbpl.xcodeproj; sourceTree = "<group>"; };
+		14F6AA84305E97F2001325AD /* cli/bBpiano Lite/bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "cli/bBpiano Lite/bbpl.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -247,14 +242,14 @@
 			path = cli;
 			sourceTree = "<group>";
 		};
-		14E708382F78BE0C005C806C /* App */ = {
+		14E708382F78BE0C005C806C /* app */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = App;
+			path = app;
 			sourceTree = "<group>";
 		};
-		14E7092E2F7D43C4005C806C /* Doc */ = {
+		14E7092E2F7D43C4005C806C /* doc */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Doc;
+			path = doc;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -269,6 +264,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		140742AD305EA25D00B289D6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		140742AF305EA25D00B289D6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		140742B1305EA25D00B289D6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		142C18C22FD52A2A00685F41 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -281,46 +297,60 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		143FB6402FE4E182000091A3 /* examples */ = {
+		14501AE0305E9D4600EC80FF /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
-				1468171A305BBF8200716D97 /* L1-Clavier B Minor.mp3 */,
-				143FB63B2FE4E182000091A3 /* L0-100c Op.101.mp3 */,
-				143FB63C2FE4E182000091A3 /* L0-beta k.141.mp3 */,
-				143FB63D2FE4E182000091A3 /* Pianoteq 9 "From the Street".mp3 */,
-				143FB63E2FE4E182000091A3 /* SF2 Grand Piano BWV 874.mp3 */,
-				143FB63F2FE4E182000091A3 /* Yamaha Disklaviers B Minor.mp3 */,
+				14F6AA84305E97F2001325AD /* cli/bBpiano Lite/bbpl.xcodeproj */,
+				145025F2305E9D4700EC80FF /* bBpiano.xcodeproj */,
+				1450299C305E9D4700EC80FF /* bbpl.xcodeproj */,
+				1450206C305E9D4700EC80FF /* bBpiano.xcodeproj */,
+				14706E8A305EA0F100682FF9 /* bBpiano.xcodeproj */,
+				14707234305EA0F100682FF9 /* bbpl.xcodeproj */,
+				14706904305EA0F100682FF9 /* bBpiano.xcodeproj */,
 			);
-			path = examples;
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
-		143FB6422FE4E182000091A3 /* Audio */ = {
+		14502C9B305E9D4700EC80FF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				143FB6402FE4E182000091A3 /* examples */,
-				143FB6412FE4E182000091A3 /* Audio.md */,
 			);
-			path = Audio;
+			name = Products;
 			sourceTree = "<group>";
 		};
-		143FB6442FE4E182000091A3 /* javascripts */ = {
+		14502C9D305E9D4700EC80FF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				143FB6432FE4E182000091A3 /* mathjax.js */,
 			);
-			path = javascripts;
+			name = Products;
 			sourceTree = "<group>";
 		};
-		143FB6482FE4E182000091A3 /* docs */ = {
+		14502C9F305E9D4700EC80FF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				143FB6422FE4E182000091A3 /* Audio */,
-				143FB6442FE4E182000091A3 /* javascripts */,
-				143FB6452FE4E182000091A3 /* bBpiano.md */,
-				143FB6462FE4E182000091A3 /* Doc */,
-				143FB6472FE4E182000091A3 /* index.md */,
 			);
-			path = docs;
+			name = Products;
+			sourceTree = "<group>";
+		};
+		14707533305EA0F100682FF9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		14707535305EA0F100682FF9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		14707537305EA0F100682FF9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		14E7082D2F78BE0C005C806C = {
@@ -328,12 +358,11 @@
 			children = (
 				142C184B2FD502E100685F41 /* cli */,
 				146587D62FA42DAF009F5C08 /* README.md */,
-				14E7092E2F7D43C4005C806C /* Doc */,
-				14E708382F78BE0C005C806C /* App */,
+				14E7092E2F7D43C4005C806C /* doc */,
+				14E708382F78BE0C005C806C /* app */,
 				142C18C22FD52A2A00685F41 /* Frameworks */,
 				14E708372F78BE0C005C806C /* Products */,
-				146A412C2FDA96F900AF2C9C /* From PDE to PCM.md */,
-				143FB6482FE4E182000091A3 /* docs */,
+				14501AE0305E9D4600EC80FF /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -345,21 +374,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		14EDB277305E899E008652D0 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		14EDB279305E899E008652D0 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		14EDB27B305E899E008652D0 /* Products */ = {
+		14F6AD85305E97F2001325AD /* Products */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -381,7 +396,8 @@
 			);
 			fileSystemSynchronizedGroups = (
 				142C184B2FD502E100685F41 /* cli */,
-				14E708382F78BE0C005C806C /* App */,
+				14E708382F78BE0C005C806C /* app */,
+				14F6AA84305E97F2001325AD /* cli/bBpiano Lite/bbpl.xcodeproj */,
 			);
 			name = bBpiano;
 			productName = blueBird;
@@ -420,16 +436,44 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 14EDB279305E899E008652D0 /* Products */;
-					ProjectRef = 14EDABCE305E899E008652D0 /* bBpiano.xcodeproj */;
+					ProductGroup = 14707537305EA0F100682FF9 /* Products */;
+					ProjectRef = 14706E8A305EA0F100682FF9 /* bBpiano.xcodeproj */;
 				},
 				{
-					ProductGroup = 14EDB277305E899E008652D0 /* Products */;
-					ProjectRef = 14EDA648305E899E008652D0 /* bBpiano.xcodeproj */;
+					ProductGroup = 140742AD305EA25D00B289D6 /* Products */;
+					ProjectRef = 14073C04305EA25D00B289D6 /* bBpiano.xcodeproj */;
 				},
 				{
-					ProductGroup = 14EDB27B305E899E008652D0 /* Products */;
-					ProjectRef = 14EDAF78305E899E008652D0 /* bbpl.xcodeproj */;
+					ProductGroup = 14502C9F305E9D4700EC80FF /* Products */;
+					ProjectRef = 1450206C305E9D4700EC80FF /* bBpiano.xcodeproj */;
+				},
+				{
+					ProductGroup = 140742AF305EA25D00B289D6 /* Products */;
+					ProjectRef = 1407367E305EA25D00B289D6 /* bBpiano.xcodeproj */;
+				},
+				{
+					ProductGroup = 14502C9D305E9D4700EC80FF /* Products */;
+					ProjectRef = 145025F2305E9D4700EC80FF /* bBpiano.xcodeproj */;
+				},
+				{
+					ProductGroup = 14707535305EA0F100682FF9 /* Products */;
+					ProjectRef = 14706904305EA0F100682FF9 /* bBpiano.xcodeproj */;
+				},
+				{
+					ProductGroup = 140742B1305EA25D00B289D6 /* Products */;
+					ProjectRef = 14073FAE305EA25D00B289D6 /* bbpl.xcodeproj */;
+				},
+				{
+					ProductGroup = 14707533305EA0F100682FF9 /* Products */;
+					ProjectRef = 14707234305EA0F100682FF9 /* bbpl.xcodeproj */;
+				},
+				{
+					ProductGroup = 14502C9B305E9D4700EC80FF /* Products */;
+					ProjectRef = 1450299C305E9D4700EC80FF /* bbpl.xcodeproj */;
+				},
+				{
+					ProductGroup = 14F6AD85305E97F2001325AD /* Products */;
+					ProjectRef = 14F6AA84305E97F2001325AD /* cli/bBpiano Lite/bbpl.xcodeproj */;
 				},
 			);
 			projectRoot = "";

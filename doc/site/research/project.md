@@ -1,21 +1,21 @@
- # bBpiano - bBSonicLab Physical Modeling
+# bBpiano - bBSonicLab Physical Modeling
 
-![Piano Structure](./doc/design/bBsonicLab_logo_transparent_fullsize.png)
+![Piano Structure](media/images/bBsonicLab_logo_transparent_fullsize.png)
 
 <hr>
 <div align="center" style="line-height: 1;">
   <a href="https://github.com/opus-arc/bBpiano/actions/workflows/engine-evaluation.yml" target="_blank"><img alt="bBpiano Engine Evaluation"
     src="https://github.com/opus-arc/bBpiano/actions/workflows/engine-evaluation.yml/badge.svg"/></a>
-  <br>   
+  <br>
   <a href="https://github.com/opus-arc/bBpiano/milestone/1" target="_blank"><img alt="Foundational Research Progress"
     src="https://img.shields.io/github/milestones/progress-percent/opus-arc/bBpiano/1?label=foundational%20research"/></a>
   <a href="https://github.com/opus-arc/bBpiano/milestone/1" target="_blank"><img alt="Milestone Issues"
     src="https://img.shields.io/github/milestones/progress/opus-arc/bBpiano/1?label=issues"/></a>
   <br>
-  <a href="https://opus-arc.github.io/bBpiano/"><b>Primary Research Document</b>👁️</a>
+  <a href="from-pde-to-pcm.html"><b>Primary Research Document</b>👁️</a>
 </div>
 
-> Every resonance eventually fades.  
+> Every resonance eventually fades.<br>
 > What remains is the desire to keep creating, to keep moving, and perhaps, one day, to become as free as the bluebird.
 >
 > ***Bluebird** comes from David Bowie's final farewell, **Lazarus**:*
@@ -102,7 +102,7 @@ This approach offers several potential advantages:
 
 这种方法具有若干潜在的优势：
 
-- **Compact Representation — 紧凑的表征** 
+- **Compact Representation — 紧凑的表征**
 
   Instrument behavior is described by parameters and algorithms rather than multi-gigabyte sample libraries. 乐器的行为由参数与算法描述，而非依赖数以 GB 计的采样音源。
 
@@ -130,7 +130,7 @@ This approach offers several potential advantages:
 
   乐器由此成为一个可以被探索、分析与实验的物理系统，而不再只是一组固定的音频素材。
 
-  
+
 
 The long-term vision is to investigate whether physically modeled instruments can simultaneously achieve:
 
@@ -152,7 +152,7 @@ The long-term vision is to investigate whether physically modeled instruments ca
 
   以及传统采样式方法难以企及的紧凑性。
 
-  
+
 
 Ultimately, bBpiano asks a simple question:
 
@@ -283,7 +283,7 @@ Can the soul of an acoustic instrument be reconstructed through mathematics and 
                        ▼
              Synthesized Piano Sound
                  合成钢琴声音
-       			
+
 ```
 
 ## 4. Quick Start
@@ -622,6 +622,4 @@ Repeated evaluations indicate that CLAP exhibits measurable stochastic variation
 
 **bBSonicLab**
 
-![page_end](./doc/assets/page_end.PNG)
-
- 
+![page_end](media/images/page_end.PNG)
