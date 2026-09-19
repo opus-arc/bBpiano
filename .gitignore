@@ -43,3 +43,7 @@ AcousticLab/HammerLab/.Generated/
 *.[mM][iI][dD]
 *.[mM][iI][dD][iI]
 *.[wW][aA][vV]
+
+# Local CLI audio files
+Cli/**/*.wav
+Cli/**/*.WAV
