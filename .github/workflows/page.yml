@@ -27,7 +27,7 @@ jobs:
 
       - run: pip install mkdocs-material
 
-      - run: mkdocs build
+      - run: python doc/site/build.py
 
       - uses: actions/upload-pages-artifact@v5
         with:

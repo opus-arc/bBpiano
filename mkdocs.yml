@@ -1,4 +1,7 @@
-site_name: bBpiano
+site_name: bBpiano · 研究
+site_url: https://opus-arc.github.io/bBpiano/research/
+docs_dir: doc/site/research
+site_dir: site/research
 use_directory_urls: false
 
 theme:
@@ -27,9 +30,10 @@ theme:
     - toc.integrate
 
 nav:
-  - README: bBpiano.md
-  - From PDE to PCM: index.md
-  - Audio: Audio/Audio.md
+  - 研究概览: index.md
+  - 从波动方程到物理建模: from-pde-to-pcm.md
+  - 项目说明: project.md
+  - 音频比较: audio.md
 
 markdown_extensions:
   - toc:

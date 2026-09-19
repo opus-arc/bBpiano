@@ -6,8 +6,8 @@
 AcousticLab/HammerLab/Build/
 AcousticLab/HammerLab/.Generated/
 
-!/Doc/
-!/Doc/**
+!/doc/
+!/doc/**
 
 /Cli/bBpiano Lite/_archive_local
 /Cli/bBpiano Sonic/_archive_local
