@@ -18,9 +18,19 @@ jobs:
 
     steps:
       - name: Set release variables
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
         run: |
-          TAG="${{ github.event.release.tag_name || inputs.tag }}"
-          ZIP="bBpiano-${TAG}-macOS-arm64.zip"
+          ASSETS=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq '.assets[].name')
+          mapfile -t ZIP_MATCHES < <(printf '%s\n' "$ASSETS" | awk -v prefix="bBpiano-${TAG}-" 'index($0, prefix) == 1 && /-macOS-arm64\.zip$/')
+
+          if [ "${#ZIP_MATCHES[@]}" -ne 1 ]; then
+            echo "Expected exactly one macOS arm64 asset for ${TAG}, found ${#ZIP_MATCHES[@]}" >&2
+            exit 1
+          fi
+
+          ZIP="${ZIP_MATCHES[0]}"
           URL="https://github.com/opus-arc/bBpiano/releases/download/${TAG}/${ZIP}"
 
           echo "TAG=${TAG}" >> "$GITHUB_ENV"
