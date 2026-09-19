@@ -5,18 +5,10 @@
 //  Created by opus arc on 2026/5/25.
 //
 
-#if DEBUG
-import Inject
-#endif
-
-
 import SwiftUI
 
 struct TransportControl: View {
     
-    #if DEBUG
-    @ObserveInjection var inject
-    #endif
     
     @State private var volume: Double = 0.62
     @State private var progress: Double = 0.11
@@ -36,10 +28,7 @@ struct TransportControl: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(PreviewBackdrop())
-        
-        #if DEBUG
-        .enableInjection()
-        #endif
+    
     }
 }
 
