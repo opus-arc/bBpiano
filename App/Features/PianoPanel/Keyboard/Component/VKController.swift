@@ -28,7 +28,7 @@ public class VKController {
         let mappedVelocity = CurveModel.velocityMapper(
             midiVelocity: Int(velocity)
         )
-        note_on(Int32(note), Double(mappedVelocity))
+//        note_on(Int32(note), Double(mappedVelocity))
         
         Task { @MainActor in
             KeyboardUIState.shared.setKeyHighlight(velocity: Int(velocity), for: note)
@@ -36,7 +36,7 @@ public class VKController {
     }
 
     static func NoteOff(note: Int, velocity: Double) {
-        note_off(Int32(note), Double(velocity))
+//        note_off(Int32(note), Double(velocity))
         
         Task { @MainActor in
             KeyboardUIState.shared.setKeyHighlight(velocity: nil, for: note)
@@ -44,7 +44,7 @@ public class VKController {
     }
 
     static func PolyAftertouch(note: Int, pressure: Double) {
-        note_afterTouch(Int32(note), Double(pressure))
+//        note_afterTouch(Int32(note), Double(pressure))
     }
 
     static func ChannelAftertouch(pressure: Double) {

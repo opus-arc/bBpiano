@@ -17,21 +17,12 @@
  
  */
 
-#if DEBUG
-import Inject
-#endif
 
 import SwiftUI
 
 struct ContentView: View {
     
-    #if DEBUG
-    @ObserveInjection var inject
-    #endif
-
     var body: some View {
-        
-    
         
         VStack(spacing: 0) {
             TransportPanelView()
@@ -41,9 +32,6 @@ struct ContentView: View {
         .frame(width: 880, height: 695)
         .background(Color.clear)
         
-        #if DEBUG
-        .enableInjection()
-        #endif
     }
 }
 

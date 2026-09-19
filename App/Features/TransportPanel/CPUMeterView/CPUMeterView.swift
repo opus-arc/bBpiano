@@ -47,7 +47,7 @@ struct PerformanceMeterPanel: View {
     }
 
     private func refreshMeters() {
-        engineRate = get_engineRate()
+//        engineRate = get_engineRate()
         cpuUsage = CPUUsageReader.currentProcessCPUUsage()
     }
 }
