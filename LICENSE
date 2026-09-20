@@ -1,4 +1,4 @@
-# bBpiano CLI Use and Extension License 1.0
+# bBpiano CLI Use and Extension License 1.1
 
 Copyright (c) 2026 Ziyang Tan. All rights reserved.
 
@@ -63,7 +63,8 @@ revocable, non-exclusive, non-transferable, non-sublicensable license to:
    - does not contain or disclose any portion of the Licensed Software or any
      Protected Implementation Information; and
    - requires each user to obtain the Licensed Software separately from an
-     official source designated by the Licensor; and
+     official source designated by the Licensor;
+   - complies with the attribution requirements of Section 7; and
 4. use, reproduce, perform, publish, and distribute Output.
 
 No other rights are granted.
@@ -121,20 +122,42 @@ Information. This license grants no trademark rights and no patent license
 except to the minimum extent necessarily implied for the permitted operation
 of an unmodified official copy.
 
-## 7. Third-Party Components
+## 7. Attribution
+
+Any Extension distributed to another person or entity must clearly disclose
+that it uses or depends on bbpl technology and must attribute bbpl to the
+Licensor.
+
+For software with a graphical user interface, this notice must appear in an
+ordinarily accessible About, Credits, Legal, or equivalent section.
+
+For command-line software or software without such a section, the notice must
+appear in accompanying documentation or another ordinarily accessible
+location.
+
+Unless otherwise specified by the Licensor, the following form is sufficient:
+
+    Uses bbpl technology.
+    Copyright (c) 2026 Ziyang Tan.
+
+The attribution must not be removed, obscured, or presented in a manner that
+implies sponsorship or endorsement of the surrounding product by the
+Licensor.
+
+## 8. Third-Party Components
 
 Third-party components remain governed by their respective license terms. If
 a third-party license conflicts with this license for that component, the
 third-party license controls for that component only.
 
-## 8. Termination
+## 9. Termination
 
 This license terminates automatically and immediately if You breach any term.
 On termination, You must stop using the Licensed Software and destroy all
-copies in Your possession or control. Sections 4 through 12 survive
+copies in Your possession or control. Sections 4 through 13 survive
 termination.
 
-## 9. Disclaimer of Warranty
+## 10. Disclaimer of Warranty
 
 TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSED SOFTWARE IS PROVIDED
 "AS IS" AND "AS AVAILABLE," WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
@@ -142,7 +165,7 @@ WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT,
 ACCURACY, OR RELIABILITY.
 
-## 10. Limitation of Liability
+## 11. Limitation of Liability
 
 TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSOR WILL NOT BE LIABLE FOR
 ANY INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, CONSEQUENTIAL, OR PUNITIVE
@@ -152,7 +175,7 @@ LIABILITY. THE LICENSOR'S TOTAL AGGREGATE LIABILITY WILL NOT EXCEED THE GREATER
 OF USD 10 OR THE AMOUNT YOU PAID THE LICENSOR FOR THE LICENSED SOFTWARE DURING
 THE TWELVE MONTHS BEFORE THE EVENT GIVING RISE TO LIABILITY.
 
-## 11. General
+## 12. General
 
 If a provision is unenforceable, it will be modified only to the minimum
 extent necessary, and the remaining provisions will remain effective. A
@@ -161,7 +184,7 @@ You may not assign this license without the Licensor's prior written consent.
 This license is the entire agreement concerning the rights granted here and
 may be changed only in a writing issued or signed by the Licensor.
 
-## 12. Contact and Additional Permissions
+## 13. Contact and Additional Permissions
 
 Commercial redistribution, source modification, hosted-service use, or other
 rights not granted here require a separate written license from the Licensor.
@@ -174,6 +197,8 @@ additional permission.
 
 本软件允许用户下载、安装、运行未经修改的官方版本，也允许通过公开的 CLI
 或操作系统进程接口独立开发扩展，并允许使用和发布合规运行产生的音频输出。
+分发 Extension 时，必须在 About、Credits、Legal、文档或其他合理可访问的位置
+明确声明使用了 bbpl，并保留相应署名。
 未经另行书面授权，不允许重新分发软件本体、修改源码或二进制、提取或复用实现
 逻辑与参数、逆向工程、系统性探测或行为克隆，也不允许把合成功能作为第三方托管
 服务提供。中文摘要仅为阅读便利；如与英文条款存在差异，以英文条款为准。
