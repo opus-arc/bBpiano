@@ -414,9 +414,9 @@ In addition to the MAESTRO-referenced performance evaluation, bBpiano maintains 
 
 ## 6. License
 
-This repository and the packaged bBpiano CLI are released under the proprietary [bBpiano CLI Use and Extension License 1.0](https://github.com/opus-arc/bBpiano/blob/main/LICENSE). The license permits ordinary use, generated-output distribution, and independent extensions through documented interfaces, while prohibiting unauthorized redistribution, reverse engineering, parameter extraction, model extraction, and implementation cloning.
+This repository and the packaged bBpiano CLI are released under the proprietary [bBpiano CLI Use and Extension License 1.1](https://github.com/opus-arc/bBpiano/blob/main/LICENSE). The license permits ordinary use, generated-output distribution, and independent extensions through documented interfaces, while prohibiting unauthorized redistribution, reverse engineering, parameter extraction, model extraction, and implementation cloning.
 
-此存储库及打包发布的 bBpiano CLI 采用专有的 [bBpiano CLI Use and Extension License 1.0](https://github.com/opus-arc/bBpiano/blob/main/LICENSE)。该许可允许正常使用、分发生成的输出，以及通过公开接口开发独立扩展；未经许可不得重新分发软件本体、逆向工程、提取参数或模型，也不得复制其实现逻辑。
+此存储库及打包发布的 bBpiano CLI 采用专有的 [bBpiano CLI Use and Extension License 1.1](https://github.com/opus-arc/bBpiano/blob/main/LICENSE)。该许可允许正常使用、分发生成的输出，以及通过公开接口开发独立扩展；未经许可不得重新分发软件本体、逆向工程、提取参数或模型，也不得复制其实现逻辑。
 
 ## 7. Contact
 
