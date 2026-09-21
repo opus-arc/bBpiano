@@ -1,0 +1,6 @@
+midi_velocity,velocity_m_s,force_log,reference_wav,onset_ms
+50,0.5221217822340614,force_midi_50.txt,/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Old Version/3/v50/C4_take01_v50.wav,0
+65,0.7158634668102116,force_midi_65.txt,/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Old Version/3/v65/C4_take02_v65.wav,0
+80,1.052136525303366,force_midi_80.txt,/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Old Version/3/v80/C4_take03_v80.wav,0
+95,1.7244837345822932,force_midi_95.txt,/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Old Version/3/v95/C4_take04_v95.wav,0
+110,3.439269708578476,force_midi_110.txt,/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Old Version/3/v110/C4_take05_v110.wav,0

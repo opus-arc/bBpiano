@@ -1,0 +1,844 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Hammer parameter optimization report — post waveguide fix",
+    "description": "Final C4 hammer-parameter search, code writeback, and validation after correcting the string waveguide.",
+    "generatedAt": "2026-07-28T11:42:01.563268+00:00",
+    "cards": [
+      {
+        "id": "rmse",
+        "description": "Transfer-cancelled modal-shape error across MIDI 50, 65, 95, and 110 relative to MIDI 80.",
+        "dataset": "headline",
+        "sourceId": "paired_source",
+        "metrics": [
+          {
+            "label": "Paired shape RMSE",
+            "field": "paired_rmse_db",
+            "format": "number",
+            "unit": "dB"
+          },
+          {
+            "label": "Before parameter refinement",
+            "field": "previous_rmse_db",
+            "format": "number",
+            "unit": "dB"
+          }
+        ]
+      },
+      {
+        "id": "improvement",
+        "description": "Relative reduction from the post-waveguide-fix current-parameter baseline.",
+        "dataset": "headline",
+        "sourceId": "paired_source",
+        "metrics": [
+          {
+            "label": "RMSE reduction",
+            "field": "rmse_reduction_percent",
+            "format": "number",
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "id": "duration",
+        "description": "MIDI-80 duration above five percent of peak; the physical target gate remains 1.2–3.5 ms.",
+        "dataset": "headline",
+        "sourceId": "force_source",
+        "metrics": [
+          {
+            "label": "Contact duration",
+            "field": "midi80_contact_duration_ms",
+            "format": "number",
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "id": "energy",
+        "description": "Largest hammer-plus-string mechanical energy divided by incident hammer energy over all five velocities.",
+        "dataset": "headline",
+        "sourceId": "force_source",
+        "metrics": [
+          {
+            "label": "Maximum energy ratio",
+            "field": "maximum_energy_ratio",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "search_count",
+        "description": "Deterministic, space-filling, and local-refinement candidates evaluated in the final search.",
+        "dataset": "headline",
+        "sourceId": "winner_source",
+        "metrics": [
+          {
+            "label": "Candidates evaluated",
+            "field": "candidate_count",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "target_modal",
+        "title": "Target MIDI-80 modal-energy distribution",
+        "subtitle": "Pianoteq C4 microphone partial-power proxy at 13 measured frequencies; values sum to 100%.",
+        "type": "bar",
+        "dataset": "target_modal",
+        "sourceId": "modal_source",
+        "encodings": {
+          "x": {
+            "field": "mode",
+            "type": "quantitative",
+            "label": "Mode n"
+          },
+          "y": {
+            "field": "energy_percent",
+            "type": "quantitative",
+            "label": "Target energy proxy (%)"
+          },
+          "tooltip": [
+            {
+              "field": "mode",
+              "type": "quantitative",
+              "label": "Mode"
+            },
+            {
+              "field": "frequency_hz",
+              "type": "quantitative",
+              "label": "Frequency (Hz)"
+            },
+            {
+              "field": "energy_percent",
+              "type": "quantitative",
+              "label": "Energy proxy (%)"
+            },
+            {
+              "field": "relative_db",
+              "type": "quantitative",
+              "label": "Relative power (dB)"
+            }
+          ]
+        }
+      },
+      {
+        "id": "current_modal",
+        "title": "Written winner MIDI-80 modal-energy distribution",
+        "subtitle": "Force projection into the lossless, dispersion-free ideal string using the code-written parameters.",
+        "type": "bar",
+        "dataset": "current_modal",
+        "sourceId": "modal_source",
+        "encodings": {
+          "x": {
+            "field": "mode",
+            "type": "quantitative",
+            "label": "Mode n"
+          },
+          "y": {
+            "field": "energy_percent",
+            "type": "quantitative",
+            "label": "Projected modal energy (%)"
+          },
+          "tooltip": [
+            {
+              "field": "mode",
+              "type": "quantitative",
+              "label": "Mode"
+            },
+            {
+              "field": "frequency_hz",
+              "type": "quantitative",
+              "label": "Frequency (Hz)"
+            },
+            {
+              "field": "energy_percent",
+              "type": "quantitative",
+              "label": "Projected energy (%)"
+            },
+            {
+              "field": "relative_db",
+              "type": "quantitative",
+              "label": "Relative energy (dB)"
+            }
+          ]
+        }
+      },
+      {
+        "id": "modal_residual",
+        "title": "Written winner MIDI-80 modal residual",
+        "subtitle": "Positive means the force projection is high relative to the microphone target after peak normalization.",
+        "type": "bar",
+        "dataset": "residual",
+        "sourceId": "modal_source",
+        "encodings": {
+          "x": {
+            "field": "mode",
+            "type": "quantitative",
+            "label": "Mode n"
+          },
+          "y": {
+            "field": "current_minus_target_db",
+            "type": "quantitative",
+            "label": "Current minus target (dB)"
+          },
+          "tooltip": [
+            {
+              "field": "mode",
+              "type": "quantitative",
+              "label": "Mode"
+            },
+            {
+              "field": "frequency_hz",
+              "type": "quantitative",
+              "label": "Frequency (Hz)"
+            },
+            {
+              "field": "current_minus_target_db",
+              "type": "quantitative",
+              "label": "Residual (dB)"
+            }
+          ]
+        }
+      },
+      {
+        "id": "velocity_rmse",
+        "title": "Paired modal-shape error by MIDI velocity",
+        "subtitle": "Each velocity is compared with MIDI 80 after removing one constant gain offset; lower is better.",
+        "type": "bar",
+        "dataset": "per_velocity",
+        "sourceId": "paired_source",
+        "encodings": {
+          "x": {
+            "field": "midi_velocity",
+            "type": "quantitative",
+            "label": "MIDI velocity"
+          },
+          "y": {
+            "field": "shape_rmse_db",
+            "type": "quantitative",
+            "label": "Shape RMSE (dB)"
+          },
+          "tooltip": [
+            {
+              "field": "midi_velocity",
+              "type": "quantitative",
+              "label": "MIDI velocity"
+            },
+            {
+              "field": "velocity_m_s",
+              "type": "quantitative",
+              "label": "Impact velocity (m/s)"
+            },
+            {
+              "field": "valid_mode_count",
+              "type": "quantitative",
+              "label": "Eligible modes"
+            },
+            {
+              "field": "shape_rmse_db",
+              "type": "quantitative",
+              "label": "Shape RMSE (dB)"
+            }
+          ]
+        }
+      }
+    ],
+    "tables": [],
+    "sources": [
+      {
+        "id": "winner_source",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('search_refined_snr0/winner.json');",
+          "description": "Selected candidate and search metadata after 7,051 evaluations.",
+          "executed_at": "2026-07-28T11:42:01.565606+00:00",
+          "tables_used": [
+            "search_refined_snr0/winner.json"
+          ],
+          "filters": [
+            "minimum target modal SNR >= 0 dB",
+            "five paired C4 velocities"
+          ]
+        }
+      },
+      {
+        "id": "paired_source",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('written_winner_validation/paired_score/paired_velocity_benchmark.csv');",
+          "description": "Transfer-cancelled five-velocity modal-shape benchmark.",
+          "executed_at": "2026-07-28T11:42:01.565611+00:00",
+          "tables_used": [
+            "written_winner_validation/paired_score/paired_velocity_benchmark.csv"
+          ],
+          "filters": [
+            "MIDI 80 is the baseline",
+            "measured modal frequencies",
+            "minimum target modal SNR >= 0 dB"
+          ]
+        }
+      },
+      {
+        "id": "modal_source",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('written_winner_validation/single_v80_target/modal_fingerprint.csv');",
+          "description": "MIDI-80 target and written-winner modal-energy proxies.",
+          "executed_at": "2026-07-28T11:42:01.565612+00:00",
+          "tables_used": [
+            "written_winner_validation/single_v80_target/modal_fingerprint.csv"
+          ],
+          "filters": [
+            "100 ms target window",
+            "13 measured C4 modes"
+          ]
+        }
+      },
+      {
+        "id": "force_source",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('written_winner_validation/force_metrics.csv');",
+          "description": "Force-curve and energy-guard metrics regenerated from the parameters written into the source code.",
+          "executed_at": "2026-07-28T11:42:01.565613+00:00",
+          "tables_used": [
+            "written_winner_validation/force_metrics.csv"
+          ],
+          "filters": [
+            "MIDI velocities 50, 65, 80, 95, and 110"
+          ]
+        }
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# Hammer parameter optimization report — post waveguide fix"
+      },
+      {
+        "id": "summary",
+        "type": "markdown",
+        "sourceId": "winner_source",
+        "body": "## 技术结论：频谱评分显著提高，但接触时长限制仍未解决\n\n在修复 StringModel 的端点交叉反射与共点力注入后，共测试 `7,051` 组参数。没有候选同时达到 `1.2–3.5 ms` 接触时长并保持完整卸载与负回弹。因此按预先声明的回退规则，从能量守恒、单次接触、完整卸载、负回弹、合理 Fmax/峰位候选中选择 paired RMSE 最低者，并已写入程序。\n\n最终 RMSE 为 `1.1266 dB`，相对修复波导后的当前参数 `2.2852 dB` 降低 `50.7%`。但 MIDI 80 接触仍为 `7.778 ms`，不能宣称已经得到实验意义上的真实击槌接触时长。"
+      },
+      {
+        "id": "metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "rmse",
+          "improvement",
+          "duration",
+          "energy",
+          "search_count"
+        ]
+      },
+      {
+        "id": "parameters",
+        "type": "markdown",
+        "sourceId": "winner_source",
+        "body": "## 已写入的最终参数\n\n```cpp\nhardness = 109.87459216355096;\np = 1.5;\nepsilon = 0.8104484280879438;\ntau0 = 8.741820760093148e-06;\nlinear_density = 0.006751517084270981; // kg/m\ntension = 780.9979217748913;            // N, derived\nmidi80_impact_velocity = 1.6266395205247568; // m/s\n```\n\n`p` 与 hardness 都接近搜索下界，说明当前模型依赖非常软、近线性的等效毛毡来拟合力度间模态变化；它是模型补偿，不应直接解释为独立材料测量值。"
+      },
+      {
+        "id": "modal_intro",
+        "type": "markdown",
+        "body": "## 目标与当前模态分布\n\n以下两图分别展示目标和写入参数后的 MIDI-80 分布。两图可用于定位具体模态，但目标仍包含音板、辐射与麦克风传递，所以正式排名使用五力度相对变化，而不是强迫单个绝对分布完全重合。"
+      },
+      {
+        "id": "target_chart",
+        "type": "chart",
+        "chartId": "target_modal"
+      },
+      {
+        "id": "current_chart",
+        "type": "chart",
+        "chartId": "current_modal"
+      },
+      {
+        "id": "residual_intro",
+        "type": "markdown",
+        "sourceId": "modal_source",
+        "body": "## 单力度残差仍集中在高阶低 SNR 模态\n\nMIDI 80 中，第 `5/6/9/10` 模态的投影偏低，第 `8/11/12/13` 模态偏高。第 8 及以上模态多数曾在目标残差底附近或以下，因此这些绝对残差只作诊断，不进入 `SNR ≥ 0 dB` 的配对优化结论。"
+      },
+      {
+        "id": "residual_chart",
+        "type": "chart",
+        "chartId": "modal_residual"
+      },
+      {
+        "id": "velocity_intro",
+        "type": "markdown",
+        "sourceId": "paired_source",
+        "body": "## 低中力度拟合最好，MIDI 110 是主要剩余误差\n\n相对 MIDI 80，MIDI `65` 与 `95` 的 shape RMSE 分别只有 `0.477` 与 `0.542 dB`；MIDI `50` 为 `1.168 dB`，MIDI `110` 上升至 `1.790 dB`。因此总体误差的主要剩余来源是最高力度下的非线性变化。"
+      },
+      {
+        "id": "velocity_chart",
+        "type": "chart",
+        "chartId": "velocity_rmse"
+      },
+      {
+        "id": "force",
+        "type": "markdown",
+        "sourceId": "force_source",
+        "body": "## 五力度力曲线均稳定，但接触时长几乎不随力度缩短\n\n|MIDI|锤速 m/s|时长 ms|Fmax N|峰位|rise/fall|冲量 Ns|回弹速度 m/s|\n|---:|---:|---:|---:|---:|---:|---:|---:|\n|50|0.807|7.800|3.198|0.208|0.262|0.01264|-0.0355|\n|65|1.107|7.778|4.409|0.203|0.254|0.01724|-0.0431|\n|80|1.627|7.778|6.518|0.198|0.247|0.02522|-0.0548|\n|95|2.666|7.755|10.747|0.193|0.240|0.04111|-0.0750|\n|110|5.317|7.710|21.611|0.156|0.185|0.08150|-0.1180|\n\n所有力度均为单次接触、负回弹，最大机械能比均为 `1.0`。但是接触时长保持在约 `7.71–7.80 ms`，与真实钢琴通常随力度上升而缩短的行为不符。"
+      },
+      {
+        "id": "scope",
+        "type": "markdown",
+        "body": "## 数据、评分与选择规则\n\n目标为同一 C4、同一 Pianoteq 录音链的 MIDI `50/65/80/95/110` 五个 WAV。13 个频率从 MIDI 80 测量一次并固定；只允许目标与基线都达到 `SNR ≥ 0 dB` 的模态参与评分。候选响应来自 hammer force 投影到无损、无色散理想弦。每个力度相对 MIDI 80 计算逐模态增益，再删除一个常量增益偏置后汇总 shape RMSE。"
+      },
+      {
+        "id": "method",
+        "type": "markdown",
+        "sourceId": "winner_source",
+        "body": "## 搜索方法与稳健性检查\n\n搜索包括确定性锚点与单因素扫描、`2,500` 组无 SciPy 依赖的拉丁超立方，以及围绕 30 个低误差/近门禁/最短负回弹种子的 `4,500` 组局部精炼。每个候选都在五个力度运行现有能量门禁、force analyzer 与 paired modal benchmark。写回后重新编译并仅使用代码默认值复现全部五个 force log，RMSE 与搜索结果逐位一致。"
+      },
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "body": "## 限制与验证结论：Share with caveats\n\n- 没有候选通过完整 `1.2–3.5 ms` 接触时长门禁；写入的是具有完整回弹曲线的最低 RMSE 候选，而不是物理全合格候选。\n- 目标是 Pianoteq 麦克风输出，不是实测 hammer force 或弦速度；paired 方法只能抵消固定传递函数，不能把目标变成绝对材料测量。\n- 每个 MIDI 力度只有一个目标文件，无法估计击次方差。\n- `p=1.5` 和 hardness 接近搜索边界；继续放宽范围可能降低分数，但物理可解释性会更弱。\n- 本次结论只针对 C4 和当前修复后的 StringModel。"
+      },
+      {
+        "id": "next",
+        "type": "markdown",
+        "body": "## 推荐下一步\n\n保留本次写入参数作为当前最佳声学基线，不再通过继续扩大四参数范围追求虚假收敛。下一阶段应把“为什么完整负回弹总在约 7.8 ms”作为独立模型问题：先验证接触点返回波与位移状态，再决定是否需要升级为 Chabassier 型能量一致接触模型。任何结构修改都应与本报告基线进行同一五力度回归。"
+      },
+      {
+        "id": "questions",
+        "type": "markdown",
+        "body": "## 后续需要回答的问题\n\n1. 约 `7.8 ms` 的平台是否由接触状态历史、固定端返回波，还是 Stulov 单松弛支路本身造成？\n2. 使用真实钢琴 C4 的锤速与弦速度测量后，当前 `velocity_scale=1.546` 是否仍成立？\n3. MIDI 110 的剩余非线性误差是否需要第二松弛时间，还是目标录音链在高力度下并非完全固定？"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-07-28T11:42:01.563268+00:00",
+    "status": "ready",
+    "datasets": {
+      "headline": [
+        {
+          "paired_rmse_db": 1.126574466009547,
+          "previous_rmse_db": 2.2851614361586776,
+          "rmse_reduction_percent": 50.700442945365744,
+          "midi80_contact_duration_ms": 7.7777777777777795,
+          "maximum_energy_ratio": 1.0,
+          "candidate_count": 7051
+        }
+      ],
+      "target_modal": [
+        {
+          "mode": 1,
+          "frequency_hz": 261.5952780690596,
+          "energy_percent": 63.60673423882325,
+          "relative_db": 0.0
+        },
+        {
+          "mode": 2,
+          "frequency_hz": 523.1834479594987,
+          "energy_percent": 13.44637646839514,
+          "relative_db": -6.74897831802358
+        },
+        {
+          "mode": 3,
+          "frequency_hz": 785.3578940749138,
+          "energy_percent": 2.411576400984436,
+          "relative_db": -14.21202072833948
+        },
+        {
+          "mode": 4,
+          "frequency_hz": 1048.6238450988235,
+          "energy_percent": 5.701210908231637,
+          "relative_db": -10.475359907518719
+        },
+        {
+          "mode": 5,
+          "frequency_hz": 1312.864491664852,
+          "energy_percent": 4.976405975712253,
+          "relative_db": -11.065872952465073
+        },
+        {
+          "mode": 6,
+          "frequency_hz": 1578.4302179495207,
+          "energy_percent": 7.858426593128427,
+          "relative_db": -9.081674974576222
+        },
+        {
+          "mode": 7,
+          "frequency_hz": 1845.7308066504609,
+          "energy_percent": 1.4121018170450004,
+          "relative_db": -16.536370863009978
+        },
+        {
+          "mode": 8,
+          "frequency_hz": 2114.8239017056167,
+          "energy_percent": 0.06506934685685155,
+          "relative_db": -29.90126650702177
+        },
+        {
+          "mode": 9,
+          "frequency_hz": 2386.0665408236573,
+          "energy_percent": 0.2823668248386609,
+          "relative_db": -23.526894278649877
+        },
+        {
+          "mode": 10,
+          "frequency_hz": 2659.880663077636,
+          "energy_percent": 0.11969710663406104,
+          "relative_db": -27.254194455683024
+        },
+        {
+          "mode": 11,
+          "frequency_hz": 2936.5262638125855,
+          "energy_percent": 0.032050265148129566,
+          "relative_db": -32.976714714254925
+        },
+        {
+          "mode": 12,
+          "frequency_hz": 3215.6841610553674,
+          "energy_percent": 0.06332701174772708,
+          "relative_db": -30.01914102984236
+        },
+        {
+          "mode": 13,
+          "frequency_hz": 3498.7529366765953,
+          "energy_percent": 0.024657042454418045,
+          "relative_db": -34.115621152284625
+        }
+      ],
+      "current_modal": [
+        {
+          "mode": 1,
+          "frequency_hz": 261.5952780690596,
+          "energy_percent": 74.95048472203165,
+          "relative_db": 0.0
+        },
+        {
+          "mode": 2,
+          "frequency_hz": 523.1834479594987,
+          "energy_percent": 11.101613395148599,
+          "relative_db": -8.293883465762596
+        },
+        {
+          "mode": 3,
+          "frequency_hz": 785.3578940749138,
+          "energy_percent": 5.721366362482193,
+          "relative_db": -11.17274687568186
+        },
+        {
+          "mode": 4,
+          "frequency_hz": 1048.6238450988235,
+          "energy_percent": 2.711272677423249,
+          "relative_db": -14.4160124834501
+        },
+        {
+          "mode": 5,
+          "frequency_hz": 1312.864491664852,
+          "energy_percent": 1.1562771781247518,
+          "relative_db": -18.117124919808457
+        },
+        {
+          "mode": 6,
+          "frequency_hz": 1578.4302179495207,
+          "energy_percent": 1.102286413275631,
+          "relative_db": -18.324799915200625
+        },
+        {
+          "mode": 7,
+          "frequency_hz": 1845.7308066504609,
+          "energy_percent": 1.5131159030359482,
+          "relative_db": -16.949022500924283
+        },
+        {
+          "mode": 8,
+          "frequency_hz": 2114.8239017056167,
+          "energy_percent": 0.4635472590380391,
+          "relative_db": -22.08680428445554
+        },
+        {
+          "mode": 9,
+          "frequency_hz": 2386.0665408236573,
+          "energy_percent": 0.021181739655358172,
+          "relative_db": -35.48812820052513
+        },
+        {
+          "mode": 10,
+          "frequency_hz": 2659.880663077636,
+          "energy_percent": 0.03176396189269771,
+          "relative_db": -33.72839779550591
+        },
+        {
+          "mode": 11,
+          "frequency_hz": 2936.5262638125855,
+          "energy_percent": 0.21012274834071687,
+          "relative_db": -25.52301373269685
+        },
+        {
+          "mode": 12,
+          "frequency_hz": 3215.6841610553674,
+          "energy_percent": 0.48567850413957964,
+          "relative_db": -21.884255636095183
+        },
+        {
+          "mode": 13,
+          "frequency_hz": 3498.7529366765953,
+          "energy_percent": 0.5312891354116015,
+          "relative_db": -21.49443510973022
+        }
+      ],
+      "residual": [
+        {
+          "mode": 1,
+          "frequency_hz": 261.5952780690596,
+          "current_minus_target_db": 0.0
+        },
+        {
+          "mode": 2,
+          "frequency_hz": 523.1834479594987,
+          "current_minus_target_db": -1.5449051477390157
+        },
+        {
+          "mode": 3,
+          "frequency_hz": 785.3578940749138,
+          "current_minus_target_db": 3.0392738526576206
+        },
+        {
+          "mode": 4,
+          "frequency_hz": 1048.6238450988235,
+          "current_minus_target_db": -3.940652575931381
+        },
+        {
+          "mode": 5,
+          "frequency_hz": 1312.864491664852,
+          "current_minus_target_db": -7.051251967343385
+        },
+        {
+          "mode": 6,
+          "frequency_hz": 1578.4302179495207,
+          "current_minus_target_db": -9.243124940624403
+        },
+        {
+          "mode": 7,
+          "frequency_hz": 1845.7308066504609,
+          "current_minus_target_db": -0.4126516379143048
+        },
+        {
+          "mode": 8,
+          "frequency_hz": 2114.8239017056167,
+          "current_minus_target_db": 7.814462222566231
+        },
+        {
+          "mode": 9,
+          "frequency_hz": 2386.0665408236573,
+          "current_minus_target_db": -11.961233921875255
+        },
+        {
+          "mode": 10,
+          "frequency_hz": 2659.880663077636,
+          "current_minus_target_db": -6.474203339822889
+        },
+        {
+          "mode": 11,
+          "frequency_hz": 2936.5262638125855,
+          "current_minus_target_db": 7.453700981558075
+        },
+        {
+          "mode": 12,
+          "frequency_hz": 3215.6841610553674,
+          "current_minus_target_db": 8.134885393747176
+        },
+        {
+          "mode": 13,
+          "frequency_hz": 3498.7529366765953,
+          "current_minus_target_db": 12.621186042554406
+        }
+      ],
+      "per_velocity": [
+        {
+          "midi_velocity": 50,
+          "velocity_m_s": 0.8072183648066608,
+          "valid_mode_count": 6,
+          "gain_offset_db": 3.304985159650463,
+          "shape_rmse_db": 1.1680022323282315,
+          "raw_level_rmse_db": 3.730771412338746,
+          "median_absolute_shape_error_db": 0.8773676509543071,
+          "percentile_90_shape_error_db": 1.6727238483952147,
+          "candidate_projection_energy_over_incident": 0.008159256392289848
+        },
+        {
+          "midi_velocity": 65,
+          "velocity_m_s": 1.106749721551205,
+          "valid_mode_count": 7,
+          "gain_offset_db": 2.1056608875296696,
+          "shape_rmse_db": 0.47674598625545167,
+          "raw_level_rmse_db": 2.299523858081412,
+          "median_absolute_shape_error_db": 0.22605779228880452,
+          "percentile_90_shape_error_db": 0.6859624322211557,
+          "candidate_projection_energy_over_incident": 0.008250055416678156
+        },
+        {
+          "midi_velocity": 95,
+          "velocity_m_s": 2.666111600264876,
+          "valid_mode_count": 7,
+          "gain_offset_db": -3.150623607852826,
+          "shape_rmse_db": 0.5424231264692531,
+          "raw_level_rmse_db": 3.2257937077521452,
+          "median_absolute_shape_error_db": 0.4230592829560389,
+          "percentile_90_shape_error_db": 0.8705552764694454,
+          "candidate_projection_energy_over_incident": 0.008191748789575693
+        },
+        {
+          "midi_velocity": 110,
+          "velocity_m_s": 5.31723012667424,
+          "valid_mode_count": 7,
+          "gain_offset_db": -7.397307979819436,
+          "shape_rmse_db": 1.7901176485052137,
+          "raw_level_rmse_db": 7.8167832376649935,
+          "median_absolute_shape_error_db": 0.6786912613909326,
+          "percentile_90_shape_error_db": 2.855163575622937,
+          "candidate_projection_energy_over_incident": 0.008005711713918388
+        }
+      ],
+      "force": [
+        {
+          "midi_velocity": 50,
+          "impact_velocity_m_s": 0.8072183648066608,
+          "contact_duration_ms": 7.800453500000001,
+          "maximum_force_N": 3.1978782,
+          "peak_position_ratio": 0.20754717,
+          "rise_fall_ratio": 0.26190476,
+          "impulse_Ns": 0.012638525,
+          "contact_event_count": 1,
+          "rebound_velocity_m_s": -0.0354507770987,
+          "maximum_energy_ratio": 1.0
+        },
+        {
+          "midi_velocity": 65,
+          "impact_velocity_m_s": 1.106749721551205,
+          "contact_duration_ms": 7.7777778,
+          "maximum_force_N": 4.4091103,
+          "peak_position_ratio": 0.2027027,
+          "rise_fall_ratio": 0.25423729,
+          "impulse_Ns": 0.017244755,
+          "contact_event_count": 1,
+          "rebound_velocity_m_s": -0.0430614891299,
+          "maximum_energy_ratio": 1.0
+        },
+        {
+          "midi_velocity": 80,
+          "impact_velocity_m_s": 1.6266395205247568,
+          "contact_duration_ms": 7.7777778,
+          "maximum_force_N": 6.5179598,
+          "peak_position_ratio": 0.19783198,
+          "rise_fall_ratio": 0.24662162,
+          "impulse_Ns": 0.025216843,
+          "contact_event_count": 1,
+          "rebound_velocity_m_s": -0.0547669603949,
+          "maximum_energy_ratio": 1.0
+        },
+        {
+          "midi_velocity": 95,
+          "impact_velocity_m_s": 2.666111600264876,
+          "contact_duration_ms": 7.755102,
+          "maximum_force_N": 10.747272,
+          "peak_position_ratio": 0.19346049,
+          "rise_fall_ratio": 0.23986486,
+          "impulse_Ns": 0.041108081,
+          "contact_event_count": 1,
+          "rebound_velocity_m_s": -0.0750253714859,
+          "maximum_energy_ratio": 1.0
+        },
+        {
+          "midi_velocity": 110,
+          "impact_velocity_m_s": 5.31723012667424,
+          "contact_duration_ms": 7.7097506,
+          "maximum_force_N": 21.610931,
+          "peak_position_ratio": 0.15616438,
+          "rise_fall_ratio": 0.18506494,
+          "impulse_Ns": 0.081502895,
+          "contact_event_count": 1,
+          "rebound_velocity_m_s": -0.117964330241,
+          "maximum_energy_ratio": 1.0
+        }
+      ]
+    },
+    "accessIssues": []
+  },
+  "sources": [
+    {
+      "id": "winner_source",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('search_refined_snr0/winner.json');",
+        "description": "Selected candidate and search metadata after 7,051 evaluations.",
+        "executed_at": "2026-07-28T11:42:01.565606+00:00",
+        "tables_used": [
+          "search_refined_snr0/winner.json"
+        ],
+        "filters": [
+          "minimum target modal SNR >= 0 dB",
+          "five paired C4 velocities"
+        ]
+      }
+    },
+    {
+      "id": "paired_source",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('written_winner_validation/paired_score/paired_velocity_benchmark.csv');",
+        "description": "Transfer-cancelled five-velocity modal-shape benchmark.",
+        "executed_at": "2026-07-28T11:42:01.565611+00:00",
+        "tables_used": [
+          "written_winner_validation/paired_score/paired_velocity_benchmark.csv"
+        ],
+        "filters": [
+          "MIDI 80 is the baseline",
+          "measured modal frequencies",
+          "minimum target modal SNR >= 0 dB"
+        ]
+      }
+    },
+    {
+      "id": "modal_source",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('written_winner_validation/single_v80_target/modal_fingerprint.csv');",
+        "description": "MIDI-80 target and written-winner modal-energy proxies.",
+        "executed_at": "2026-07-28T11:42:01.565612+00:00",
+        "tables_used": [
+          "written_winner_validation/single_v80_target/modal_fingerprint.csv"
+        ],
+        "filters": [
+          "100 ms target window",
+          "13 measured C4 modes"
+        ]
+      }
+    },
+    {
+      "id": "force_source",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('written_winner_validation/force_metrics.csv');",
+        "description": "Force-curve and energy-guard metrics regenerated from the parameters written into the source code.",
+        "executed_at": "2026-07-28T11:42:01.565613+00:00",
+        "tables_used": [
+          "written_winner_validation/force_metrics.csv"
+        ],
+        "filters": [
+          "MIDI velocities 50, 65, 80, 95, and 110"
+        ]
+      }
+    }
+  ]
+}

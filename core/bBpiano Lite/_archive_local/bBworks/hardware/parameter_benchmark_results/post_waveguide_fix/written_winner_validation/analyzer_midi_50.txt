@@ -1,0 +1,19 @@
+
+=== Hammer Contact Analysis ===
+Fmax_N                   : 3.1978782
+t_peak_s                 : 0.0017687075
+peak_position_ratio      : 0.20754717
+contact_span_s           : 0.0084126984
+contact_duration_s       : 0.0078004535
+half_max_duration_s      : 0.0039229025
+rise_time_s              : 0.0017460317
+fall_time_s              : 0.0066666667
+rise_fall_ratio          : 0.26190476
+impulse_Ns               : 0.012638525
+loading_impulse_fraction : 0.32603313
+unloading_impulse_fraction: 0.67396687
+force_centroid_ratio     : 0.31751818
+sample_count             : 372
+max_rise_slope           : 6678.5398
+max_fall_slope           : -2818.3208
+contact_event_count      : 1
