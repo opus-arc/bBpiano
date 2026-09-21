@@ -1,0 +1,61 @@
+{
+  "winner": {
+    "index": 282,
+    "label": "refine_00_009",
+    "stage": "refinement",
+    "hardness": 300.0000000000001,
+    "p": 3.087775852197242,
+    "epsilon": 0.99272169873901,
+    "tau0_s": 9.723816821461994e-06,
+    "linear_density_kg_m": 0.006641261422830414,
+    "tension_N": 768.2438338603976,
+    "velocity_scale": 0.8838920072826142,
+    "midi80_velocity_m_s": 0.9299750652857472,
+    "status": "PASS",
+    "paired_shape_rmse_db": 4.007095966315444,
+    "median_abs_shape_error_db": 2.315332524298741,
+    "p90_abs_shape_error_db": 6.336499736925331,
+    "force_curve_gate_pass": true,
+    "midi80_contact_duration_ms": 2.789115646258503,
+    "midi80_contact_span_ms": 3.0839002267573687,
+    "midi80_Fmax_N": 10.1770513803278,
+    "midi80_peak_position": 1.0,
+    "midi80_impulse_Ns": 0.008346137558290563,
+    "midi80_rise_fall_ratio": Infinity,
+    "midi80_rebound_velocity_m_s": 0.365872896538,
+    "max_energy_ratio": 1.0
+  },
+  "candidate_count": 453,
+  "passing_candidate_count": 164,
+  "minimum_snr_db": -20.0,
+  "mode_count": 13,
+  "modal_frequencies_hz": [
+    261.5952780758935,
+    523.1834479961433,
+    785.357894081139,
+    1048.623845097757,
+    1312.8644916080107,
+    1578.4302179713518,
+    1845.730806584671,
+    2114.8239020411793,
+    2386.0665409687786,
+    2659.8806630809027,
+    2936.5262637408955,
+    3215.6841613424413,
+    3498.7529374009355
+  ],
+  "goebl_velocity_m_s": {
+    "50": 0.5221217822340614,
+    "65": 0.7158634668102116,
+    "80": 1.052136525303366,
+    "95": 1.7244837345822932,
+    "110": 3.439269708578476
+  },
+  "target_wavs": {
+    "50": "/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Old Version/3/v50/C4_take01_v50.wav",
+    "65": "/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Old Version/3/v65/C4_take02_v65.wav",
+    "80": "/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Old Version/3/v80/C4_take03_v80.wav",
+    "95": "/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Old Version/3/v95/C4_take04_v95.wav",
+    "110": "/Users/opusarc/Projects/XCodeProjects/bBpiano/AcousticLab/StringFilterLab/Samples/Pianoteq 9/SingleNoteSamples/Old Version/3/v110/C4_take05_v110.wav"
+  }
+}

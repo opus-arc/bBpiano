@@ -12,7 +12,7 @@ jobs:
     runs-on: macos-26
 
     env:
-      BBPL_PROJECT: "Cli/bBpiano Lite/bbpl.xcodeproj"
+      BBPL_PROJECT: "core/bBpiano Lite/bbpl.xcodeproj"
       BBPL_SCHEME: "bbpl"
 
       # GitHub Actions runners are used for regression tracking,

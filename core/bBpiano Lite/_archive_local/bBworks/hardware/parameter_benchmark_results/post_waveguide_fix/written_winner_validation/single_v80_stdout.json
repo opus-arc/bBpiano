@@ -1,0 +1,28 @@
+{
+  "candidate_domain": "force_modal_energy",
+  "candidate_total_modal_energy_J": 0.00016409756925110126,
+  "candidate_incident_hammer_energy_J": 0.019844670972997577,
+  "candidate_projection_energy_over_incident": 0.008269100025613275,
+  "closed_system_energy_budget_applicable": false,
+  "energy_identity_max_relative_error": 4.682779421682334e-16,
+  "self_test": null,
+  "target_domain": "microphone_partial_power_proxy",
+  "distance": {
+    "valid_mode_count": 13,
+    "sqrt_jensen_shannon_distance": 0.2221098165564262,
+    "modal_similarity_score_0_100": 77.78901834435739,
+    "total_variation_distance": 0.162600885114199,
+    "log_energy_rmse_db": 7.283062838373927,
+    "candidate_energy_centroid_mode": 1.674127213909008,
+    "target_energy_centroid_mode": 2.0814820804239313,
+    "centroid_error_modes": -0.40735486651492336,
+    "comparison_is_physical_hammer_only": false
+  },
+  "outputs": {
+    "json": "hardware/parameter_benchmark_results/post_waveguide_fix/written_winner_validation/single_v80_target/modal_fingerprint.json",
+    "csv": "hardware/parameter_benchmark_results/post_waveguide_fix/written_winner_validation/single_v80_target/modal_fingerprint.csv",
+    "plot": null
+  }
+}
+
+WARNING: microphone comparison is a reproducible acoustic proxy, not an absolute hammer-only physical distance. Soundboard, microphone, room, and radiation transfer remain inside the target recording.
