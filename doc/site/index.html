@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+                <meta name="theme-color" content="#101112">
+                    <title>bbpl — 余响</title>
+                    <meta name="description" content="聆听 bBpiano 不同版本的声音与演奏差异。">
+                        <link rel="preload" as="image" href="assets/photos/night.jpeg">
+                            <link rel="stylesheet" href="css/style.css">
+                                <script src="js/script.js" defer></script>
+    </head>
+    <body>
+        <a class="skip" href="#frames">跳至照片</a>
+        <main class="folio" data-frame="0">
+            <div class="photographs" id="photographs" aria-live="off">
+                <figure class="frame frame-night is-active" data-person="ziyang" data-caption="窗外伸手" aria-hidden="false"><img src="assets/photos/night.jpeg" alt="Ziyang Tan 的手伸向夜车窗外，灯光在移动中模糊。" width="1152" height="1536" fetchpriority="high"></figure>
+                <figure class="frame frame-sunglasses" data-person="ziyang" data-caption="墨镜" aria-hidden="true" inert><img src="assets/photos/sunglasses.jpeg" alt="Ziyang Tan 戴着墨镜坐在餐桌旁。" width="1013" height="1013" decoding="async"></figure>
+                <figure class="frame frame-disc" data-person="ziyang" data-caption="手持光碟" aria-hidden="true" inert><img src="assets/photos/disc.jpeg" alt="Ziyang Tan 在木质吧台前手持光碟。" width="960" height="960" decoding="async"></figure>
+                <figure class="frame frame-room" data-person="zhuoran" data-caption="椅子上的停顿" aria-hidden="true" inert><img src="assets/photos/room.jpeg" alt="Zhuoran Chen 靠在窗边的椅子上，桌上放着电脑。" width="1536" height="1152" decoding="async"></figure>
+                <figure class="frame frame-phone" data-person="zhuoran" data-caption="车内通话" aria-hidden="true" inert><img src="assets/photos/phone.jpeg" alt="Zhuoran Chen 在车内打电话的黑白照片。" width="1279" height="1706" decoding="async"></figure>
+                <figure class="frame frame-lake" data-person="zhuoran" data-caption="湖边蓝色 Polo 衫" aria-hidden="true" inert><img src="assets/photos/lake.jpeg" alt="Zhuoran Chen 穿蓝色 Polo 衫站在湖边。" width="1440" height="960" decoding="async"></figure>
+                <figure class="frame frame-sol" data-person="sol" data-caption="非肖像：研究辅助系统" aria-hidden="true" inert><div class="sol-mark" aria-hidden="true"><span>03</span><strong>SOL</strong><em>research assistance</em></div></figure>
+            </div>
+            <header class="masthead">
+                <span class="edition">bBSonicLab</span>
+                <nav class="main-nav" aria-label="主导航"><a href="#sound" data-open="sound">声音 <span lang="en">Sound</span></a><a href="#about" data-open="about">关于 <span lang="en">About</span></a></nav>
+            </header>
+            <h1 class="wordmark" aria-label="bBpiano Lite">bbpl</h1>
+            <div class="folio-note creator-details"><span id="creator-name">Ziyang Tan</span><span id="creator-role">设计、架构与开发</span><span id="creator-credit" lang="en">Design, Architecture &amp; Development</span></div>
+            <footer class="folio-footer">
+                <div class="imprint"><span>余响</span><span class="year">2026</span></div>
+                <nav class="frame-nav" id="frames" aria-label="人物与照片" tabindex="-1">
+                    <div class="creator-numbers">
+                        <button class="creator-number" data-creator="ziyang" aria-label="01 Ziyang Tan：设计、架构与开发" aria-controls="photographs" aria-current="true"><span>01</span> Ziyang Tan</button>
+                        <button class="creator-number" data-creator="zhuoran" aria-label="02 Zhuoran Chen：特别致谢，讨论与灵感" aria-controls="photographs"><span>02</span> Zhuoran Chen</button>
+                        <button class="creator-number" data-creator="sol" aria-label="03 ChatGPT 5.6 Sol：研究与工程辅助" aria-controls="photographs"><span>03</span> ChatGPT 5.6 Sol</button>
+                    </div>
+                    <div class="photo-navigation"><span id="photo-count" aria-label="当前人物的第 1 幅画面，共 3 幅">1 / 3</span><div class="frame-arrows"><button id="previous" aria-label="Ziyang Tan 的上一幅画面">←</button><button id="next" aria-label="Ziyang Tan 的下一幅画面">→</button></div></div>
+                </nav>
+            </footer>
+            <p class="sr-only" id="frame-status" role="status">Ziyang Tan，设计、架构与开发。画面 1，共 3 幅：窗外伸手</p>
+        </main>
+        <dialog id="sound" class="panel sound-panel" aria-labelledby="sound-title">
+            <div class="panel-top"><span>bbpl / 声音</span><button class="close" data-close aria-label="关闭声音页面">关闭 <span aria-hidden="true">×</span></button></div>
+            <div class="sound-layout">
+                <figure class="sound-photo"><img src="assets/photos/disc.jpeg" alt="Ziyang Tan 手持光碟。" width="960" height="960"><figcaption>Ziyang Tan</figcaption></figure>
+                <div class="sound-content">
+                    <p class="section-label" id="track-engine">01 / bBpiano L1-Clavier</p>
+                    <h2 id="sound-title" lang="en"><span id="track-composer">Mozart</span><span id="track-work">K. 576</span></h2>
+                    <p class="track-note"><span id="track-name">D Major Sonata · I. Allegro</span><br><span id="track-mode">L1-Clavier</span></p>
+                    <audio id="audio" preload="metadata" src="audio/l1-clavier-k576-on.mp3"></audio>
+                    <div class="player"><button id="play" aria-label="播放 Mozart K.576，L1-Clavier"><span id="play-icon" aria-hidden="true">▶</span><span id="play-label">播放</span></button><div class="timeline"><input id="seek" type="range" min="0" max="100" step="0.1" value="0" aria-label="播放进度"><div class="timestamps"><span id="time">0:00</span><span id="duration">—:—</span></div></div></div>
+                    <p id="audio-status" class="audio-status" aria-live="polite">bBpiano L1-Clavier</p>
+                    <div class="track-list" aria-label="试听曲目">
+                        <button class="track-option" type="button" aria-pressed="true" data-src="audio/l1-clavier-k576-on.mp3" data-engine="01 / bBpiano L1-Clavier" data-composer="Mozart" data-work="K. 576" data-name="D Major Sonata · I. Allegro" data-mode="L1-Clavier"><span>01</span><strong>K.576</strong><em>L1-Clavier</em></button>
+                        <button class="track-option" type="button" aria-pressed="false" data-src="audio/l1-clavier-bwv874-on.mp3" data-engine="02 / bBpiano L1-Clavier" data-composer="Bach" data-work="BWV 874" data-name="Prelude and Fugue in D Major" data-mode="L1-Clavier"><span>02</span><strong>BWV 874</strong><em>L1-Clavier</em></button>
+                        <button class="track-option" type="button" aria-pressed="false" data-src="audio/l0-100c-op101.mp3" data-engine="03 / bBpiano L0-100c" data-composer="Beethoven" data-work="Op. 101" data-name="第 28 钢琴奏鸣曲" data-mode="L0-100c"><span>03</span><strong>Op.101</strong><em>L0-100c</em></button>
+                        <button class="track-option" type="button" aria-pressed="false" data-src="audio/l0-beta-k141.mp3" data-engine="04 / bBpiano L0-beta" data-composer="Scarlatti" data-work="K. 141" data-name="Sonata in D Minor" data-mode="L0-beta"><span>04</span><strong>K.141</strong><em>L0-beta</em></button>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-bottom"><span>bBSonicLab</span><a href="https://github.com/opus-arc/bBpiano" target="_blank" rel="noopener">项目档案 ↗</a></div>
+        </dialog>
+        <dialog id="about" class="panel about-panel" aria-labelledby="about-title">
+            <div class="panel-top"><span>bbpl / 关于</span><button class="close" data-close aria-label="关闭关于页面">关闭 <span aria-hidden="true">×</span></button></div>
+            <div class="about-layout"><div class="about-identity"><h2 id="about-title" class="sr-only">关于 bBpiano Lite</h2><img src="assets/identity/bbsoniclab.png" alt="bBSonicLab 原始标识：金色击弦机结构图、Physical Modeling 与 bBpiano 字样。" width="1536" height="1024"></div><div class="about-copy"><p>bbpl，bBpiano Lite。<br>一架用数学与程序构建的钢琴。</p><dl class="credits"><div><dt>Ziyang Tan</dt><dd>设计、架构与开发<br><span lang="en">Design, Architecture &amp; Development</span></dd></div><div><dt>Zhuoran Chen</dt><dd>特别致谢 · 讨论与灵感<br><span lang="en">With Special Thanks<br>For the conversations and inspiration</span></dd></div><div class="credit-assistant"><dt>ChatGPT 5.6 Sol</dt><dd>研究与工程辅助<br>数据分析、论文指导、代码审阅及修改建议<br><span lang="en">Research &amp; Engineering Assistance<br>Data analysis, academic guidance, code review and revision proposals</span></dd></div></dl><p class="bluebird" lang="en">bB / bluebird</p><div class="about-links"><a href="https://github.com/opus-arc/bBpiano" target="_blank" rel="noopener">代码 <span>GitHub ↗</span></a><a href="research/" target="_blank" rel="noopener">研究 <span>Research ↗</span></a></div></div></div>
+            <div class="panel-bottom"><span>bBSonicLab · bBpiano Lite</span><a href="https://github.com/opus-arc/bBpiano/blob/main/LICENSE" target="_blank" rel="noopener">bBpiano CLI Use and Extension License 1.1 ↗</a></div>
+        </dialog>
+        <noscript><style>.frame-nav{display:none}.panel{display:block;position:relative;width:100%;height:auto;min-height:100svh}.close{
+            display:none
+        }</style></noscript>
+    </body>
+</html>
