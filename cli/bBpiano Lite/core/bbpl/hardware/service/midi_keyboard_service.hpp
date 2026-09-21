@@ -9,14 +9,14 @@
 #include "midi_inputhub_service.hpp"
 
 class MidiKeyboard {
- public:
-  explicit MidiKeyboard(MidiInputHub& input_hub) noexcept
+public:
+  explicit MidiKeyboard(MidiInputHub &input_hub) noexcept
       : input_hub_(input_hub) {}
 
-  MidiKeyboard(const MidiKeyboard&) = delete;
-//  MidiKeyboard& operator=(const MidiKeyboard&) = delete;
-  MidiKeyboard(MidiKeyboard&&) = delete;
-  MidiKeyboard& operator=(MidiKeyboard&&) = delete;
+  MidiKeyboard(const MidiKeyboard &) = delete;
+  //  MidiKeyboard& operator=(const MidiKeyboard&) = delete;
+  MidiKeyboard(MidiKeyboard &&) = delete;
+  MidiKeyboard &operator=(MidiKeyboard &&) = delete;
 
   ~MidiKeyboard() { stop(); }
 
@@ -33,15 +33,14 @@ class MidiKeyboard {
     if (!subscription_) {
       return;
     }
-    subscription_
-        ->reset();  // Synchronizes with an in-flight CoreMIDI callback.
+    subscription_->reset(); // Synchronizes with an in-flight CoreMIDI callback.
     subscription_.reset();
     reset_engine_state();
   }
 
   bool is_running() const noexcept { return subscription_.has_value(); }
 
- private:
+private:
   static bool is_playable_note(std::uint8_t note) noexcept {
     return note >= 21 && note <= 108;
   }
@@ -70,26 +69,28 @@ class MidiKeyboard {
     }
 
     if (type != 0xB0 || message.size() < 3) {
+
       return;
     }
 
     const double depth =
         std::clamp(static_cast<double>(message[2]) / 127.0, 0.0, 1.0);
+
     switch (message[1]) {
-      case MidiInputHub::k_sustain_pedal_controller:
-        sustainpedal_control(depth);
-        break;
-      case MidiInputHub::k_sostenuto_pedal_controller:
-        sostenutopedal_control(depth);
-        break;
-      case MidiInputHub::k_soft_pedal_controller:
-        softpedal_control(depth);
-        break;
-      case MidiInputHub::k_harmonic_pedal_controller:
-        harmonicpedal_control(depth);
-        break;
-      default:
-        break;
+    case MidiInputHub::k_sustain_pedal_controller:
+      sustainpedal_control(depth);
+      break;
+    case MidiInputHub::k_sostenuto_pedal_controller:
+      sostenutopedal_control(depth);
+      break;
+    case MidiInputHub::k_soft_pedal_controller:
+      softpedal_control(depth);
+      break;
+    case MidiInputHub::k_harmonic_pedal_controller:
+      harmonicpedal_control(depth);
+      break;
+    default:
+      break;
     }
   }
 
@@ -102,7 +103,7 @@ class MidiKeyboard {
     all_silence();
   }
 
-  MidiInputHub& input_hub_;
+  MidiInputHub &input_hub_;
   std::optional<MidiInputHub::Subscription> subscription_;
 };
 
