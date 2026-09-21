@@ -1,0 +1,26 @@
+[
+  {
+    "label": "bbpl: Build",
+    "command": "./.zed/scripts/build.sh",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+  },
+  {
+    "label": "bbpl: Run",
+    "command": "./.zed/scripts/run.sh",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+  },
+  {
+    "label": "bbpl: Produce",
+    "command": "./.zed/scripts/produce.sh",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+  },
+  {
+    "label": "bbpl: Clear",
+    "command": "./.zed/scripts/clear.sh",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+  },
+]
