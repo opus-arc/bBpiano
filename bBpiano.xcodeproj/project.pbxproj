@@ -27,10 +27,10 @@
 		142C18C72FD52A3C00685F41 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		142C18C92FD52A8600685F41 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		146587D62FA42DAF009F5C08 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		1473E6F530612B1A007D2301 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
+		1473EC7B30612B1A007D2301 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
+		1473EFDA30612B1A007D2301 /* bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bbpl.xcodeproj; sourceTree = "<group>"; };
 		147D713E2FD6F9D7008F3BF8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		14AE2DA13061206D00EB83C7 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
-		14AE33273061206D00EB83C7 /* bBpiano.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bBpiano.xcodeproj; sourceTree = "<group>"; };
-		14AE36863061206D00EB83C7 /* bbpl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = bbpl.xcodeproj; sourceTree = "<group>"; };
 		14E708362F78BE0C005C806C /* bBpiano.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bBpiano.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -269,21 +269,21 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		14AE39873061206D00EB83C7 /* Products */ = {
+		1473F2C930612B1A007D2301 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		14AE39893061206D00EB83C7 /* Products */ = {
+		1473F2CB30612B1A007D2301 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		14AE398B3061206D00EB83C7 /* Products */ = {
+		1473F2CD30612B1A007D2301 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -364,16 +364,16 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 14AE39873061206D00EB83C7 /* Products */;
-					ProjectRef = 14AE33273061206D00EB83C7 /* bBpiano.xcodeproj */;
+					ProductGroup = 1473F2CB30612B1A007D2301 /* Products */;
+					ProjectRef = 1473E6F530612B1A007D2301 /* bBpiano.xcodeproj */;
 				},
 				{
-					ProductGroup = 14AE39893061206D00EB83C7 /* Products */;
-					ProjectRef = 14AE2DA13061206D00EB83C7 /* bBpiano.xcodeproj */;
+					ProductGroup = 1473F2CD30612B1A007D2301 /* Products */;
+					ProjectRef = 1473EC7B30612B1A007D2301 /* bBpiano.xcodeproj */;
 				},
 				{
-					ProductGroup = 14AE398B3061206D00EB83C7 /* Products */;
-					ProjectRef = 14AE36863061206D00EB83C7 /* bbpl.xcodeproj */;
+					ProductGroup = 1473F2C930612B1A007D2301 /* Products */;
+					ProjectRef = 1473EFDA30612B1A007D2301 /* bbpl.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -551,6 +551,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/app/bbpl_SDK/lib",
 					"$(PROJECT_DIR)/cli/bBpiano\\ Lite/build/bbpl_SDK/lib",
+					"$(PROJECT_DIR)/core/bBpiano\\ Lite/build/bbpl_SDK/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 27.0;
 				MARKETING_VERSION = "L1-Clavier";
@@ -597,6 +598,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/app/bbpl_SDK/lib",
 					"$(PROJECT_DIR)/cli/bBpiano\\ Lite/build/bbpl_SDK/lib",
+					"$(PROJECT_DIR)/core/bBpiano\\ Lite/build/bbpl_SDK/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 27.0;
 				MARKETING_VERSION = "L1-Clavier";
