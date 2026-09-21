@@ -1,12 +1,12 @@
 // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 // [ZERO AI-GENERATED CODE]
-// Every line in this file is written and understood by its author. Every result is
-// reproducible, every assumption is open to inspection, and every implementation
-// stands open to criticism and challenge.
-// AI may be used for non-core, replaceable, engineering work;
-// this file, however, contains core logic that the author considers
-// necessary to understand firsthand, explain line by line, and take full responsibility for,
-// and is therefore implemented entirely by hand.
+// Every line in this file is written and understood by its author. Every result
+// is reproducible, every assumption is open to inspection, and every
+// implementation stands open to criticism and challenge. AI may be used for
+// non-core, replaceable, engineering work; this file, however, contains core
+// logic that the author considers necessary to understand firsthand, explain
+// line by line, and take full responsibility for, and is therefore implemented
+// entirely by hand.
 // ---------------------------------------------------------------------------
 // [本文件承诺不含任何 AI 生成代码]
 // 每一行代码均由作者亲自编写，并确知其意义。一切结果可以复现，一切假设可经受检验，一切实现经得起批评与质疑。
@@ -20,6 +20,8 @@
 #ifndef cli_helper_hpp
 #define cli_helper_hpp
 
-int cli_helper(int argc, char* argv[], const char* version, const char* logo);
+#include <stop_token>
+int cli_helper(int argc, char *argv[], const char *version, const char *logo,
+               std::stop_token external_stop = {});
 
 #endif /* cli_helper_hpp */
