@@ -1,0 +1,21 @@
+delay: 84.2806, f0: 261.626, z: 2.29628
+status=PASS
+velocity_m_s=2.66611160026
+force_log="hardware/parameter_benchmark_results/post_waveguide_fix/written_winner_validation/force_midi_95.txt"
+positive_force_samples=368
+contact_span_s=0.00832199546485
+maximum_force_N=10.747271789
+force_impulse_Ns=0.0411170545763
+initial_hammer_energy_J=0.053311132988
+maximum_mechanical_energy_J=0.053311132988
+maximum_mechanical_energy_ratio=1
+string_energy_at_release_J=0.000481136840503
+string_energy_at_release_ratio=0.0090250725043
+final_hammer_energy_J=4.22160477495e-05
+final_string_energy_J=0.000458349246287
+rebound_velocity_m_s=-0.0750253714859
+physical_f0_hz=261.626
+configured_f0_hz=261.626
+f0_relative_error=0
+integer_spatial_port_pass=1
+strike_reset_position_error_m=0

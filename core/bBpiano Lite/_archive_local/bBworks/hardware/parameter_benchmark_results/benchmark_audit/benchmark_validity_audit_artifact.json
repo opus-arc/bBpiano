@@ -1,0 +1,773 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Hammer modal benchmark validity audit",
+    "description": "Audit of the bBworks hammer modal benchmark after restoring the pre-phase-1 contact model.",
+    "generatedAt": "2026-07-28T10:59:51.633465+00:00",
+    "cards": [
+      {
+        "id": "parity_gap",
+        "description": "Summed even-mode peak power relative to summed odd-mode peak power in the restored live StringModel output.",
+        "dataset": "headline",
+        "sourceId": "direct_source",
+        "metrics": [
+          {
+            "label": "Even / odd peak power",
+            "field": "even_odd_peak_power_db",
+            "format": "number",
+            "unit": "dB"
+          }
+        ]
+      },
+      {
+        "id": "estimator_error",
+        "description": "Largest per-mode difference between the target least-squares estimate and a conventional 100 ms FFT peak.",
+        "dataset": "headline",
+        "sourceId": "target_source",
+        "metrics": [
+          {
+            "label": "Max LS–FFT difference",
+            "field": "max_ls_fft_difference_db",
+            "format": "number",
+            "unit": "dB"
+          }
+        ]
+      },
+      {
+        "id": "condition",
+        "description": "Condition number of the target least-squares sinusoid design matrix; values near one are well separated.",
+        "dataset": "headline",
+        "sourceId": "target_source",
+        "metrics": [
+          {
+            "label": "LS condition number",
+            "field": "ls_condition_number",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "reliable_delta",
+        "description": "Phase-1 score minus restored score when only target modes with non-negative measured SNR are retained.",
+        "dataset": "headline",
+        "sourceId": "snr_source",
+        "metrics": [
+          {
+            "label": "Phase-1 penalty at SNR ≥ 0",
+            "field": "reliable_mode_phase1_delta_db",
+            "format": "number",
+            "unit": "dB"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "direct_modes",
+        "title": "Live StringModel output contains only the odd-harmonic sequence",
+        "subtitle": "Restored MIDI-80 direct output. Even-mode search bins are more than 105 dB below the summed odd-mode peaks.",
+        "type": "bar",
+        "dataset": "direct",
+        "sourceId": "direct_source",
+        "encodings": {
+          "x": {
+            "field": "mode",
+            "type": "quantitative",
+            "label": "Mode n"
+          },
+          "y": {
+            "field": "relative_peak_power_db",
+            "type": "quantitative",
+            "label": "Peak power relative to mode 1 (dB)"
+          },
+          "tooltip": [
+            {
+              "field": "mode",
+              "type": "quantitative",
+              "label": "Mode"
+            },
+            {
+              "field": "expected_frequency_hz",
+              "type": "quantitative",
+              "label": "Expected frequency (Hz)"
+            },
+            {
+              "field": "detected_peak_hz",
+              "type": "quantitative",
+              "label": "Detected peak (Hz)"
+            },
+            {
+              "field": "relative_peak_power_db",
+              "type": "quantitative",
+              "label": "Relative peak power (dB)"
+            }
+          ]
+        }
+      },
+      {
+        "id": "target_modes",
+        "title": "Target WAV modal levels are reproduced by an ordinary FFT",
+        "subtitle": "The displayed target pattern is present in the WAV itself; least-squares extraction does not create the dips.",
+        "type": "bar",
+        "dataset": "target",
+        "sourceId": "target_source",
+        "encodings": {
+          "x": {
+            "field": "mode",
+            "type": "quantitative",
+            "label": "Mode n"
+          },
+          "y": {
+            "field": "least_squares_100ms_db",
+            "type": "quantitative",
+            "label": "Target power relative to mode 1 (dB)"
+          },
+          "tooltip": [
+            {
+              "field": "mode",
+              "type": "quantitative",
+              "label": "Mode"
+            },
+            {
+              "field": "measured_frequency_hz",
+              "type": "quantitative",
+              "label": "Measured frequency (Hz)"
+            },
+            {
+              "field": "least_squares_100ms_db",
+              "type": "quantitative",
+              "label": "Least-squares power (dB)"
+            },
+            {
+              "field": "fft_peak_100ms_db",
+              "type": "quantitative",
+              "label": "FFT peak power (dB)"
+            },
+            {
+              "field": "target_snr_db",
+              "type": "quantitative",
+              "label": "Target SNR (dB)"
+            }
+          ]
+        }
+      },
+      {
+        "id": "target_snr",
+        "title": "Most target modes above mode 7 are below the residual floor",
+        "subtitle": "Negative SNR means the modal estimate is weaker than the local residual used by the benchmark.",
+        "type": "bar",
+        "dataset": "target",
+        "sourceId": "target_source",
+        "encodings": {
+          "x": {
+            "field": "mode",
+            "type": "quantitative",
+            "label": "Mode n"
+          },
+          "y": {
+            "field": "target_snr_db",
+            "type": "quantitative",
+            "label": "Measured target SNR (dB)"
+          },
+          "tooltip": [
+            {
+              "field": "mode",
+              "type": "quantitative",
+              "label": "Mode"
+            },
+            {
+              "field": "measured_frequency_hz",
+              "type": "quantitative",
+              "label": "Measured frequency (Hz)"
+            },
+            {
+              "field": "target_snr_db",
+              "type": "quantitative",
+              "label": "Target SNR (dB)"
+            }
+          ]
+        }
+      },
+      {
+        "id": "snr_sensitivity",
+        "title": "The phase-1 ranking reverses when low-SNR modes are excluded",
+        "subtitle": "Positive values mean phase 1 is worse than the restored Stulov baseline; the former improvement appears only below −10 dB SNR.",
+        "type": "bar",
+        "dataset": "snr",
+        "sourceId": "snr_source",
+        "encodings": {
+          "x": {
+            "field": "minimum_snr_db",
+            "type": "quantitative",
+            "label": "Minimum eligible target SNR (dB)"
+          },
+          "y": {
+            "field": "phase1_minus_restored_db",
+            "type": "quantitative",
+            "label": "Phase 1 minus restored RMSE (dB)"
+          },
+          "tooltip": [
+            {
+              "field": "minimum_snr_db",
+              "type": "quantitative",
+              "label": "Minimum SNR (dB)"
+            },
+            {
+              "field": "restored_stulov_rmse_db",
+              "type": "quantitative",
+              "label": "Restored RMSE (dB)"
+            },
+            {
+              "field": "chabassier_phase1_rmse_db",
+              "type": "quantitative",
+              "label": "Phase-1 RMSE (dB)"
+            },
+            {
+              "field": "phase1_minus_restored_db",
+              "type": "quantitative",
+              "label": "Difference (dB)"
+            }
+          ]
+        }
+      },
+      {
+        "id": "window_sensitivity",
+        "title": "The former score advantage disappears in a 500 ms window",
+        "subtitle": "All rows retain the former −20 dB SNR threshold; this is a sensitivity diagnostic, not a recommended score definition.",
+        "type": "bar",
+        "dataset": "window",
+        "sourceId": "window_source",
+        "encodings": {
+          "x": {
+            "field": "window_ms",
+            "type": "quantitative",
+            "label": "Analysis window (ms)"
+          },
+          "y": {
+            "field": "phase1_minus_restored_db",
+            "type": "quantitative",
+            "label": "Phase 1 minus restored RMSE (dB)"
+          },
+          "tooltip": [
+            {
+              "field": "window_ms",
+              "type": "quantitative",
+              "label": "Window (ms)"
+            },
+            {
+              "field": "restored_stulov_rmse_db",
+              "type": "quantitative",
+              "label": "Restored RMSE (dB)"
+            },
+            {
+              "field": "chabassier_phase1_rmse_db",
+              "type": "quantitative",
+              "label": "Phase-1 RMSE (dB)"
+            },
+            {
+              "field": "phase1_minus_restored_db",
+              "type": "quantitative",
+              "label": "Difference (dB)"
+            }
+          ]
+        }
+      }
+    ],
+    "tables": [],
+    "sources": [
+      {
+        "id": "direct_source",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('direct_output_modes.csv');",
+          "description": "Restored StringModel::getSamples output, 500 ms Hann FFT, peak search within plus or minus 12 Hz of n times f0.",
+          "executed_at": "2026-07-28T10:59:51.633859+00:00",
+          "tables_used": [
+            "direct_output_modes.csv"
+          ]
+        }
+      },
+      {
+        "id": "target_source",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('target_estimator_reconciliation.csv');",
+          "description": "Target C4 MIDI-80 WAV measured frequencies; 100 ms least-squares modal power reconciled against ordinary Hann-FFT peak power.",
+          "executed_at": "2026-07-28T10:59:51.633862+00:00",
+          "tables_used": [
+            "target_estimator_reconciliation.csv"
+          ]
+        }
+      },
+      {
+        "id": "snr_source",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('snr_threshold_sensitivity.csv');",
+          "description": "Five-velocity score recomputed while varying the target-mode minimum-SNR eligibility threshold.",
+          "executed_at": "2026-07-28T10:59:51.633863+00:00",
+          "tables_used": [
+            "snr_threshold_sensitivity.csv"
+          ]
+        }
+      },
+      {
+        "id": "window_source",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_csv_auto('window_sensitivity.csv');",
+          "description": "Five-velocity score recomputed for 50, 100, 200, and 500 ms target analysis windows at the former minus-20 dB SNR threshold.",
+          "executed_at": "2026-07-28T10:59:51.633864+00:00",
+          "tables_used": [
+            "window_sensitivity.csv"
+          ]
+        }
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# Hammer modal benchmark validity audit"
+      },
+      {
+        "id": "answer",
+        "type": "markdown",
+        "body": "## 结论先行\n\n**上一阶段的 Chabassier 优势结论应撤回。** 当前 benchmark 的最主要问题不是最小二乘把相邻模态混在一起，而是它把碰撞力投影到一根具有完整 `n·f0` 模态的理想定端弦；实际 `StringModel` 的左右行波各自独立闭环，只形成 `(2k+1)·f0` 序列。两者比较的不是同一个系统。\n\n同时，原评分阈值允许目标信号低至残差以下 20 dB。前一阶段的分数提升由这些不可靠高阶模态驱动；只保留 `SNR ≥ 0 dB` 的模态时，恢复后的 Stulov 基线反而优于 phase 1。"
+      },
+      {
+        "id": "metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "parity_gap",
+          "estimator_error",
+          "condition",
+          "reliable_delta"
+        ]
+      },
+      {
+        "id": "restore",
+        "type": "markdown",
+        "body": "## 还原范围\n\n已撤出本轮第一阶段的 Chabassier 接触模型、三弦力拆分、隐式求解与相应测试逻辑；`HammerModel.hpp` 恢复到对话前的 Stulov 形式。保留此前已经批准、且早于第一阶段存在的 C4 线密度 `0.00623958204318 kg/m`，以及旧测试入口所需的参数命令行覆盖。恢复后的能量门禁和 force-curve 指标与保存的前一阶段基线逐项一致。"
+      },
+      {
+        "id": "friture",
+        "type": "markdown",
+        "body": "## Friture 截图并不显示完整 partial 序列\n\n截图中的明显峰约为 `261.6, 784.9, 1308.1, 1831.5 Hz…`，相邻间隔约 `2·f0`。它们对应第 `1,3,5,7…` 模态，而不是第 `1,2,3,4…` 模态。用恢复后的实际 `StringModel::getSamples()` 直接渲染再做 FFT，得到完全相同的奇数序列。"
+      },
+      {
+        "id": "direct_chart",
+        "type": "chart",
+        "chartId": "direct_modes"
+      },
+      {
+        "id": "root_cause",
+        "type": "markdown",
+        "body": "## 已确认的结构原因\n\n`StringModel.hpp::propagate()` 在每次移动 rail head 后，分别对 `left[leftHead]` 与 `right[rightHead]` 做一次负反射，但两条 rail 在端点没有互相交叉连接。每条 rail 因而是一条带单次符号反转的独立长度 `D` 环路：`H(z)=−z^(−D)`。谐振条件为 `ωD=(2k+1)π`，所以只留下奇数倍频。\n\n这不是击槌参数或 Chabassier/Stulov 本构能修复的现象。在修改弦边界前，任何 hammer-only 模态跑分都无法预测实际输出频谱。"
+      },
+      {
+        "id": "estimator",
+        "type": "markdown",
+        "body": "## “benchmark 把其他模态混进来”这一假设未得到支持\n\n在目标 WAV 的同一 100 ms 窗口内，least-squares 模态功率与普通 Hann FFT 的局部峰值逐模态相差不超过 `0.01 dB`；设计矩阵条件数为 `1.000028`，最大归一化列相关仅 `1.66×10⁻⁵`。benchmark 的自测试也达到 `100%` 相似度、`6.28×10⁻¹⁶` 能量恒等误差。提取器在它自己的理想弦假设下数值正确，问题是这个假设不对应当前 waveguide。"
+      },
+      {
+        "id": "target_chart",
+        "type": "chart",
+        "chartId": "target_modes"
+      },
+      {
+        "id": "snr_chart",
+        "type": "chart",
+        "chartId": "target_snr"
+      },
+      {
+        "id": "score_validity",
+        "type": "markdown",
+        "body": "## 原先跑分为何会给出错误方向\n\n目标第 `8–13` 模态多数处于负 SNR。原 `−20 dB` 门槛几乎把它们全部纳入优化，于是低于残差底的数值可以决定排名。在这个门槛下，phase 1 的 RMSE 为 `2.1947 dB`、旧模型为 `3.0953 dB`；但改用 `SNR ≥ 0 dB` 后，phase 1 为 `1.0843 dB`、旧模型为 `0.6500 dB`。结论发生反转。"
+      },
+      {
+        "id": "snr_sensitivity_chart",
+        "type": "chart",
+        "chartId": "snr_sensitivity"
+      },
+      {
+        "id": "window_chart",
+        "type": "chart",
+        "chartId": "window_sensitivity"
+      },
+      {
+        "id": "assessment",
+        "type": "markdown",
+        "body": "## Validation report\n\n### Overall assessment: Needs revision\n\n1. **Critical — 系统域不一致。** force projection 使用完整定端弦模态；实际 waveguide 只生成奇数序列，模型排名不能用于生产输出。\n2. **High — 评分受负 SNR 模态支配。** 这已经实际逆转 phase-1 与恢复基线的优劣。\n3. **Medium — 时间窗敏感。** 在 `50–200 ms` 窗口出现的约 `0.9 dB` phase-1 优势，到 `500 ms` 仅剩 `0.0094 dB`。\n4. **Rejected hypothesis — 相邻模态混叠。** LS/FFT 对账、条件数和列相关均不支持这一解释。"
+      },
+      {
+        "id": "next",
+        "type": "markdown",
+        "body": "## 建议的下一步（尚未实施）\n\n1. 暂停 hammer 模型更换与参数搜索。\n2. 先经你批准，修复 `StringModel` 两个固定端的 rail 交叉反射，使实际系统恢复完整模态序列；不同时修改 hammer、loss、dispersion 或 delay。\n3. 修复后增加一个一致性门禁：同一无损、无色散设置中，实际 `getSamples()` 的逐模态结果必须与 force projection 在可解释误差内一致。\n4. 目标评分默认只使用 `SNR ≥ 0 dB` 的重复可见模态；负 SNR 模态只报告，不参与参数优化。\n5. 完成上述验证后，才重新比较 Stulov 与 Chabassier。"
+      },
+      {
+        "id": "repro",
+        "type": "markdown",
+        "body": "## Reproducibility\n\n审计输入与中间结果保存在本目录的四个 CSV 中；可执行、带输出的 notebook 为 `benchmark_validity_audit.ipynb`。本报告截至 2026-07-28，样本率 `44.1 kHz`，测试音为 C4 MIDI 80。实际输出 FFT 使用 500 ms Hann 窗，目标估计器对账使用 100 ms Hann 窗。"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-07-28T10:59:51.633465+00:00",
+    "status": "ready",
+    "datasets": {
+      "headline": [
+        {
+          "even_odd_peak_power_db": -105.3587,
+          "max_ls_fft_difference_db": 0.01,
+          "ls_condition_number": 1.000028,
+          "reliable_mode_phase1_delta_db": 0.4343
+        }
+      ],
+      "direct": [
+        {
+          "mode": 1.0,
+          "expected_frequency_hz": 261.626,
+          "detected_peak_hz": 261.637,
+          "relative_peak_power_db": 0.0,
+          "parity": "odd"
+        },
+        {
+          "mode": 2.0,
+          "expected_frequency_hz": 523.252,
+          "detected_peak_hz": 511.75,
+          "relative_peak_power_db": -105.37,
+          "parity": "even"
+        },
+        {
+          "mode": 3.0,
+          "expected_frequency_hz": 784.878,
+          "detected_peak_hz": 784.868,
+          "relative_peak_power_db": -10.91,
+          "parity": "odd"
+        },
+        {
+          "mode": 4.0,
+          "expected_frequency_hz": 1046.504,
+          "detected_peak_hz": 1035.11,
+          "relative_peak_power_db": -120.26,
+          "parity": "even"
+        },
+        {
+          "mode": 5.0,
+          "expected_frequency_hz": 1308.13,
+          "detected_peak_hz": 1308.184,
+          "relative_peak_power_db": -19.99,
+          "parity": "odd"
+        },
+        {
+          "mode": 6.0,
+          "expected_frequency_hz": 1569.756,
+          "detected_peak_hz": 1557.79,
+          "relative_peak_power_db": -117.6,
+          "parity": "even"
+        },
+        {
+          "mode": 7.0,
+          "expected_frequency_hz": 1831.382,
+          "detected_peak_hz": 1831.5,
+          "relative_peak_power_db": -18.09,
+          "parity": "odd"
+        },
+        {
+          "mode": 8.0,
+          "expected_frequency_hz": 2093.008,
+          "detected_peak_hz": 2081.4,
+          "relative_peak_power_db": -125.78,
+          "parity": "even"
+        },
+        {
+          "mode": 9.0,
+          "expected_frequency_hz": 2354.634,
+          "detected_peak_hz": 2354.858,
+          "relative_peak_power_db": -30.04,
+          "parity": "odd"
+        },
+        {
+          "mode": 10.0,
+          "expected_frequency_hz": 2616.26,
+          "detected_peak_hz": 2622.34,
+          "relative_peak_power_db": -125.07,
+          "parity": "even"
+        },
+        {
+          "mode": 11.0,
+          "expected_frequency_hz": 2877.886,
+          "detected_peak_hz": 2878.257,
+          "relative_peak_power_db": -22.44,
+          "parity": "odd"
+        },
+        {
+          "mode": 12.0,
+          "expected_frequency_hz": 3139.512,
+          "detected_peak_hz": 3127.99,
+          "relative_peak_power_db": -129.9,
+          "parity": "even"
+        },
+        {
+          "mode": 13.0,
+          "expected_frequency_hz": 3401.138,
+          "detected_peak_hz": 3401.783,
+          "relative_peak_power_db": -43.56,
+          "parity": "odd"
+        }
+      ],
+      "target": [
+        {
+          "mode": 1.0,
+          "measured_frequency_hz": 261.5953,
+          "least_squares_100ms_db": 0.0,
+          "fft_peak_100ms_db": 0.0,
+          "fft_peak_500ms_db": 0.0,
+          "target_snr_db": 20.11,
+          "ls_minus_fft100_db": 0.0
+        },
+        {
+          "mode": 2.0,
+          "measured_frequency_hz": 523.1834,
+          "least_squares_100ms_db": -6.75,
+          "fft_peak_100ms_db": -6.75,
+          "fft_peak_500ms_db": -6.73,
+          "target_snr_db": 13.36,
+          "ls_minus_fft100_db": 0.0
+        },
+        {
+          "mode": 3.0,
+          "measured_frequency_hz": 785.3579,
+          "least_squares_100ms_db": -14.21,
+          "fft_peak_100ms_db": -14.22,
+          "fft_peak_500ms_db": -14.09,
+          "target_snr_db": 5.89,
+          "ls_minus_fft100_db": 0.01
+        },
+        {
+          "mode": 4.0,
+          "measured_frequency_hz": 1048.6238,
+          "least_squares_100ms_db": -10.48,
+          "fft_peak_100ms_db": -10.48,
+          "fft_peak_500ms_db": -11.02,
+          "target_snr_db": 9.63,
+          "ls_minus_fft100_db": 0.0
+        },
+        {
+          "mode": 5.0,
+          "measured_frequency_hz": 1312.8645,
+          "least_squares_100ms_db": -11.07,
+          "fft_peak_100ms_db": -11.07,
+          "fft_peak_500ms_db": -11.87,
+          "target_snr_db": 9.04,
+          "ls_minus_fft100_db": 0.0
+        },
+        {
+          "mode": 6.0,
+          "measured_frequency_hz": 1578.4302,
+          "least_squares_100ms_db": -9.08,
+          "fft_peak_100ms_db": -9.08,
+          "fft_peak_500ms_db": -11.81,
+          "target_snr_db": 11.02,
+          "ls_minus_fft100_db": 0.0
+        },
+        {
+          "mode": 7.0,
+          "measured_frequency_hz": 1845.7308,
+          "least_squares_100ms_db": -16.54,
+          "fft_peak_100ms_db": -16.54,
+          "fft_peak_500ms_db": -20.33,
+          "target_snr_db": 3.57,
+          "ls_minus_fft100_db": 0.0
+        },
+        {
+          "mode": 8.0,
+          "measured_frequency_hz": 2114.8239,
+          "least_squares_100ms_db": -29.9,
+          "fft_peak_100ms_db": -29.9,
+          "fft_peak_500ms_db": -33.81,
+          "target_snr_db": -9.8,
+          "ls_minus_fft100_db": 0.0
+        },
+        {
+          "mode": 9.0,
+          "measured_frequency_hz": 2386.0665,
+          "least_squares_100ms_db": -23.53,
+          "fft_peak_100ms_db": -23.53,
+          "fft_peak_500ms_db": -27.88,
+          "target_snr_db": -3.42,
+          "ls_minus_fft100_db": 0.0
+        },
+        {
+          "mode": 10.0,
+          "measured_frequency_hz": 2659.8807,
+          "least_squares_100ms_db": -27.25,
+          "fft_peak_100ms_db": -27.26,
+          "fft_peak_500ms_db": -34.3,
+          "target_snr_db": -7.15,
+          "ls_minus_fft100_db": 0.01
+        },
+        {
+          "mode": 11.0,
+          "measured_frequency_hz": 2936.5263,
+          "least_squares_100ms_db": -32.98,
+          "fft_peak_100ms_db": -32.98,
+          "fft_peak_500ms_db": -38.03,
+          "target_snr_db": -12.87,
+          "ls_minus_fft100_db": 0.0
+        },
+        {
+          "mode": 12.0,
+          "measured_frequency_hz": 3215.6842,
+          "least_squares_100ms_db": -30.02,
+          "fft_peak_100ms_db": -30.02,
+          "fft_peak_500ms_db": -34.56,
+          "target_snr_db": -9.91,
+          "ls_minus_fft100_db": 0.0
+        },
+        {
+          "mode": 13.0,
+          "measured_frequency_hz": 3498.7529,
+          "least_squares_100ms_db": -34.12,
+          "fft_peak_100ms_db": -34.12,
+          "fft_peak_500ms_db": -37.65,
+          "target_snr_db": -14.01,
+          "ls_minus_fft100_db": 0.0
+        }
+      ],
+      "snr": [
+        {
+          "minimum_snr_db": 5.0,
+          "restored_stulov_rmse_db": 0.514,
+          "chabassier_phase1_rmse_db": 0.7831,
+          "phase1_minus_restored_db": 0.2691,
+          "interpretation": "phase1_worse"
+        },
+        {
+          "minimum_snr_db": 0.0,
+          "restored_stulov_rmse_db": 0.65,
+          "chabassier_phase1_rmse_db": 1.0843,
+          "phase1_minus_restored_db": 0.4343,
+          "interpretation": "phase1_worse"
+        },
+        {
+          "minimum_snr_db": -5.0,
+          "restored_stulov_rmse_db": 1.5274,
+          "chabassier_phase1_rmse_db": 1.6134,
+          "phase1_minus_restored_db": 0.086,
+          "interpretation": "phase1_worse"
+        },
+        {
+          "minimum_snr_db": -10.0,
+          "restored_stulov_rmse_db": 1.6328,
+          "chabassier_phase1_rmse_db": 1.571,
+          "phase1_minus_restored_db": -0.0618,
+          "interpretation": "near_tie"
+        },
+        {
+          "minimum_snr_db": -15.0,
+          "restored_stulov_rmse_db": 2.8093,
+          "chabassier_phase1_rmse_db": 1.8515,
+          "phase1_minus_restored_db": -0.9578,
+          "interpretation": "phase1_better_on_low_snr_modes"
+        },
+        {
+          "minimum_snr_db": -20.0,
+          "restored_stulov_rmse_db": 3.0953,
+          "chabassier_phase1_rmse_db": 2.1947,
+          "phase1_minus_restored_db": -0.9006,
+          "interpretation": "phase1_better_on_low_snr_modes"
+        }
+      ],
+      "window": [
+        {
+          "window_ms": 50.0,
+          "restored_stulov_rmse_db": 3.1718,
+          "chabassier_phase1_rmse_db": 2.1888,
+          "phase1_minus_restored_db": -0.983
+        },
+        {
+          "window_ms": 100.0,
+          "restored_stulov_rmse_db": 3.0953,
+          "chabassier_phase1_rmse_db": 2.1947,
+          "phase1_minus_restored_db": -0.9006
+        },
+        {
+          "window_ms": 200.0,
+          "restored_stulov_rmse_db": 3.0583,
+          "chabassier_phase1_rmse_db": 2.1544,
+          "phase1_minus_restored_db": -0.9039
+        },
+        {
+          "window_ms": 500.0,
+          "restored_stulov_rmse_db": 1.4648,
+          "chabassier_phase1_rmse_db": 1.4554,
+          "phase1_minus_restored_db": -0.0094
+        }
+      ]
+    },
+    "accessIssues": []
+  },
+  "sources": [
+    {
+      "id": "direct_source",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('direct_output_modes.csv');",
+        "description": "Restored StringModel::getSamples output, 500 ms Hann FFT, peak search within plus or minus 12 Hz of n times f0.",
+        "executed_at": "2026-07-28T10:59:51.633859+00:00",
+        "tables_used": [
+          "direct_output_modes.csv"
+        ]
+      }
+    },
+    {
+      "id": "target_source",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('target_estimator_reconciliation.csv');",
+        "description": "Target C4 MIDI-80 WAV measured frequencies; 100 ms least-squares modal power reconciled against ordinary Hann-FFT peak power.",
+        "executed_at": "2026-07-28T10:59:51.633862+00:00",
+        "tables_used": [
+          "target_estimator_reconciliation.csv"
+        ]
+      }
+    },
+    {
+      "id": "snr_source",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('snr_threshold_sensitivity.csv');",
+        "description": "Five-velocity score recomputed while varying the target-mode minimum-SNR eligibility threshold.",
+        "executed_at": "2026-07-28T10:59:51.633863+00:00",
+        "tables_used": [
+          "snr_threshold_sensitivity.csv"
+        ]
+      }
+    },
+    {
+      "id": "window_source",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('window_sensitivity.csv');",
+        "description": "Five-velocity score recomputed for 50, 100, 200, and 500 ms target analysis windows at the former minus-20 dB SNR threshold.",
+        "executed_at": "2026-07-28T10:59:51.633864+00:00",
+        "tables_used": [
+          "window_sensitivity.csv"
+        ]
+      }
+    }
+  ]
+}
