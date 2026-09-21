@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/bBworks/hardware/hammer_parameter_benchmark.py", line 656, in <module>
-    main()
-  File "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/bBworks/hardware/hammer_parameter_benchmark.py", line 624, in main
-    raise RuntimeError("No candidate passed the physical force gate.")
-RuntimeError: No candidate passed the physical force gate.

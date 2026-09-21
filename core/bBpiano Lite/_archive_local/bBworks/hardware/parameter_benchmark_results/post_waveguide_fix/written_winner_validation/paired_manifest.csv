@@ -1,6 +1,0 @@
-velocity_m_s,force_log,reference_wav,onset_ms
-0.8072183648066608,force_midi_50.txt,../reference_pcm/C4_take01_v50.wav,0
-1.106749721551205,force_midi_65.txt,../reference_pcm/C4_take02_v65.wav,0
-1.6266395205247568,force_midi_80.txt,../reference_pcm/C4_take03_v80.wav,0
-2.666111600264876,force_midi_95.txt,../reference_pcm/C4_take04_v95.wav,0
-5.31723012667424,force_midi_110.txt,../reference_pcm/C4_take05_v110.wav,0
