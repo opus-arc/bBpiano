@@ -8,7 +8,7 @@
 
 class SoundboardModel {
     static constexpr bool soundboard_active_ = true;
-    
+
     SoundboardModel(const SoundboardModel&) = delete;
     SoundboardModel& operator=(const SoundboardModel&) = delete;
 
@@ -77,48 +77,72 @@ class SoundboardModel {
     };
 
 
+    static constexpr std::size_t kLossSectionCount = 8;
+
+
     // ================================================================
-    // Frequency-dependent loss
-    //
-    // H(z) =
-    //
-    //           g (1 - a)
-    //       -----------------
-    //        1 - a z^-1
-    //
-    //
-    // DC gain:
-    //
-    // H(1) = g
-    //
-    // Higher frequencies have slightly smaller gain.
-    //
-    // This follows Bank's structure:
-    // one-pole loss filter in series with every delay line.
-    //
-    // Exact coefficients in Bank were obtained from measured
-    // frequency-dependent decay times and are not published
-    // numerically in the thesis.
+    // 单一二阶filter的公式：
+    //              b0 + b1 z^-1 + b2 z^-2
+    // H(z) = ---------------------------------
+    //              1 + a1 z^-1 + a2 z^-2
+    // 此处阶数的意思是系统差分方程需要记忆多少阶过去状态
     // ================================================================
 
-    struct LossFilter {
-        float gain = 1.0f;
-        float pole = 0.0f;
+    struct LossSection {
+        float b0 = 1.0f;
+        float b1 = 0.0f;
+        float b2 = 0.0f;
 
-        float state = 0.0f;
+        float a1 = 0.0f;
+        float a2 = 0.0f;
+
+        float s1 = 0.0f;
+        float s2 = 0.0f;
 
         inline float process(float x) noexcept {
             const float y =
-                gain * (1.0f - pole) * x
-                + pole * state;
+                b0 * x
+                + s1;
 
-            state = y;
+            s1 =
+                b1 * x
+                - a1 * y
+                + s2;
+
+            s2 =
+                b2 * x
+                - a2 * y;
 
             return y;
         }
 
         inline void reset() noexcept {
-            state = 0.0f;
+            s1 = 0.0f;
+            s2 = 0.0f;
+        }
+    };
+
+
+    // ================================================================
+    // 二阶filters的串联公式：
+    // H_total(z) = H_1(z) H_2(z) ... H_M(z)
+    // ================================================================
+
+    struct LossFilter {
+        std::array<LossSection, kLossSectionCount> sections{};
+
+        inline float process(float x) noexcept {
+            for (auto& section : sections) {
+                x = section.process(x);
+            }
+
+            return x;
+        }
+
+        inline void reset() noexcept {
+            for (auto& section : sections) {
+                section.reset();
+            }
         }
     };
 
@@ -460,14 +484,50 @@ private:
                     target_t60
                 );
 
-            loss_filters_[i].gain =
-                static_cast<float>(gain);
 
-            loss_filters_[i].pole =
-                loss_pole;
+            // H(z) = 1
+            //
+            // b0 = 1
+            // b1 = b2 = a1 = a2 = 0
 
-            loss_filters_[i].state =
-                0.0f;
+            for (auto& section : loss_filters_[i].sections) {
+                section.b0 = 1.0f;
+                section.b1 = 0.0f;
+                section.b2 = 0.0f;
+
+                section.a1 = 0.0f;
+                section.a2 = 0.0f;
+
+                section.s1 = 0.0f;
+                section.s2 = 0.0f;
+            }
+
+
+            // 让二阶filter塌缩成一阶filter，以此先证明两者可在此参数设置下等价:
+            //
+            //            g (1 - a)
+            // H(z) = ----------------
+            //            1 - a z^-1
+            //
+            // 通过进行以下的参数代入：
+            // b0 = g (1 - a)
+            // b1 = 0
+            // b2 = 0
+            // a1 = -a
+            // a2 = 0
+
+            auto& section =
+                loss_filters_[i].sections[0];
+
+            section.b0 =
+                static_cast<float>(gain)
+                * (1.0f - loss_pole);
+
+            section.b1 = 0.0f;
+            section.b2 = 0.0f;
+
+            section.a1 = -loss_pole;
+            section.a2 = 0.0f;
         }
     }
 
@@ -913,15 +973,15 @@ private:
 ////class SoundboardModel {
 ////    SoundboardModel(const SoundboardModel&) = delete;
 ////    SoundboardModel& operator=(const SoundboardModel&) = delete;
-////    
+////
 ////    float radiation_z1_ = 0.0f;
 ////    float radiation_z2_ = 0.0f;
-////    
+////
 ////public:
 ////    mutable std::array<float, 88> bridge_force{};
-////    
+////
 ////    explicit SoundboardModel() {
-////        
+////
 ////    }
 //////    inline float get_sample() {
 //////        float bridge_sum = 0.0f;
@@ -973,7 +1033,7 @@ private:
 ////        }
 ////        return sum;
 ////    }
-////    
+////
 ////    inline void system_reset() {
 ////        bridge_force.fill(0.0f);
 ////
