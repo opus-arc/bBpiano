@@ -372,7 +372,7 @@ public:
 
 
         // ------------------------------------------------------------
-        // 3. Read delayed states and apply frequency-dependent losses
+        // 3. Read delayed states; apply losses to feedback only
         //
         // In FDN notation:
         //
@@ -380,17 +380,16 @@ public:
         // ------------------------------------------------------------
 
         std::array<float, kFDNSize> delayed{};
+        std::array<float, kFDNSize> retained{};
 
-        float delayed_sum = 0.0f;
+        float retained_sum = 0.0f;
 
         for (std::size_t i = 0; i < kFDNSize; ++i) {
 
-            delayed[i] =
-                loss_filters_[i].process(
-                    delay_lines_[i].read()
-                );
+            delayed[i] = delay_lines_[i].read();
+            retained[i] = loss_filters_[i].process(delayed[i]);
 
-            delayed_sum += delayed[i];
+            retained_sum += retained[i];
         }
 
 
@@ -435,8 +434,8 @@ public:
         // Therefore:
         //
         // feedback[i]
-        //      = delayed[(i + 1) mod 8]
-        //        - 0.25 * sum(delayed)
+        //      = retained[(i + 1) mod 8]
+        //        - 0.25 * sum(retained)
         //
         //
         // This is mathematically equivalent to the full 8×8
@@ -444,7 +443,7 @@ public:
         // ------------------------------------------------------------
 
         const float common =
-            0.25f * delayed_sum;
+            0.25f * retained_sum;
 
 
         // ------------------------------------------------------------
@@ -463,7 +462,7 @@ public:
                 (i + 1) & 7;
 
             const float feedback =
-                delayed[shifted]
+                retained[shifted]
                 - common;
 
             delay_lines_[i].write(
