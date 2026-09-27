@@ -1,0 +1,251 @@
+{
+  "overall": "WARN",
+  "checks": [
+    {
+      "status": "PASS",
+      "message": "所有 section 稳定：最大 pole radius=0.96164377"
+    },
+    {
+      "status": "PASS",
+      "message": "所有 branch 无 >0 dB 放大：最大 gain=-0.144026 dB"
+    },
+    {
+      "status": "PASS",
+      "message": "单节最大 gain=0.000005 dB"
+    },
+    {
+      "status": "PASS",
+      "message": "目标误差：最大 branch RMS=0.580 dB，最大点误差=1.931 dB"
+    },
+    {
+      "status": "WARN",
+      "message": "实际响应按 delay 归一的偏差：RMS=0.861 dB，max=3.625 dB (换算到 L=721)"
+    },
+    {
+      "status": "PASS",
+      "message": "导出参数 gain 按 L/Lref 缩放：最大偏差=3.55e-15 dB"
+    },
+    {
+      "status": "PASS",
+      "message": "窄峰/窄 notch 局部曲率最大=0.313 dB"
+    }
+  ],
+  "max_pole_radius": 0.961643765808773,
+  "max_gain_db_0_to_nyquist": -0.14402643324600234,
+  "max_section_gain_db_0_to_nyquist": 5.113728107877672e-06,
+  "scaling": {
+    "reference_delay_samples": 721,
+    "rms_db_at_reference_scale": 0.8605010628179262,
+    "max_abs_db_at_reference_scale": 3.6254910560013407
+  },
+  "branches": [
+    {
+      "delay_samples": 37,
+      "rms_db": 0.038006348474392875,
+      "max_abs_db": 0.13953493647269655,
+      "max_pole_radius": 0.961643765808773,
+      "max_gain_db_20_to_nyquist": -0.14402643324600234,
+      "narrow_feature": {
+        "max_abs_db": 0.011161930416451304,
+        "frequency_hz": 1465.4710641560052,
+        "type": "notch"
+      },
+      "bands": {
+        "low_20_300": {
+          "rms_db": 0.0019260290801531837,
+          "max_abs_db": 0.004505172882854347
+        },
+        "mid_300_3000": {
+          "rms_db": 0.04198651042929634,
+          "max_abs_db": 0.13926745645034289
+        },
+        "high_3000_nyquist": {
+          "rms_db": 0.055071999999196486,
+          "max_abs_db": 0.13953493647269655
+        }
+      }
+    },
+    {
+      "delay_samples": 87,
+      "rms_db": 0.08734906244314189,
+      "max_abs_db": 0.32125289803774804,
+      "max_pole_radius": 0.961424479331108,
+      "max_gain_db_20_to_nyquist": -0.3389983819028089,
+      "narrow_feature": {
+        "max_abs_db": 0.026289148888908542,
+        "frequency_hz": 1465.4710641560052,
+        "type": "notch"
+      },
+      "bands": {
+        "low_20_300": {
+          "rms_db": 0.004331809357797457,
+          "max_abs_db": 0.010857790640457887
+        },
+        "mid_300_3000": {
+          "rms_db": 0.0969208645602148,
+          "max_abs_db": 0.32063943439928977
+        },
+        "high_3000_nyquist": {
+          "rms_db": 0.12620046547662528,
+          "max_abs_db": 0.32125289803774804
+        }
+      }
+    },
+    {
+      "delay_samples": 181,
+      "rms_db": 0.16535206494005109,
+      "max_abs_db": 0.611246285525266,
+      "max_pole_radius": 0.9610061310861332,
+      "max_gain_db_20_to_nyquist": -0.7060120056195281,
+      "narrow_feature": {
+        "max_abs_db": 0.05503921184713256,
+        "frequency_hz": 1465.4710641560052,
+        "type": "notch"
+      },
+      "bands": {
+        "low_20_300": {
+          "rms_db": 0.008844543018594081,
+          "max_abs_db": 0.024512966073423348
+        },
+        "mid_300_3000": {
+          "rms_db": 0.18628701218529786,
+          "max_abs_db": 0.6100929590284894
+        },
+        "high_3000_nyquist": {
+          "rms_db": 0.2363388392167979,
+          "max_abs_db": 0.611246285525266
+        }
+      }
+    },
+    {
+      "delay_samples": 271,
+      "rms_db": 0.2116205583028703,
+      "max_abs_db": 0.7813331826676375,
+      "max_pole_radius": 0.9605980560455414,
+      "max_gain_db_20_to_nyquist": -1.0593314880755114,
+      "narrow_feature": {
+        "max_abs_db": 0.08317605118452054,
+        "frequency_hz": 1465.4710641560052,
+        "type": "notch"
+      },
+      "bands": {
+        "low_20_300": {
+          "rms_db": 0.012707603632869404,
+          "max_abs_db": 0.04149568808427273
+        },
+        "mid_300_3000": {
+          "rms_db": 0.24228895865422292,
+          "max_abs_db": 0.779865813026305
+        },
+        "high_3000_nyquist": {
+          "rms_db": 0.29882040507725116,
+          "max_abs_db": 0.7813331826676375
+        }
+      }
+    },
+    {
+      "delay_samples": 359,
+      "rms_db": 0.22585973158480363,
+      "max_abs_db": 0.805832779110963,
+      "max_pole_radius": 0.9601917319263813,
+      "max_gain_db_20_to_nyquist": -1.4068732217138429,
+      "narrow_feature": {
+        "max_abs_db": 0.11141278310901015,
+        "frequency_hz": 1465.4710641560052,
+        "type": "notch"
+      },
+      "bands": {
+        "low_20_300": {
+          "rms_db": 0.01658776407714495,
+          "max_abs_db": 0.06381614635333266
+        },
+        "mid_300_3000": {
+          "rms_db": 0.2572075441021102,
+          "max_abs_db": 0.8042687701264004
+        },
+        "high_3000_nyquist": {
+          "rms_db": 0.32002247351989305,
+          "max_abs_db": 0.805832779110963
+        }
+      }
+    },
+    {
+      "delay_samples": 492,
+      "rms_db": 0.22605123234710267,
+      "max_abs_db": 0.6370692373015441,
+      "max_pole_radius": 0.9595636300402268,
+      "max_gain_db_20_to_nyquist": -1.9379611958952514,
+      "narrow_feature": {
+        "max_abs_db": 0.1554894636883919,
+        "frequency_hz": 1465.4710641560052,
+        "type": "notch"
+      },
+      "bands": {
+        "low_20_300": {
+          "rms_db": 0.024438460565160282,
+          "max_abs_db": 0.11340979641422266
+        },
+        "mid_300_3000": {
+          "rms_db": 0.20793600223212205,
+          "max_abs_db": 0.6370692373015441
+        },
+        "high_3000_nyquist": {
+          "rms_db": 0.3587841019575086,
+          "max_abs_db": 0.592814544985405
+        }
+      }
+    },
+    {
+      "delay_samples": 687,
+      "rms_db": 0.48995402688816564,
+      "max_abs_db": 1.6674853811980768,
+      "max_pole_radius": 0.9586114410782532,
+      "max_gain_db_20_to_nyquist": -2.7331901717406546,
+      "narrow_feature": {
+        "max_abs_db": 0.2819028488852311,
+        "frequency_hz": 3180.4774917082236,
+        "type": "notch"
+      },
+      "bands": {
+        "low_20_300": {
+          "rms_db": 0.05147613798129537,
+          "max_abs_db": 0.23923115001908002
+        },
+        "mid_300_3000": {
+          "rms_db": 0.4751587356234446,
+          "max_abs_db": 1.2128711360436064
+        },
+        "high_3000_nyquist": {
+          "rms_db": 0.7607916911527064,
+          "max_abs_db": 1.6674853811980768
+        }
+      }
+    },
+    {
+      "delay_samples": 721,
+      "rms_db": 0.5801575557375038,
+      "max_abs_db": 1.9308941463423963,
+      "max_pole_radius": 0.9584414932471274,
+      "max_gain_db_20_to_nyquist": -2.8735268017369635,
+      "narrow_feature": {
+        "max_abs_db": 0.31345963909685537,
+        "frequency_hz": 3180.4774917082236,
+        "type": "notch"
+      },
+      "bands": {
+        "low_20_300": {
+          "rms_db": 0.05934056128460016,
+          "max_abs_db": 0.2699734379627823
+        },
+        "mid_300_3000": {
+          "rms_db": 0.5995635551716594,
+          "max_abs_db": 1.3909712877125298
+        },
+        "high_3000_nyquist": {
+          "rms_db": 0.8730924650865215,
+          "max_abs_db": 1.9308941463423963
+        }
+      }
+    }
+  ]
+}
