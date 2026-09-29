@@ -1,0 +1,87 @@
+bBpiano v2b modal-structure search with temporal guardrails
+====================================================================
+source ref: b9d8f0c0e02c8500476899663f6998a167f49940
+
+[SEARCH SCOPE]
+Eight delay lengths only; fixed shifted-Householder topology.
+Lossless structural search; damping, readout and direct path excluded.
+Stage A: 7500 global + 6500 local candidates; Stage B: top 100 by modal/geometry score.
+
+[MODAL TARGET]
+density=0.060 modes/Hz; sum(L)=2646; Rayleigh CV=0.522723.
+Original four modal objective terms, target curves and weights unchanged.
+
+[ENGINEERING GUARDRAILS — not piano-physics targets]
+min_delay=25; max_delay=780; min_gap=20
+pair proximity sigma=50; CV floor=0.7 × current; proximity ceiling=2 × current.
+One-sided spread/proximity penalties add to Stage A search score.
+Best modal-only means Stage A modal+geometry score before temporal filtering.
+
+[CURRENT PRODUCTION]
+delays=[37, 87, 181, 271, 359, 492, 687, 721]  sum(L)=2835
+search_score=6.040845  modal_score=6.040845
+density_RMSE=0.006452  spacing_CV=0.357358  CDF_distance=0.122002  quantile_RMSE=0.177581
+delay_CV=0.686331  span=684  max/min=19.486  proximity=0.039723
+spread_penalty=0.000000  proximity_penalty_one_sided=0.000000
+median_NED_20_80=0.807525  mean_NED_20_80=0.752261  time_to_NED075=38.92 ms  kurtosis_error_20_80=2.260449  temporal_pass=True
+
+[SCALED CURRENT]
+delays=[35, 81, 169, 253, 335, 459, 641, 673]  sum(L)=2646
+search_score=6.038605  modal_score=6.038605
+density_RMSE=0.004158  spacing_CV=0.355226  CDF_distance=0.127802  quantile_RMSE=0.179173
+delay_CV=0.686049  span=638  max/min=19.229  proximity=0.045297
+spread_penalty=0.000000  proximity_penalty_one_sided=0.000000
+
+[BEST MODAL-ONLY CANDIDATE]
+delays=[49, 171, 275, 304, 326, 447, 494, 580]  sum(L)=2646
+search_score=1.264240  modal_score=1.259505
+density_RMSE=0.005089  spacing_CV=0.470424  CDF_distance=0.052715  quantile_RMSE=0.100529
+delay_CV=0.491063  span=531  max/min=11.837  proximity=0.084913
+spread_penalty=0.000000  proximity_penalty_one_sided=0.004735
+median_NED_20_80=0.839683  mean_NED_20_80=0.821103  time_to_NED075=36.93 ms  kurtosis_error_20_80=1.544526  temporal_pass=True
+
+[HISTORICAL CLUSTER CONTROL — user-supplied, excluded from ranking]
+delays=[189, 209, 248, 339, 359, 379, 416, 507]  sum(L)=2646
+search_score=3.430151  modal_score=1.850168
+density_RMSE=0.004645  spacing_CV=0.444003  CDF_distance=0.070279  quantile_RMSE=0.108252
+delay_CV=0.308497  span=318  max/min=2.683  proximity=0.175175
+spread_penalty=0.128075  proximity_penalty_one_sided=1.451908
+median_NED_20_80=0.811098  mean_NED_20_80=0.776082  time_to_NED075=44.91 ms  kurtosis_error_20_80=1.551853  temporal_pass=False
+failure_reasons=NED 0.75 reached too late or not reached
+
+[TEMPORAL DIFFUSION BASELINE]
+Lossless zero-state delta input; 8 runtime ring buffers; no damping/direct/shaper.
+duration=150 ms; NED window=10 ms; hop=1 ms; NED=P(|x|>window std)/0.31731.
+NED is not clipped; 20–80 ms summary; 3 consecutive windows for time to 0.75.
+delays=[37, 87, 181, 271, 359, 492, 687, 721]  sum(L)=2835
+search_score=6.040845  modal_score=6.040845
+density_RMSE=0.006452  spacing_CV=0.357358  CDF_distance=0.122002  quantile_RMSE=0.177581
+delay_CV=0.686331  span=684  max/min=19.486  proximity=0.039723
+spread_penalty=0.000000  proximity_penalty_one_sided=0.000000
+median_NED_20_80=0.807525  mean_NED_20_80=0.752261  time_to_NED075=38.92 ms  kurtosis_error_20_80=2.260449  temporal_pass=True
+
+[BEST TEMPORALLY FEASIBLE CANDIDATE]
+delays=[49, 171, 275, 304, 326, 447, 494, 580]  sum(L)=2646
+search_score=1.264240  modal_score=1.259505
+density_RMSE=0.005089  spacing_CV=0.470424  CDF_distance=0.052715  quantile_RMSE=0.100529
+delay_CV=0.491063  span=531  max/min=11.837  proximity=0.084913
+spread_penalty=0.000000  proximity_penalty_one_sided=0.004735
+median_NED_20_80=0.839683  mean_NED_20_80=0.821103  time_to_NED075=36.93 ms  kurtosis_error_20_80=1.544526  temporal_pass=True
+
+[GUARDRAIL RESULTS]
+tested=100; passed=58; failed=42.
+median NED floor=0.9 × current; time ceiling=1.15 × current if current reaches 0.75; kurtosis ceiling=1.25 × current (epsilon 1e-9).
+maximum temporal-feasible spacing CV in shortlist=0.470424.
+
+[INTERPRETATION]
+Historical cluster temporal guardrail pass: False; failures=('NED 0.75 reached too late or not reached',).
+Historical minus current median NED=+0.003573; time to NED 0.75=+5.99 ms; kurtosis error=-0.708597.
+Best feasible spacing CV improves current: yes (0.470424 vs 0.357358)
+Best feasible CDF distance improves current: yes (0.052715 vs 0.122002)
+Best feasible quantile RMSE improves current: yes (0.100529 vs 0.177581)
+A lower modal/geometry score is not an audio-quality score.
+Diminishing returns / architectural limit: not established by this shortlist.
+
+[NEXT STEP]
+Run the requested full search before selecting a delay candidate for integration.
+No damping SOS, production delay bank, or MIDI rendering is changed here.

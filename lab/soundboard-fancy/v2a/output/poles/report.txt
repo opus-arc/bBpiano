@@ -1,0 +1,124 @@
+Soundboard FDN: closed-loop dynamics and audible readout
+======================================================================
+1. Version mapping
+A L1-Clavier: a6e1914ffc632abc22cf9e065a96ccf8099c2b77
+B v2a post-loss: 6ec51f9cd61cfd63898abc8e1af75584d5fa6a5b
+C v2a pre-loss: b9d8f0c0e02c8500476899663f6998a167f49940
+
+2. Production-source verification
+A/B/C delay banks identical: [37, 87, 181, 271, 359, 492, 687, 721]
+L1 target_t60=0.340000 s, loss_pole=0.075000
+B/C SOS banks elementwise identical; 6 effective sections per branch
+B/C feedback uses loss-filtered retained; B output uses retained; C output uses raw delayed
+A/B/C direct_gain=0.18; input/output q=0.353553391; Fs=44100.0 Hz
+
+3. Closed-loop dynamics: L1 vs v2a (shared by B and C)
+L1 states=2843, structural positive-frequency poles=1417, redundant near-zero=8
+v2a states=2931, structural positive-frequency poles=1417, SOS-state-dominated=48
+Radius gap structural/SOS=0.030096215
+Characteristic normalized sigma_min/sigma_max max: L1=1.555e-11, v2a=3.978e-12
+4. B/C pole identity verification
+max_abs(F_post - F_pre) = 0.000e+00
+max matched pole distance |z_B - z_C| = 0.000e+00
+Same state transition implies identical exact poles; eig numerical tolerance warning threshold=1e-10.
+
+5. Modal damping statistics
+v2a target alpha RMSE=3.786 1/s, MAE=3.050 1/s, relative MAE=1.74% (100-10000 Hz structural poles)
+model  band         N   alpha(1/s)   T60(s)   eta(%)      Q      modal_density
+L1    100-300       13      20.317   0.3400    3.655    30.20       0.06515
+L1    300-1100      51      20.370   0.3391    1.065   106.63       0.06468
+L1    1100-2500     91      20.681   0.3340    0.387   272.44       0.06437
+L1    2500-5000    161      21.855   0.3164    0.192   537.89       0.06457
+L1    5000-10000   321      25.801   0.2698    0.112   909.02       0.06452
+v2a   100-300       14      20.153   0.3431    3.559    30.85       0.06601
+v2a   300-1100      52      49.798   0.1575    2.254    44.38       0.06562
+v2a   1100-2500     89     135.629   0.0529    2.430    41.31       0.06447
+v2a   2500-5000    161     214.637   0.0323    1.888    54.75       0.06426
+v2a   5000-10000   321     217.068   0.0318    0.955   108.30       0.06446
+
+6. Modal structure statistics
+L1 spacing mean=15.570 Hz, CV=0.358; v2a mean=15.438 Hz, CV=0.364 (100-3000 Hz)
+Paper reduced-model Rayleigh spacing CV=0.523.
+Paper overlays are published curves/reported trends and equations, not digitized experimental scatter.
+
+7. Three-version impulse/readout comparison
+Input: shaped_force[n]=delta[n], zero state, 2 s; no hammer/string/region shaper.
+All 2 s response metrics include direct_gain; FDN-only FFT removes only the n=0 direct impulse.
+FFT: full 2 s rectangular truncation, zero padded to next_fast_len(2N); no taper; zero padding does not improve physical resolution.
+Bands: identical 4th-order Butterworth SOS, causal zero-state filters; high pass >3 kHz.
+Centroids and C50/C80 use energy; ABR=10log10(E[0,20ms]/E[20,200ms]).
+Persistence: last 5 ms centered RMS crossing -20/-40 dB relative to that band's own peak.
+   RAW metrics
+L1: 2s RMS=0.00185717, peak=0.18, crest=96.922, broadband centroid=18.07 ms, C50=11.26 dB, C80=17.64 dB, ABR=3.44 dB, gain=1
+  centroid mid/high = 21.92/17.09 ms; persistence mid -20/-40 = 111.5/225.4 ms; high -20/-40 = 83.9/174.5 ms
+    0-  20 ms RMS broadband/mid/high = 0.0154056/0.00671905/0.0137159
+   20-  50 ms RMS broadband/mid/high = 0.00746301/0.00343961/0.00655415
+   50- 100 ms RMS broadband/mid/high = 0.00295665/0.00153507/0.00245028
+  100- 200 ms RMS broadband/mid/high = 0.000655764/0.000425762/0.000489686
+  200- 500 ms RMS broadband/mid/high = 4.10084e-05/3.15364e-05/2.51552e-05
+  500-1000 ms RMS broadband/mid/high = 5.75579e-08/4.98673e-08/2.48444e-08
+v2a post-loss: 2s RMS=0.000944292, peak=0.18, crest=190.619, broadband centroid=4.64 ms, C50=17.83 dB, C80=25.06 dB, ABR=12.51 dB, gain=1
+  centroid mid/high = 9.29/1.31 ms; persistence mid -20/-40 = 56.6/129.7 ms; high -20/-40 = 11.0/22.2 ms
+    0-  20 ms RMS broadband/mid/high = 0.00918851/0.00440488/0.00782326
+   20-  50 ms RMS broadband/mid/high = 0.00148227/0.0010966/6.54936e-05
+   50- 100 ms RMS broadband/mid/high = 0.000731585/0.000409328/3.55928e-07
+  100- 200 ms RMS broadband/mid/high = 0.00014471/5.85905e-05/2.05802e-08
+  200- 500 ms RMS broadband/mid/high = 1.01311e-05/4.08335e-06/7.11971e-10
+  500-1000 ms RMS broadband/mid/high = 2.05026e-08/4.821e-09/5.37293e-13
+v2a pre-loss: 2s RMS=0.00154579, peak=0.18, crest=116.445, broadband centroid=8.40 ms, C50=20.57 dB, C80=27.54 dB, ABR=14.05 dB, gain=1
+  centroid mid/high = 11.13/7.07 ms; persistence mid -20/-40 = 55.6/141.8 ms; high -20/-40 = 22.5/35.3 ms
+    0-  20 ms RMS broadband/mid/high = 0.0151624/0.00647766/0.0135396
+   20-  50 ms RMS broadband/mid/high = 0.00215582/0.00153294/0.000913196
+   50- 100 ms RMS broadband/mid/high = 0.000874341/0.000475531/1.38741e-06
+  100- 200 ms RMS broadband/mid/high = 0.000180296/7.8698e-05/3.22374e-08
+  200- 500 ms RMS broadband/mid/high = 1.25021e-05/4.89994e-06/9.01999e-10
+  500-1000 ms RMS broadband/mid/high = 2.61343e-08/6.03871e-09/6.79701e-13
+  C-B RMS differences (dB):
+    high_gt3000 20-50 ms: +22.887
+    high_gt3000 50-100 ms: +11.817
+    broadband 20-200 ms: +2.808
+    mid_300_3000 20-200 ms: +2.648
+    high_gt3000 20-200 ms: +22.887
+8. LEVEL-MATCHED comparison
+L1: 2s RMS=0.000944292, peak=0.0915224, crest=96.922, broadband centroid=18.07 ms, C50=11.26 dB, C80=17.64 dB, ABR=3.44 dB, gain=0.508458
+  centroid mid/high = 21.92/17.09 ms; persistence mid -20/-40 = 111.5/225.4 ms; high -20/-40 = 83.9/174.5 ms
+    0-  20 ms RMS broadband/mid/high = 0.00783311/0.00341635/0.00697397
+   20-  50 ms RMS broadband/mid/high = 0.00379462/0.0017489/0.00333251
+   50- 100 ms RMS broadband/mid/high = 0.00150333/0.000780515/0.00124587
+  100- 200 ms RMS broadband/mid/high = 0.000333428/0.000216482/0.000248985
+  200- 500 ms RMS broadband/mid/high = 2.0851e-05/1.60349e-05/1.27903e-05
+  500-1000 ms RMS broadband/mid/high = 2.92657e-08/2.53554e-08/1.26323e-08
+v2a post-loss: 2s RMS=0.000944292, peak=0.18, crest=190.619, broadband centroid=4.64 ms, C50=17.83 dB, C80=25.06 dB, ABR=12.51 dB, gain=1
+  centroid mid/high = 9.29/1.31 ms; persistence mid -20/-40 = 56.6/129.7 ms; high -20/-40 = 11.0/22.2 ms
+    0-  20 ms RMS broadband/mid/high = 0.00918851/0.00440488/0.00782326
+   20-  50 ms RMS broadband/mid/high = 0.00148227/0.0010966/6.54936e-05
+   50- 100 ms RMS broadband/mid/high = 0.000731585/0.000409328/3.55928e-07
+  100- 200 ms RMS broadband/mid/high = 0.00014471/5.85905e-05/2.05802e-08
+  200- 500 ms RMS broadband/mid/high = 1.01311e-05/4.08335e-06/7.11971e-10
+  500-1000 ms RMS broadband/mid/high = 2.05026e-08/4.821e-09/5.37293e-13
+v2a pre-loss: 2s RMS=0.000944292, peak=0.109959, crest=116.445, broadband centroid=8.40 ms, C50=20.57 dB, C80=27.54 dB, ABR=14.05 dB, gain=0.610881
+  centroid mid/high = 11.13/7.07 ms; persistence mid -20/-40 = 55.6/141.8 ms; high -20/-40 = 22.5/35.3 ms
+    0-  20 ms RMS broadband/mid/high = 0.00926242/0.00395708/0.00827106
+   20-  50 ms RMS broadband/mid/high = 0.00131695/0.000936442/0.000557854
+   50- 100 ms RMS broadband/mid/high = 0.000534118/0.000290493/8.47539e-07
+  100- 200 ms RMS broadband/mid/high = 0.000110139/4.80751e-05/1.96932e-08
+  200- 500 ms RMS broadband/mid/high = 7.63728e-06/2.99328e-06/5.51014e-10
+  500-1000 ms RMS broadband/mid/high = 1.59649e-08/3.68893e-09/4.15217e-13
+  C-B RMS differences (dB):
+    high_gt3000 20-50 ms: +18.606
+    high_gt3000 50-100 ms: +7.536
+    broadband 20-200 ms: -1.473
+    mid_300_3000 20-200 ms: -1.633
+    high_gt3000 20-200 ms: +18.606
+
+9. Interpretation
+[DYNAMICS]
+L1 mean T60 low/high=0.340/0.270 s; v2a=0.343/0.032 s. Compare bands above and alpha/T60 plots for frequency-dependent damping.
+Spacing CV L1/v2a=0.358/0.364; modal density is reported by band above; delay bank is identical.
+[READOUT]
+B and C have identical feedback matrices and poles. Their different output operators give different mode residues/zeros, hence different impulse and audible spectra.
+Level-matched high-band C-B 20-50 ms: +18.61 dB
+Level-matched high-band C-B 50-100 ms: +7.54 dB
+Level-matched high-band C-B 20-200 ms: +18.61 dB
+At matched 2 s RMS, 20-50 ms high-band C is between L1 and B: L1=0.00333251, B=6.54936e-05, C=0.000557854.
+The same ordering does not apply to every metric: level-matched C-B 20-200 ms broadband=-1.47 dB, mid-band=-1.63 dB. C does not return to L1 feedback dynamics.
