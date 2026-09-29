@@ -1,0 +1,57 @@
+[VERSION / CANDIDATE]
+production source: /Users/muzhi/Documents/bBpiano/core/bBpiano Lite/core/bbpl/piano/soundboard_model.hpp
+candidate JSON: /Users/muzhi/Documents/bBpiano/lab/soundboard-fancy/v2b/output/structure_search/best_candidate.json
+best_modal_only == best_temporally_feasible: True; selected best_temporally_feasible
+current delays=[37, 87, 181, 271, 359, 492, 687, 721], sum=2835
+candidate delays=[49, 171, 275, 304, 326, 447, 494, 580], sum=2646
+[SOS REGENERATION]
+Unchanged v2a alpha target; |H_i(f)|=exp(-alpha_target(f)*L_i/Fs). One shared 6-section nonlinear fit; reference 721, section gain_db scaled by L/721. Float32 coefficients, two identity slots per branch.
+optimizer success=True; candidate SOS=/Users/muzhi/Documents/bBpiano/lab/soundboard-fancy/v2b/output/damped_candidate_A/candidate_sos.json
+[BRANCH FIT QUALITY]
+20 Hz..Nyquist, 4096 log-spaced points; RMS / max absolute dB:
+  L=49: 0.041937 / 0.142527
+  L=171: 0.121814 / 0.436250
+  L=275: 0.133201 / 0.537197
+  L=304: 0.124443 / 0.530110
+  L=326: 0.114637 / 0.512922
+  L=447: 0.106718 / 0.542819
+  L=494: 0.185251 / 0.796315
+  L=580: 0.408395 / 1.401396
+overall RMS dB=0.185560; max SOS pole radius=0.968131945; all finite, |coefficient|<=10
+[EXACT CLOSED-LOOP VALIDATION]
+current eig(F) dimension=2931, max radius=0.999556075; candidate lossless dimension=2646, max radius=1.000000000; candidate damped dimension=2742, max radius=0.999553840
+structural/SOS-dominated: current 1417/48, candidate 1322/48
+radius gap: current=0.030096215, candidate=0.024648372
+M(z) sigma_min/sigma_max current max/median=3.978e-12/6.536e-13
+M(z) sigma_min/sigma_max candidate max/median=4.223e-12/6.280e-13
+Characteristic residuals near numerical zero
+[DAMPING TARGET TRACKING]
+Structural modes 100-10000 Hz; alpha MAE/RMSE/mean relative absolute error:
+current n=637: 3.049545 / 3.786498 / 1.735104%
+candidate n=594: 1.241262 / 1.668364 / 0.844233%
+  current v2a 100-300: n=14, mean alpha=20.15262 s^-1, T60=0.34309 s, eta=3.55916%, Q=30.85120
+  current v2a 300-1100: n=52, mean alpha=49.79795 s^-1, T60=0.15751 s, eta=2.25428%, Q=44.38314
+  current v2a 1100-2500: n=89, mean alpha=135.62939 s^-1, T60=0.05291 s, eta=2.42988%, Q=41.31469
+  current v2a 2500-5000: n=161, mean alpha=214.63702 s^-1, T60=0.03226 s, eta=1.88831%, Q=54.75169
+  current v2a 5000-10000: n=321, mean alpha=217.06763 s^-1, T60=0.03183 s, eta=0.95492%, Q=108.30081
+  candidate damped 100-300: n=12, mean alpha=20.06710 s^-1, T60=0.34443 s, eta=3.56892%, Q=30.63064
+  candidate damped 300-1100: n=49, mean alpha=49.43083 s^-1, T60=0.15981 s, eta=2.25859%, Q=44.29220
+  candidate damped 1100-2500: n=84, mean alpha=135.74804 s^-1, T60=0.05299 s, eta=2.42582%, Q=41.41889
+  candidate damped 2500-5000: n=150, mean alpha=213.43123 s^-1, T60=0.03242 s, eta=1.87159%, Q=55.13820
+  candidate damped 5000-10000: n=299, mean alpha=217.38965 s^-1, T60=0.03178 s, eta=0.95833%, Q=108.43147
+[MODAL STRUCTURE PRESERVATION]
+Nearest-neighbor spacing 100-3000 Hz; physical density target only 100-1100 Hz.
+  current v2a: n=188, CV=0.363531324, CDF distance=0.120525961, quantile RMSE=0.172843196, low-density RMSE=0.007223057
+  candidate lossless: n=174, CV=0.470424149, CDF distance=0.052715398, quantile RMSE=0.100528690, low-density RMSE=0.005095394
+  candidate damped: n=175, CV=0.467808512, CDF distance=0.054456433, quantile RMSE=0.101354798, low-density RMSE=0.005317873
+damped minus lossless: delta CV=-0.002615637, delta CDF=+0.001741035, delta quantile RMSE=+0.000826108
+monotonic same-candidate pairing (100-10000 Hz, n=594): median/p95/max |delta f|=6.346398/18.617113/19.559321 Hz
+monotonic same-candidate pairing (100-3000 Hz, n=174): median/p95/max |delta f|=16.929906/19.056385/19.559321 Hz
+[INTERPRETATION]
+Q1: YES; candidate damped CV 0.467809 versus current 0.363531; Rayleigh target 0.522723. CDF and quantile metrics are also better.
+Q2: lossless CV 0.470424 -> damped CV 0.467809.
+Q3: YES, candidate alpha target MAE/RMSE/relative MAE 1.24126/1.66836/0.844%, versus current relative MAE 1.735%; band T60 and eta above.
+Q4: substantial angle shifts: 100-3000 Hz median/p95/max 16.92991/19.05639/19.55932 Hz, versus mean modal spacing 16.71655 Hz. Smooth shifts leave spacing statistics close; damping is not purely radial.
+Q5: YES on numerical grounds for experimental integration and listening A/B; no listening inference.
+[NEXT STEP]
+Experimental integration can test the measured angle shifts and then listening A/B; production unchanged in this run.

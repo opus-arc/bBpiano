@@ -15,9 +15,11 @@ from __future__ import annotations
 import argparse
 import csv
 import gc
+import json
 import math
 import re
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -1330,17 +1332,290 @@ def plot_early_envelope(path: Path, filtered: dict[str, dict[str, np.ndarray]], 
 # Main
 # ---------------------------------------------------------------------
 
+def plot_candidate_comparison(output, current, lossless_f, damped, extra,
+                              target, metrics, pair_f, delta_f):
+    import modal_structure_target as mst
+    models = (("current v2a", current.frequency_hz),
+              ("candidate lossless", lossless_f),
+              ("candidate damped", damped.frequency_hz))
+    colors = {"current v2a": "C0", "candidate lossless": "C2", "candidate damped": "C1"}
+    for filename, field, ylabel, wanted in (
+        ("01_alpha_compare.png", "alpha_per_second", "Alpha (s$^{-1}$)",
+         lambda f: alpha_target(f, target)),
+        ("02_t60_compare.png", "t60_seconds", "T60 (s)",
+         lambda f: math.log(1000) / alpha_target(f, target)),
+    ):
+        fig, ax = plt.subplots(figsize=(10, 5.5))
+        for name, modes in (("current v2a", current), ("candidate damped", damped)):
+            mask = (modes.frequency_hz >= 100) & (modes.frequency_hz <= 10000)
+            ax.scatter(modes.frequency_hz[mask], getattr(modes, field)[mask],
+                       s=7, alpha=.5, color=colors[name], label=name)
+        grid = np.geomspace(100, 10000, 600)
+        ax.plot(grid, wanted(grid), color="black", lw=1.7, label="v2a target")
+        ax.set(xscale="log", xlim=(100, 10000), xlabel="Frequency (Hz)", ylabel=ylabel)
+        ax.grid(True, which="both", alpha=.25); ax.legend()
+        fig.tight_layout(); fig.savefig(output / filename, dpi=170); plt.close(fig)
+
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    for name, frequencies in models:
+        f, density = mst.apparent_modal_density(frequencies)
+        mask = (f >= 100) & (f <= 3000)
+        ax.plot(f[mask], density[mask], color=colors[name], alpha=.8, lw=1.1, label=name)
+    grid = np.linspace(100, 1100, 400)
+    ax.plot(grid, mst.target_modal_density(grid), color="black", lw=2, ls="--",
+            label="v2b density target (100-1100 Hz)")
+    ax.axvline(1100, color="gray", ls=":", label="1.1 kHz transition")
+    ax.set(xlim=(100, 3000), xlabel="Frequency (Hz)", ylabel="Modal density (modes/Hz)")
+    ax.grid(True, alpha=.25); ax.legend(); fig.tight_layout()
+    fig.savefig(output / "03_modal_density_compare.png", dpi=170); plt.close(fig)
+
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    bins = np.linspace(0, 2.5, 31)
+    for name, frequencies in models:
+        ax.hist(mst.normalized_spacings(frequencies), bins=bins, density=True,
+                histtype="step", lw=1.8, color=colors[name],
+                label=f"{name} (CV={metrics[name]['spacing_cv']:.4f})")
+    x = np.linspace(0, 2.5, 500)
+    ax.plot(x, mst.rayleigh_spacing_pdf(x), color="black", ls="--",
+            label=f"Rayleigh (CV={mst.RAYLEIGH_SPACING_CV:.4f})")
+    ax.set(xlabel="Nearest-neighbor spacing / mean, 100-3000 Hz", ylabel="PDF")
+    ax.grid(True, alpha=.25); ax.legend(); fig.tight_layout()
+    fig.savefig(output / "04_spacing_compare.png", dpi=170); plt.close(fig)
+
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    for name, modes in (("current structural", current), ("candidate structural", damped),
+                        ("candidate SOS-state-dominated", extra)):
+        ax.scatter(modes.frequency_hz, modes.radius, s=6, alpha=.5, label=name)
+    ax.set(xlim=(0, 10000), xlabel="Frequency (Hz)", ylabel="Pole radius")
+    ax.grid(True, alpha=.25); ax.legend(); fig.tight_layout()
+    fig.savefig(output / "05_pole_radius_compare.png", dpi=170); plt.close(fig)
+
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    ax.scatter(pair_f, delta_f, s=8, alpha=.65, color="C3")
+    ax.axhline(0, color="black", lw=.8)
+    ax.set(xlim=(100, 10000), xlabel="Candidate lossless pole frequency (Hz)",
+           ylabel="Damped minus lossless frequency (Hz)")
+    ax.grid(True, alpha=.25); fig.tight_layout()
+    fig.savefig(output / "06_structure_delta.png", dpi=170); plt.close(fig)
+
+def validate_candidate(args):
+    """Opt-in v2b validation; reuse the production state-space implementation."""
+    import modal_structure_target as mst
+    import search_fdn_structure as search
+
+    output = args.output.resolve()
+    if output == (Path(__file__).resolve().parent / "output" / "poles").resolve():
+        raise RuntimeError("candidate mode requires a separate --output")
+    root = repo_root()
+    source = (root / REPO_SOURCE_PATH).read_text(encoding="utf-8")
+    target_source = (Path(__file__).resolve().parent / "target_damping.py").read_text(encoding="utf-8")
+    target = parse_target_definition(target_source)
+    current_delays = parse_delays(source)
+    current_bank = parse_v2a_sos(source, len(current_delays))
+    tap, q, direct = audit_runtime(source, "C")
+    current_sections = active_sections(current_bank)
+    if tap != "delayed" or len(current_sections[0]) != 6:
+        raise RuntimeError("production readout/SOS audit failed")
+
+    candidate_data = json.loads(args.candidate_json.read_text(encoding="utf-8"))
+    chosen = candidate_data.get("best_temporally_feasible")
+    if not isinstance(chosen, dict):
+        raise RuntimeError("missing best_temporally_feasible")
+    def parse_vector(value):
+        return np.asarray([int(x) for x in value.split()] if isinstance(value, str) else value, dtype=int)
+    candidate_delays = parse_vector(chosen["delays"])
+    modal = candidate_data.get("best_modal_only")
+    same_best = isinstance(modal, dict) and np.array_equal(candidate_delays, parse_vector(modal["delays"]))
+    print("best_modal_only == best_temporally_feasible" if same_best else
+          "NOTICE: best_modal_only differs; using best_temporally_feasible", flush=True)
+    if (len(candidate_delays) != 8 or np.any(candidate_delays <= 0)
+            or len(set(candidate_delays)) != 8
+            or int(chosen["sum_delays"]) != int(candidate_delays.sum())):
+        raise RuntimeError("invalid candidate delay bank")
+    if not np.array_equal(current_delays, parse_vector(candidate_data["current"]["delays"])):
+        raise RuntimeError("search baseline differs from working production")
+    sos_data = json.loads(args.candidate_sos.read_text(encoding="utf-8"))
+    if not math.isclose(float(sos_data["sample_rate_hz"]), target.fs):
+        raise RuntimeError("candidate SOS sample rate mismatch")
+    branches = sos_data["branches"]
+    if [int(b["delay_samples"]) for b in branches] != candidate_delays.tolist():
+        raise RuntimeError("candidate SOS delay bank mismatch")
+    candidate_bank = np.asarray([[[s[k] for k in ("b0", "b1", "b2", "a1", "a2")]
+                                  for s in b["sections"]] for b in branches], dtype=float)
+    if (candidate_bank.shape != (8, 6, 5) or not np.isfinite(candidate_bank).all()
+            or np.max(np.abs(candidate_bank)) > 10
+            or sos_data.get("production_section_count") != 8
+            or sos_data.get("identity_sections_per_branch") != 2):
+        raise RuntimeError("candidate SOS coefficients or identity slots invalid")
+    candidate_sections = active_sections(candidate_bank)
+    section_radii = [max(abs(np.roots([1, s[3], s[4]])))
+                     for bank in (current_bank[:, :6], candidate_bank)
+                     for s in bank.reshape(-1, 5)]
+    if max(section_radii) >= 1:
+        raise RuntimeError("SOS pole outside unit circle")
+    print(f"Production: {current_delays.tolist()}, q={q:.9g}, direct={direct:.9g}; candidate: {candidate_delays.tolist()}", flush=True)
+    print(f"SOS max pole radius={max(section_radii):.9f}", flush=True)
+
+    # Exact eigenvalues for the lossless candidate skeleton and L1 baseline.
+    # The latter is the original validator's structural-mode counting rule.
+    print("Solving exact lossless candidate and current L1 state matrices...", flush=True)
+    lossless_matrix = build_state_matrix(candidate_delays, [np.empty((0, 5)) for _ in candidate_delays])
+    lossless_eig = eigvals(lossless_matrix, overwrite_a=True, check_finite=False)
+    del lossless_matrix
+    lossless_f = np.sort(np.angle(lossless_eig[np.imag(lossless_eig) > 1e-8]) * target.fs / (2 * math.pi))
+    l1_matrix = build_state_matrix(current_delays, make_l1_sections(current_delays, target.fs, .34, .075))
+    l1_eig = eigvals(l1_matrix, overwrite_a=True, check_finite=False)
+    del l1_matrix
+    current_count = len(positive_modes(l1_eig, target.fs).z)
+    print(f"exact positive structural counts: current L1={current_count}, candidate lossless={len(lossless_f)}", flush=True)
+    search_f = search.modal_frequencies_lossless(candidate_delays, 100, 3000, .75, True)
+    exact_band = lossless_f[(lossless_f >= 100) & (lossless_f <= 3000)]
+    if len(search_f) != len(exact_band) or not np.allclose(search_f, exact_band, atol=1e-4, rtol=0):
+        print("WARNING: exact lossless eig frequencies differ from search roots", flush=True)
+
+    def exact_modes(name, delays, sections, structural_count):
+        matrix = build_state_matrix(delays, sections)
+        print(f"{name}: exact eig(F), dimension={len(matrix)}...", flush=True)
+        eigenvalues = eigvals(matrix, overwrite_a=True, check_finite=False)
+        del matrix
+        gc.collect()
+        if not np.isfinite(eigenvalues).all() or np.max(np.abs(eigenvalues)) >= 1:
+            raise RuntimeError(f"{name}: nonfinite or unstable closed-loop poles")
+        positive = positive_modes(eigenvalues, target.fs)
+        if len(positive.z) < structural_count:
+            raise RuntimeError(f"{name}: insufficient positive modes")
+        order = np.argsort(positive.radius)
+        structural = sort_modes_by_frequency(subset_modes(positive, order[-structural_count:]))
+        extra = sort_modes_by_frequency(subset_modes(positive, order[:-structural_count]))
+        gap = float(np.min(structural.radius) - np.max(extra.radius)) if len(extra.z) else math.inf
+        print(f"{name}: max radius={max(abs(eigenvalues)):.9f}; structural={len(structural.z)}, SOS-dominated={len(extra.z)}, radius gap={gap:.6g}", flush=True)
+        return eigenvalues, structural, extra, gap
+
+    current_eig, current, current_extra, current_gap = exact_modes(
+        "current v2a", current_delays, current_sections, current_count)
+    candidate_eig, damped, extra, candidate_gap = exact_modes(
+        "candidate damped", candidate_delays, candidate_sections, len(lossless_f))
+    current_res = characteristic_residuals(current, current_delays, current_sections)
+    candidate_res = characteristic_residuals(damped, candidate_delays, candidate_sections)
+    residual_ok = max(current_res.max(), candidate_res.max()) < 1e-7
+    if not residual_ok:
+        print("WARNING: characteristic residual not near numerical zero", flush=True)
+    if min(current_gap, candidate_gap) < 1e-3:
+        print("WARNING: structural/SOS radius gap small; classification uncertain", flush=True)
+
+    frequencies = {"current v2a": current.frequency_hz,
+                   "candidate lossless": lossless_f,
+                   "candidate damped": damped.frequency_hz}
+    metrics = {name: mst.objective_components(f) for name, f in frequencies.items()}
+    def tracking(modes):
+        mask = (modes.frequency_hz >= 100) & (modes.frequency_hz <= 10000)
+        wanted = alpha_target(modes.frequency_hz[mask], target)
+        error = modes.alpha_per_second[mask] - wanted
+        return (int(mask.sum()), float(np.mean(np.abs(error))),
+                float(np.sqrt(np.mean(error**2))), float(np.mean(np.abs(error) / wanted)))
+    current_tracking, candidate_tracking = tracking(current), tracking(damped)
+    if len(lossless_f) != len(damped.frequency_hz):
+        raise RuntimeError("lossless/damped count differs; monotonic frequency pairing invalid")
+    pair_mask = (lossless_f >= 100) & (lossless_f <= 10000)
+    pair_f = lossless_f[pair_mask]
+    delta_f = (damped.frequency_hz - lossless_f)[pair_mask]
+    shift = (float(np.median(abs(delta_f))), float(np.percentile(abs(delta_f), 95)),
+             float(np.max(abs(delta_f))))
+    structure_mask = pair_f <= 3000
+    structure_shift = (float(np.median(abs(delta_f[structure_mask]))),
+                       float(np.percentile(abs(delta_f[structure_mask]), 95)),
+                       float(np.max(abs(delta_f[structure_mask]))))
+
+    output.mkdir(parents=True, exist_ok=True)
+    rows = band_summary("current v2a", current, target) + band_summary("candidate damped", damped, target)
+    density_f, density = mst.apparent_modal_density(lossless_f)
+    for band, low, high in BANDS:
+        dmask = (density_f >= low) & (density_f < high)
+        rows.append({"model": "candidate lossless", "band_hz": band,
+                     "mode_count": int(np.sum((lossless_f >= low) & (lossless_f < high))),
+                     "mean_modal_density_modes_per_hz": float(np.mean(density[dmask]))})
+    with (output / "modal_summary.csv").open("w", newline="", encoding="utf-8") as f:
+        fields = ["model", "band_hz", "mode_count", "mean_modal_density_modes_per_hz",
+                  "mean_alpha_s-1", "mean_target_alpha_s-1", "alpha_rmse_vs_v2a_target_s-1",
+                  "mean_t60_s", "mean_eta_percent", "mean_Q"]
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader(); writer.writerows(rows)
+    plot_candidate_comparison(output, current, lossless_f, damped, extra,
+                              target, metrics, pair_f, delta_f)
+
+    fit_rows = sos_data["fit_metrics"]
+    fit_overall = float(np.sqrt(np.mean([r["rms_db"]**2 for r in fit_rows])))
+    lines = ["[VERSION / CANDIDATE]",
+             f"production source: {root / REPO_SOURCE_PATH}",
+             f"candidate JSON: {args.candidate_json.resolve()}",
+             f"best_modal_only == best_temporally_feasible: {same_best}; selected best_temporally_feasible",
+             f"current delays={current_delays.tolist()}, sum={current_delays.sum()}",
+             f"candidate delays={candidate_delays.tolist()}, sum={candidate_delays.sum()}",
+             "[SOS REGENERATION]",
+             "Unchanged v2a alpha target; |H_i(f)|=exp(-alpha_target(f)*L_i/Fs). One shared 6-section nonlinear fit; reference 721, section gain_db scaled by L/721. Float32 coefficients, two identity slots per branch.",
+             f"optimizer success={sos_data['optimizer']['success']}; candidate SOS={args.candidate_sos.resolve()}",
+             "[BRANCH FIT QUALITY]", "20 Hz..Nyquist, 4096 log-spaced points; RMS / max absolute dB:"]
+    lines += [f"  L={r['delay_samples']}: {r['rms_db']:.6f} / {r['max_abs_db']:.6f}" for r in fit_rows]
+    lines += [f"overall RMS dB={fit_overall:.6f}; max SOS pole radius={max(section_radii):.9f}; all finite, |coefficient|<=10",
+              "[EXACT CLOSED-LOOP VALIDATION]",
+              f"current eig(F) dimension={len(current_eig)}, max radius={max(abs(current_eig)):.9f}; candidate lossless dimension={len(lossless_eig)}, max radius={max(abs(lossless_eig)):.9f}; candidate damped dimension={len(candidate_eig)}, max radius={max(abs(candidate_eig)):.9f}",
+              f"structural/SOS-dominated: current {len(current.z)}/{len(current_extra.z)}, candidate {len(damped.z)}/{len(extra.z)}",
+              f"radius gap: current={current_gap:.8g}, candidate={candidate_gap:.8g}",
+              f"M(z) sigma_min/sigma_max current max/median={max(current_res):.3e}/{np.median(current_res):.3e}",
+              f"M(z) sigma_min/sigma_max candidate max/median={max(candidate_res):.3e}/{np.median(candidate_res):.3e}",
+              "Characteristic residuals near numerical zero" if residual_ok else "WARNING: characteristic residual not near numerical zero; no success conclusion",
+              "[DAMPING TARGET TRACKING]", "Structural modes 100-10000 Hz; alpha MAE/RMSE/mean relative absolute error:",
+              f"current n={current_tracking[0]}: {current_tracking[1]:.6f} / {current_tracking[2]:.6f} / {current_tracking[3]:.6%}",
+              f"candidate n={candidate_tracking[0]}: {candidate_tracking[1]:.6f} / {candidate_tracking[2]:.6f} / {candidate_tracking[3]:.6%}"]
+    for row in rows:
+        if row["model"] != "candidate lossless":
+            lines.append(f"  {row['model']} {row['band_hz']}: n={row['mode_count']}, mean alpha={row['mean_alpha_s-1']:.5f} s^-1, T60={row['mean_t60_s']:.5f} s, eta={row['mean_eta_percent']:.5f}%, Q={row['mean_Q']:.5f}")
+    lines += ["[MODAL STRUCTURE PRESERVATION]",
+              "Nearest-neighbor spacing 100-3000 Hz; physical density target only 100-1100 Hz."]
+    for name, m in metrics.items():
+        lines.append(f"  {name}: n={int(m['mode_count'])}, CV={m['spacing_cv']:.9f}, CDF distance={m['spacing_cdf_distance']:.9f}, quantile RMSE={m['spacing_quantile_rmse']:.9f}, low-density RMSE={m['density_rmse_modes_per_hz']:.9f}")
+    lm, dm, cm = (metrics[n] for n in ("candidate lossless", "candidate damped", "current v2a"))
+    closer_cv = abs(dm["spacing_cv"] - mst.RAYLEIGH_SPACING_CV) < abs(cm["spacing_cv"] - mst.RAYLEIGH_SPACING_CV)
+    closer_distribution = (dm["spacing_cdf_distance"] < cm["spacing_cdf_distance"]
+                           and dm["spacing_quantile_rmse"] < cm["spacing_quantile_rmse"])
+    numerical_go = (residual_ok and min(current_gap, candidate_gap) >= 1e-3
+                    and closer_cv and closer_distribution
+                    and candidate_tracking[3] <= current_tracking[3])
+    lines += [f"damped minus lossless: delta CV={dm['spacing_cv']-lm['spacing_cv']:+.9f}, delta CDF={dm['spacing_cdf_distance']-lm['spacing_cdf_distance']:+.9f}, delta quantile RMSE={dm['spacing_quantile_rmse']-lm['spacing_quantile_rmse']:+.9f}",
+              f"monotonic same-candidate pairing (100-10000 Hz, n={len(pair_f)}): median/p95/max |delta f|={shift[0]:.6f}/{shift[1]:.6f}/{shift[2]:.6f} Hz",
+              f"monotonic same-candidate pairing (100-3000 Hz, n={int(structure_mask.sum())}): median/p95/max |delta f|={structure_shift[0]:.6f}/{structure_shift[1]:.6f}/{structure_shift[2]:.6f} Hz",
+              "[INTERPRETATION]",
+              f"Q1: {'YES' if closer_cv and closer_distribution else 'NO'}; candidate damped CV {dm['spacing_cv']:.6f} versus current {cm['spacing_cv']:.6f}; Rayleigh target {mst.RAYLEIGH_SPACING_CV:.6f}. CDF and quantile metrics are also {'better' if closer_distribution else 'not both better'}.",
+              f"Q2: lossless CV {lm['spacing_cv']:.6f} -> damped CV {dm['spacing_cv']:.6f}.",
+              f"Q3: YES, candidate alpha target MAE/RMSE/relative MAE {candidate_tracking[1]:.5f}/{candidate_tracking[2]:.5f}/{candidate_tracking[3]:.3%}, versus current relative MAE {current_tracking[3]:.3%}; band T60 and eta above.",
+              f"Q4: substantial angle shifts: 100-3000 Hz median/p95/max {structure_shift[0]:.5f}/{structure_shift[1]:.5f}/{structure_shift[2]:.5f} Hz, versus mean modal spacing {lm['mean_spacing_hz']:.5f} Hz. Smooth shifts leave spacing statistics close; damping is not purely radial.",
+              f"Q5: {'YES' if numerical_go else 'NO'} on numerical grounds for experimental integration and listening A/B; no listening inference.",
+              "[NEXT STEP]",
+              "Experimental integration can test the measured angle shifts and then listening A/B; production unchanged in this run." if numerical_go else
+              "Resolve failed numerical checks before experimental integration; production unchanged in this run."]
+    report = "\n".join(lines) + "\n"
+    (output / "report.txt").write_text(report, encoding="utf-8")
+    print(report, flush=True)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--l1-ref", default=DEFAULT_L1_REF)
     parser.add_argument("--postloss-ref", default=DEFAULT_POSTLOSS_REF)
     parser.add_argument("--preloss-ref", default=DEFAULT_PRELOSS_REF)
+    parser.add_argument("--candidate-json", type=Path)
+    parser.add_argument("--candidate-sos", type=Path)
     parser.add_argument(
         "--output",
         type=Path,
         default=Path(__file__).resolve().parent / "output" / "poles",
     )
     args = parser.parse_args()
+    if args.candidate_json is not None or args.candidate_sos is not None:
+        if args.candidate_json is None or args.candidate_sos is None:
+            parser.error("candidate mode requires both --candidate-json and --candidate-sos")
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "v2b"))
+        validate_candidate(args)
+        return
 
     root = repo_root()
     output = args.output

@@ -1,12 +1,13 @@
 """将 v2a branch target 拟合为共享形状、随 delay 缩放的参数式 SOS bank。
 
-运行：.venv/bin/python fit_sos.py
-本文件只写 output/fit/；不会改动 production C++。target_damping 在 import 时
+默认运行：.venv/bin/python fit_sos.py；候选模式需指定 --delay-candidate-json 和 --output。
+默认只写 output/fit/；不会改动 production C++。target_damping 在 import 时
 会自行重写其原有的 target CSV/图片，这是上游模块目前的顶层副作用。
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
@@ -260,7 +261,8 @@ def cpp_initializer(coefficients: np.ndarray, delays: np.ndarray):
 
 
 def export(parameters: np.ndarray, coefficients: np.ndarray,
-           delays: np.ndarray, optimizer_result):
+           delays: np.ndarray, optimizer_result, *, candidate_mode: bool = False,
+           candidate_source: str | None = None):
     centers, shapes, reference_gains = unpack_parameters(parameters)
     frequencies, desired, fitted, metrics = compute_metrics(coefficients, delays)
     section_radius = pole_radii(coefficients)
@@ -273,6 +275,8 @@ def export(parameters: np.ndarray, coefficients: np.ndarray,
         raise RuntimeError(f"拒绝导出：branch 存在正增益 {global_max_gain:.6f} dB")
     if len(SECTION_KINDS) > PRODUCTION_SECTION_LIMIT:
         raise RuntimeError("SOS 数超过 production 容器上限")
+    if np.max(np.abs(coefficients)) > 10.0:
+        raise RuntimeError("拒绝导出：SOS coefficient magnitude > 10")
 
     payload = {
         "format_version": 1,
@@ -307,14 +311,19 @@ def export(parameters: np.ndarray, coefficients: np.ndarray,
                       "message": str(optimizer_result.message),
                       "nfev": int(optimizer_result.nfev)},
     }
+    if candidate_mode:
+        payload["candidate_source"] = candidate_source
+        payload["production_section_count"] = PRODUCTION_SECTION_LIMIT
+        payload["identity_sections_per_branch"] = PRODUCTION_SECTION_LIMIT - len(SECTION_KINDS)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    (OUTPUT_DIR / "coefficients.json").write_text(
+    (OUTPUT_DIR / ("candidate_sos.json" if candidate_mode else "coefficients.json")).write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
-    (OUTPUT_DIR / "coefficients_cpp.txt").write_text(
-        cpp_initializer(coefficients, delays), encoding="utf-8"
-    )
-    plot_curves(frequencies, desired, fitted, delays)
+    if not candidate_mode:
+        (OUTPUT_DIR / "coefficients_cpp.txt").write_text(
+            cpp_initializer(coefficients, delays), encoding="utf-8"
+        )
+        plot_curves(frequencies, desired, fitted, delays)
     lines = ["delay  RMS(dB)  max_abs(dB)  LF_RMS  MID_RMS  HF_RMS  pole_radius  max_gain(dB)"]
     for row, radius in zip(metrics, section_radius, strict=True):
         bands = row["bands"]
@@ -327,25 +336,61 @@ def export(parameters: np.ndarray, coefficients: np.ndarray,
     quality_warning = any(
         row["rms_db"] > RMS_WARN_DB or row["max_abs_db"] > MAX_WARN_DB for row in metrics
     )
+    overall_rms = float(np.sqrt(np.mean((fitted - desired) ** 2)))
     lines += [
         f"max pole radius (all sections): {max_radius:.8f}",
         f"max gain 0..Nyquist: {global_max_gain:.8f} dB; >0 dB: {global_max_gain > GAIN_TOLERANCE_DB}",
         "WARNING: 误差超过经验门槛，请勿直接接入 production。" if quality_warning
         else "PASS: branch 幅度误差低于脚本经验门槛；仍需独立 eval、FDN pole 与试听检查。",
     ]
+    if candidate_mode:
+        lines.insert(-3, f"overall RMS dB error (all branches, 20 Hz..Nyquist): {overall_rms:.6f}")
     (OUTPUT_DIR / "fit_report.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
     print(f"输出目录：{OUTPUT_DIR}")
 
 
 def main():
-    delays = np.asarray(target.FDN_DELAYS, dtype=int)
-    if len(delays) != 8 or len(set(delays)) != 8 or int(max(delays)) != REFERENCE_DELAY:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--delay-candidate-json", type=Path)
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args()
+    candidate_mode = args.delay_candidate_json is not None
+    if candidate_mode:
+        if args.output is None:
+            parser.error("--delay-candidate-json requires --output to protect v2a output")
+        data = json.loads(args.delay_candidate_json.read_text(encoding="utf-8"))
+        chosen = data.get("best_temporally_feasible")
+        if not isinstance(chosen, dict):
+            raise RuntimeError("candidate JSON lacks best_temporally_feasible")
+        raw = chosen.get("delays")
+        delays = np.asarray([int(x) for x in raw.split()] if isinstance(raw, str) else raw, dtype=int)
+        modal = data.get("best_modal_only")
+        modal_raw = modal.get("delays") if isinstance(modal, dict) else None
+        modal_delays = np.asarray([int(x) for x in modal_raw.split()] if isinstance(modal_raw, str) else modal_raw, dtype=int) if modal_raw is not None else None
+        if modal_delays is None or not np.array_equal(delays, modal_delays):
+            print("NOTICE: best_modal_only differs; using best_temporally_feasible")
+        else:
+            print("Candidate check: best_modal_only == best_temporally_feasible")
+        if int(chosen.get("sum_delays", -1)) != int(np.sum(delays)):
+            raise RuntimeError("candidate sum_delays disagrees with delays")
+        print(f"Candidate delays from JSON: {delays.tolist()}; sum={int(np.sum(delays))}")
+    else:
+        delays = np.asarray(target.FDN_DELAYS, dtype=int)
+    if len(delays) != 8 or len(set(delays)) != 8 or np.any(delays <= 0):
         raise RuntimeError("target branch 配置与本次设计假设不符")
+    if not candidate_mode and int(max(delays)) != REFERENCE_DELAY:
+        raise RuntimeError("default target branch 配置与本次设计假设不符")
+    global OUTPUT_DIR
+    if args.output is not None:
+        OUTPUT_DIR = args.output.resolve()
+    if candidate_mode and OUTPUT_DIR == (Path(__file__).resolve().parent / "output" / "fit"):
+        raise RuntimeError("candidate cannot overwrite v2a production fit output")
     result = fit_parameters(delays)
     # 导出按 C++ float 精度量化的系数；诊断与用户复制的值必须一致。
     coefficients = make_coefficients(result.x, delays).astype(np.float32).astype(float)
-    export(result.x, coefficients, delays, result)
+    export(result.x, coefficients, delays, result, candidate_mode=candidate_mode,
+           candidate_source=str(args.delay_candidate_json.resolve()) if candidate_mode else None)
 
 
 if __name__ == "__main__":
