@@ -61,7 +61,7 @@ const playIcon = document.querySelector('#play-icon');
 const seek = document.querySelector('#seek');
 const audioStatus = document.querySelector('#audio-status');
 const trackOptions = [...document.querySelectorAll('.track-option')];
-let currentTrackLabel = 'Mozart K.576，L1-Clavier';
+let currentTrackLabel = 'Fauré Op. 63 · No. 6，L1-Clavier';
 const formatTime = time => Number.isFinite(time) ? `${Math.floor(time / 60)}:${String(Math.floor(time % 60)).padStart(2, '0')}` : '—:—';
 playButton.addEventListener('click', async () => {
   if (audio.paused) {
