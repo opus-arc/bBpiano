@@ -1,5 +1,5 @@
 /*
-   'input.cpp' Obfuscated by COBF (Version 1.06 2006-01-07 by BB) at Mon Sep 21 16:14:04 2026
+   'input.cpp' Obfuscated by COBF (Version 1.06 2006-01-07 by BB) at Thu Sep 24 10:12:17 2026
 */
 #include<chrono>
 #include<condition_variable>

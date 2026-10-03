@@ -1,0 +1,12 @@
+CompileFlags:
+  Add:
+    - -std=c++20
+---
+If:
+  PathMatch:
+    - "build/.*"
+    - "external/.*"
+    - "third_party/.*"
+    - "vendor/.*"
+Index:
+  Background: Skip

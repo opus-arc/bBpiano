@@ -63,6 +63,18 @@ clang++ -std=c++20 './build/bbpl_SDK/main.cpp' \
     -framework CoreFoundation \
     -o './build/bbpl_SDK/bbpl'
 
+    # Sign the final executable
+    codesign \
+        --force \
+        --sign "Apple Development: arcopus07@gmail.com (K6Y4GK2K9T)" \
+        './build/bbpl_SDK/bbpl'
+    # Verify signature
+    codesign \
+        --verify \
+        --strict \
+        --verbose=2 \
+        './build/bbpl_SDK/bbpl'
+
 rm './build/bbpl_SDK/main.cpp'
 
 ./build/bbpl_SDK/bbpl
