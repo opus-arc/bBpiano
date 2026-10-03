@@ -1,5 +1,5 @@
 /*
-   'input.cpp' Obfuscated by COBF (Version 1.06 2006-01-07 by BB) at Thu Sep 24 10:12:17 2026
+   'input.cpp' Obfuscated by COBF (Version 1.06 2006-01-07 by BB) at Sun Oct  4 02:12:27 2026
 */
 #include<chrono>
 #include<condition_variable>
@@ -9,25 +9,25 @@
 #include<mutex>
 #include<stop_token>
 #include<thread>
-void l577(double ln);void l535()noexcept;void l493(double ln);void
-l502()noexcept;void l436(double ln);void l372()noexcept;void l373(
-float*out,int l584,double l818);void l454();void l49(int lk,double l94
-)noexcept;void l98(int lk,double l94)noexcept;void l187(int lk,double
-l516)noexcept;void l125(double l11)noexcept;void l119(double l11)noexcept
-;void l127(double l11)noexcept;void sustainpedal_control(double l11)noexcept
-;void l59()noexcept;void l576()noexcept;bool l520(std::stop_token
-stop_token)noexcept;bool l197()noexcept;void l386()noexcept;void l521
-()noexcept;
+void l577(double lo);void bbpiano_shutdown()noexcept;void l493(double
+lo);void l501()noexcept;void l435(double lo);void l376()noexcept;void
+l362(float*out,int l463,double l818);void l453();void note_on(int lk,
+double l90)noexcept;void l96(int lk,double l90)noexcept;void l187(int
+lk,double l517)noexcept;void l130(double l11)noexcept;void l124(
+double l11)noexcept;void l114(double l11)noexcept;void l76(double l11
+)noexcept;void l55()noexcept;void l576()noexcept;bool l520(std::
+stop_token stop_token)noexcept;bool l199()noexcept;void l390()noexcept
+;void l522()noexcept;
 #include<string>
-static constexpr double ln=44100.0;int l116(int l204,char*l18[],const
-char*l13,const char*l29,std::stop_token l238={});void l560(const std
-::string&l44,std::stop_token stop_token);void l500(std::stop_token
-stop_token);void l437(std::stop_token stop_token);void l561(std::
+static constexpr double lo=44100.0;int l119(int l206,char*l18[],const
+char*l17,const char*l28,std::stop_token l241={});void l559(const std
+::string&l40,std::stop_token stop_token);void l504(std::stop_token
+stop_token);void l436(std::stop_token stop_token);void l561(std::
 string l804,std::stop_token stop_token);void l537(std::stop_token
-stop_token);void l505(std::stop_token stop_token);void l475(std::
+stop_token);void l505(std::stop_token stop_token);void l516(std::
 stop_token stop_token);
-int l466(int l204,char*l18[],const char*l13,const char*l29,std::
-stop_token l238={});
+int l464(int l206,char*l18[],const char*l17,const char*l28,std::
+stop_token l241={});
 #include<algorithm>
 #include<array>
 #include<cmath>
@@ -38,468 +38,465 @@ stop_token l238={});
 #include<cstddef>
 #include<unordered_set>
 #include<utility>
-class l9:public std::runtime_error{public:using std::runtime_error::
-runtime_error;};class l130{public:struct l7{std::uint64_t l26=0;
-double l136=0.0;std::uint8_t l4=0;std::uint8_t l32=0;std::uint8_t l248
-=0;std::string l255;int l793()const noexcept{return static_cast<int>(
-l4&0x0F);}std::uint8_t l237()const noexcept{return l4&0xF0;}bool l381
-()const noexcept{return l237()==0x90&&l248!=0;}bool l345()const
-noexcept{return l237()==0x80||(l237()==0x90&&l248==0);}bool l583()const
-noexcept{return l237()==0xA0;}bool l601()const noexcept{return l237()==
-0xB0;}bool l455()const noexcept{if(!l601()){return false;}return l32
-==64||l32==66||l32==67||l32==68;}double l507()const noexcept{return
-std::clamp(static_cast<double>(l248)/127.0,0.0,1.0);}};enum class l56
-{l214,l294};l130()=delete;static std::vector<l7>l567(const std::
-string&l151){auto ls=l728(l773(l774(l151)));std::stable_sort(ls.begin
-(),ls.end(),[](const l7&l0,const l7&l1){return l0.l136<l1.l136;});
-return ls;}static l56 l727(double l443,double l602,const std::string&
-l151,std::stop_token stop_token={}){if(!(l443>0.0)){throw std::
+class l7:public std::runtime_error{public:using std::runtime_error::
+runtime_error;};class l131{public:struct l9{std::uint64_t l21=0;
+double l135=0.0;std::uint8_t l6=0;std::uint8_t l34=0;std::uint8_t l283
+=0;std::string l293;int l793()const noexcept{return static_cast<int>(
+l6&0x0F);}std::uint8_t l238()const noexcept{return l6&0xF0;}bool l383
+()const noexcept{return l238()==0x90&&l283!=0;}bool l379()const
+noexcept{return l238()==0x80||(l238()==0x90&&l283==0);}bool l583()const
+noexcept{return l238()==0xA0;}bool l599()const noexcept{return l238()==
+0xB0;}bool l454()const noexcept{if(!l599()){return false;}return l34
+==64||l34==66||l34==67||l34==68;}double l507()const noexcept{return
+std::clamp(static_cast<double>(l283)/127.0,0.0,1.0);}};enum class l61
+{l224,l299};l131()=delete;static std::vector<l9>l566(const std::
+string&l148){auto ls=l727(l779(l774(l148)));std::stable_sort(ls.begin
+(),ls.end(),[](const l9&l1,const l9&l0){return l1.l135<l0.l135;});
+return ls;}static l61 l725(double l440,double l600,const std::string&
+l148,std::stop_token stop_token={}){if(!(l440>0.0)){throw std::
 invalid_argument("\x70\x6c\x61\x79\x62\x61\x63\x6b\x5f\x72\x61\x74"
 "\x65\x20\x6d\x75\x73\x74\x20\x62\x65\x20\x67\x72\x65\x61\x74\x65\x72"
-"\x20\x74\x68\x61\x6e\x20\x7a\x65\x72\x6f\x2e");}const double l460=
-std::max(0.0,l602);std::vector<l7>ls=l567(l151);const auto l776=std::
-lower_bound(ls.begin(),ls.end(),l460,[](const l7&li,double time){
-return li.l136<time;});std::unordered_set<int>l251;std::mutex l615;
-std::condition_variable l390;std::stop_callback l551(stop_token,[&
-l390]{l390.notify_all();});const auto l711=std::chrono::steady_clock
-::now();auto l270=[&l251]{for(int lq:l251){l98(lq,0.0);}l279();};try{
+"\x20\x74\x68\x61\x6e\x20\x7a\x65\x72\x6f\x2e");}const double l461=
+std::max(0.0,l600);std::vector<l9>ls=l566(l148);const auto l776=std::
+lower_bound(ls.begin(),ls.end(),l461,[](const l9&li,double time){
+return li.l135<time;});std::unordered_set<int>l254;std::mutex l614;
+std::condition_variable l393;std::stop_callback l552(stop_token,[&
+l393]{l393.notify_all();});const auto l712=std::chrono::steady_clock
+::now();auto l268=[&l254]{for(int lq:l254){l96(lq,0.0);}l259();};try{
 for(auto li=l776;li!=ls.end();++li){if(stop_token.stop_requested()){
-l270();return l56::l294;}const double l759=std::max(0.0,li->l136-l460
-)/l443;const auto l599=l711+std::chrono::duration_cast<std::chrono::
-steady_clock::duration>(std::chrono::duration<double>(l759));{std::
-unique_lock lock(l615);l390.wait_until(lock,l599,[&stop_token]{return
-stop_token.stop_requested();});}if(stop_token.stop_requested()){l270(
-);return l56::l294;}l503( *li);if(li->l381()&&l63(li->l32)){l251.
-insert(static_cast<int>(li->l32));}else if(li->l345()){l251.erase(
-static_cast<int>(li->l32));}}}catch(...){l270();throw;}l270();return
-l56::l214;}static void l503(const l7&li){const int lq=static_cast<int
->(li.l32);const double l173=static_cast<double>(li.l248);if(li.l381()){
-if(l63(li.l32)){l49(lq,l173);}}else if(li.l345()){if(l63(li.l32)){l98
-(lq,l173);}}else if(li.l583()){if(l63(li.l32)){l187(lq,li.l507());}}
-else if(li.l455()){l719(li.l32,li.l507());}}static void l279(){l125(
-0.0);l119(0.0);l127(0.0);sustainpedal_control(0.0);}private:struct
-l146{std::uint64_t l26=0;double l574=500000.0;std::size_t l476=0;};
-class l580{public:explicit l580(std::vector<std::uint8_t>l22):l126(
-std::move(l22)){}std::size_t l8()const noexcept{return l55;}std::
-size_t size()const noexcept{return l126.size();}void l446(std::size_t
-l8){if(l8>l126.size()){throw l9("\x4d\x49\x44\x49\x20\x63\x68\x75\x6e"
-"\x6b\x20\x65\x78\x63\x65\x65\x64\x73\x20\x66\x69\x6c\x65\x20\x73\x69"
-"\x7a\x65\x2e");}l55=l8;}std::uint8_t l60(std::size_t l16=std::
-numeric_limits<std::size_t>::max()){if(l55>=l126.size()||l55>=l16){
-throw l9("\x55\x6e\x65\x78\x70\x65\x63\x74\x65\x64\x20\x65\x6e\x64"
-"\x20\x6f\x66\x20\x4d\x49\x44\x49\x20\x64\x61\x74\x61\x2e");}return
-l126[l55++];}std::uint16_t l376(std::size_t l16=std::numeric_limits<
-std::size_t>::max()){const std::uint16_t l384=l60(l16);const std::
-uint16_t l260=l60(l16);return static_cast<std::uint16_t>((l384<<8)|
-l260);}std::uint32_t l526(std::size_t l16=std::numeric_limits<std::
-size_t>::max()){const std::uint32_t l163=l60(l16);const std::uint32_t
-l191=l60(l16);const std::uint32_t l335=l60(l16);const std::uint32_t
-l639=l60(l16);return(l163<<24)|(l191<<16)|(l335<<8)|l639;}std::
-uint32_t l395(std::size_t l16){std::uint32_t lt=0;for(int count=0;
-count<4;++count){const std::uint8_t l33=l60(l16);lt=(lt<<7)|
-static_cast<std::uint32_t>(l33&0x7F);if((l33&0x80)==0){return lt;}}
-throw l9("\x49\x6e\x76\x61\x6c\x69\x64\x20\x4d\x49\x44\x49\x20\x76"
-"\x61\x72\x69\x61\x62\x6c\x65\x2d\x6c\x65\x6e\x67\x74\x68\x20\x76\x61"
-"\x6c\x75\x65\x2e");}std::string l491(std::size_t count,std::size_t
-l16=std::numeric_limits<std::size_t>::max()){l388(count,l16);const
-auto begin=l126.begin()+static_cast<std::ptrdiff_t>(l55);l55+=count;
-return std::string(begin,begin+static_cast<std::ptrdiff_t>(count));}
-std::vector<std::uint8_t>l592(std::size_t count,std::size_t l16){l388
-(count,l16);const auto begin=l126.begin()+static_cast<std::ptrdiff_t>
-(l55);l55+=count;return{begin,begin+static_cast<std::ptrdiff_t>(count
-)};}void l756(std::size_t count,std::size_t l16=std::numeric_limits<
-std::size_t>::max()){l388(count,l16);l55+=count;}private:void l388(
-std::size_t count,std::size_t l16)const{const std::size_t l528=std::
-min(l16,l126.size());if(l55>l528||count>l528-l55){throw l9("\x55\x6e"
-"\x65\x78\x70\x65\x63\x74\x65\x64\x20\x65\x6e\x64\x20\x6f\x66\x20\x4d"
-"\x49\x44\x49\x20\x64\x61\x74\x61\x2e");}}std::vector<std::uint8_t>
-l126;std::size_t l55=0;};static bool l63(std::uint8_t lq)noexcept{
-return lq>=21&&lq<=108;}static void l719(std::uint8_t l113,double l11
-){switch(l113){case 64:sustainpedal_control(l11);break;case 66:l127(
-l11);break;case 67:l125(l11);break;case 68:l119(l11);break;default:
-break;}}static std::vector<std::uint8_t>l774(const std::string&path){
-std::ifstream l244(path,std::ios::binary|std::ios::ate);if(!l244){
-throw l9("\x43\x61\x6e\x6e\x6f\x74\x20\x6f\x70\x65\x6e\x20\x4d\x49"
-"\x44\x49\x20\x66\x69\x6c\x65\x3a\x20"+path);}const std::streampos end
-=l244.tellg();if(end<=0){throw l9("\x4d\x49\x44\x49\x20\x66\x69\x6c"
-"\x65\x20\x69\x73\x20\x65\x6d\x70\x74\x79\x3a\x20"+path);}if(
-static_cast<std::uintmax_t>(end)>std::numeric_limits<std::size_t>::
-max()){throw l9("\x4d\x49\x44\x49\x20\x66\x69\x6c\x65\x20\x69\x73\x20"
-"\x74\x6f\x6f\x20\x6c\x61\x72\x67\x65\x2e");}std::vector<std::uint8_t
->l22(static_cast<std::size_t>(end));l244.seekg(0,std::ios::beg);l244.
-read(reinterpret_cast<char* >(l22.data()),static_cast<std::streamsize
->(l22.size()));if(!l244){throw l9("\x46\x61\x69\x6c\x65\x64\x20\x74"
-"\x6f\x20\x72\x65\x61\x64\x20\x4d\x49\x44\x49\x20\x66\x69\x6c\x65\x3a"
-"\x20"+path);}return l22;}static std::vector<l7>l773(std::vector<std
-::uint8_t>l22){l580 l2(std::move(l22));if(l2.l491(4)!="\x4d\x54\x68"
-"\x64"){throw l9("\x4d\x69\x73\x73\x69\x6e\x67\x20\x4d\x49\x44\x49"
-"\x20\x68\x65\x61\x64\x65\x72\x20\x63\x68\x75\x6e\x6b\x2e");}const std
-::uint32_t l582=l2.l526();if(l582<6){throw l9("\x49\x6e\x76\x61\x6c"
-"\x69\x64\x20\x4d\x49\x44\x49\x20\x68\x65\x61\x64\x65\x72\x20\x6c\x65"
-"\x6e\x67\x74\x68\x2e");}const std::size_t l167=l2.l8()+l582;if(l167<
-l2.l8()||l167>l2.size()){throw l9("\x4d\x49\x44\x49\x20\x68\x65\x61"
-"\x64\x65\x72\x20\x65\x78\x63\x65\x65\x64\x73\x20\x66\x69\x6c\x65\x20"
-"\x73\x69\x7a\x65\x2e");}const std::uint16_t l25=l2.l376(l167);const
-std::uint16_t l323=l2.l376(l167);const std::uint16_t l405=l2.l376(
-l167);l2.l446(l167);if(l25>1){throw l9("\x4f\x6e\x6c\x79\x20\x4d\x49"
-"\x44\x49\x20\x66\x6f\x72\x6d\x61\x74\x20\x30\x20\x61\x6e\x64\x20\x31"
-"\x20\x61\x72\x65\x20\x73\x75\x70\x70\x6f\x72\x74\x65\x64\x2e");}if(
-l323==0||(l25==0&&l323!=1)){throw l9("\x49\x6e\x76\x61\x6c\x69\x64"
+l268();return l61::l299;}const double l760=std::max(0.0,li->l135-l461
+)/l440;const auto l601=l712+std::chrono::duration_cast<std::chrono::
+steady_clock::duration>(std::chrono::duration<double>(l760));{std::
+unique_lock lock(l614);l393.wait_until(lock,l601,[&stop_token]{return
+stop_token.stop_requested();});}if(stop_token.stop_requested()){l268(
+);return l61::l299;}l502( *li);if(li->l383()&&l57(li->l34)){l254.
+insert(static_cast<int>(li->l34));}else if(li->l379()){l254.erase(
+static_cast<int>(li->l34));}}}catch(...){l268();throw;}l268();return
+l61::l224;}static void l502(const l9&li){const int lq=static_cast<int
+>(li.l34);const double l178=static_cast<double>(li.l283);if(li.l383()){
+if(l57(li.l34)){note_on(lq,l178);}}else if(li.l379()){if(l57(li.l34)){
+l96(lq,l178);}}else if(li.l583()){if(l57(li.l34)){l187(lq,li.l507());
+}}else if(li.l454()){l719(li.l34,li.l507());}}static void l259(){l130
+(0.0);l124(0.0);l114(0.0);l76(0.0);}private:struct l142{std::uint64_t
+l21=0;double l574=500000.0;std::size_t l477=0;};class l579{public:
+explicit l579(std::vector<std::uint8_t>l25):l129(std::move(l25)){}std
+::size_t l8()const noexcept{return l50;}std::size_t size()const
+noexcept{return l129.size();}void l445(std::size_t l8){if(l8>l129.
+size()){throw l7("\x4d\x49\x44\x49\x20\x63\x68\x75\x6e\x6b\x20\x65"
+"\x78\x63\x65\x65\x64\x73\x20\x66\x69\x6c\x65\x20\x73\x69\x7a\x65\x2e"
+);}l50=l8;}std::uint8_t l56(std::size_t l15=std::numeric_limits<std::
+size_t>::max()){if(l50>=l129.size()||l50>=l15){throw l7("\x55\x6e\x65"
+"\x78\x70\x65\x63\x74\x65\x64\x20\x65\x6e\x64\x20\x6f\x66\x20\x4d\x49"
+"\x44\x49\x20\x64\x61\x74\x61\x2e");}return l129[l50++];}std::
+uint16_t l381(std::size_t l15=std::numeric_limits<std::size_t>::max()){
+const std::uint16_t l388=l56(l15);const std::uint16_t l276=l56(l15);
+return static_cast<std::uint16_t>((l388<<8)|l276);}std::uint32_t l526
+(std::size_t l15=std::numeric_limits<std::size_t>::max()){const std::
+uint32_t l95=l56(l15);const std::uint32_t l84=l56(l15);const std::
+uint32_t l158=l56(l15);const std::uint32_t l639=l56(l15);return(l95<<
+24)|(l84<<16)|(l158<<8)|l639;}std::uint32_t l400(std::size_t l15){std
+::uint32_t lt=0;for(int count=0;count<4;++count){const std::uint8_t
+l35=l56(l15);lt=(lt<<7)|static_cast<std::uint32_t>(l35&0x7F);if((l35&
+0x80)==0){return lt;}}throw l7("\x49\x6e\x76\x61\x6c\x69\x64\x20\x4d"
+"\x49\x44\x49\x20\x76\x61\x72\x69\x61\x62\x6c\x65\x2d\x6c\x65\x6e\x67"
+"\x74\x68\x20\x76\x61\x6c\x75\x65\x2e");}std::string l492(std::size_t
+count,std::size_t l15=std::numeric_limits<std::size_t>::max()){l424(
+count,l15);const auto begin=l129.begin()+static_cast<std::ptrdiff_t>(
+l50);l50+=count;return std::string(begin,begin+static_cast<std::
+ptrdiff_t>(count));}std::vector<std::uint8_t>l589(std::size_t count,
+std::size_t l15){l424(count,l15);const auto begin=l129.begin()+
+static_cast<std::ptrdiff_t>(l50);l50+=count;return{begin,begin+
+static_cast<std::ptrdiff_t>(count)};}void l758(std::size_t count,std
+::size_t l15=std::numeric_limits<std::size_t>::max()){l424(count,l15);
+l50+=count;}private:void l424(std::size_t count,std::size_t l15)const
+{const std::size_t l483=std::min(l15,l129.size());if(l50>l483||count>
+l483-l50){throw l7("\x55\x6e\x65\x78\x70\x65\x63\x74\x65\x64\x20\x65"
+"\x6e\x64\x20\x6f\x66\x20\x4d\x49\x44\x49\x20\x64\x61\x74\x61\x2e");}
+}std::vector<std::uint8_t>l129;std::size_t l50=0;};static bool l57(
+std::uint8_t lq)noexcept{return lq>=21&&lq<=108;}static void l719(std
+::uint8_t l122,double l11){switch(l122){case 64:l76(l11);break;case 66
+:l114(l11);break;case 67:l130(l11);break;case 68:l124(l11);break;
+default:break;}}static std::vector<std::uint8_t>l774(const std::
+string&path){std::ifstream l229(path,std::ios::binary|std::ios::ate);
+if(!l229){throw l7("\x43\x61\x6e\x6e\x6f\x74\x20\x6f\x70\x65\x6e\x20"
+"\x4d\x49\x44\x49\x20\x66\x69\x6c\x65\x3a\x20"+path);}const std::
+streampos end=l229.tellg();if(end<=0){throw l7("\x4d\x49\x44\x49\x20"
+"\x66\x69\x6c\x65\x20\x69\x73\x20\x65\x6d\x70\x74\x79\x3a\x20"+path);
+}if(static_cast<std::uintmax_t>(end)>std::numeric_limits<std::size_t>
+::max()){throw l7("\x4d\x49\x44\x49\x20\x66\x69\x6c\x65\x20\x69\x73"
+"\x20\x74\x6f\x6f\x20\x6c\x61\x72\x67\x65\x2e");}std::vector<std::
+uint8_t>l25(static_cast<std::size_t>(end));l229.seekg(0,std::ios::beg
+);l229.read(reinterpret_cast<char* >(l25.data()),static_cast<std::
+streamsize>(l25.size()));if(!l229){throw l7("\x46\x61\x69\x6c\x65\x64"
+"\x20\x74\x6f\x20\x72\x65\x61\x64\x20\x4d\x49\x44\x49\x20\x66\x69\x6c"
+"\x65\x3a\x20"+path);}return l25;}static std::vector<l9>l779(std::
+vector<std::uint8_t>l25){l579 l2(std::move(l25));if(l2.l492(4)!="\x4d"
+"\x54\x68\x64"){throw l7("\x4d\x69\x73\x73\x69\x6e\x67\x20\x4d\x49"
+"\x44\x49\x20\x68\x65\x61\x64\x65\x72\x20\x63\x68\x75\x6e\x6b\x2e");}
+const std::uint32_t l582=l2.l526();if(l582<6){throw l7("\x49\x6e\x76"
+"\x61\x6c\x69\x64\x20\x4d\x49\x44\x49\x20\x68\x65\x61\x64\x65\x72\x20"
+"\x6c\x65\x6e\x67\x74\x68\x2e");}const std::size_t l171=l2.l8()+l582;
+if(l171<l2.l8()||l171>l2.size()){throw l7("\x4d\x49\x44\x49\x20\x68"
+"\x65\x61\x64\x65\x72\x20\x65\x78\x63\x65\x65\x64\x73\x20\x66\x69\x6c"
+"\x65\x20\x73\x69\x7a\x65\x2e");}const std::uint16_t l23=l2.l381(l171
+);const std::uint16_t l326=l2.l381(l171);const std::uint16_t l405=l2.
+l381(l171);l2.l445(l171);if(l23>1){throw l7("\x4f\x6e\x6c\x79\x20\x4d"
+"\x49\x44\x49\x20\x66\x6f\x72\x6d\x61\x74\x20\x30\x20\x61\x6e\x64\x20"
+"\x31\x20\x61\x72\x65\x20\x73\x75\x70\x70\x6f\x72\x74\x65\x64\x2e");}
+if(l326==0||(l23==0&&l326!=1)){throw l7("\x49\x6e\x76\x61\x6c\x69\x64"
 "\x20\x4d\x49\x44\x49\x20\x74\x72\x61\x63\x6b\x20\x63\x6f\x75\x6e\x74"
-"\x2e");}if((l405&0x8000)!=0||l405==0){throw l9("\x53\x4d\x50\x54\x45"
+"\x2e");}if((l405&0x8000)!=0||l405==0){throw l7("\x53\x4d\x50\x54\x45"
 "\x20\x6f\x72\x20\x7a\x65\x72\x6f\x20\x4d\x49\x44\x49\x20\x74\x69\x6d"
 "\x65\x20\x64\x69\x76\x69\x73\x69\x6f\x6e\x20\x69\x73\x20\x75\x6e\x73"
-"\x75\x70\x70\x6f\x72\x74\x65\x64\x2e");}std::vector<l7>ls;std::
-vector<l146>l156{{0,500000.0,0}};std::size_t l589=1;for(std::uint16_t
-l12=0;l12<l323;++l12){if(l2.l491(4)!="\x4d\x54\x72\x6b"){throw l9(""
+"\x75\x70\x70\x6f\x72\x74\x65\x64\x2e");}std::vector<l9>ls;std::
+vector<l142>l181{{0,500000.0,0}};std::size_t l594=1;for(std::uint16_t
+l12=0;l12<l326;++l12){if(l2.l492(4)!="\x4d\x54\x72\x6b"){throw l7(""
 "\x4d\x69\x73\x73\x69\x6e\x67\x20\x4d\x49\x44\x49\x20\x74\x72\x61\x63"
-"\x6b\x20\x63\x68\x75\x6e\x6b\x2e");}const std::size_t l449=l2.l526();
-const std::size_t l552=l2.l8();if(l449>l2.size()-l552){throw l9("\x4d"
+"\x6b\x20\x63\x68\x75\x6e\x6b\x2e");}const std::size_t l448=l2.l526();
+const std::size_t l553=l2.l8();if(l448>l2.size()-l553){throw l7("\x4d"
 "\x49\x44\x49\x20\x74\x72\x61\x63\x6b\x20\x65\x78\x63\x65\x65\x64\x73"
-"\x20\x66\x69\x6c\x65\x20\x73\x69\x7a\x65\x2e");}const std::size_t l64
-=l552+l449;std::uint64_t l282=0;std::uint8_t l62=0;std::string l255;
-while(l2.l8()<l64){const std::uint32_t l492=l2.l395(l64);if(l492>std
-::numeric_limits<std::uint64_t>::max()-l282){throw l9("\x4d\x49\x44"
+"\x20\x66\x69\x6c\x65\x20\x73\x69\x7a\x65\x2e");}const std::size_t l63
+=l553+l448;std::uint64_t l307=0;std::uint8_t l59=0;std::string l293;
+while(l2.l8()<l63){const std::uint32_t l496=l2.l400(l63);if(l496>std
+::numeric_limits<std::uint64_t>::max()-l307){throw l7("\x4d\x49\x44"
 "\x49\x20\x61\x62\x73\x6f\x6c\x75\x74\x65\x20\x74\x69\x63\x6b\x20\x6f"
-"\x76\x65\x72\x66\x6c\x6f\x77\x2e");}l282+=l492;const std::uint8_t
-l411=l2.l60(l64);std::uint8_t l4=l411;std::uint8_t l32=0;bool l461=
-false;if(l411<0x80){if(l62==0){throw l9("\x4d\x49\x44\x49\x20\x72\x75"
+"\x76\x65\x72\x66\x6c\x6f\x77\x2e");}l307+=l496;const std::uint8_t
+l412=l2.l56(l63);std::uint8_t l6=l412;std::uint8_t l34=0;bool l580=
+false;if(l412<0x80){if(l59==0){throw l7("\x4d\x49\x44\x49\x20\x72\x75"
 "\x6e\x6e\x69\x6e\x67\x20\x73\x74\x61\x74\x75\x73\x20\x68\x61\x73\x20"
-"\x6e\x6f\x20\x73\x74\x61\x74\x75\x73\x20\x62\x79\x74\x65\x2e");}l4=
-l62;l32=l411;l461=true;}if(l4==0xFF){l62=0;const std::uint8_t l14=l2.
-l60(l64);const std::size_t length=l2.l395(l64);const auto data=l2.
-l592(length,l64);if(l14==0x03){l255.assign(data.begin(),data.end());}
-else if(l14==0x51&&data.size()==3){const double l182=static_cast<
+"\x6e\x6f\x20\x73\x74\x61\x74\x75\x73\x20\x62\x79\x74\x65\x2e");}l6=
+l59;l34=l412;l580=true;}if(l6==0xFF){l59=0;const std::uint8_t l13=l2.
+l56(l63);const std::size_t length=l2.l400(l63);const auto data=l2.
+l589(length,l63);if(l13==0x03){l293.assign(data.begin(),data.end());}
+else if(l13==0x51&&data.size()==3){const double l190=static_cast<
 double>(data[0]) *65536.0+static_cast<double>(data[1]) *256.0+
-static_cast<double>(data[2]);if(l182>0.0){l156.push_back({l282,l182,
-l589++});}}continue;}if(l4==0xF0||l4==0xF7){l62=0;l2.l756(l2.l395(l64
-),l64);continue;}if(l4>=0xF0){throw l9("\x55\x6e\x73\x75\x70\x70\x6f"
+static_cast<double>(data[2]);if(l190>0.0){l181.push_back({l307,l190,
+l594++});}}continue;}if(l6==0xF0||l6==0xF7){l59=0;l2.l758(l2.l400(l63
+),l63);continue;}if(l6>=0xF0){throw l7("\x55\x6e\x73\x75\x70\x70\x6f"
 "\x72\x74\x65\x64\x20\x73\x79\x73\x74\x65\x6d\x20\x6d\x65\x73\x73\x61"
 "\x67\x65\x20\x69\x6e\x20\x4d\x49\x44\x49\x20\x74\x72\x61\x63\x6b\x2e"
-);}l62=l4;const std::uint8_t l14=l4&0xF0;const std::uint8_t l479=l461
-?l32:l2.l60(l64);if((l479&0x80)!=0){throw l9("\x49\x6e\x76\x61\x6c"
+);}l59=l6;const std::uint8_t l13=l6&0xF0;const std::uint8_t l481=l580
+?l34:l2.l56(l63);if((l481&0x80)!=0){throw l7("\x49\x6e\x76\x61\x6c"
 "\x69\x64\x20\x4d\x49\x44\x49\x20\x64\x61\x74\x61\x20\x62\x79\x74\x65"
-"\x2e");}switch(l14){case 0x80:case 0x90:case 0xA0:case 0xB0:{const
-std::uint8_t l439=l2.l60(l64);if((l439&0x80)!=0){throw l9("\x49\x6e"
+"\x2e");}switch(l13){case 0x80:case 0x90:case 0xA0:case 0xB0:{const
+std::uint8_t l438=l2.l56(l63);if((l438&0x80)!=0){throw l7("\x49\x6e"
 "\x76\x61\x6c\x69\x64\x20\x4d\x49\x44\x49\x20\x64\x61\x74\x61\x20\x62"
-"\x79\x74\x65\x2e");}ls.push_back({l282,0.0,l4,l479,l439,l255});break
-;}case 0xE0:static_cast<void>(l2.l60(l64));break;case 0xC0:case 0xD0:
-break;default:throw l9("\x49\x6e\x76\x61\x6c\x69\x64\x20\x4d\x49\x44"
+"\x79\x74\x65\x2e");}ls.push_back({l307,0.0,l6,l481,l438,l293});break
+;}case 0xE0:static_cast<void>(l2.l56(l63));break;case 0xC0:case 0xD0:
+break;default:throw l7("\x49\x6e\x76\x61\x6c\x69\x64\x20\x4d\x49\x44"
 "\x49\x20\x63\x68\x61\x6e\x6e\x65\x6c\x20\x6d\x65\x73\x73\x61\x67\x65"
-"\x2e");}}l2.l446(l64);}l781(ls,l156,static_cast<double>(l405));
-return ls;}static void l781(std::vector<l7>&ls,std::vector<l146>&l156
-,double l556){std::stable_sort(l156.begin(),l156.end(),[](const l146&
-l0,const l146&l1){if(l0.l26!=l1.l26){return l0.l26<l1.l26;}return l0.
-l476<l1.l476;});std::vector<l146>l110;for(const l146&l182:l156){if(!
-l110.empty()&&l110.back().l26==l182.l26){l110.back()=l182;}else{l110.
-push_back(l182);}}std::stable_sort(ls.begin(),ls.end(),[](const l7&l0
-,const l7&l1){return l0.l26<l1.l26;});std::size_t l408=0;std::
-uint64_t l183=0;double l313=0.0;double l357=l110.front().l574;for(l7&
-li:ls){while(l408+1<l110.size()&&l110[l408+1].l26<=li.l26){const l146
-&l385=l110[++l408];l313+=static_cast<double>(l385.l26-l183) *l357/(
-1000000.0*l556);l183=l385.l26;l357=l385.l574;}li.l136=l313+
-static_cast<double>(li.l26-l183) *l357/(1000000.0*l556);}}static std
-::vector<l7>l728(const std::vector<l7>&ls){std::vector<l7>l302;for(
-const l7&li:ls){if(li.l381()||li.l345()||li.l583()||li.l455()){l302.
-push_back(li);}}std::vector<l7>l380;for(const l7&li:l302){std::string
-l102=li.l255;std::transform(l102.begin(),l102.end(),l102.begin(),[](
-unsigned char l75){return static_cast<char>(std::tolower(l75));});if(
-l102.find("\x70\x69\x61\x6e\x6f")!=std::string::npos||l102.find("\x6b"
-"\x65\x79\x62\x6f\x61\x72\x64")!=std::string::npos||l102.find("\x67"
-"\x72\x61\x6e\x64")!=std::string::npos){l380.push_back(li);}}if(!l380
-.empty()){return l380;}std::vector<l7>l322;for(const l7&li:l302){if(
-li.l793()==0){l322.push_back(li);}}return l322.empty()?l302:l322;}};
-class l285{public:enum class l56{l214,l294};l285()=delete;static l56
-l663(const std::string&l151,std::filesystem::path lw={},std::uint32_t
-ln=44100,double l387=5.0,std::stop_token stop_token={}){if(l151.empty
+"\x2e");}}l2.l445(l63);}l782(ls,l181,static_cast<double>(l405));
+return ls;}static void l782(std::vector<l9>&ls,std::vector<l142>&l181
+,double l557){std::stable_sort(l181.begin(),l181.end(),[](const l142&
+l1,const l142&l0){if(l1.l21!=l0.l21){return l1.l21<l0.l21;}return l1.
+l477<l0.l477;});std::vector<l142>l112;for(const l142&l190:l181){if(!
+l112.empty()&&l112.back().l21==l190.l21){l112.back()=l190;}else{l112.
+push_back(l190);}}std::stable_sort(ls.begin(),ls.end(),[](const l9&l1
+,const l9&l0){return l1.l21<l0.l21;});std::size_t l402=0;std::
+uint64_t l172=0;double l315=0.0;double l359=l112.front().l574;for(l9&
+li:ls){while(l402+1<l112.size()&&l112[l402+1].l21<=li.l21){const l142
+&l384=l112[++l402];l315+=static_cast<double>(l384.l21-l172) *l359/(
+1000000.0*l557);l172=l384.l21;l359=l384.l574;}li.l135=l315+
+static_cast<double>(li.l21-l172) *l359/(1000000.0*l557);}}static std
+::vector<l9>l727(const std::vector<l9>&ls){std::vector<l9>l305;for(
+const l9&li:ls){if(li.l383()||li.l379()||li.l583()||li.l454()){l305.
+push_back(li);}}std::vector<l9>l386;for(const l9&li:l305){std::string
+l101=li.l293;std::transform(l101.begin(),l101.end(),l101.begin(),[](
+unsigned char l68){return static_cast<char>(std::tolower(l68));});if(
+l101.find("\x70\x69\x61\x6e\x6f")!=std::string::npos||l101.find("\x6b"
+"\x65\x79\x62\x6f\x61\x72\x64")!=std::string::npos||l101.find("\x67"
+"\x72\x61\x6e\x64")!=std::string::npos){l386.push_back(li);}}if(!l386
+.empty()){return l386;}std::vector<l9>l328;for(const l9&li:l305){if(
+li.l793()==0){l328.push_back(li);}}return l328.empty()?l305:l328;}};
+class l286{public:enum class l61{l224,l299};l286()=delete;static l61
+l662(const std::string&l148,std::filesystem::path lu={},std::uint32_t
+lo=44100,double l391=5.0,std::stop_token stop_token={}){if(l148.empty
 ()){throw std::invalid_argument("\x4e\x6f\x20\x4d\x49\x44\x49\x20\x66"
 "\x69\x6c\x65\x20\x70\x61\x74\x68\x20\x70\x72\x6f\x76\x69\x64\x65\x64"
-"\x2e");}if(ln==0||ln>std::numeric_limits<std::uint32_t>::max()/
-sizeof(float)||!std::isfinite(l387)||l387<0.0){throw std::
+"\x2e");}if(lo==0||lo>std::numeric_limits<std::uint32_t>::max()/
+sizeof(float)||!std::isfinite(l391)||l391<0.0){throw std::
 invalid_argument("\x49\x6e\x76\x61\x6c\x69\x64\x20\x57\x41\x56\x20"
 "\x72\x65\x6e\x64\x65\x72\x69\x6e\x67\x20\x63\x6f\x6e\x66\x69\x67\x75"
-"\x72\x61\x74\x69\x6f\x6e\x2e");}std::vector<l130::l7>ls=l130::l567(
-l151);if(lw.empty()){lw=std::filesystem::path(l151);lw.
-replace_extension("\x2e\x77\x61\x76");}l748(lw);const double l744=ls.
-empty()?0.0:ls.back().l136;const long double l259=(static_cast<long
-double>(l744)+l387) *ln;constexpr std::uint64_t l646=std::
-numeric_limits<std::uint32_t>::max()-36ULL;if(!std::isfinite(l259)||
-l259<0.0L||l259>l646/sizeof(float)){throw std::runtime_error("\x57"
+"\x72\x61\x74\x69\x6f\x6e\x2e");}std::vector<l131::l9>ls=l131::l566(
+l148);if(lu.empty()){lu=std::filesystem::path(l148);lu.
+replace_extension("\x2e\x77\x61\x76");}l747(lu);const double l746=ls.
+empty()?0.0:ls.back().l135;const long double l246=(static_cast<long
+double>(l746)+l391) *lo;constexpr std::uint64_t l645=std::
+numeric_limits<std::uint32_t>::max()-36ULL;if(!std::isfinite(l246)||
+l246<0.0L||l246>l645/sizeof(float)){throw std::runtime_error("\x57"
 "\x41\x56\x20\x65\x78\x63\x65\x65\x64\x73\x20\x74\x68\x65\x20\x52\x49"
 "\x46\x46\x20\x33\x32\x2d\x62\x69\x74\x20\x73\x69\x7a\x65\x20\x6c\x69"
 "\x6d\x69\x74\x3b\x20\x52\x46\x36\x34\x20\x69\x73\x20\x6e\x6f\x74\x20"
 "\x69\x6d\x70\x6c\x65\x6d\x65\x6e\x74\x65\x64\x2e");}const std::
-uint64_t l417=static_cast<std::uint64_t>(std::ceil(l259));const std::
-uint64_t l268=l417*sizeof(float);std::filesystem::path l35=lw;l35+=""
+uint64_t l407=static_cast<std::uint64_t>(std::ceil(l246));const std::
+uint64_t l270=l407*sizeof(float);std::filesystem::path l44=lu;l44+=""
 "\x2e\x62\x62\x70\x6c\x2d\x70\x61\x72\x74";if(std::filesystem::exists
-(l35)){throw std::runtime_error("\x54\x65\x6d\x70\x6f\x72\x61\x72\x79"
+(l44)){throw std::runtime_error("\x54\x65\x6d\x70\x6f\x72\x61\x72\x79"
 "\x20\x57\x41\x56\x20\x6f\x75\x74\x70\x75\x74\x20\x61\x6c\x72\x65\x61"
-"\x64\x79\x20\x65\x78\x69\x73\x74\x73\x3a\x20"+l35.string());}l59();
-try{std::ofstream ll(l35,std::ios::binary);if(!ll){throw std::
+"\x64\x79\x20\x65\x78\x69\x73\x74\x73\x3a\x20"+l44.string());}l55();
+try{std::ofstream ll(l44,std::ios::binary);if(!ll){throw std::
 runtime_error("\x43\x61\x6e\x6e\x6f\x74\x20\x63\x72\x65\x61\x74\x65"
-"\x20\x57\x41\x56\x20\x6f\x75\x74\x70\x75\x74\x3a\x20"+lw.string());}
-l683(ll,ln,static_cast<std::uint32_t>(l268));constexpr std::size_t
-l563=512;std::array<float,l563>buffer{};std::uint64_t l53=0;std::
-size_t l178=0;while(l53<l417){if(stop_token.stop_requested()){ll.
-close();l59();std::error_code l194;std::filesystem::remove(l35,l194);
-return l56::l294;}while(l178<ls.size()&&l501(ls[l178],ln)<=l53){l130
-::l503(ls[l178]);++l178;}std::uint64_t l225=std::min<std::uint64_t>(
-l417,l53+l563);if(l178<ls.size()){l225=std::min(l225,l501(ls[l178],ln
-));}if(l225==l53){continue;}const auto l472=static_cast<std::size_t>(
-l225-l53);l373(buffer.data(),static_cast<int>(l472),1.0);ll.write(
-reinterpret_cast<const char* >(buffer.data()),static_cast<std::
-streamsize>(l472*sizeof(float)));if(!ll){throw std::runtime_error(""
+"\x20\x57\x41\x56\x20\x6f\x75\x74\x70\x75\x74\x3a\x20"+lu.string());}
+l682(ll,lo,static_cast<std::uint32_t>(l270));constexpr std::size_t
+l560=512;std::array<float,l560>l116{};std::uint64_t l58=0;std::size_t
+l167=0;while(l58<l407){if(stop_token.stop_requested()){ll.close();l55
+();std::error_code l215;std::filesystem::remove(l44,l215);return l61
+::l299;}while(l167<ls.size()&&l503(ls[l167],lo)<=l58){l131::l502(ls[
+l167]);++l167;}std::uint64_t l200=std::min<std::uint64_t>(l407,l58+
+l560);if(l167<ls.size()){l200=std::min(l200,l503(ls[l167],lo));}if(
+l200==l58){continue;}const auto l471=static_cast<std::size_t>(l200-
+l58);l362(l116.data(),static_cast<int>(l471),1.0);ll.write(
+reinterpret_cast<const char* >(l116.data()),static_cast<std::
+streamsize>(l471*sizeof(float)));if(!ll){throw std::runtime_error(""
 "\x46\x61\x69\x6c\x65\x64\x20\x77\x68\x69\x6c\x65\x20\x77\x72\x69\x74"
-"\x69\x6e\x67\x20\x57\x41\x56\x20\x6f\x75\x74\x70\x75\x74\x3a\x20"+lw
-.string());}l53=l225;}l59();ll.close();if(!ll){throw std::
+"\x69\x6e\x67\x20\x57\x41\x56\x20\x6f\x75\x74\x70\x75\x74\x3a\x20"+lu
+.string());}l58=l200;}l55();ll.close();if(!ll){throw std::
 runtime_error("\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x66\x69\x6e"
 "\x61\x6c\x69\x7a\x65\x20\x57\x41\x56\x20\x6f\x75\x74\x70\x75\x74\x3a"
-"\x20"+lw.string());}std::filesystem::rename(l35,lw);return l56::l214
-;}catch(...){l59();std::error_code l194;std::filesystem::remove(l35,
-l194);throw;}}private:static std::uint64_t l501(const l130::l7&li,std
-::uint32_t ln)noexcept{return static_cast<std::uint64_t>(std::llround
-(li.l136*ln));}static void l748(const std::filesystem::path&lw){if(
-std::filesystem::exists(lw)){throw std::runtime_error("\x52\x65\x66"
+"\x20"+lu.string());}std::filesystem::rename(l44,lu);return l61::l224
+;}catch(...){l55();std::error_code l215;std::filesystem::remove(l44,
+l215);throw;}}private:static std::uint64_t l503(const l131::l9&li,std
+::uint32_t lo)noexcept{return static_cast<std::uint64_t>(std::llround
+(li.l135*lo));}static void l747(const std::filesystem::path&lu){if(
+std::filesystem::exists(lu)){throw std::runtime_error("\x52\x65\x66"
 "\x75\x73\x69\x6e\x67\x20\x74\x6f\x20\x6f\x76\x65\x72\x77\x72\x69\x74"
 "\x65\x20\x65\x78\x69\x73\x74\x69\x6e\x67\x20\x57\x41\x56\x20\x66\x69"
-"\x6c\x65\x3a\x20"+lw.string());}const std::filesystem::path l352=lw.
-parent_path();if(!l352.empty()&&!std::filesystem::exists(l352)){throw
+"\x6c\x65\x3a\x20"+lu.string());}const std::filesystem::path l422=lu.
+parent_path();if(!l422.empty()&&!std::filesystem::exists(l422)){throw
 std::runtime_error("\x57\x41\x56\x20\x6f\x75\x74\x70\x75\x74\x20\x64"
 "\x69\x72\x65\x63\x74\x6f\x72\x79\x20\x64\x6f\x65\x73\x20\x6e\x6f\x74"
-"\x20\x65\x78\x69\x73\x74\x3a\x20"+l352.string());}}static void l277(
+"\x20\x65\x78\x69\x73\x74\x3a\x20"+l422.string());}}static void l265(
 std::ostream&ll,std::uint16_t lt){ll.put(static_cast<char>(lt&0xFF));
-ll.put(static_cast<char>((lt>>8)&0xFF));}static void l210(std::
+ll.put(static_cast<char>((lt>>8)&0xFF));}static void l234(std::
 ostream&ll,std::uint32_t lt){ll.put(static_cast<char>(lt&0xFF));ll.
 put(static_cast<char>((lt>>8)&0xFF));ll.put(static_cast<char>((lt>>16
-)&0xFF));ll.put(static_cast<char>((lt>>24)&0xFF));}static void l683(
-std::ostream&ll,std::uint32_t ln,std::uint32_t l268){constexpr std::
-uint16_t l616=3;constexpr std::uint16_t l786=1;constexpr std::
+)&0xFF));ll.put(static_cast<char>((lt>>24)&0xFF));}static void l682(
+std::ostream&ll,std::uint32_t lo,std::uint32_t l270){constexpr std::
+uint16_t l616=3;constexpr std::uint16_t l789=1;constexpr std::
 uint16_t l740=32;constexpr std::uint16_t l487=sizeof(float);constexpr
-std::uint32_t l568=16;const std::uint32_t l710=ln*l487;const std::
-uint32_t l643=4+(8+l568)+(8+l268);ll.write("\x52\x49\x46\x46",4);l210
-(ll,l643);ll.write("\x57\x41\x56\x45\x66\x6d\x74\x20",8);l210(ll,l568
-);l277(ll,l616);l277(ll,l786);l210(ll,ln);l210(ll,l710);l277(ll,l487);
-l277(ll,l740);ll.write("\x64\x61\x74\x61",4);l210(ll,l268);}};
+std::uint32_t l570=16;const std::uint32_t l710=lo*l487;const std::
+uint32_t l647=4+(8+l570)+(8+l270);ll.write("\x52\x49\x46\x46",4);l234
+(ll,l647);ll.write("\x57\x41\x56\x45\x66\x6d\x74\x20",8);l234(ll,l570
+);l265(ll,l616);l265(ll,l789);l234(ll,lo);l234(ll,l710);l265(ll,l487);
+l265(ll,l740);ll.write("\x64\x61\x74\x61",4);l234(ll,l270);}};
 #include<optional>
 #include<CoreMIDI/CoreMIDI.h>
 #include<functional>
 #include<memory>
 #include<span>
-class lp{public:using l106=std::span<const std::uint8_t>;using l404=
-std::function<void(l106)>;private:struct l149{explicit l149(l404
-new_handler):l129(std::move(new_handler)){}void l604(l106 lj)noexcept
-{{std::lock_guard lock(mutex);if(!l363){return;}++l391;}try{l129(lj);
-}catch(...){}{std::lock_guard lock(mutex);--l391;}l275.notify_all();}
-void l694()noexcept{std::unique_lock lock(mutex);l363=false;l275.wait
-(lock,[this]{return l391==0;});l129={};}bool l782()const noexcept{std
-::lock_guard lock(mutex);return l363;}mutable std::mutex mutex;std::
-condition_variable l275;l404 l129;std::size_t l391=0;bool l363=true;}
-;public:class l30{public:l30()noexcept=default;l30(const l30&)=delete
-;l30&operator=(const l30&)=delete;l30(l30&&l264)noexcept:l101(std::
-exchange(l264.l101,{})){}l30&operator=(l30&&l264)noexcept{if(this!=&
-l264){reset();l101=std::exchange(l264.l101,{});}return*this;}~l30(){
-reset();}void reset()noexcept{if(l101){l101->l694();l101.reset();}}
-explicit operator bool()const noexcept{return static_cast<bool>(l101);
-}private:friend class lp;explicit l30(std::shared_ptr<l149>l24):l101(
-std::move(l24)){}std::shared_ptr<l149>l101;};static constexpr std::
-uint8_t l402=64;static constexpr std::uint8_t l409=66;static constexpr
-std::uint8_t l331=67;static constexpr std::uint8_t l326=68;lp()=
+class lp{public:using l100=std::span<const std::uint8_t>;using l397=
+std::function<void(l100)>;private:struct l149{explicit l149(l397
+new_handler):l118(std::move(new_handler)){}void l603(l100 lj)noexcept
+{{std::lock_guard lock(mutex);if(!l348){return;}++l392;}try{l118(lj);
+}catch(...){}{std::lock_guard lock(mutex);--l392;}l308.notify_all();}
+void l694()noexcept{std::unique_lock lock(mutex);l348=false;l308.wait
+(lock,[this]{return l392==0;});l118={};}bool l783()const noexcept{std
+::lock_guard lock(mutex);return l348;}mutable std::mutex mutex;std::
+condition_variable l308;l397 l118;std::size_t l392=0;bool l348=true;}
+;public:class l31{public:l31()noexcept=default;l31(const l31&)=delete
+;l31&operator=(const l31&)=delete;l31(l31&&l280)noexcept:l102(std::
+exchange(l280.l102,{})){}l31&operator=(l31&&l280)noexcept{if(this!=&
+l280){reset();l102=std::exchange(l280.l102,{});}return*this;}~l31(){
+reset();}void reset()noexcept{if(l102){l102->l694();l102.reset();}}
+explicit operator bool()const noexcept{return static_cast<bool>(l102);
+}private:friend class lp;explicit l31(std::shared_ptr<l149>l20):l102(
+std::move(l20)){}std::shared_ptr<l149>l102;};static constexpr std::
+uint8_t l408=64;static constexpr std::uint8_t l410=66;static constexpr
+std::uint8_t l335=67;static constexpr std::uint8_t l330=68;lp()=
 default;lp(const lp&)=delete;lp&operator=(const lp&)=delete;lp(lp&&)=
-delete;lp&operator=(lp&&)=delete;~lp(){l67();}l30 l554(l404 l129){if(
-!l129){throw std::invalid_argument("\x49\x6e\x76\x61\x6c\x69\x64\x20"
+delete;lp&operator=(lp&&)=delete;~lp(){l78();}l31 l554(l397 l118){if(
+!l118){throw std::invalid_argument("\x49\x6e\x76\x61\x6c\x69\x64\x20"
 "\x4d\x49\x44\x49\x20\x6d\x65\x73\x73\x61\x67\x65\x20\x68\x61\x6e\x64"
-"\x6c\x65\x72\x2e");}auto l24=std::make_shared<l149>(std::move(l129));
-std::lock_guard lock(l95);l767();l133.push_back(l24);return l30(std::
-move(l24));}void l68(){std::lock_guard l266(l147);{std::lock_guard
-l256(l95);if(l93){return;}}const ItemCount l399=
+"\x6c\x65\x72\x2e");}auto l20=std::make_shared<l149>(std::move(l118));
+std::lock_guard lock(l108);l768();l138.push_back(l20);return l31(std
+::move(l20));}void l64(){std::lock_guard l263(l134);{std::lock_guard
+l260(l108);if(l82){return;}}const ItemCount l399=
 MIDIGetNumberOfSources();if(l399==0){throw std::runtime_error("\x4e"
 "\x6f\x20\x4d\x49\x44\x49\x20\x69\x6e\x70\x75\x74\x20\x64\x65\x76\x69"
-"\x63\x65\x20\x66\x6f\x75\x6e\x64\x2e");}MIDIClientRef l81=0;
-MIDIPortRef l77=0;std::vector<std::unique_ptr<l280>>l290;OSStatus l4=
+"\x63\x65\x20\x66\x6f\x75\x6e\x64\x2e");}MIDIClientRef l94=0;
+MIDIPortRef l69=0;std::vector<std::unique_ptr<l250>>l297;OSStatus l6=
 MIDIClientCreate(CFSTR("\x62\x62\x70\x6c\x20\x4d\x49\x44\x49\x20\x49"
-"\x6e\x70\x75\x74\x20\x48\x75\x62"),nullptr,nullptr,&l81);if(l4!=
-noErr||l81==0){throw std::runtime_error("\x46\x61\x69\x6c\x65\x64\x20"
+"\x6e\x70\x75\x74\x20\x48\x75\x62"),nullptr,nullptr,&l94);if(l6!=
+noErr||l94==0){throw std::runtime_error("\x46\x61\x69\x6c\x65\x64\x20"
 "\x74\x6f\x20\x63\x72\x65\x61\x74\x65\x20\x43\x6f\x72\x65\x4d\x49\x44"
-"\x49\x20\x63\x6c\x69\x65\x6e\x74\x2e");}l4=MIDIInputPortCreate(l81,
+"\x49\x20\x63\x6c\x69\x65\x6e\x74\x2e");}l6=MIDIInputPortCreate(l94,
 CFSTR("\x62\x62\x70\x6c\x20\x4d\x49\x44\x49\x20\x49\x6e\x70\x75\x74"
-"\x20\x50\x6f\x72\x74"),&lp::l754,nullptr,&l77);if(l4!=noErr||l77==0){
-MIDIClientDispose(l81);throw std::runtime_error("\x46\x61\x69\x6c\x65"
+"\x20\x50\x6f\x72\x74"),&lp::l753,nullptr,&l69);if(l6!=noErr||l69==0){
+MIDIClientDispose(l94);throw std::runtime_error("\x46\x61\x69\x6c\x65"
 "\x64\x20\x74\x6f\x20\x63\x72\x65\x61\x74\x65\x20\x43\x6f\x72\x65\x4d"
-"\x49\x44\x49\x20\x69\x6e\x70\x75\x74\x20\x70\x6f\x72\x74\x2e");}l290
+"\x49\x44\x49\x20\x69\x6e\x70\x75\x74\x20\x70\x6f\x72\x74\x2e");}l297
 .reserve(static_cast<std::size_t>(l399));for(ItemCount lh=0;lh<l399;
-++lh){const MIDIEndpointRef l134=MIDIGetSource(lh);if(l134==0){
-continue;}auto l41=std::make_unique<l280>();l41->l154=this;l41->l134=
-l134;l4=MIDIPortConnectSource(l77,l134,l41.get());if(l4==noErr){l290.
-push_back(std::move(l41));}}if(l290.empty()){MIDIPortDispose(l77);
-MIDIClientDispose(l81);throw std::runtime_error("\x4e\x6f\x20\x4d\x49"
+++lh){const MIDIEndpointRef l137=MIDIGetSource(lh);if(l137==0){
+continue;}auto l41=std::make_unique<l250>();l41->l156=this;l41->l137=
+l137;l6=MIDIPortConnectSource(l69,l137,l41.get());if(l6==noErr){l297.
+push_back(std::move(l41));}}if(l297.empty()){MIDIPortDispose(l69);
+MIDIClientDispose(l94);throw std::runtime_error("\x4e\x6f\x20\x4d\x49"
 "\x44\x49\x20\x69\x6e\x70\x75\x74\x20\x64\x65\x76\x69\x63\x65\x20\x63"
 "\x6f\x75\x6c\x64\x20\x62\x65\x20\x6f\x70\x65\x6e\x65\x64\x2e");}{std
-::lock_guard l256(l95);l329=l81;l361=l77;l382=std::move(l290);l429=
-true;l93=true;}}void l67()noexcept{std::lock_guard l266(l147);
-MIDIClientRef l81=0;MIDIPortRef l77=0;{std::lock_guard l256(l95);if(!
-l93){return;}l429=false;l93=false;l81=l329;l77=l361;}for(const auto&
-l41:l382){if(l77!=0&&l41&&l41->l134!=0){MIDIPortDisconnectSource(l77,
-l41->l134);}}if(l77!=0){MIDIPortDispose(l77);}if(l81!=0){
-MIDIClientDispose(l81);}{std::unique_lock l256(l95);l508.wait(l256,[
-this]{return l350==0;});l329=0;l361=0;l382.clear();}}bool l644()const
-noexcept{std::lock_guard lock(l95);return l93;}private:struct l218{
-std::array<std::uint8_t,3>l22{};std::size_t size=0;};struct l498{std
-::mutex mutex;std::uint8_t l62=0;std::uint8_t l111=0;std::array<std::
-uint8_t,2>data{};std::size_t l171=0;std::size_t l186=0;bool l359=
-false;};struct l280{lp*l154=nullptr;MIDIEndpointRef l134=0;l498 lr;};
-class l416{public:explicit l416(lp&l154)noexcept:l465(&l154),l141(
-l154.l678()){}~l416(){if(l141){l465->l673();}}explicit operator bool(
-)const noexcept{return l141;}private:lp*l465;bool l141;};static void
-l754(const MIDIPacketList*l341,void* ,void*l755)noexcept{auto*l41=
-static_cast<l280* >(l755);if(l341==nullptr||l41==nullptr||l41->l154==
-nullptr){return;}l416 l158( *l41->l154);if(!l158){return;}const
-MIDIPacket*packet=&l341->packet[0];for(UInt32 lh=0;lh<l341->
-numPackets;++lh){l41->l154->l649(l41->lr,packet->data,packet->length);
-packet=MIDIPacketNext(packet);}}bool l678()noexcept{std::lock_guard
-lock(l95);if(!l429){return false;}++l350;return true;}void l673()noexcept
-{{std::lock_guard lock(l95);--l350;}l508.notify_all();}static std::
-size_t l444(std::uint8_t l4)noexcept{switch(l4&0xF0){case 0x80:case
+::lock_guard l260(l108);l377=l94;l367=l69;l322=std::move(l297);l317=
+true;l82=true;}}void l78()noexcept{std::lock_guard l263(l134);
+MIDIClientRef l94=0;MIDIPortRef l69=0;{std::lock_guard l260(l108);if(
+!l82){return;}l317=false;l82=false;l94=l377;l69=l367;}for(const auto&
+l41:l322){if(l69!=0&&l41&&l41->l137!=0){MIDIPortDisconnectSource(l69,
+l41->l137);}}if(l69!=0){MIDIPortDispose(l69);}if(l94!=0){
+MIDIClientDispose(l94);}{std::unique_lock l260(l108);l511.wait(l260,[
+this]{return l353==0;});l377=0;l367=0;l322.clear();}}bool l642()const
+noexcept{std::lock_guard lock(l108);return l82;}private:struct l218{
+std::array<std::uint8_t,3>l25{};std::size_t size=0;};struct l497{std
+::mutex mutex;std::uint8_t l59=0;std::uint8_t l127=0;std::array<std::
+uint8_t,2>data{};std::size_t l175=0;std::size_t l163=0;bool l364=
+false;};struct l250{lp*l156=nullptr;MIDIEndpointRef l137=0;l497 lr;};
+class l417{public:explicit l417(lp&l156)noexcept:l467(&l156),l159(
+l156.l675()){}~l417(){if(l159){l467->l668();}}explicit operator bool(
+)const noexcept{return l159;}private:lp*l467;bool l159;};static void
+l753(const MIDIPacketList*l344,void* ,void*l757)noexcept{auto*l41=
+static_cast<l250* >(l757);if(l344==nullptr||l41==nullptr||l41->l156==
+nullptr){return;}l417 l173( *l41->l156);if(!l173){return;}const
+MIDIPacket*packet=&l344->packet[0];for(UInt32 lh=0;lh<l344->
+numPackets;++lh){l41->l156->l648(l41->lr,packet->data,packet->length);
+packet=MIDIPacketNext(packet);}}bool l675()noexcept{std::lock_guard
+lock(l108);if(!l317){return false;}++l353;return true;}void l668()noexcept
+{{std::lock_guard lock(l108);--l353;}l511.notify_all();}static std::
+size_t l443(std::uint8_t l6)noexcept{switch(l6&0xF0){case 0x80:case
 0x90:case 0xA0:case 0xB0:case 0xE0:return 2;case 0xC0:case 0xD0:
-return 1;default:break;}switch(l4){case 0xF1:case 0xF3:return 1;case
-0xF2:return 2;case 0xF6:return 0;default:return 0;}}void l649(l498&lr
-,const Byte*data,UInt16 length)noexcept{std::vector<l218>l205;l205.
+return 1;default:break;}switch(l6){case 0xF1:case 0xF3:return 1;case
+0xF2:return 2;case 0xF6:return 0;default:return 0;}}void l648(l497&lr
+,const Byte*data,UInt16 length)noexcept{std::vector<l218>l209;l209.
 reserve(static_cast<std::size_t>(length)/2+1);{std::lock_guard l823(
-lr.mutex);for(UInt16 lh=0;lh<length;++lh){const std::uint8_t l33=
-static_cast<std::uint8_t>(data[lh]);if(l33>=0xF8){l218 lj;lj.l22[0]=
-l33;lj.size=1;l205.push_back(lj);continue;}if(lr.l359){if(l33==0xF7){
-lr.l359=false;}continue;}if((l33&0x80)!=0){lr.l186=0;lr.l111=0;if(l33
-==0xF0){lr.l359=true;lr.l62=0;continue;}if(l33==0xF7){lr.l62=0;
-continue;}lr.l111=l33;lr.l171=l444(l33);if(l33<0xF0){lr.l62=l33;}else
-{lr.l62=0;}if(lr.l171==0){l218 lj;lj.l22[0]=l33;lj.size=1;l205.
-push_back(lj);lr.l111=0;}continue;}if(lr.l111==0){if(lr.l62==0){
-continue;}lr.l111=lr.l62;lr.l171=l444(lr.l111);lr.l186=0;}if(lr.l186<
-lr.data.size()){lr.data[lr.l186++]=l33;}if(lr.l186==lr.l171){l218 lj;
-lj.l22[0]=lr.l111;for(std::size_t l137=0;l137<lr.l171;++l137){lj.l22[
-l137+1]=lr.data[l137];}lj.size=lr.l171+1;l205.push_back(lj);lr.l111=0
-;lr.l186=0;}}}for(const l218&lj:l205){l603(l106(lj.l22.data(),lj.size
-));}}void l603(l106 lj)noexcept{std::vector<std::shared_ptr<l149>>
-l316;{std::lock_guard lock(l95);l316.reserve(l133.size());for(const
-auto&l344:l133){if(auto l24=l344.lock()){l316.push_back(std::move(l24
-));}}}for(const auto&l129:l316){l129->l604(lj);}}void l767(){l133.
-erase(std::remove_if(l133.begin(),l133.end(),[](const std::weak_ptr<
-l149>&l344){const auto l24=l344.lock();return!l24||!l24->l782();}),
-l133.end());}mutable std::mutex l147;mutable std::mutex l95;std::
-condition_variable l508;bool l93=false;bool l429=false;std::size_t
-l350=0;MIDIClientRef l329=0;MIDIPortRef l361=0;std::vector<std::
-unique_ptr<l280>>l382;std::vector<std::weak_ptr<l149>>l133;};class
-MidiKeyboard{public:explicit MidiKeyboard(lp&l54)noexcept:l230(l54){}
-MidiKeyboard(const MidiKeyboard&)=delete;MidiKeyboard(MidiKeyboard&&)=
-delete;MidiKeyboard&operator=(MidiKeyboard&&)=delete;~MidiKeyboard(){
-l67();}void l68(){if(l21){return;}l21.emplace(l230.l554([](lp::l106 lj
-){l796(lj);}));}void l67()noexcept{if(!l21){return;}l21->reset();l21.
-reset();l775();}bool l644()const noexcept{return l21.has_value();}
-private:static bool l63(std::uint8_t lq)noexcept{return lq>=21&&lq<=
-108;}static void l796(lp::l106 lj){if(lj.empty()){return;}const std::
-uint8_t l14=lj[0]&0xF0;if(l14==0x80||l14==0x90||l14==0xA0){if(lj.size
-()<3||!l63(lj[1])){return;}const int lq=static_cast<int>(lj[1]);const
-double l173=static_cast<double>(lj[2]);if(l14==0x80||(l14==0x90&&lj[2
-]==0)){l98(lq,l173);}else if(l14==0x90){l49(lq,l173);}else{l187(lq,
-std::clamp(l173/127.0,0.0,1.0));}return;}if(l14!=0xB0||lj.size()<3){
-return;}const double l11=std::clamp(static_cast<double>(lj[2])/127.0,
-0.0,1.0);switch(lj[1]){case lp::l402:sustainpedal_control(l11);break;
-case lp::l409:l127(l11);break;case lp::l331:l125(l11);break;case lp::
-l326:l119(l11);break;default:break;}}static void l775()noexcept{l125(
-0.0);l119(0.0);l127(0.0);sustainpedal_control(0.0);l59();}lp&l230;std
-::optional<lp::l30>l21;};
+lr.mutex);for(UInt16 lh=0;lh<length;++lh){const std::uint8_t l35=
+static_cast<std::uint8_t>(data[lh]);if(l35>=0xF8){l218 lj;lj.l25[0]=
+l35;lj.size=1;l209.push_back(lj);continue;}if(lr.l364){if(l35==0xF7){
+lr.l364=false;}continue;}if((l35&0x80)!=0){lr.l163=0;lr.l127=0;if(l35
+==0xF0){lr.l364=true;lr.l59=0;continue;}if(l35==0xF7){lr.l59=0;
+continue;}lr.l127=l35;lr.l175=l443(l35);if(l35<0xF0){lr.l59=l35;}else
+{lr.l59=0;}if(lr.l175==0){l218 lj;lj.l25[0]=l35;lj.size=1;l209.
+push_back(lj);lr.l127=0;}continue;}if(lr.l127==0){if(lr.l59==0){
+continue;}lr.l127=lr.l59;lr.l175=l443(lr.l127);lr.l163=0;}if(lr.l163<
+lr.data.size()){lr.data[lr.l163++]=l35;}if(lr.l163==lr.l175){l218 lj;
+lj.l25[0]=lr.l127;for(std::size_t l151=0;l151<lr.l175;++l151){lj.l25[
+l151+1]=lr.data[l151];}lj.size=lr.l175+1;l209.push_back(lj);lr.l127=0
+;lr.l163=0;}}}for(const l218&lj:l209){l602(l100(lj.l25.data(),lj.size
+));}}void l602(l100 lj)noexcept{std::vector<std::shared_ptr<l149>>
+l323;{std::lock_guard lock(l108);l323.reserve(l138.size());for(const
+auto&l358:l138){if(auto l20=l358.lock()){l323.push_back(std::move(l20
+));}}}for(const auto&l118:l323){l118->l603(lj);}}void l768(){l138.
+erase(std::remove_if(l138.begin(),l138.end(),[](const std::weak_ptr<
+l149>&l358){const auto l20=l358.lock();return!l20||!l20->l783();}),
+l138.end());}mutable std::mutex l134;mutable std::mutex l108;std::
+condition_variable l511;bool l82=false;bool l317=false;std::size_t
+l353=0;MIDIClientRef l377=0;MIDIPortRef l367=0;std::vector<std::
+unique_ptr<l250>>l322;std::vector<std::weak_ptr<l149>>l138;};class l92
+{public:explicit l92(lp&l53)noexcept:l242(l53){}l92(const l92&)=
+delete;l92(l92&&)=delete;l92&operator=(l92&&)=delete;~l92(){l78();}
+void l64(){if(l27){return;}l27.emplace(l242.l554([](lp::l100 lj){l796
+(lj);}));}void l78()noexcept{if(!l27){return;}l27->reset();l27.reset(
+);l775();}bool l642()const noexcept{return l27.has_value();}private:
+static bool l57(std::uint8_t lq)noexcept{return lq>=21&&lq<=108;}
+static void l796(lp::l100 lj){if(lj.empty()){return;}const std::
+uint8_t l13=lj[0]&0xF0;if(l13==0x80||l13==0x90||l13==0xA0){if(lj.size
+()<3||!l57(lj[1])){return;}const int lq=static_cast<int>(lj[1]);const
+double l178=static_cast<double>(lj[2]);if(l13==0x80||(l13==0x90&&lj[2
+]==0)){l96(lq,l178);}else if(l13==0x90){note_on(lq,l178);}else{l187(
+lq,std::clamp(l178/127.0,0.0,1.0));}return;}if(l13!=0xB0||lj.size()<3
+){return;}const double l11=std::clamp(static_cast<double>(lj[2])/
+127.0,0.0,1.0);switch(lj[1]){case lp::l408:l76(l11);break;case lp::
+l410:l114(l11);break;case lp::l335:l130(l11);break;case lp::l330:l124
+(l11);break;default:break;}}static void l775()noexcept{l130(0.0);l124
+(0.0);l114(0.0);l76(0.0);l55();}lp&l242;std::optional<lp::l31>l27;};
 #include<iomanip>
 #include<sstream>
-class l74{public:struct l97{std::uint64_t l215=0;std::array<std::
-uint8_t,3>lj{};std::uint8_t l410=0;};explicit l74(lp&l54)noexcept:
-l230(l54){}l74(const l74&)=delete;l74&operator=(const l74&)=delete;
-l74(l74&&)=delete;l74&operator=(l74&&)=delete;~l74(){l708();}void l68
-(std::filesystem::path lw={}){std::lock_guard l266(l147);if(l21){
-return;}{std::lock_guard l346(l201);l157.clear();l157.reserve(4096);
-l309=std::move(lw);l569=l76::now();}l21.emplace(l230.l554([this](lp::
-l106 lj){l630(lj);}));}std::filesystem::path l67(){std::lock_guard
-l266(l147);const bool l628=l21.has_value();if(l21){l21->reset();l21.
-reset();}std::vector<l97>l284;std::filesystem::path l319;{std::
-lock_guard l346(l201);l284=l157;l319=l309;}if(!l628&&l284.empty()){
-return l527;}const std::filesystem::path l401=l319.empty()?std::
-filesystem::current_path()/l659(l284):l319;l653(l401,l284);{std::
-lock_guard l346(l201);l157.clear();l309.clear();l527=l401;}return l401
-;}void l708()noexcept{std::lock_guard l266(l147);if(l21){l21->reset();
-l21.reset();}std::lock_guard l346(l201);l157.clear();l309.clear();}
-bool l810()const noexcept{std::lock_guard lock(l147);return l21.
-has_value();}private:using l76=std::chrono::steady_clock;static
-constexpr std::uint16_t l434=480;static constexpr std::uint32_t l670=
-500000;void l630(lp::l106 lj){if(!l750(lj)){return;}l97 li;li.l215=
+class l77{public:struct l103{std::uint64_t l217=0;std::array<std::
+uint8_t,3>lj{};std::uint8_t l411=0;};explicit l77(lp&l53)noexcept:
+l242(l53){}l77(const l77&)=delete;l77&operator=(const l77&)=delete;
+l77(l77&&)=delete;l77&operator=(l77&&)=delete;~l77(){l706();}void l64
+(std::filesystem::path lu={}){std::lock_guard l263(l134);if(l27){
+return;}{std::lock_guard l350(l204);l160.clear();l160.reserve(4096);
+l312=std::move(lu);l568=l71::now();}l27.emplace(l242.l554([this](lp::
+l100 lj){l629(lj);}));}std::filesystem::path l78(){std::lock_guard
+l263(l134);const bool l628=l27.has_value();if(l27){l27->reset();l27.
+reset();}std::vector<l103>l285;std::filesystem::path l324;{std::
+lock_guard l350(l204);l285=l160;l324=l312;}if(!l628&&l285.empty()){
+return l527;}const std::filesystem::path l403=l324.empty()?std::
+filesystem::current_path()/l657(l285):l324;l651(l403,l285);{std::
+lock_guard l350(l204);l160.clear();l312.clear();l527=l403;}return l403
+;}void l706()noexcept{std::lock_guard l263(l134);if(l27){l27->reset();
+l27.reset();}std::lock_guard l350(l204);l160.clear();l312.clear();}
+bool l810()const noexcept{std::lock_guard lock(l134);return l27.
+has_value();}private:using l71=std::chrono::steady_clock;static
+constexpr std::uint16_t l432=480;static constexpr std::uint32_t l669=
+500000;void l629(lp::l100 lj){if(!l751(lj)){return;}l103 li;li.l217=
 static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::
-microseconds>(l76::now()-l569).count());li.l410=static_cast<std::
+microseconds>(l71::now()-l568).count());li.l411=static_cast<std::
 uint8_t>(lj.size());std::copy(lj.begin(),lj.end(),li.lj.begin());std
-::lock_guard lock(l201);l157.push_back(std::move(li));}static bool
-l750(lp::l106 lj)noexcept{if(lj.empty()||lj[0]>=0xF0){return false;}
+::lock_guard lock(l204);l160.push_back(std::move(li));}static bool
+l751(lp::l100 lj)noexcept{if(lj.empty()||lj[0]>=0xF0){return false;}
 switch(lj[0]&0xF0){case 0x80:case 0x90:case 0xA0:case 0xB0:case 0xE0:
 return lj.size()==3;case 0xC0:case 0xD0:return lj.size()==2;default:
-return false;}}static std::string l659(const std::vector<l97>&ls){
-const std::time_t now=std::time(nullptr);std::tm l483{};localtime_r(&
-now,&l483);std::size_t l506=0;std::size_t l523=0;for(const l97&li:ls){
-if(li.l410<3){continue;}const std::uint8_t l14=li.lj[0]&0xF0;if(l14==
-0x90&&li.lj[2]!=0){++l506;}else if(l14==0xB0&&l655(li.lj[1])){++l523;
-}}const std::uint64_t l313=ls.empty()?0:ls.back().l215/1000000ULL;std
-::ostringstream l102;l102<<std::put_time(&l483,"\x25\x59\x2d\x25\x6d"
-"\x2d\x25\x64\x5f\x25\x48\x2d\x25\x4d\x2d\x25\x53")<<"\x5f"<<l506<<""
-"\x2d\x6e\x6f\x74\x65\x73\x5f"<<l523<<"\x2d\x70\x65\x64\x61\x6c\x73"
-"\x5f"<<l313<<"\x2d\x73\x65\x63\x6f\x6e\x64\x73\x2e\x6d\x69\x64";
-return l102.str();}static bool l655(std::uint8_t l113)noexcept{return
-l113==lp::l402||l113==lp::l409||l113==lp::l331||l113==lp::l326;}
-static void l541(std::vector<std::uint8_t>&ll,std::uint32_t lt){std::
-uint8_t l22[5]{};int lh=4;l22[lh]=static_cast<std::uint8_t>(lt&0x7F);
-while((lt>>=7)!=0&&lh>0){l22[--lh]=static_cast<std::uint8_t>((lt&0x7F
-)|0x80);}for(;lh<5;++lh){ll.push_back(l22[lh]);}}static std::uint32_t
-l665(std::uint64_t microseconds)noexcept{const long double l432=
-static_cast<long double>(microseconds) *l434/l670;return l432>=std::
-numeric_limits<std::uint32_t>::max()?std::numeric_limits<std::
-uint32_t>::max():static_cast<std::uint32_t>(l432);}static void l717(
-std::vector<std::uint8_t>&l12){const std::uint8_t l803[]={lp::l402,lp
-::l409,lp::l331,lp::l326};for(std::uint8_t l113:l803){l541(l12,0);l12
-.insert(l12.end(),{0xB0,l113,0});}}static void l414(std::ostream&ll,
+return false;}}static std::string l657(const std::vector<l103>&ls){
+const std::time_t now=std::time(nullptr);std::tm l484{};localtime_r(&
+now,&l484);std::size_t l506=0;std::size_t l523=0;for(const l103&li:ls
+){if(li.l411<3){continue;}const std::uint8_t l13=li.lj[0]&0xF0;if(l13
+==0x90&&li.lj[2]!=0){++l506;}else if(l13==0xB0&&l660(li.lj[1])){++
+l523;}}const std::uint64_t l315=ls.empty()?0:ls.back().l217/
+1000000ULL;std::ostringstream l101;l101<<std::put_time(&l484,"\x25"
+"\x59\x2d\x25\x6d\x2d\x25\x64\x5f\x25\x48\x2d\x25\x4d\x2d\x25\x53")<<""
+"\x5f"<<l506<<"\x2d\x6e\x6f\x74\x65\x73\x5f"<<l523<<"\x2d\x70\x65\x64"
+"\x61\x6c\x73\x5f"<<l315<<"\x2d\x73\x65\x63\x6f\x6e\x64\x73\x2e\x6d"
+"\x69\x64";return l101.str();}static bool l660(std::uint8_t l122)noexcept
+{return l122==lp::l408||l122==lp::l410||l122==lp::l335||l122==lp::
+l330;}static void l540(std::vector<std::uint8_t>&ll,std::uint32_t lt){
+std::uint8_t l25[5]{};int lh=4;l25[lh]=static_cast<std::uint8_t>(lt&
+0x7F);while((lt>>=7)!=0&&lh>0){l25[--lh]=static_cast<std::uint8_t>((
+lt&0x7F)|0x80);}for(;lh<5;++lh){ll.push_back(l25[lh]);}}static std::
+uint32_t l673(std::uint64_t microseconds)noexcept{const long double
+l430=static_cast<long double>(microseconds) *l432/l669;return l430>=
+std::numeric_limits<std::uint32_t>::max()?std::numeric_limits<std::
+uint32_t>::max():static_cast<std::uint32_t>(l430);}static void l717(
+std::vector<std::uint8_t>&l12){const std::uint8_t l803[]={lp::l408,lp
+::l410,lp::l335,lp::l330};for(std::uint8_t l122:l803){l540(l12,0);l12
+.insert(l12.end(),{0xB0,l122,0});}}static void l416(std::ostream&ll,
 std::uint16_t lt){ll.put(static_cast<char>((lt>>8)&0xFF));ll.put(
-static_cast<char>(lt&0xFF));}static void l557(std::ostream&ll,std::
+static_cast<char>(lt&0xFF));}static void l558(std::ostream&ll,std::
 uint32_t lt){ll.put(static_cast<char>((lt>>24)&0xFF));ll.put(
 static_cast<char>((lt>>16)&0xFF));ll.put(static_cast<char>((lt>>8)&
-0xFF));ll.put(static_cast<char>(lt&0xFF));}static void l653(const std
-::filesystem::path&lw,std::vector<l97>ls){std::stable_sort(ls.begin(),
-ls.end(),[](const l97&l0,const l97&l1){return l0.l215<l1.l215;});std
-::vector<std::uint8_t>l12;l12.reserve(ls.size() *4+32);l12.insert(l12
-.end(),{0x00,0xFF,0x51,0x03,0x07,0xA1,0x20});std::uint32_t l183=0;for
-(const l97&li:ls){const std::uint32_t l26=l665(li.l215);l541(l12,l26-
-l183);l183=l26;l12.insert(l12.end(),li.lj.begin(),li.lj.begin()+li.
-l410);}l717(l12);l12.insert(l12.end(),{0x00,0xFF,0x2F,0x00});if(l12.
-size()>std::numeric_limits<std::uint32_t>::max()){throw std::
+0xFF));ll.put(static_cast<char>(lt&0xFF));}static void l651(const std
+::filesystem::path&lu,std::vector<l103>ls){std::stable_sort(ls.begin(
+),ls.end(),[](const l103&l1,const l103&l0){return l1.l217<l0.l217;});
+std::vector<std::uint8_t>l12;l12.reserve(ls.size() *4+32);l12.insert(
+l12.end(),{0x00,0xFF,0x51,0x03,0x07,0xA1,0x20});std::uint32_t l172=0;
+for(const l103&li:ls){const std::uint32_t l21=l673(li.l217);l540(l12,
+l21-l172);l172=l21;l12.insert(l12.end(),li.lj.begin(),li.lj.begin()+
+li.l411);}l717(l12);l12.insert(l12.end(),{0x00,0xFF,0x2F,0x00});if(
+l12.size()>std::numeric_limits<std::uint32_t>::max()){throw std::
 runtime_error("\x52\x65\x63\x6f\x72\x64\x65\x64\x20\x4d\x49\x44\x49"
 "\x20\x74\x72\x61\x63\x6b\x20\x69\x73\x20\x74\x6f\x6f\x20\x6c\x61\x72"
-"\x67\x65\x2e");}if(!lw.parent_path().empty()&&!std::filesystem::
-exists(lw.parent_path())){throw std::runtime_error("\x4d\x49\x44\x49"
+"\x67\x65\x2e");}if(!lu.parent_path().empty()&&!std::filesystem::
+exists(lu.parent_path())){throw std::runtime_error("\x4d\x49\x44\x49"
 "\x20\x6f\x75\x74\x70\x75\x74\x20\x64\x69\x72\x65\x63\x74\x6f\x72\x79"
 "\x20\x64\x6f\x65\x73\x20\x6e\x6f\x74\x20\x65\x78\x69\x73\x74\x3a\x20"
-+lw.parent_path().string());}if(std::filesystem::exists(lw)){throw std
++lu.parent_path().string());}if(std::filesystem::exists(lu)){throw std
 ::runtime_error("\x52\x65\x66\x75\x73\x69\x6e\x67\x20\x74\x6f\x20\x6f"
 "\x76\x65\x72\x77\x72\x69\x74\x65\x20\x65\x78\x69\x73\x74\x69\x6e\x67"
-"\x20\x4d\x49\x44\x49\x20\x66\x69\x6c\x65\x3a\x20"+lw.string());}std
-::filesystem::path l35=lw;l35+="\x2e\x62\x62\x70\x6c\x2d\x70\x61\x72"
-"\x74";if(std::filesystem::exists(l35)){throw std::runtime_error(""
+"\x20\x4d\x49\x44\x49\x20\x66\x69\x6c\x65\x3a\x20"+lu.string());}std
+::filesystem::path l44=lu;l44+="\x2e\x62\x62\x70\x6c\x2d\x70\x61\x72"
+"\x74";if(std::filesystem::exists(l44)){throw std::runtime_error(""
 "\x54\x65\x6d\x70\x6f\x72\x61\x72\x79\x20\x4d\x49\x44\x49\x20\x6f\x75"
 "\x74\x70\x75\x74\x20\x61\x6c\x72\x65\x61\x64\x79\x20\x65\x78\x69\x73"
-"\x74\x73\x3a\x20"+l35.string());}try{std::ofstream ll(l35,std::ios::
+"\x74\x73\x3a\x20"+l44.string());}try{std::ofstream ll(l44,std::ios::
 binary);if(!ll){throw std::runtime_error("\x43\x61\x6e\x6e\x6f\x74"
 "\x20\x63\x72\x65\x61\x74\x65\x20\x4d\x49\x44\x49\x20\x6f\x75\x74\x70"
-"\x75\x74\x3a\x20"+lw.string());}ll.write("\x4d\x54\x68\x64",4);l557(
-ll,6);l414(ll,0);l414(ll,1);l414(ll,l434);ll.write("\x4d\x54\x72\x6b"
-,4);l557(ll,static_cast<std::uint32_t>(l12.size()));ll.write(
+"\x75\x74\x3a\x20"+lu.string());}ll.write("\x4d\x54\x68\x64",4);l558(
+ll,6);l416(ll,0);l416(ll,1);l416(ll,l432);ll.write("\x4d\x54\x72\x6b"
+,4);l558(ll,static_cast<std::uint32_t>(l12.size()));ll.write(
 reinterpret_cast<const char* >(l12.data()),static_cast<std::
 streamsize>(l12.size()));ll.close();if(!ll){throw std::runtime_error(""
 "\x46\x61\x69\x6c\x65\x64\x20\x77\x68\x69\x6c\x65\x20\x77\x72\x69\x74"
 "\x69\x6e\x67\x20\x4d\x49\x44\x49\x20\x6f\x75\x74\x70\x75\x74\x3a\x20"
-+lw.string());}std::filesystem::rename(l35,lw);}catch(...){std::
-error_code l194;std::filesystem::remove(l35,l194);throw;}}lp&l230;
-mutable std::mutex l147;mutable std::mutex l201;std::optional<lp::l30
->l21;std::vector<l97>l157;std::filesystem::path l309;std::filesystem
-::path l527;l76::time_point l569{};};
++lu.string());}std::filesystem::rename(l44,lu);}catch(...){std::
+error_code l215;std::filesystem::remove(l44,l215);throw;}}lp&l242;
+mutable std::mutex l134;mutable std::mutex l204;std::optional<lp::l31
+>l27;std::vector<l103>l160;std::filesystem::path l312;std::filesystem
+::path l527;l71::time_point l568{};};
 #include<sys/event.h>
 #include<sys/time.h>
 #include<termios.h>
@@ -508,457 +505,455 @@ mutable std::mutex l147;mutable std::mutex l201;std::optional<lp::l30
 #include<cctype>
 #include<cerrno>
 #include<string_view>
-class l89{public:l89()=default;l89(const l89&)=delete;l89&operator=(
-const l89&)=delete;l89(l89&&)=delete;l89&operator=(l89&&)=delete;void
+class l86{public:l86()=default;l86(const l86&)=delete;l86&operator=(
+const l86&)=delete;l86(l86&&)=delete;l86&operator=(l86&&)=delete;void
 l812(std::chrono::milliseconds duration)noexcept{const auto l787=std
-::clamp(duration.count(),20LL,2000LL);l547.store(static_cast<int>(
-l787));}void l792(std::stop_token stop_token={}){l379 l824;l348 l199;
-l613(l199.get());std::stop_callback l551(stop_token,[l706=l199.get()]
-{struct kevent li{};EV_SET(&li,l422,EVFILT_USER,0,NOTE_TRIGGER,0,
-nullptr);static_cast<void>(kevent(l706,&li,1,nullptr,0,nullptr));});
-l721();try{while(!stop_token.stop_requested()){l707();const timespec
-l762=l634();struct kevent li{};const int count=kevent(l199.get(),
-nullptr,0,&li,1,&l762);if(count<0){if(errno==EINTR){continue;}throw
+::clamp(duration.count(),20LL,2000LL);l548.store(static_cast<int>(
+l787));}void l792(std::stop_token stop_token={}){l385 l824;l357 l203;
+l613(l203.get());std::stop_callback l552(stop_token,[l708=l203.get()]
+{struct kevent li{};EV_SET(&li,l419,EVFILT_USER,0,NOTE_TRIGGER,0,
+nullptr);static_cast<void>(kevent(l708,&li,1,nullptr,0,nullptr));});
+l722();try{while(!stop_token.stop_requested()){l705();const timespec
+l765=l634();struct kevent li{};const int count=kevent(l203.get(),
+nullptr,0,&li,1,&l765);if(count<0){if(errno==EINTR){continue;}throw
 std::runtime_error("\x6b\x71\x75\x65\x75\x65\x20\x77\x61\x69\x74\x20"
 "\x66\x61\x69\x6c\x65\x64\x2e");}if(count==0){continue;}if(li.filter
-==EVFILT_USER&&li.ident==l422){break;}if(li.filter==EVFILT_READ&&li.
-ident==STDIN_FILENO&&!l718()){break;}}}catch(...){l445();l279();throw
-;}l445();l279();}private:using l76=std::chrono::steady_clock;static
-constexpr uintptr_t l422=1;static constexpr int l685=24;static
-constexpr int l729=108;static constexpr int l801=10;class l379{public
-:l379(){if(!isatty(STDIN_FILENO)){throw std::runtime_error("\x50\x43"
+==EVFILT_USER&&li.ident==l419){break;}if(li.filter==EVFILT_READ&&li.
+ident==STDIN_FILENO&&!l718()){break;}}}catch(...){l444();l259();throw
+;}l444();l259();}private:using l71=std::chrono::steady_clock;static
+constexpr uintptr_t l419=1;static constexpr int l685=24;static
+constexpr int l731=108;static constexpr int l801=10;class l385{public
+:l385(){if(!isatty(STDIN_FILENO)){throw std::runtime_error("\x50\x43"
 "\x20\x6b\x65\x79\x62\x6f\x61\x72\x64\x20\x72\x65\x71\x75\x69\x72\x65"
 "\x73\x20\x61\x6e\x20\x69\x6e\x74\x65\x72\x61\x63\x74\x69\x76\x65\x20"
 "\x74\x65\x72\x6d\x69\x6e\x61\x6c\x2e");}if(tcgetattr(STDIN_FILENO,&
-l403)!=0){throw std::runtime_error("\x46\x61\x69\x6c\x65\x64\x20\x74"
+l404)!=0){throw std::runtime_error("\x46\x61\x69\x6c\x65\x64\x20\x74"
 "\x6f\x20\x72\x65\x61\x64\x20\x74\x65\x72\x6d\x69\x6e\x61\x6c\x20\x6d"
-"\x6f\x64\x65\x2e");}termios l278=l403;l278.c_lflag&=static_cast<
+"\x6f\x64\x65\x2e");}termios l278=l404;l278.c_lflag&=static_cast<
 tcflag_t>(~(ICANON|ECHO));l278.c_cc[VMIN]=1;l278.c_cc[VTIME]=0;if(
 tcsetattr(STDIN_FILENO,TCSANOW,&l278)!=0){throw std::runtime_error(""
 "\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x65\x6e\x74\x65\x72\x20\x72"
 "\x61\x77\x20\x74\x65\x72\x6d\x69\x6e\x61\x6c\x20\x6d\x6f\x64\x65\x2e"
-);}l546=true;}~l379(){if(l546){static_cast<void>(tcsetattr(
-STDIN_FILENO,TCSANOW,&l403));}}private:termios l403{};bool l546=false
-;};class l348{public:l348():l307(kqueue()){if(l307<0){throw std::
+);}l542=true;}~l385(){if(l542){static_cast<void>(tcsetattr(
+STDIN_FILENO,TCSANOW,&l404));}}private:termios l404{};bool l542=false
+;};class l357{public:l357():l313(kqueue()){if(l313<0){throw std::
 runtime_error("\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x63\x72\x65"
-"\x61\x74\x65\x20\x6b\x71\x75\x65\x75\x65\x2e");}}~l348(){close(l307);
-}int get()const noexcept{return l307;}private:int l307;};struct l190{
-int lq=0;l76::time_point l283{};bool l115=false;};struct l539{int l137
-=-1;double l94=0.0;};static void l613(int l199){std::array<struct
-kevent,2>l291{};EV_SET(&l291[0],STDIN_FILENO,EVFILT_READ,EV_ADD|
-EV_ENABLE,0,0,nullptr);EV_SET(&l291[1],l422,EVFILT_USER,EV_ADD|
-EV_CLEAR,0,0,nullptr);if(kevent(l199,l291.data(),static_cast<int>(
-l291.size()),nullptr,0,nullptr)!=0){throw std::runtime_error("\x46"
+"\x61\x74\x65\x20\x6b\x71\x75\x65\x75\x65\x2e");}}~l357(){close(l313);
+}int get()const noexcept{return l313;}private:int l313;};struct l168{
+int lq=0;l71::time_point l282{};bool l125=false;};struct l539{int l151
+=-1;double l90=0.0;};static void l613(int l203){std::array<struct
+kevent,2>l295{};EV_SET(&l295[0],STDIN_FILENO,EVFILT_READ,EV_ADD|
+EV_ENABLE,0,0,nullptr);EV_SET(&l295[1],l419,EVFILT_USER,EV_ADD|
+EV_CLEAR,0,0,nullptr);if(kevent(l203,l295.data(),static_cast<int>(
+l295.size()),nullptr,0,nullptr)!=0){throw std::runtime_error("\x46"
 "\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x72\x65\x67\x69\x73\x74\x65\x72"
 "\x20\x6b\x71\x75\x65\x75\x65\x20\x65\x76\x65\x6e\x74\x73\x2e");}}
-bool l718(){std::array<char,64>l206{};const ssize_t count=read(
-STDIN_FILENO,l206.data(),l206.size());if(count==0){return false;}if(
+bool l718(){std::array<char,64>l233{};const ssize_t count=read(
+STDIN_FILENO,l233.data(),l233.size());if(count==0){return false;}if(
 count<0){return errno==EINTR||errno==EAGAIN;}for(ssize_t lh=0;lh<
-count;++lh){l638(l206[static_cast<std::size_t>(lh)]);}return true;}
-void l638(char l75){if(l75>='1'&&l75<='9'){l424=l685+(static_cast<int
->(l75-'1') *l801);l702("\x50\x43\x20\x6b\x65\x79\x62\x6f\x61\x72\x64"
+count;++lh){l638(l233[static_cast<std::size_t>(lh)]);}return true;}
+void l638(char l68){if(l68>='1'&&l68<='9'){l425=l685+(static_cast<int
+>(l68-'1') *l801);l701("\x50\x43\x20\x6b\x65\x79\x62\x6f\x61\x72\x64"
 "\x20\x62\x61\x73\x65\x20\x4d\x49\x44\x49\x20\x6e\x6f\x74\x65\x3a\x20"
-,l424);return;}if(l588(l75)){return;}const l539 l368=l794(l75);const
-int lq=l424+l368.l137;if(l368.l137<0||lq<21||lq>l729){return;}l726(lq
-,l368.l94);}void l726(int lq,double l94){const auto now=l76::now();
-const auto l478=std::chrono::milliseconds(l547.load());l190*l176=
-nullptr;for(l190&l20:l306){if(l20.l115&&l20.lq==lq){l20.l283=now+l478
-;return;}if(!l20.l115&&l176==nullptr){l176=&l20;}}if(l176==nullptr){
-return;}l49(lq,l94);l689("\x4e\x6f\x74\x65\x4f\x6e\x3a\x20\x4d\x49"
-"\x44\x49\x20",lq,"\x2c\x20\x76\x65\x6c\x6f\x63\x69\x74\x79\x20",l94);
-l176->lq=lq;l176->l283=now+l478;l176->l115=true;}void l707(){const
-auto now=l76::now();for(l190&l20:l306){if(l20.l115&&l20.l283<=now){
-l98(l20.lq,0.0);l20.l115=false;}}}void l445()noexcept{for(l190&l20:
-l306){if(l20.l115){l98(l20.lq,0.0);l20.l115=false;}}}timespec l634()const
-noexcept{auto l295=l76::time_point::max();for(const l190&l20:l306){if
-(l20.l115){l295=std::min(l295,l20.l283);}}if(l295==l76::time_point::
-max()){return timespec{3600,0};}const auto l734=std::max(l76::
-duration::zero(),l295-l76::now());const auto nanoseconds=std::chrono
-::duration_cast<std::chrono::nanoseconds>(l734).count();return
+,l425);return;}if(l588(l68)){return;}const l539 l370=l794(l68);const
+int lq=l425+l370.l151;if(l370.l151<0||lq<21||lq>l731){return;}l726(lq
+,l370.l90);}void l726(int lq,double l90){const auto now=l71::now();
+const auto l478=std::chrono::milliseconds(l548.load());l168*l179=
+nullptr;for(l168&l26:l309){if(l26.l125&&l26.lq==lq){l26.l282=now+l478
+;return;}if(!l26.l125&&l179==nullptr){l179=&l26;}}if(l179==nullptr){
+return;}note_on(lq,l90);l690("\x4e\x6f\x74\x65\x4f\x6e\x3a\x20\x4d"
+"\x49\x44\x49\x20",lq,"\x2c\x20\x76\x65\x6c\x6f\x63\x69\x74\x79\x20",
+l90);l179->lq=lq;l179->l282=now+l478;l179->l125=true;}void l705(){
+const auto now=l71::now();for(l168&l26:l309){if(l26.l125&&l26.l282<=
+now){l96(l26.lq,0.0);l26.l125=false;}}}void l444()noexcept{for(l168&
+l26:l309){if(l26.l125){l96(l26.lq,0.0);l26.l125=false;}}}timespec l634
+()const noexcept{auto l298=l71::time_point::max();for(const l168&l26:
+l309){if(l26.l125){l298=std::min(l298,l26.l282);}}if(l298==l71::
+time_point::max()){return timespec{3600,0};}const auto l735=std::max(
+l71::duration::zero(),l298-l71::now());const auto nanoseconds=std::
+chrono::duration_cast<std::chrono::nanoseconds>(l735).count();return
 timespec{static_cast<time_t>(nanoseconds/1000000000LL),static_cast<
-long>(nanoseconds%1000000000LL)};}static l539 l794(char l75)noexcept{
-const char l378=static_cast<char>(std::tolower(static_cast<unsigned
-char>(l75)));constexpr std::string_view l705="\x71\x77\x65\x72\x74"
-"\x79\x75\x69\x6f\x70";constexpr std::string_view l631="\x61\x73\x64"
-"\x66\x67\x68\x6a\x6b\x6c\x3b";constexpr std::string_view l614="\x7a"
-"\x78\x63\x76\x62\x6e\x6d\x2c\x2e\x2f";if(const auto lh=l705.find(
-l378);lh!=std::string_view::npos){return{static_cast<int>(lh),112.0};
-}if(const auto lh=l631.find(l378);lh!=std::string_view::npos){return{
-static_cast<int>(lh),72.0};}if(const auto lh=l614.find(l378);lh!=std
+long>(nanoseconds%1000000000LL)};}static l539 l794(char l68)noexcept{
+const char l382=static_cast<char>(std::tolower(static_cast<unsigned
+char>(l68)));constexpr std::string_view l703="\x71\x77\x65\x72\x74"
+"\x79\x75\x69\x6f\x70";constexpr std::string_view l630="\x61\x73\x64"
+"\x66\x67\x68\x6a\x6b\x6c\x3b";constexpr std::string_view l611="\x7a"
+"\x78\x63\x76\x62\x6e\x6d\x2c\x2e\x2f";if(const auto lh=l703.find(
+l382);lh!=std::string_view::npos){return{static_cast<int>(lh),112.0};
+}if(const auto lh=l630.find(l382);lh!=std::string_view::npos){return{
+static_cast<int>(lh),72.0};}if(const auto lh=l611.find(l382);lh!=std
 ::string_view::npos){return{static_cast<int>(lh),40.0};}return{};}
-bool l588(char l75){switch(l75){case'-':l289=!l289;if(l289){l125(1.0);
-l109("\x50\x65\x64\x61\x6c\x50\x72\x65\x73\x73\x65\x64\x3a\x20\x53"
+bool l588(char l68){switch(l68){case'-':l291=!l291;if(l291){l130(1.0);
+l113("\x50\x65\x64\x61\x6c\x50\x72\x65\x73\x73\x65\x64\x3a\x20\x53"
 "\x6f\x66\x74\x20\x70\x65\x64\x61\x6c\x20\x28\x75\x6e\x61\x20\x63\x6f"
 "\x72\x64\x61\x29\x20\x68\x61\x73\x20\x62\x65\x65\x6e\x20\x70\x72\x65"
-"\x73\x73\x65\x64\x2e");}else{l125(0.0);l109("\x50\x65\x64\x61\x6c"
+"\x73\x73\x65\x64\x2e");}else{l130(0.0);l113("\x50\x65\x64\x61\x6c"
 "\x52\x65\x6c\x65\x61\x73\x65\x64\x3a\x20\x53\x6f\x66\x74\x20\x70\x65"
 "\x64\x61\x6c\x20\x28\x75\x6e\x61\x20\x63\x6f\x72\x64\x61\x29\x20\x68"
 "\x61\x73\x20\x62\x65\x65\x6e\x20\x72\x65\x6c\x65\x61\x73\x65\x64\x2e"
-);}return true;case'=':l281=!l281;if(l281){l119(1.0);l109("\x50\x65"
+);}return true;case'=':l253=!l253;if(l253){l124(1.0);l113("\x50\x65"
 "\x64\x61\x6c\x50\x72\x65\x73\x73\x65\x64\x3a\x20\x48\x61\x72\x6d\x6f"
 "\x6e\x69\x63\x20\x70\x65\x64\x61\x6c\x20\x68\x61\x73\x20\x62\x65\x65"
-"\x6e\x20\x70\x72\x65\x73\x73\x65\x64\x2e");}else{l119(0.0);l109(""
+"\x6e\x20\x70\x72\x65\x73\x73\x65\x64\x2e");}else{l124(0.0);l113(""
 "\x50\x65\x64\x61\x6c\x52\x65\x6c\x65\x61\x73\x65\x64\x3a\x20\x48\x61"
 "\x72\x6d\x6f\x6e\x69\x63\x20\x70\x65\x64\x61\x6c\x20\x68\x61\x73\x20"
 "\x62\x65\x65\x6e\x20\x72\x65\x6c\x65\x61\x73\x65\x64\x2e");}return
-true;case'[':l252=!l252;if(l252){l127(1.0);l109("\x50\x65\x64\x61\x6c"
+true;case'[':l257=!l257;if(l257){l114(1.0);l113("\x50\x65\x64\x61\x6c"
 "\x50\x72\x65\x73\x73\x65\x64\x3a\x20\x53\x6f\x73\x74\x65\x6e\x75\x74"
 "\x6f\x20\x70\x65\x64\x61\x6c\x20\x68\x61\x73\x20\x62\x65\x65\x6e\x20"
-"\x70\x72\x65\x73\x73\x65\x64\x2e");}else{l127(0.0);l109("\x50\x65"
+"\x70\x72\x65\x73\x73\x65\x64\x2e");}else{l114(0.0);l113("\x50\x65"
 "\x64\x61\x6c\x52\x65\x6c\x65\x61\x73\x65\x64\x3a\x20\x53\x6f\x73\x74"
 "\x65\x6e\x75\x74\x6f\x20\x70\x65\x64\x61\x6c\x20\x68\x61\x73\x20\x62"
 "\x65\x65\x6e\x20\x72\x65\x6c\x65\x61\x73\x65\x64\x2e");}return true;
-case']':l269=!l269;if(l269){sustainpedal_control(1.0);l109("\x50\x65"
-"\x64\x61\x6c\x50\x72\x65\x73\x73\x65\x64\x3a\x20\x53\x75\x73\x74\x61"
-"\x69\x6e\x20\x70\x65\x64\x61\x6c\x20\x68\x61\x73\x20\x62\x65\x65\x6e"
-"\x20\x70\x72\x65\x73\x73\x65\x64\x2e");}else{sustainpedal_control(
-0.0);l109("\x50\x65\x64\x61\x6c\x52\x65\x6c\x65\x61\x73\x65\x64\x3a"
-"\x20\x53\x75\x73\x74\x61\x69\x6e\x20\x70\x65\x64\x61\x6c\x20\x68\x61"
-"\x73\x20\x62\x65\x65\x6e\x20\x72\x65\x6c\x65\x61\x73\x65\x64\x2e");}
-return true;return true;default:return false;}}void l279()noexcept{
-l289=false;l281=false;l252=false;l269=false;l125(0.0);l119(0.0);l127(
-0.0);sustainpedal_control(0.0);}static void l721(){std::cout<<"\x50"
-"\x43\x20\x6b\x65\x79\x62\x6f\x61\x72\x64\x20\x73\x74\x61\x72\x74\x65"
-"\x64\x20\x28\x43\x74\x72\x6c\x2d\x43\x20\x65\x78\x69\x74\x73\x29\x2e"
-"\n"<<"\x20\x20\x51\x2d\x50\x20\x2f\x20\x41\x2d\x3b\x20\x2f\x20\x5a"
-"\x2d\x2f\x20\x3a\x20\x76\x65\x6c\x6f\x63\x69\x74\x79\x20\x31\x31\x32"
-"\x20\x2f\x20\x37\x32\x20\x2f\x20\x34\x30\n"<<"\x20\x20\x31\x2d\x39"
-"\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x3a\x20"
-"\x73\x65\x6c\x65\x63\x74\x20\x70\x69\x74\x63\x68\x20\x62\x61\x6e\x6b"
-"\n"<<"\x20\x20\x2d\x20\x3d\x20\x5b\x20\x5d\x20\x20\x20\x20\x20\x20"
-"\x20\x20\x20\x20\x20\x3a\x20\x73\x6f\x66\x74\x20\x2f\x20\x68\x61\x72"
-"\x6d\x6f\x6e\x69\x63\x20\x2f\x20\x73\x6f\x73\x74\x65\x6e\x75\x74\x6f"
-"\x20\x2f\x20\x73\x75\x73\x74\x61\x69\x6e\n";}inline void l109(std::
-string_view lj){std::cout<<"\r\x1b\x5b\x32\x4b"<<lj<<std::flush;}
-inline void l702(std::string_view lj,double lt){std::cout<<"\r\x1b"
-"\x5b\x32\x4b"<<lj<<lt<<std::flush;}inline void l689(std::string_view
-l733,double l797,std::string_view l732,double l799){std::cout<<"\r"
-"\x1b\x5b\x32\x4b"<<l733<<l797<<l732<<l799<<std::flush;}std::atomic<
-int>l547{350};int l424=60;std::array<l190,30>l306{};bool l289=false;
-bool l281=false;bool l252=false;bool l269=false;};namespace{void l407
-(std::stop_token stop_token){std::mutex mutex;std::
-condition_variable_any l275;std::unique_lock lock(mutex);l275.wait(
-lock,stop_token,[]{return false;});}}int l116(int l204,char*l18[],
-const char*l13,const char*l29,std::stop_token l238){return l466(l204,
-l18,l13,l29,l238);}void l560(const std::string&l44,std::stop_token
+case']':l269=!l269;if(l269){l76(1.0);l113("\x50\x65\x64\x61\x6c\x50"
+"\x72\x65\x73\x73\x65\x64\x3a\x20\x53\x75\x73\x74\x61\x69\x6e\x20\x70"
+"\x65\x64\x61\x6c\x20\x68\x61\x73\x20\x62\x65\x65\x6e\x20\x70\x72\x65"
+"\x73\x73\x65\x64\x2e");}else{l76(0.0);l113("\x50\x65\x64\x61\x6c\x52"
+"\x65\x6c\x65\x61\x73\x65\x64\x3a\x20\x53\x75\x73\x74\x61\x69\x6e\x20"
+"\x70\x65\x64\x61\x6c\x20\x68\x61\x73\x20\x62\x65\x65\x6e\x20\x72\x65"
+"\x6c\x65\x61\x73\x65\x64\x2e");}return true;return true;default:
+return false;}}void l259()noexcept{l291=false;l253=false;l257=false;
+l269=false;l130(0.0);l124(0.0);l114(0.0);l76(0.0);}static void l722(){
+std::cout<<"\x50\x43\x20\x6b\x65\x79\x62\x6f\x61\x72\x64\x20\x73\x74"
+"\x61\x72\x74\x65\x64\x20\x28\x43\x74\x72\x6c\x2d\x43\x20\x65\x78\x69"
+"\x74\x73\x29\x2e\n"<<"\x20\x20\x51\x2d\x50\x20\x2f\x20\x41\x2d\x3b"
+"\x20\x2f\x20\x5a\x2d\x2f\x20\x3a\x20\x76\x65\x6c\x6f\x63\x69\x74\x79"
+"\x20\x31\x31\x32\x20\x2f\x20\x37\x32\x20\x2f\x20\x34\x30\n"<<"\x20"
+"\x20\x31\x2d\x39\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20"
+"\x20\x20\x3a\x20\x73\x65\x6c\x65\x63\x74\x20\x70\x69\x74\x63\x68\x20"
+"\x62\x61\x6e\x6b\n"<<"\x20\x20\x2d\x20\x3d\x20\x5b\x20\x5d\x20\x20"
+"\x20\x20\x20\x20\x20\x20\x20\x20\x20\x3a\x20\x73\x6f\x66\x74\x20\x2f"
+"\x20\x68\x61\x72\x6d\x6f\x6e\x69\x63\x20\x2f\x20\x73\x6f\x73\x74\x65"
+"\x6e\x75\x74\x6f\x20\x2f\x20\x73\x75\x73\x74\x61\x69\x6e\n";}inline
+void l113(std::string_view lj){std::cout<<"\r\x1b\x5b\x32\x4b"<<lj<<
+std::flush;}inline void l701(std::string_view lj,double lt){std::cout
+<<"\r\x1b\x5b\x32\x4b"<<lj<<lt<<std::flush;}inline void l690(std::
+string_view l734,double l798,std::string_view l733,double l799){std::
+cout<<"\r\x1b\x5b\x32\x4b"<<l734<<l798<<l733<<l799<<std::flush;}std::
+atomic<int>l548{350};int l425=60;std::array<l168,30>l309{};bool l291=
+false;bool l253=false;bool l257=false;bool l269=false;};namespace{
+void l406(std::stop_token stop_token){std::mutex mutex;std::
+condition_variable_any l308;std::unique_lock lock(mutex);l308.wait(
+lock,stop_token,[]{return false;});}}int l119(int l206,char*l18[],
+const char*l17,const char*l28,std::stop_token l241){return l464(l206,
+l18,l17,l28,l241);}void l559(const std::string&l40,std::stop_token
 stop_token){std::cout<<"\x50\x6c\x61\x79\x69\x6e\x67\x20\x4d\x49\x44"
-"\x49\x3a\x20"<<l44<<'\n';const l130::l56 l148=l130::l727(1.0,0.0,l44
-,stop_token);if(l148==l130::l56::l214){std::cout<<"\x4d\x49\x44\x49"
+"\x49\x3a\x20"<<l40<<'\n';const l131::l61 l154=l131::l725(1.0,0.0,l40
+,stop_token);if(l154==l131::l61::l224){std::cout<<"\x4d\x49\x44\x49"
 "\x20\x70\x6c\x61\x79\x62\x61\x63\x6b\x20\x63\x6f\x6d\x70\x6c\x65\x74"
-"\x65\x64\x2e\n";}}void l500(std::stop_token stop_token){lp l54;
-MidiKeyboard l70(l54);l70.l68();l54.l68();std::cout<<"\x4d\x49\x44"
-"\x49\x20\x70\x69\x61\x6e\x6f\x20\x73\x74\x61\x72\x74\x65\x64\x20\x28"
-"\x43\x74\x72\x6c\x2d\x43\x20\x65\x78\x69\x74\x73\x29\x2e\n";l407(
-stop_token);l54.l67();l70.l67();}void l437(std::stop_token stop_token
-){l89 l70;l70.l792(stop_token);}void l561(std::string l44,std::
-stop_token stop_token){std::filesystem::path lw(l44);lw.
-replace_extension("\x2e\x77\x61\x76");const l285::l56 l148=l285::l663
-(l44,lw,static_cast<std::uint32_t>(ln),5.0,stop_token);if(l148==l285
-::l56::l214){std::cout<<"\x45\x78\x70\x6f\x72\x74\x65\x64\x20\x57\x41"
-"\x56\x3a\x20"<<lw<<'\n';}}void l537(std::stop_token stop_token){lp
-l54;MidiKeyboard l70(l54);l74 l549(l54);l70.l68();l549.l68();l54.l68(
-);std::cout<<"\x4d\x49\x44\x49\x20\x72\x65\x63\x6f\x72\x64\x69\x6e"
-"\x67\x20\x73\x74\x61\x72\x74\x65\x64\x20\x28\x43\x74\x72\x6c\x2d\x43"
-"\x20\x73\x61\x76\x65\x73\x20\x61\x6e\x64\x20\x65\x78\x69\x74\x73\x29"
-"\x2e\n";l407(stop_token);l54.l67();const std::filesystem::path lw=
-l549.l67();l70.l67();std::cout<<"\x52\x65\x63\x6f\x72\x64\x65\x64\x20"
-"\x4d\x49\x44\x49\x3a\x20"<<lw<<'\n';}void l505(std::stop_token
-stop_token){std::cout<<"\x54\x65\x73\x74\x20\x73\x65\x72\x76\x69\x63"
-"\x65\x20\x73\x74\x61\x72\x74\x65\x64\x2e\n\n";for(int lm=21;lm<=108;
-++lm){l49(lm,110.0);}std::this_thread::sleep_for(std::chrono::
-milliseconds(500));l454();}void l475(std::stop_token stop_token){std
-::cout<<"\x49\x6e\x74\x65\x72\x6e\x61\x6c\x20\x74\x65\x73\x74\x20\x73"
-"\x74\x61\x72\x74\x65\x64\x20\x28\x43\x74\x72\x6c\x2d\x43\x20\x65\x78"
-"\x69\x74\x73\x29\x2e\n";sustainpedal_control(0.6);l49(69,110);l407(
-stop_token);l59();}
+"\x65\x64\x2e\n";}}void l504(std::stop_token stop_token){lp l53;l92
+l74(l53);l74.l64();l53.l64();std::cout<<"\x4d\x49\x44\x49\x20\x70\x69"
+"\x61\x6e\x6f\x20\x73\x74\x61\x72\x74\x65\x64\x20\x28\x43\x74\x72\x6c"
+"\x2d\x43\x20\x65\x78\x69\x74\x73\x29\x2e\n";l406(stop_token);l53.l78
+();l74.l78();}void l436(std::stop_token stop_token){l86 l74;l74.l792(
+stop_token);}void l561(std::string l40,std::stop_token stop_token){
+std::filesystem::path lu(l40);lu.replace_extension("\x2e\x77\x61\x76"
+);const l286::l61 l154=l286::l662(l40,lu,static_cast<std::uint32_t>(
+lo),5.0,stop_token);if(l154==l286::l61::l224){std::cout<<"\x45\x78"
+"\x70\x6f\x72\x74\x65\x64\x20\x57\x41\x56\x3a\x20"<<lu<<'\n';}}void
+l537(std::stop_token stop_token){lp l53;l92 l74(l53);l77 l549(l53);
+l74.l64();l549.l64();l53.l64();std::cout<<"\x4d\x49\x44\x49\x20\x72"
+"\x65\x63\x6f\x72\x64\x69\x6e\x67\x20\x73\x74\x61\x72\x74\x65\x64\x20"
+"\x28\x43\x74\x72\x6c\x2d\x43\x20\x73\x61\x76\x65\x73\x20\x61\x6e\x64"
+"\x20\x65\x78\x69\x74\x73\x29\x2e\n";l406(stop_token);l53.l78();const
+std::filesystem::path lu=l549.l78();l74.l78();std::cout<<"\x52\x65"
+"\x63\x6f\x72\x64\x65\x64\x20\x4d\x49\x44\x49\x3a\x20"<<lu<<'\n';}
+void l505(std::stop_token stop_token){std::cout<<"\x54\x65\x73\x74"
+"\x20\x73\x65\x72\x76\x69\x63\x65\x20\x73\x74\x61\x72\x74\x65\x64\x2e"
+"\n\n";for(int ln=21;ln<=108;++ln){note_on(ln,110.0);}std::
+this_thread::sleep_for(std::chrono::milliseconds(500));l453();}void
+l516(std::stop_token stop_token){std::cout<<"\x49\x6e\x74\x65\x72\x6e"
+"\x61\x6c\x20\x74\x65\x73\x74\x20\x73\x74\x61\x72\x74\x65\x64\x20\x28"
+"\x43\x74\x72\x6c\x2d\x43\x20\x65\x78\x69\x74\x73\x29\x2e\n";l76(0.6);
+note_on(69,110);l406(stop_token);l55();}
 #include<numbers>
-class Damper{float l124=0.0f;float l209=0.0f;public:inline void l34(
-float&lo){constexpr float l597=0.020f;constexpr float l632=0.25f;
-constexpr float l697=0.38f;constexpr float l452=1.0f-l597;constexpr
-float l510=l697*l632;constexpr float l747=1.0f-l510;constexpr float
-l637=l452*l747;constexpr float l789=l452*l510;constexpr float l163=
-0.292893218813f;constexpr float l191=0.585786437627f;constexpr float
-l335=0.292893218813f;constexpr float l400=0.171572875254f;const float
-l38=l163*lo+l124;l124=l191*lo+l209;l209=l335*lo-l400*l38;lo=l637*lo+
-l789*l38;}inline void lx()noexcept{l124=0.0f;l209=0.0f;}inline float
-state_energy()const noexcept{return 0.5f* (l124*l124+l209*l209);}};
-class l490{float l120=0.0;float l217=0.0;float l212=0.0;public:bool
-l578=false;l490(double l542,double l430){if(std::abs(l542)<1.0e-12){
-l578=true;l120=0.0f;return;}const double l224=std::tan(0.5*l430*l542)/
-std::tan(0.5*l430);const double l423=(1.0-l224)/(1.0+l224);if(!std::
-isfinite(l423)||std::abs(l423)>=1.0){throw std::runtime_error("\x66"
+class Damper{float l117=0.0f;float l210=0.0f;public:inline void l30(
+float&lm){constexpr float l596=0.020f;constexpr float l631=0.25f;
+constexpr float l695=0.38f;constexpr float l451=1.0f-l596;constexpr
+float l509=l695*l631;constexpr float l749=1.0f-l509;constexpr float
+l637=l451*l749;constexpr float l788=l451*l509;constexpr float l95=
+0.292893218813f;constexpr float l84=0.585786437627f;constexpr float
+l158=0.292893218813f;constexpr float l146=0.171572875254f;const float
+l32=l95*lm+l117;l117=l84*lm+l210;l210=l158*lm-l146*l32;lm=l637*lm+
+l788*l32;}inline void lx()noexcept{l117=0.0f;l210=0.0f;}inline float
+state_energy()const noexcept{return 0.5f* (l117*l117+l210*l210);}};
+class l491{float l60=0.0;float l221=0.0;float l216=0.0;public:bool
+l578=false;l491(double l543,double l429){if(std::abs(l543)<1.0e-12){
+l578=true;l60=0.0f;return;}const double l226=std::tan(0.5*l429*l543)/
+std::tan(0.5*l429);const double l426=(1.0-l226)/(1.0+l226);if(!std::
+isfinite(l426)||std::abs(l426)>=1.0){throw std::runtime_error("\x66"
 "\x72\x61\x63\x74\x69\x6f\x6e\x61\x6c\x5f\x66\x69\x6c\x74\x65\x72\x3a"
 "\x20\x69\x6e\x76\x61\x6c\x69\x64\x20\x61\x6c\x6c\x70\x61\x73\x73\x20"
-"\x63\x6f\x65\x66\x66\x69\x63\x69\x65\x6e\x74");}l120=static_cast<
-float>(l423);}inline void l34(float&lo){if(l578){return;}const float
-l38=l217+l120* (lo-l212);l217=lo;l212=l38;lo=l38;}inline void lx(){
-l217=0.0;l212=0.0;}inline float state_energy()const noexcept{return
-0.5f* (l217*l217+l212*l212);}};
+"\x63\x6f\x65\x66\x66\x69\x63\x69\x65\x6e\x74");}l60=static_cast<
+float>(l426);}inline void l30(float&lm){if(l578){return;}const float
+l32=l221+l60* (lm-l216);l221=lm;l216=l32;lm=l32;}inline void lx(){
+l221=0.0;l216=0.0;}inline float state_energy()const noexcept{return
+0.5f* (l221*l221+l216*l216);}};
 #include<complex>
-class l308{inline static constexpr int l23=21;inline static constexpr
-int l80=108;inline static constexpr std::size_t l299=2;struct ld{
-float l163;float l191;float l120;};struct lf{int lm;double l425;
-double l813;double l600;std::array<ld,l299>l276;};public:lf l273;
-private:std::array<float,l299>l36{};public:explicit l308(int lm)noexcept
-:l273(l192[static_cast<std::size_t>(std::clamp(lm,l23,l80)-l23)]){}[[
-nodiscard]]inline double l808()const noexcept{return l273.l600;}[[
-nodiscard]]inline double l598(double l355,double l397)const{const
-double l550=2.0*std::numbers::pi_v<double> *l397/l355;const std::
-complex<double>l124=std::polar(1.0,-l550);std::complex<double>l453{
-1.0,0.0};for(const auto&l85:l273.l276)l453*=(double(l85.l163)+double(
-l85.l191) *l124)/(1.0+double(l85.l120) *l124);return-std::arg(l453)/
-l550;}inline void l34(float&lo)noexcept{for(std::size_t lc=0;lc<l299;
-++lc){const auto&l85=l273.l276[lc];const float l38=l85.l163*lo+l36[lc
-];l36[lc]=l85.l191*lo-l85.l120*l38;lo=l38;}}inline void lx()noexcept{
-l36.fill(0.0f);}[[nodiscard]]inline float state_energy()const noexcept
-{float l571=0.0f;for(float lt:l36)l571+=lt*lt;return l571/static_cast
-<float>(l299);}private:inline static constexpr std::array<lf,88>l192=
-{{lf{21,27.5,0.90716426692764396,0.9071646747176394,{{ld{0.509180427f
-,0.508661687f,0.0483981334f},ld{0.524460435f,0.52394706f,
-0.0484074801f},}}},lf{22,29.13523509488062,0.88551598492877714,
-0.88551653056390844,{{ld{0.515856087f,0.515351951f,0.0604129694f},ld{
-0.530497193f,0.529971659f,0.0604688823f},}}},lf{23,30.867706328507751
-,0.86378779457930455,0.86378849770897626,{{ld{0.522680938f,
+class l248{inline static constexpr int l22=21;inline static constexpr
+int l83=108;inline static constexpr std::size_t l303=2;struct ld{
+float l95;float l84;float l60;};struct lg{int ln;double l427;double
+l813;double l595;std::array<ld,l303>l105;};public:lg l272;private:std
+::array<float,l303>l42{};public:explicit l248(int ln)noexcept:l272(
+l170[static_cast<std::size_t>(std::clamp(ln,l22,l83)-l22)]){}[[
+nodiscard]]inline double l808()const noexcept{return l272.l595;}[[
+nodiscard]]inline double l597(double l363,double l401)const{const
+double l551=2.0*std::numbers::pi_v<double> *l401/l363;const std::
+complex<double>l117=std::polar(1.0,-l551);std::complex<double>l452{
+1.0,0.0};for(const auto&l85:l272.l105)l452*=(double(l85.l95)+double(
+l85.l84) *l117)/(1.0+double(l85.l60) *l117);return-std::arg(l452)/
+l551;}inline void l30(float&lm)noexcept{for(std::size_t lc=0;lc<l303;
+++lc){const auto&l85=l272.l105[lc];const float l32=l85.l95*lm+l42[lc]
+;l42[lc]=l85.l84*lm-l85.l60*l32;lm=l32;}}inline void lx()noexcept{l42
+.fill(0.0f);}[[nodiscard]]inline float state_energy()const noexcept{
+float l572=0.0f;for(float lt:l42)l572+=lt*lt;return l572/static_cast<
+float>(l303);}private:inline static constexpr std::array<lg,88>l170={
+{lg{21,27.5,0.90716426692764396,0.9071646747176394,{{ld{0.509180427f,
+0.508661687f,0.0483981334f},ld{0.524460435f,0.52394706f,0.0484074801f
+},}}},lg{22,29.13523509488062,0.88551598492877714,0.88551653056390844
+,{{ld{0.515856087f,0.515351951f,0.0604129694f},ld{0.530497193f,
+0.529971659f,0.0604688823f},}}},lg{23,30.867706328507751,
+0.86378779457930455,0.86378849770897626,{{ld{0.522680938f,
 0.522195697f,0.0727941841f},ld{0.536697924f,0.536072493f,
-0.0727704167f},}}},lf{24,32.703195662574828,0.84231887734651623,
+0.0727704167f},}}},lg{24,32.703195662574828,0.84231887734651623,
 0.84231975921181745,{{ld{0.529564381f,0.529080033f,0.085329771f},ld{
-0.542902589f,0.542405844f,0.0853083879f},}}},lf{25,34.64782887210901,
+0.542902589f,0.542405844f,0.0853083879f},}}},lg{25,34.64782887210901,
 0.82080496635912426,0.82080605026171982,{{ld{0.536565423f,
 0.536063969f,0.0981385782f},ld{0.549319744f,0.548812091f,
-0.0981318802f},}}},lf{26,36.70809598967594,0.79922932279552239,
+0.0981318802f},}}},lg{26,36.70809598967594,0.79922932279552239,
 0.79923063493358293,{{ld{0.54370755f,0.543204606f,0.111300826f},ld{
-0.55590862f,0.555393159f,0.111301772f},}}},lf{27,38.890872965260115,
+0.55590862f,0.555393159f,0.111301772f},}}},lg{27,38.890872965260115,
 0.77695290386536875,0.77695446585983385,{{ld{0.551802397f,
 0.549461842f,0.124579713f},ld{0.562767565f,0.561819613f,0.124587208f}
-,}}},lf{28,41.203444614108747,0.75690961413037727,0.75691146524411568
+,}}},lg{28,41.203444614108747,0.75690961413037727,0.75691146524411568
 ,{{ld{0.558250427f,0.557452202f,0.137990847f},ld{0.569241643f,
-0.568750918f,0.137992606f},}}},lf{29,43.653528929125486,
+0.568750918f,0.137992606f},}}},lg{29,43.653528929125486,
 0.73630926537057295,0.73631143434880675,{{ld{0.565373719f,
 0.564894021f,0.151573971f},ld{0.576047182f,0.575548828f,0.151596025f}
-,}}},lf{30,46.2493028389543,0.71603221279778084,0.71603473319048061,{
+,}}},lg{30,46.2493028389543,0.71603221279778084,0.71603473319048061,{
 {ld{0.572652698f,0.572174609f,0.165191963f},ld{0.582844019f,
-0.58235693f,0.165200919f},}}},lf{31,48.999429497718666,
+0.58235693f,0.165200919f},}}},lg{31,48.999429497718666,
 0.69589490920829777,0.69589781890593205,{{ld{0.580047488f,
 0.579477608f,0.178995475f},ld{0.589761376f,0.589222431f,0.178983793f}
-,}}},lf{32,51.913087197493141,0.6762882890346601,0.67629162994047298,
+,}}},lg{32,51.913087197493141,0.6762882890346601,0.67629162994047298,
 {{ld{0.587343633f,0.586869538f,0.192821503f},ld{0.596657455f,
-0.596169353f,0.192826778f},}}},lf{33,55,0.65677078335117789,
+0.596169353f,0.192826778f},}}},lg{33,55,0.65677078335117789,
 0.65677460032584234,{{ld{0.594782948f,0.594311178f,0.206880808f},ld{
-0.603679717f,0.603197217f,0.206876919f},}}},lf{34,58.270470189761241,
+0.603679717f,0.603197217f,0.206876919f},}}},lg{34,58.270470189761241,
 0.63765584921914897,0.63766019039365374,{{ld{0.602217615f,
 0.601748049f,0.220966235f},ld{0.610726357f,0.610236168f,0.220962524f}
-,}}},lf{35,61.735412657015502,0.61891035299060482,0.61891527074279018
+,}}},lg{35,61.735412657015502,0.61891035299060482,0.61891527074279018
 ,{{ld{0.609672725f,0.609206378f,0.235127836f},ld{0.617786109f,
-0.617287874f,0.235073969f},}}},lf{36,65.406391325149656,
+0.617287874f,0.235073969f},}}},lg{36,65.406391325149656,
 0.46606000189624142,0.46606333375157766,{{ld{0.709973693f,
 0.508443058f,0.233750343f},ld{0.706111848f,0.527553976f,0.233665884f}
-,}}},lf{37,69.295657744218019,0.33795031888478599,0.3379514202006888,
+,}}},lg{37,69.295657744218019,0.33795031888478599,0.3379514202006888,
 {{ld{0.789180994f,0.390327096f,0.193514511f},ld{0.798136592f,
-0.395159841f,0.193296418f},}}},lf{38,73.416191979351879,
+0.395159841f,0.193296418f},}}},lg{38,73.416191979351879,
 0.32446968201521958,0.32447051448061071,{{ld{0.641469777f,
 0.441583872f,0.095186308f},ld{0.992804527f,0.972382426f,0.965186954f}
-,}}},lf{39,77.781745930520231,0.26545615584581045,0.26545572753212443
+,}}},lg{39,77.781745930520231,0.26545615584581045,0.26545572753212443
 ,{{ld{0.706958234f,0.365230888f,0.0835227966f},ld{0.996231437f,
-0.986721754f,0.982953131f},}}},lf{40,82.406889228217494,
+0.986721754f,0.982953131f},}}},lg{40,82.406889228217494,
 0.23121818140255349,0.23121689314889357,{{ld{0.745844185f,
 0.317866057f,0.0743207335f},ld{0.996882737f,0.988090754f,0.98497349f}
-,}}},lf{41,87.307057858250971,0.20170706983317438,0.20170534215666122
+,}}},lg{41,87.307057858250971,0.20170706983317438,0.20170534215666122
 ,{{ld{0.777087629f,0.288775146f,0.0759222656f},ld{0.997336626f,
-0.987483203f,0.984819829f},}}},lf{42,92.4986056779086,
+0.987483203f,0.984819829f},}}},lg{42,92.4986056779086,
 0.18298007617707771,0.18297774073523468,{{ld{0.798847556f,
 0.261485577f,0.0697784498f},ld{0.996821523f,0.988175392f,0.984996915f
-},}}},lf{43,97.998858995437331,0.16574132548992879,
+},}}},lg{43,97.998858995437331,0.16574132548992879,
 0.16573837139231343,{{ld{0.816609859f,0.239585862f,0.0650762916f},ld{
-0.999991238f,0.983839512f,0.98383075f},}}},lf{44,103.82617439498628,
+0.999991238f,0.983839512f,0.98383075f},}}},lg{44,103.82617439498628,
 0.15340556480886153,0.15340213410908995,{{ld{0.830932021f,
 0.223347992f,0.0626475513f},ld{0.99898237f,0.986017644f,0.985000014f}
-,}}},lf{45,110,0.14057175715261291,0.14056772174027904,{{ld{
+,}}},lg{45,110,0.14057175715261291,0.14056772174027904,{{ld{
 0.84485811f,0.205899343f,0.0586304404f},ld{0.99999243f,0.985005498f,
-0.984997928f},}}},lf{46,116.54094037952248,0.13194577695036819,
+0.984997928f},}}},lg{46,116.54094037952248,0.13194577695036819,
 0.13194142342631751,{{ld{0.853956044f,0.199678212f,0.0610868856f},ld{
-0.999991536f,0.98500824f,0.984999716f},}}},lf{47,123.47082531403103,
+0.999991536f,0.98500824f,0.984999716f},}}},lg{47,123.47082531403103,
 0.122932070583298,0.12292724873682467,{{ld{0.864486277f,0.188451856f,
-0.0599704273f},ld{0.998938501f,0.985935986f,0.984874487f},}}},lf{48,
+0.0599704273f},ld{0.998938501f,0.985935986f,0.984874487f},}}},lg{48,
 130.81278265029931,0.11726177523485393,0.11725675281697417,{{ld{
 0.871660352f,0.185513124f,0.0638398975f},ld{0.996441066f,0.988557756f
-,0.984998822f},}}},lf{49,138.59131548843604,0.11023193956390301,
+,0.984998822f},}}},lg{49,138.59131548843604,0.11023193956390301,
 0.11022650456498929,{{ld{0.970262229f,0.0248138309f,0.00100000005f},
-ld{0.90311116f,0.219625294f,0.122736461f},}}},lf{50,
+ld{0.90311116f,0.219625294f,0.122736461f},}}},lg{50,
 146.83238395870379,0.10448517554549977,0.10447932426321985,{{ld{
 0.958856881f,0.0365479961f,0.00100000005f},ld{0.919616461f,
-0.249251649f,0.168868139f},}}},lf{51,155.56349186104046,
+0.249251649f,0.168868139f},}}},lg{51,155.56349186104046,
 0.098940300779251977,0.098934106275699582,{{ld{0.957032382f,
 0.0386828519f,0.00100000005f},ld{0.927161217f,0.265097588f,
-0.19225882f},}}},lf{52,164.81377845643496,0.093876942006254085,
+0.19225882f},}}},lg{52,164.81377845643496,0.093876942006254085,
 0.093870367412676708,{{ld{0.956007719f,0.0400018543f,0.00100000005f},
-ld{0.933470905f,0.282402754f,0.215873659f},}}},lf{53,
+ld{0.933470905f,0.282402754f,0.215873659f},}}},lg{53,
 174.61411571650194,0.088216497057697338,0.088209468102949093,{{ld{
 0.956085384f,0.0401989892f,0.00100000005f},ld{0.939637244f,
-0.295529902f,0.235167161f},}}},lf{54,184.9972113558172,
+0.295529902f,0.235167161f},}}},lg{54,184.9972113558172,
 0.081874532355640517,0.081866728552633966,{{ld{0.948426247f,
 0.048101902f,0.00100000005f},ld{0.953352094f,0.394542992f,
-0.347895116f},}}},lf{55,195.99771799087463,0.079403861189346711,
+0.347895116f},}}},lg{55,195.99771799087463,0.079403861189346711,
 0.079395778395922129,{{ld{0.956778407f,0.0400209539f,0.00100000005f},
-ld{0.948613226f,0.32784009f,0.276453346f},}}},lf{56,
+ld{0.948613226f,0.32784009f,0.276453346f},}}},lg{56,
 207.65234878997256,0.074875933368343084,0.074867620877405297,{{ld{
 0.948016644f,0.0731995255f,0.0252859648f},ld{0.962163746f,
-0.395742744f,0.357906491f},}}},lf{57,220,0.068620238112223605,
+0.395742744f,0.357906491f},}}},lg{57,220,0.068620238112223605,
 0.068610706070286867,{{ld{0.955820799f,0.0414119139f,0.00100000005f},
-ld{0.961351275f,0.414186478f,0.375537753f},}}},lf{58,
+ld{0.961351275f,0.414186478f,0.375537753f},}}},lg{58,
 233.08188075904496,0.067523041778097467,0.067514426673541947,{{ld{
 0.938335717f,0.122939162f,0.0650494993f},ld{0.980198801f,0.571277678f
-,0.551476419f},}}},lf{59,246.94165062806206,0.06373878282173423,
+,0.551476419f},}}},lg{59,246.94165062806206,0.06373878282173423,
 0.063729639280263137,{{ld{0.94180274f,0.120574035f,0.0659451708f},ld{
-0.981056929f,0.582652271f,0.563709199f},}}},lf{60,261.62556530059862,
+0.981056929f,0.582652271f,0.563709199f},}}},lg{60,261.62556530059862,
 0.056928784569556183,0.056916971741435812,{{ld{0.961704791f,
 0.0361174941f,0.00100000005f},ld{0.969245374f,0.445581794f,
-0.414827168f},}}},lf{61,277.18263097687208,0.051863156817875206,
+0.414827168f},}}},lg{61,277.18263097687208,0.051863156817875206,
 0.05184992702763528,{{ld{0.962329268f,0.0356558673f,0.00100000005f},
-ld{0.974796534f,0.495570719f,0.470367283f},}}},lf{62,
+ld{0.974796534f,0.495570719f,0.470367283f},}}},lg{62,
 293.66476791740757,0.052558724607467883,0.052546743102426727,{{ld{
 0.9568578f,0.0852884501f,0.0450923853f},ld{0.979442894f,0.502439857f,
-0.481882781f},}}},lf{63,311.12698372208092,0.049443333938828764,
+0.481882781f},}}},lg{63,311.12698372208092,0.049443333938828764,
 0.049430413027113804,{{ld{0.958348155f,0.0859873146f,0.0471233912f},
-ld{0.981708527f,0.52803278f,0.509741306f},}}},lf{64,
+ld{0.981708527f,0.52803278f,0.509741306f},}}},lg{64,
 329.62755691286992,0.05018487445041131,0.050172868054033259,{{ld{
 0.952816129f,0.125764444f,0.0812796876f},ld{0.986026585f,0.609295309f
-,0.595321953f},}}},lf{65,349.22823143300388,0.043864353550868297,
+,0.595321953f},}}},lg{65,349.22823143300388,0.043864353550868297,
 0.043849830886102087,{{ld{0.964000463f,0.0780902132f,0.0445734337f},
-ld{0.982624471f,0.514371037f,0.496995509f},}}},lf{66,
+ld{0.982624471f,0.514371037f,0.496995509f},}}},lg{66,
 369.9944227116344,0.041445699304470202,0.041429139620925384,{{ld{
 0.971147656f,0.0412886031f,0.0147097185f},ld{0.97836256f,0.448060066f
-,0.426422626f},}}},lf{67,391.99543598174927,0.038569751150702061,
+,0.426422626f},}}},lg{67,391.99543598174927,0.038569751150702061,
 0.038551444027183399,{{ld{0.973727226f,0.0304478798f,0.0063054515f},
-ld{0.979394138f,0.439392835f,0.418787003f},}}},lf{68,
+ld{0.979394138f,0.439392835f,0.418787003f},}}},lg{68,
 415.30469757994513,0.038647813187822573,0.038630939741655525,{{ld{
 0.965877533f,0.0969027132f,0.0648946837f},ld{0.987163246f,
-0.537800133f,0.524963379f},}}},lf{69,440,0.034213136651369561,
+0.537800133f,0.524963379f},}}},lg{69,440,0.034213136651369561,
 0.034192177687860578,{{ld{0.977191687f,0.0219166316f,0.00100000005f},
-ld{0.981147885f,0.437750757f,0.418898672f},}}},lf{70,
+ld{0.981147885f,0.437750757f,0.418898672f},}}},lg{70,
 466.16376151808993,0.031707762542134407,0.031684544575275947,{{ld{
 0.977934003f,0.0212783217f,0.00100000005f},ld{0.983647823f,
-0.447832286f,0.43148008f},}}},lf{71,493.88330125612413,
+0.447832286f,0.43148008f},}}},lg{71,493.88330125612413,
 0.030318248694925849,0.03029388714829187,{{ld{0.979133189f,
 0.0201799199f,0.00100000005f},ld{0.983928025f,0.459363192f,
-0.443291217f},}}},lf{72,523.25113060119725,0.03068623959455101,
+0.443291217f},}}},lg{72,523.25113060119725,0.03068623959455101,
 0.030665106224438483,{{ld{0.972732961f,0.0948506445f,0.069271937f},ld
-{0.989834726f,0.542254806f,0.532089531f},}}},lf{73,554.36526195374415
+{0.989834726f,0.542254806f,0.532089531f},}}},lg{73,554.36526195374415
 ,0.027104148923911456,0.027076669008337221,{{ld{0.981550395f,
 0.0179468431f,0.00100000005f},ld{0.985468745f,0.444626749f,
-0.430095524f},}}},lf{74,587.32953583481515,0.025603578913498359,
+0.430095524f},}}},lg{74,587.32953583481515,0.025603578913498359,
 0.025574067243458867,{{ld{0.982260883f,0.0173193868f,0.00100000005f},
-ld{0.986480057f,0.468735278f,0.455215335f},}}},lf{75,
+ld{0.986480057f,0.468735278f,0.455215335f},}}},lg{75,
 622.25396744416184,0.024063781460123581,0.02403193743460982,{{ld{
 0.982919574f,0.0167379603f,0.00100000005f},ld{0.987605214f,
-0.499471009f,0.487076193f},}}},lf{76,659.25511382573984,
+0.499471009f,0.487076193f},}}},lg{76,659.25511382573984,
 0.022281722725889672,0.022246635253493741,{{ld{0.983857989f,
 0.0158759598f,0.00100000005f},ld{0.989221215f,0.463819087f,
-0.453040302f},}}},lf{77,698.45646286600777,0.02065037867038455,
+0.453040302f},}}},lg{77,698.45646286600777,0.02065037867038455,
 0.02061290564519579,{{ld{0.9846977f,0.0151007511f,0.00100000005f},ld{
-0.990332127f,0.482459813f,0.47279191f},}}},lf{78,739.9888454232688,
+0.990332127f,0.482459813f,0.47279191f},}}},lg{78,739.9888454232688,
 0.020043458871884919,0.020004698848767131,{{ld{0.98559016f,
 0.0142779136f,0.00100000005f},ld{0.989940584f,0.493299633f,
-0.483240217f},}}},lf{79,783.99087196349853,0.018325303177284917,
+0.483240217f},}}},lg{79,783.99087196349853,0.018325303177284917,
 0.018281455438323522,{{ld{0.985981226f,0.0139489817f,0.00100000005f},
-ld{0.991916418f,0.506072938f,0.497989357f},}}},lf{80,
+ld{0.991916418f,0.506072938f,0.497989357f},}}},lg{80,
 830.60939515989025,0.017645326943717989,0.017600578528719345,{{ld{
 0.986990869f,0.0129980929f,0.00100000005f},ld{0.991523027f,
-0.503933728f,0.495456755f},}}},lf{81,880,0.016392722264951056,
+0.503933728f,0.495456755f},}}},lg{81,880,0.016392722264951056,
 0.016343443718932864,{{ld{0.987505317f,0.0125398571f,0.00100000005f},
-ld{0.992678523f,0.5085181f,0.501196623f},}}},lf{82,932.32752303617985
+ld{0.992678523f,0.5085181f,0.501196623f},}}},lg{82,932.32752303617985
 ,0.0094970911571389555,0.0094607660781394938,{{ld{0.991669536f,
 0.00827072188f,0.00100000005f},ld{0.996464968f,0.579506099f,
-0.575971127f},}}},lf{83,987.76660251224826,0.014365968890251529,
+0.575971127f},}}},lg{83,987.76660251224826,0.014365968890251529,
 0.014308583761182969,{{ld{0.988678813f,0.0114687765f,0.00100000005f},
-ld{0.994058967f,0.518969297f,0.513028204f},}}},lf{84,
+ld{0.994058967f,0.518969297f,0.513028204f},}}},lg{84,
 1046.5022612023945,0.013574570699782013,0.013514183071725415,{{ld{
 0.989387631f,0.0108065158f,0.00100000005f},ld{0.994288981f,
-0.508853912f,0.503142893f},}}},lf{85,1108.7305239074883,
+0.508853912f,0.503142893f},}}},lg{85,1108.7305239074883,
 0.01276677222496244,0.012702772695009284,{{ld{0.990014732f,
 0.0102229388f,0.00100000005f},ld{0.994642735f,0.502920568f,
-0.497563332f},}}},lf{86,1174.6590716696303,0.012941280600085283,
+0.497563332f},}}},lg{86,1174.6590716696303,0.012941280600085283,
 0.012880002647250057,{{ld{0.991223514f,0.00906440616f,0.00100000005f}
-,ld{0.993042648f,0.424177974f,0.417220592f},}}},lf{87,
+,ld{0.993042648f,0.424177974f,0.417220592f},}}},lg{87,
 1244.5079348883237,0.012221098748060795,0.012160903879548815,{{ld{
 0.989729166f,0.0512266159f,0.0416597314f},ld{0.995333135f,
-0.543007791f,0.538340986f},}}},lf{88,1318.5102276514797,
+0.543007791f,0.538340986f},}}},lg{88,1318.5102276514797,
 0.0017922484159481496,0.001798657881747373,{{ld{0.996675551f,
 0.442208976f,0.440436333f},ld{0.999548852f,0.985142946f,0.984691739f}
-,}}},lf{89,1396.9129257320155,0.0047712965714784674,
+,}}},lg{89,1396.9129257320155,0.0047712965714784674,
 0.0047233363066292609,{{ld{0.995141327f,0.00506559992f,0.00100000005f
-},ld{0.998724103f,0.749601364f,0.748325467f},}}},lf{90,
+},ld{0.998724103f,0.749601364f,0.748325467f},}}},lg{90,
 1479.9776908465376,0.010812578606363645,0.010746295946221391,{{ld{
 0.990956485f,0.0596992671f,0.0512560122f},ld{0.995483577f,
-0.628141522f,0.6236251f},}}},lf{91,1567.9817439269971,
+0.628141522f,0.6236251f},}}},lg{91,1567.9817439269971,
 0.0098216176121961995,0.0097395917746298487,{{ld{0.993366241f,
 0.00709735323f,0.00100000005f},ld{0.994622886f,0.432546169f,
-0.427169055f},}}},lf{92,1661.2187903197805,0.00902255340091874,
+0.427169055f},}}},lg{92,1661.2187903197805,0.00902255340091874,
 0.0089306525999325211,{{ld{0.992716491f,0.0256401431f,0.018873984f},
-ld{0.996320605f,0.527242482f,0.523563087f},}}},lf{93,1760,
+ld{0.996320605f,0.527242482f,0.523563087f},}}},lg{93,1760,
 0.0055945008864219641,0.005506444387682401,{{ld{0.994621933f,
 0.0057295477f,0.00100000005f},ld{0.998482108f,0.669281781f,
-0.667763829f},}}},lf{94,1864.6550460723597,0.0082852901255033654,
+0.667763829f},}}},lg{94,1864.6550460723597,0.0082852901255033654,
 0.0081898274417011689,{{ld{0.9935866f,0.0297955833f,0.0238480493f},ld
-{0.996219933f,0.50925529f,0.505475223f},}}},lf{95,1975.5332050244961,
+{0.996219933f,0.50925529f,0.505475223f},}}},lg{95,1975.5332050244961,
 0.0055404491964765375,0.0054367339517353563,{{ld{0.994855464f,
 0.00554319937f,0.00100000005f},ld{0.998185754f,0.72871834f,
-0.726904094f},}}},lf{96,2093.004522404789,0.060685177171099142,
+0.726904094f},}}},lg{96,2093.004522404789,0.060685177171099142,
 0.060692289086111587,{{ld{0.97908479f,0.0214933921f,0.00100000005f},
-ld{0.925710559f,0.922291398f,0.848001957f},}}},lf{97,
+ld{0.925710559f,0.922291398f,0.848001957f},}}},lg{97,
 2217.4610478149766,0.060749840930865204,0.060774294471047235,{{ld{
 0.980520725f,0.0200777538f,0.00100000005f},ld{0.923189104f,
-0.920074701f,0.843263745f},}}},lf{98,2349.3181433392601,
+0.920074701f,0.843263745f},}}},lg{98,2349.3181433392601,
 0.016905258493571152,0.016756016971397454,{{ld{0.98256427f,
 0.0179850217f,0.00100000005f},ld{0.99999243f,0.985007584f,
-0.985000014f},}}},lf{99,2489.0158697766474,0.04549384227279344,
+0.985000014f},}}},lg{99,2489.0158697766474,0.04549384227279344,
 0.045464904972224253,{{ld{0.981879115f,0.018758826f,0.00100000005f},
-ld{0.947710276f,0.935872495f,0.883582771f},}}},lf{100,
+ld{0.947710276f,0.935872495f,0.883582771f},}}},lg{100,
 2637.0204553029598,0.014840154729723729,0.014673957114837209,{{ld{
 0.984619975f,0.0159272701f,0.00100000005f},ld{0.99999243f,
-0.985007584f,0.985000014f},}}},lf{101,2793.8258514640311,
+0.985007584f,0.985000014f},}}},lg{101,2793.8258514640311,
 0.01452019461730175,0.014337431487034582,{{ld{0.984981537f,
 0.015616239f,0.00100000005f},ld{0.99999243f,0.985007584f,0.985000014f
-},}}},lf{102,2959.9553816930752,0.010612211603816275,
+},}}},lg{102,2959.9553816930752,0.010612211603816275,
 0.010460440954997697,{{ld{0.988836408f,0.0116895735f,0.00100000005f},
-ld{0.99999243f,0.985007584f,0.985000014f},}}},lf{103,
+ld{0.99999243f,0.985007584f,0.985000014f},}}},lg{103,
 3135.9634878539946,0.010844919341281791,0.01067088188757064,{{ld{
 0.988635302f,0.0119341016f,0.00100000005f},ld{0.99999243f,
-0.985007584f,0.985000014f},}}},lf{104,3322.437580639561,
+0.985007584f,0.985000014f},}}},lg{104,3322.437580639561,
 0.011659108656308941,0.011449516347192946,{{ld{0.987855554f,
 0.012767286f,0.00100000005f},ld{0.99999243f,0.985007584f,0.985000014f
-},}}},lf{105,3520,0.01138980654730897,0.011159682642585593,{{ld{
+},}}},lg{105,3520,0.01138980654730897,0.011159682642585593,{{ld{
 0.988144815f,0.0125085283f,0.00100000005f},ld{0.99999243f,
-0.985007584f,0.985000014f},}}},lf{106,3729.3100921447194,
+0.985007584f,0.985000014f},}}},lg{106,3729.3100921447194,
 0.01253811026852846,0.012254592508744652,{{ld{0.987052023f,
 0.0136855589f,0.00100000005f},ld{0.99999243f,0.985007584f,
-0.985000014f},}}},lf{107,3951.0664100489921,0.015514637692152404,
+0.985000014f},}}},lg{107,3951.0664100489921,0.015514637692152404,
 0.0154273199751744,{{ld{0.981381297f,0.19368723f,0.175470486f},ld{
-0.99999243f,0.985007584f,0.985000014f},}}},lf{108,4186.009044809578,
+0.99999243f,0.985007584f,0.985000014f},}}},lg{108,4186.009044809578,
 0.011231121314898345,0.01090946437169898,{{ld{0.988356352f,
 0.012397076f,0.00100000005f},ld{0.99999243f,0.985007584f,0.985000014f
 },}}},}};};
-class l504{inline static constexpr std::size_t l196=4;inline static
-constexpr std::size_t l826=237;struct la{float l120;float l400;};
-struct lb{int lm;double l425;double l814;double l355;double l686;std
-::size_t l433;std::array<la,l196>l276;};lb l164;std::array<float,l196
->l159{};std::array<float,l196>l232{};std::array<float,l196>l160{};std
-::array<float,l196>l195{};public:explicit l504(double l397)noexcept:
-l164(l739(l397)){}inline void l34(float&lo)noexcept{for(std::size_t lc
-=0;lc<l164.l433;++lc){const auto&l85=l164.l276[lc];const float l38=
-l232[lc]+l85.l120* (l159[lc]-l160[lc])+l85.l400* (lo-l195[lc]);l232[
-lc]=l159[lc];l159[lc]=lo;l195[lc]=l160[lc];l160[lc]=l38;lo=l38;}}
-inline void lx()noexcept{l159.fill(0.0f);l232.fill(0.0f);l160.fill(
-0.0f);l195.fill(0.0f);}[[nodiscard]]inline double state_energy()const
-noexcept{double l540=0.0;for(std::size_t lc=0;lc<l164.l433;++lc)l540
-+=double(l159[lc]) *l159[lc]+double(l232[lc]) *l232[lc]+double(l160[
-lc]) *l160[lc]+double(l195[lc]) *l195[lc];return l540;}[[nodiscard]]
-inline double l800()const noexcept{return l164.l686;}[[nodiscard]]
-inline double l766()const noexcept{return l164.l355;}private:[[
-nodiscard]]inline static const lb&l739(double l52)noexcept{std::
-size_t l534=0;double l471=std::abs(l192[0].l425-l52);for(std::size_t
-lc=1;lc<l192.size();++lc){const double l575=std::abs(l192[lc].l425-
-l52);if(l575<l471){l471=l575;l534=lc;}}return l192[l534];}inline
-static constexpr std::array<lb,237>l192={{lb{21,27.3782,
+class l508{inline static constexpr std::size_t l201=4;inline static
+constexpr std::size_t l826=237;struct la{float l60;float l146;};
+struct lb{int ln;double l427;double l814;double l363;double l686;std
+::size_t l433;std::array<la,l201>l105;};lb l192;std::array<float,l201
+>l184{};std::array<float,l201>l227{};std::array<float,l201>l162{};std
+::array<float,l201>l197{};public:explicit l508(double l401)noexcept:
+l192(l738(l401)){}inline void l30(float&lm)noexcept{for(std::size_t lc
+=0;lc<l192.l433;++lc){const auto&l85=l192.l105[lc];const float l32=
+l227[lc]+l85.l60* (l184[lc]-l162[lc])+l85.l146* (lm-l197[lc]);l227[lc
+]=l184[lc];l184[lc]=lm;l197[lc]=l162[lc];l162[lc]=l32;lm=l32;}}inline
+void lx()noexcept{l184.fill(0.0f);l227.fill(0.0f);l162.fill(0.0f);
+l197.fill(0.0f);}[[nodiscard]]inline double state_energy()const
+noexcept{double l538=0.0;for(std::size_t lc=0;lc<l192.l433;++lc)l538
++=double(l184[lc]) *l184[lc]+double(l227[lc]) *l227[lc]+double(l162[
+lc]) *l162[lc]+double(l197[lc]) *l197[lc];return l538;}[[nodiscard]]
+inline double l584()const noexcept{return l192.l686;}[[nodiscard]]
+inline double l767()const noexcept{return l192.l363;}private:[[
+nodiscard]]inline static const lb&l738(double l62)noexcept{std::
+size_t l533=0;double l472=std::abs(l170[0].l427-l62);for(std::size_t
+lc=1;lc<l170.size();++lc){const double l544=std::abs(l170[lc].l427-
+l62);if(l544<l472){l472=l544;l533=lc;}}return l170[l533];}inline
+static constexpr std::array<lb,237>l170={{lb{21,27.3782,
 5.4850291759431087e-05,44100,1541.7305100913354,1,{{la{-1.90728378f,
 0.909946561f},la{0.0f,0.0f},la{0.0f,0.0f},la{0.0f,0.0f}}}},lb{22,
 29.0101,5.3600800116909449e-05,44100,1455.264909384322,1,{{la{-
@@ -1520,82 +1515,82 @@ la{-1.29215562f,0.429868311f},la{0.0f,0.0f},la{0.0f,0.0f},la{0.0f,
 },la{0.0f,0.0f}}}},lb{108,4265.32,0.010331883366577739,88200,
 12.001963952874597,2,{{la{-1.28201258f,0.448183239f},la{-0.720752478f
 ,0.393981755f},la{0.0f,0.0f},la{0.0f,0.0f}}}},}};};
-namespace lu::l5{enum class l43{l389,l688,l802,l772,l714,l635};
-constexpr int l23=21;constexpr int l80=108;constexpr int l184=l80-l23
-+1;static_assert(l184==88);constexpr int l651=69;constexpr double l572
-=440.0;using l58=std::array<double,l184>;using l267=std::array<double
-,l184>;using l298=std::array<double,l184>;enum class l73{l0=1,l324=2,
-l1=3};constexpr double l769=1.7;}class l45{l45(const l45&)=delete;l45
-&operator=(const l45&)=delete;public:using l43=lu::l5::l43;using l58=
-lu::l5::l58;using l73=lu::l5::l73;using l267=lu::l5::l267;using l298=
-lu::l5::l298;constexpr l45()noexcept=default;double l679(int lk,l43
-l100=l43::l389,l73 l722=l73::l324)const noexcept{if(lk<lu::l5::l23||
-lk>lu::l5::l80){return 0.0;}const int lh=lk-lu::l5::l23;const l175&ly
-=l263();const double l258=l735(ly,lh,l100);switch(l722){case l73::l0:
-return l258-ly.l220[lh];case l73::l324:return l258;case l73::l1:
-return l258+ly.l220[lh];}return l258;}const l58&l820()const noexcept{
-return l263().l37;}double l447(int lk)const noexcept{if(lk<lu::l5::
-l23||lk>lu::l5::l80){return 0.0;}const int lh=lk-lu::l5::l23;return
-l263().l485[lh];}const l298&l817()const noexcept{return l263().l485;}
-private:struct l175{l58 l37{};l58 l458{};l58 l529{};l58 l481{};l58
-l435{};l58 l438{};l267 l220{};l298 l485{};};static l175 l736(){l175 ly
-{};l676(ly.l37);ly.l458=ly.l37;ly.l529=ly.l37;ly.l481=ly.l37;ly.l435=
-ly.l37;ly.l438=ly.l37;l606(ly.l37,ly.l220);return ly;}static const
-l175&l263(){static const l175 ly=l736();return ly;}static double l336
-(int lk){return lu::l5::l572*std::pow(2.0,static_cast<double>(lk-lu::
-l5::l651)/12.0);}static double l667(double l656){constexpr double l785
+namespace lw::l4{enum class l36{l346,l687,l802,l773,l713,l635};
+constexpr int l22=21;constexpr int l83=108;constexpr int l183=l83-l22
++1;static_assert(l183==88);constexpr int l653=69;constexpr double l567
+=440.0;using l51=std::array<double,l183>;using l267=std::array<double
+,l183>;using l304=std::array<double,l183>;enum class l67{l1=1,l329=2,
+l0=3};constexpr double l770=1.7;}class l49{l49(const l49&)=delete;l49
+&operator=(const l49&)=delete;public:using l36=lw::l4::l36;using l51=
+lw::l4::l51;using l67=lw::l4::l67;using l267=lw::l4::l267;using l304=
+lw::l4::l304;constexpr l49()noexcept=default;double l679(int lk,l36
+l104=l36::l346,l67 l721=l67::l329)const noexcept{if(lk<lw::l4::l22||
+lk>lw::l4::l83){return 0.0;}const int lh=lk-lw::l4::l22;const l194&lz
+=l288();const double l262=l732(lz,lh,l104);switch(l721){case l67::l1:
+return l262-lz.l213[lh];case l67::l329:return l262;case l67::l0:
+return l262+lz.l213[lh];}return l262;}const l51&l820()const noexcept{
+return l288().l38;}double l446(int lk)const noexcept{if(lk<lw::l4::
+l22||lk>lw::l4::l83){return 0.0;}const int lh=lk-lw::l4::l22;return
+l288().l488[lh];}const l304&l817()const noexcept{return l288().l488;}
+private:struct l194{l51 l38{};l51 l457{};l51 l529{};l51 l482{};l51
+l434{};l51 l437{};l267 l213{};l304 l488{};};static l194 l737(){l194 lz
+{};l677(lz.l38);lz.l457=lz.l38;lz.l529=lz.l38;lz.l482=lz.l38;lz.l434=
+lz.l38;lz.l437=lz.l38;l606(lz.l38,lz.l213);return lz;}static const
+l194&l288(){static const l194 lz=l737();return lz;}static double l339
+(int lk){return lw::l4::l567*std::pow(2.0,static_cast<double>(lk-lw::
+l4::l653)/12.0);}static double l671(double l661){constexpr double l785
 =-1.3333333333333333;constexpr double l784=1.3333333333333333;
-constexpr double l625=-6.5760753629956712;constexpr double l624=
+constexpr double l626=-6.5760753629956712;constexpr double l624=
 1.9137732290077178;constexpr double l623=0.27614763151078042;
 constexpr double l622=-0.28572738557770405;constexpr double l621=-
-0.30709648310494486;const double lo=std::log2(l656/440.0);double l360
-=l625+l624*lo+l623*lo*lo+l622*std::pow(std::max(lo-l785,0.0),2.0)+
-l621*std::pow(std::max(lo-l784,0.0),2.0);l360=std::clamp(l360,std::
-log(5e-6),std::log(2e-2));return std::exp(l360);}static double l246(
-int lk){return l667(l336(lk));}static double l459(int l144){constexpr
-double l770=3.5;constexpr double l761=60.0;constexpr double l69=25.0;
-const double lo=(static_cast<double>(l144)-l761)/l69;return(l770*0.5) *
-(1.0-std::erf(lo))+1.0;}static double l780(int l144,int l356,double
-l657){const double l200=l459(l144);const double l213=l200*l200;const
-double l392=l246(l144);const double l342=l246(l356);return 2.0*l657*
-std::sqrt((1.0+l392*4.0*l213)/(1.0+l342*l213));}static double l607(
-int l144,int l356,double l698){const double l200=l459(l144);const
-double l213=l200*l200;const double l392=l246(l144);const double l342=
-l246(l356);const double l681=std::sqrt((1.0+l392*4.0*l213)/(1.0+l342*
-l213));return l698/(2.0*l681);}static double l791(int lk,const std::
-array<int,8>&l17,const std::array<double,8>&l145){if(lk<=l17.front()){
-return l145.front();}for(std::size_t lc=0;lc+1<l17.size();++lc){const
-int l484=l17[lc];const int l514=l17[lc+1];if(lk<=l514){const double
-l677=static_cast<double>(lk-l484)/static_cast<double>(l514-l484);
-return l145[lc]+l677* (l145[lc+1]-l145[lc]);}}const std::size_t l241=
-l17.size()-1;const std::size_t l450=l241-1;const double l746=(l145[
-l241]-l145[l450])/static_cast<double>(l17[l241]-l17[l450]);return l145
-[l241]+l746*static_cast<double>(lk-l17[l241]);}static void l676(l58&
-l37){l58 l533{};for(int lm=lu::l5::l23;lm<=lu::l5::l80;++lm){const int
-lh=lm-lu::l5::l23;l533[lh]=l336(lm);}constexpr std::array<int,8>l17={
-21,33,45,57,69,81,93,105};std::array<double,l17.size()>l174{};std::
-array<double,l17.size()>l462{};constexpr int l412=4;l174[l412]=lu::l5
-::l572;for(int lc=l412+1;lc<static_cast<int>(l17.size());++lc){l174[
-lc]=l780(l17[lc-1],l17[lc],l174[lc-1]);}for(int lc=l412-1;lc>=0;--lc){
-l174[lc]=l607(l17[lc],l17[lc+1],l174[lc+1]);}for(std::size_t lc=0;lc<
-l17.size();++lc){l462[lc]=1200.0*std::log2(l174[lc]/l336(l17[lc]));}
-for(int lm=lu::l5::l23;lm<=lu::l5::l80;++lm){const int lh=lm-lu::l5::
-l23;const double l636=l791(lm,l17,l462);l37[lh]=l533[lh] *std::pow(
-2.0,l636/1200.0);}}static double l735(const l175&ly,int lh,l43 l100)noexcept
-{switch(l100){case l43::l389:return ly.l37[lh];case l43::l688:return
-ly.l458[lh];case l43::l802:return ly.l529[lh];case l43::l772:return ly
-.l481[lh];case l43::l714:return ly.l435[lh];case l43::l635:return ly.
-l438[lh];}return ly.l37[lh];}static int l619(int lk)noexcept{if(lk<=
-28){return 1;}if(lk<=33){return 2;}return 3;}static double l693(
-double l52,int l105){if(l105<=1){return 0.0;}const double l712=std::
-pow(2.0,lu::l5::l769/1200.0);const double l783=l52*l712;const double
-l675=l783-l52;return l675*0.5;}static void l606(const l58&l37,l267&
-l220){for(int lm=lu::l5::l23;lm<=lu::l5::l80;++lm){const int lh=lm-lu
-::l5::l23;const int l105=l619(lm);const double l52=l37[lh];l220[lh]=
-l693(l52,l105);}}};
-namespace lu::l358::l339{struct le{double l752,l751,l211,l236;double
-l743,l227,l742,l198;double l703,l758;};inline constexpr std::array<le
-,88>l596{{le{1.90124055258e+15,1375613.66073,0.119408639313,
+0.30709648310494486;const double lm=std::log2(l661/440.0);double l366
+=l626+l624*lm+l623*lm*lm+l622*std::pow(std::max(lm-l785,0.0),2.0)+
+l621*std::pow(std::max(lm-l784,0.0),2.0);l366=std::clamp(l366,std::
+log(5e-6),std::log(2e-2));return std::exp(l366);}static double l247(
+int lk){return l671(l339(lk));}static double l458(int l143){constexpr
+double l771=3.5;constexpr double l763=60.0;constexpr double l70=25.0;
+const double lm=(static_cast<double>(l143)-l763)/l70;return(l771*0.5) *
+(1.0-std::erf(lm))+1.0;}static double l780(int l143,int l368,double
+l654){const double l220=l458(l143);const double l214=l220*l220;const
+double l394=l247(l143);const double l345=l247(l368);return 2.0*l654*
+std::sqrt((1.0+l394*4.0*l214)/(1.0+l345*l214));}static double l608(
+int l143,int l368,double l739){const double l220=l458(l143);const
+double l214=l220*l220;const double l394=l247(l143);const double l345=
+l247(l368);const double l680=std::sqrt((1.0+l394*4.0*l214)/(1.0+l345*
+l214));return l739/(2.0*l680);}static double l791(int lk,const std::
+array<int,8>&l14,const std::array<double,8>&l145){if(lk<=l14.front()){
+return l145.front();}for(std::size_t lc=0;lc+1<l14.size();++lc){const
+int l485=l14[lc];const int l513=l14[lc+1];if(lk<=l513){const double
+l674=static_cast<double>(lk-l485)/static_cast<double>(l513-l485);
+return l145[lc]+l674* (l145[lc+1]-l145[lc]);}}const std::size_t l223=
+l14.size()-1;const std::size_t l450=l223-1;const double l748=(l145[
+l223]-l145[l450])/static_cast<double>(l14[l223]-l14[l450]);return l145
+[l223]+l748*static_cast<double>(lk-l14[l223]);}static void l677(l51&
+l38){l51 l532{};for(int ln=lw::l4::l22;ln<=lw::l4::l83;++ln){const int
+lh=ln-lw::l4::l22;l532[lh]=l339(ln);}constexpr std::array<int,8>l14={
+21,33,45,57,69,81,93,105};std::array<double,l14.size()>l193{};std::
+array<double,l14.size()>l459{};constexpr int l413=4;l193[l413]=lw::l4
+::l567;for(int lc=l413+1;lc<static_cast<int>(l14.size());++lc){l193[
+lc]=l780(l14[lc-1],l14[lc],l193[lc-1]);}for(int lc=l413-1;lc>=0;--lc){
+l193[lc]=l608(l14[lc],l14[lc+1],l193[lc+1]);}for(std::size_t lc=0;lc<
+l14.size();++lc){l459[lc]=1200.0*std::log2(l193[lc]/l339(l14[lc]));}
+for(int ln=lw::l4::l22;ln<=lw::l4::l83;++ln){const int lh=ln-lw::l4::
+l22;const double l636=l791(ln,l14,l459);l38[lh]=l532[lh] *std::pow(
+2.0,l636/1200.0);}}static double l732(const l194&lz,int lh,l36 l104)noexcept
+{switch(l104){case l36::l346:return lz.l38[lh];case l36::l687:return
+lz.l457[lh];case l36::l802:return lz.l529[lh];case l36::l773:return lz
+.l482[lh];case l36::l713:return lz.l434[lh];case l36::l635:return lz.
+l437[lh];}return lz.l38[lh];}static int l619(int lk)noexcept{if(lk<=
+28){return 1;}if(lk<=33){return 2;}return 3;}static double l691(
+double l62,int l97){if(l97<=1){return 0.0;}const double l711=std::pow
+(2.0,lw::l4::l770/1200.0);const double l786=l62*l711;const double l676
+=l786-l62;return l676*0.5;}static void l606(const l51&l38,l267&l213){
+for(int ln=lw::l4::l22;ln<=lw::l4::l83;++ln){const int lh=ln-lw::l4::
+l22;const int l97=l619(ln);const double l62=l38[lh];l213[lh]=l691(l62
+,l97);}}};
+namespace lw::l351::l398{struct le{double l756,l755,l231,l235;double
+l744,l196,l743,l198;double l700,l762;};inline constexpr std::array<le
+,88>l604{{le{1.90124055258e+15,1375613.66073,0.119408639313,
 38.0826056266,4.13048457387,2.3661379754,1.84042891408,0.752770660711
 ,0.0110001,-0.000149802114365},le{9.59155564422e+15,1203516.60213,
 0.336605009809,42.7975403467,4.3217167608,2.13689865174,1.87282283511
@@ -1797,463 +1792,474 @@ l743,l227,l742,l198;double l703,l758;};inline constexpr std::array<le
 5.36195538131,2.42473764446,1.79906929787,0.737991989173,0.0053929,-
 2.89087289707e-05},le{1.12747490485e+21,2065125.04097,3.16029681519,
 15.4911603298,5.27542872582,2.65325822518,1.90840588135,
-0.755604694289,0.0053364,-3.19222563179e-05},}};}class l170{l170(
-const l170&)=delete;l170&operator=(const l170&)=delete;public:using lb
-=lu::l358::l339::le;using l231=std::array<lb,88>;constexpr l170()noexcept
-=default;const lb*l367(int lk)const noexcept{if(lk<21||lk>108)return
-nullptr;return&l234()[static_cast<std::size_t>(lk-21)];}const l231&
-l749()const noexcept{return l234();}private:static constexpr const
-l231&l234()noexcept{return lu::l358::l339::l596;}};
-namespace lu::l456::l494{struct lg{double l765;};inline constexpr std
-::array<lg,88>l716{{lg{12.3988206919},lg{12.8891815684},lg{
-13.1332105294},lg{13.0839327734},lg{12.8890542964},lg{12.3334372967},
-lg{11.5713724036},lg{10.6439459031},lg{9.67353066531},lg{
-8.69475953779},lg{7.75861813737},lg{6.90352041365},lg{6.12894607314},
-lg{5.42385158532},lg{4.83877578739},lg{4.35742291689},lg{
-3.96601763469},lg{3.66669615581},lg{3.44305916601},lg{3.25519545620},
-lg{2.48500589816},lg{2.42870645282},lg{2.36987715335},lg{
-2.36555046436},lg{2.30916471578},lg{2.30054038444},lg{2.29927159747},
-lg{2.29950268773},lg{2.29970769619},lg{2.29838304084},lg{
-2.29704308482},lg{2.28984360988},lg{2.27965770670},lg{2.26948218038},
-lg{2.25350012030},lg{2.23460609259},lg{2.21576495128},lg{
-2.19482505542},lg{2.17249421243},lg{2.15023958991},lg{2.12661526438},
-lg{2.10239760722},lg{2.08038575212},lg{2.05845122567},lg{
-2.03659430135},lg{2.01832734084},lg{2.00011508361},lg{1.98336683563},
-lg{1.96874177635},lg{1.95347555206},lg{1.94238693842},lg{
-1.93063556045},lg{1.92096807626},lg{1.91131151156},lg{1.90510595470},
-lg{1.89683187889},lg{1.89062632204},lg{1.88370791961},lg{
-1.87749789350},lg{1.87263363374},lg{1.86775947868},lg{1.86154052370},
-lg{1.85324858372},lg{1.84702962875},lg{1.83873768877},lg{
-1.83044574880},lg{1.82084619918},lg{1.81125761501},lg{1.79831447070},
-lg{1.78746145235},lg{1.77250647871},lg{1.75836059104},lg{
-1.74425126497},lg{1.72685989245},lg{1.70622057731},lg{1.68895544985},
-lg{1.66721274056},lg{1.64681393361},lg{1.62400957623},lg{
-1.60055424045},lg{1.57796485708},lg{1.55227685138},lg{1.52476666739},
-lg{1.49936735910},lg{1.47095957610},lg{1.44393685561},lg{
-1.41467684717},lg{1.38608153033},}};}class l179{l179(const l179&)=
-delete;l179&operator=(const l179&)=delete;public:using lb=lu::l456::
-l494::lg;using l231=std::array<lb,88>;constexpr l179()noexcept=
-default;const lb*l367(int lk)const noexcept{constexpr int l23=21;
-constexpr int l80=108;if(lk<l23||lk>l80){return nullptr;}const std::
-size_t lh=static_cast<std::size_t>(lk-l23);return&l234()[lh];}double
-l447(int lk)const noexcept{const lb*l543=l367(lk);if(l543==nullptr){
-return 0.0;}return l543->l765;}const l231&l749()const noexcept{return
-l234();}private:static constexpr const l231&l234()noexcept{return lu
-::l456::l494::l716;}};class l78{l78(const l78&)=delete;l78&operator=(
-const l78&)=delete;public:static constexpr l45 l664{};static constexpr
-l170 l48{};static constexpr l179 l771{};constexpr l78()noexcept=
-default;};class l229{public:struct l470{int size=0;int l518=0;double
-l8=0.0;double l317=0.0;int l131=0;int l168=0;float l181=1.0f;float
-l240=0.0f;l470(int size,double l8):size(size),l8(l8){if(size<2)throw
+0.755604694289,0.0053364,-3.19222563179e-05},}};}class l174{l174(
+const l174&)=delete;l174&operator=(const l174&)=delete;public:using lb
+=lw::l351::l398::le;using l208=std::array<lb,88>;constexpr l174()noexcept
+=default;const lb*l374(int lk)const noexcept{if(lk<21||lk>108)return
+nullptr;return&l240()[static_cast<std::size_t>(lk-21)];}const l208&
+l750()const noexcept{return l240();}private:static constexpr const
+l208&l240()noexcept{return lw::l351::l398::l604;}};
+namespace lw::l455::l494{struct lf{double l766;};inline constexpr std
+::array<lf,88>l716{{lf{12.3988206919},lf{12.8891815684},lf{
+13.1332105294},lf{13.0839327734},lf{12.8890542964},lf{12.3334372967},
+lf{11.5713724036},lf{10.6439459031},lf{9.67353066531},lf{
+8.69475953779},lf{7.75861813737},lf{6.90352041365},lf{6.12894607314},
+lf{5.42385158532},lf{4.83877578739},lf{4.35742291689},lf{
+3.96601763469},lf{3.66669615581},lf{3.44305916601},lf{3.25519545620},
+lf{2.48500589816},lf{2.42870645282},lf{2.36987715335},lf{
+2.36555046436},lf{2.30916471578},lf{2.30054038444},lf{2.29927159747},
+lf{2.29950268773},lf{2.29970769619},lf{2.29838304084},lf{
+2.29704308482},lf{2.28984360988},lf{2.27965770670},lf{2.26948218038},
+lf{2.25350012030},lf{2.23460609259},lf{2.21576495128},lf{
+2.19482505542},lf{2.17249421243},lf{2.15023958991},lf{2.12661526438},
+lf{2.10239760722},lf{2.08038575212},lf{2.05845122567},lf{
+2.03659430135},lf{2.01832734084},lf{2.00011508361},lf{1.98336683563},
+lf{1.96874177635},lf{1.95347555206},lf{1.94238693842},lf{
+1.93063556045},lf{1.92096807626},lf{1.91131151156},lf{1.90510595470},
+lf{1.89683187889},lf{1.89062632204},lf{1.88370791961},lf{
+1.87749789350},lf{1.87263363374},lf{1.86775947868},lf{1.86154052370},
+lf{1.85324858372},lf{1.84702962875},lf{1.83873768877},lf{
+1.83044574880},lf{1.82084619918},lf{1.81125761501},lf{1.79831447070},
+lf{1.78746145235},lf{1.77250647871},lf{1.75836059104},lf{
+1.74425126497},lf{1.72685989245},lf{1.70622057731},lf{1.68895544985},
+lf{1.66721274056},lf{1.64681393361},lf{1.62400957623},lf{
+1.60055424045},lf{1.57796485708},lf{1.55227685138},lf{1.52476666739},
+lf{1.49936735910},lf{1.47095957610},lf{1.44393685561},lf{
+1.41467684717},lf{1.38608153033},}};}class l180{l180(const l180&)=
+delete;l180&operator=(const l180&)=delete;public:using lb=lw::l455::
+l494::lf;using l208=std::array<lb,88>;constexpr l180()noexcept=
+default;const lb*l374(int lk)const noexcept{constexpr int l22=21;
+constexpr int l83=108;if(lk<l22||lk>l83){return nullptr;}const std::
+size_t lh=static_cast<std::size_t>(lk-l22);return&l240()[lh];}double
+l446(int lk)const noexcept{const lb*l545=l374(lk);if(l545==nullptr){
+return 0.0;}return l545->l766;}const l208&l750()const noexcept{return
+l240();}private:static constexpr const l208&l240()noexcept{return lw
+::l455::l494::l716;}};class l73{l73(const l73&)=delete;l73&operator=(
+const l73&)=delete;public:static constexpr l49 l666{};static constexpr
+l174 l46{};static constexpr l180 l772{};constexpr l73()noexcept=
+default;};class l237{public:struct l470{int size=0;int l518=0;double
+l8=0.0;double l320=0.0;int l128=0;int l182=0;float l195=1.0f;float
+l225=0.0f;l470(int size,double l8):size(size),l8(l8){if(size<2)throw
 std::runtime_error("\x73\x74\x72\x69\x6e\x67\x5f\x6d\x6f\x64\x65\x6c"
 "\x3a\x20\x73\x69\x7a\x65\x20\x69\x73\x20\x74\x6f\x6f\x20\x73\x6d\x61"
 "\x6c\x6c\x2c\x20\x73\x69\x7a\x65\x3a\x20"+std::to_string(size));if(
 l8>1.0||l8<=0.0)throw std::runtime_error("\x73\x74\x72\x69\x6e\x67"
 "\x5f\x6d\x6f\x64\x65\x6c\x3a\x20\x70\x6f\x73\x69\x74\x69\x6f\x6e\x20"
 "\x69\x73\x6e\x27\x74\x20\x67\x6f\x6f\x64\x2c\x20\x70\x6f\x73\x69\x74"
-"\x69\x6f\x6e\x3a\x20"+std::to_string(l8));l518=size-1;l317=l518*l8;
-l131=std::ceil(l317);l168=l131-1;l181=l317-l168;l240=1-l181;}};public
-:const l78*l330=nullptr;int l31=69;double l52=440.0;double l61=
-44100.0;double l261=44100.0;l308 l219;l504 l161;double l695=0.0;
-double l815=0.0;double l169=0.0;int l71=0;double l480=0.0;int l90=0;
-std::vector<float>l0;std::vector<float>l1;int l42=0;int l40=0;float*
-l153=nullptr;float*l271=nullptr;double l764=1.0/9.4;l470 l15;double
-l242=0.0;Damper l351;bool l193=false;l490 l262;bool l112=false;double
-l558=0.0;public:l229(double ln,int lk,l45::l43 l100,l45::l73 l737,
-const l78*l46):l330(l46),l31(lk),l52(l46->l664.l679(l31,l100,l737)),
-l61(ln),l261(l31>=96?2.0*l61:l61),l219(l31),l161(l52),l695(l219.l598(
-l261,l52)),l169(l161.l800()/2.0),l71(static_cast<int>(std::floor(l169
-))+1),l480(2.0* (l169-std::floor(l169))),l90(l71-1),l15(l71,l764),
-l262(l480,2.0*std::numbers::pi_v<double> *l52/l261){if(l71<4)throw std
+"\x69\x6f\x6e\x3a\x20"+std::to_string(l8));l518=size-1;l320=l518*l8;
+l128=std::ceil(l320);l182=l128-1;l195=l320-l182;l225=1-l195;}};public
+:const l73*l333=nullptr;int l33=69;double l62=440.0;double l52=
+44100.0;double l277=44100.0;l248 l244;l508 l161;double l692=0.0;
+double l815=0.0;double l166=0.0;int l72=0;double l536=0.0;int l89=0;
+std::vector<float>l1;std::vector<float>l0;int l43=0;int l37=0;float*
+l150=nullptr;float*l271=nullptr;double l764=1.0/9.4;l470 l16;double
+l239=0.0;Damper l355;bool l185=false;l491 l275;bool l111=false;double
+l563=0.0;public:l237(double lo,int lk,l49::l36 l104,l49::l67 l736,
+const l73*l47):l333(l47),l33(lk),l62(l47->l666.l679(l33,l104,l736)),
+l52(lo),l277(l33>=96?2.0*l52:l52),l244(l33),l161(l62),l692(l244.l597(
+l277,l62)),l166(l161.l584()/2.0),l72(static_cast<int>(std::floor(l166
+))+1),l536(2.0* (l166-std::floor(l166))),l89(l72-1),l16(l72,l764),
+l275(l536,2.0*std::numbers::pi_v<double> *l62/l277){if(l72<4)throw std
 ::runtime_error("\x73\x74\x72\x69\x6e\x67\x5f\x6d\x6f\x64\x65\x6c\x3a"
 "\x20\x64\x65\x6c\x61\x79\x5f\x69\x6e\x74\x20\x69\x73\x20\x74\x6f\x6f"
-"\x20\x73\x6d\x61\x6c\x6c\x3a\x20"+std::to_string(l71));if(l15.l131+1
->l90||l15.l131-1<0){throw std::runtime_error("\x73\x74\x72\x69\x6e"
+"\x20\x73\x6d\x61\x6c\x6c\x3a\x20"+std::to_string(l72));if(l16.l128+1
+>l89||l16.l128-1<0){throw std::runtime_error("\x73\x74\x72\x69\x6e"
 "\x67\x5f\x6d\x6f\x64\x65\x6c\x3a\x20\x6e\x65\x78\x74\x5f\x69\x6e\x64"
 "\x65\x78\x20\x64\x6f\x65\x73\x6e\x27\x74\x20\x65\x78\x69\x73\x74\x3a"
-"\x20"+std::to_string(l71));}if(std::abs(l161.l766()-l261)>0.5){throw
+"\x20"+std::to_string(l72));}if(std::abs(l161.l767()-l277)>0.5){throw
 std::runtime_error("\x73\x74\x72\x69\x6e\x67\x5f\x6d\x6f\x64\x65\x6c"
 "\x3a\x20\x64\x69\x73\x70\x65\x72\x73\x69\x6f\x6e\x20\x70\x72\x65\x73"
 "\x65\x74\x20\x73\x61\x6d\x70\x6c\x65\x20\x72\x61\x74\x65\x20\x6d\x69"
-"\x73\x6d\x61\x74\x63\x68");}l0.resize(l71,0.0f);l1.resize(l71,0.0f);
-l42=0;l40=0;l153=&l0[l42];l271=&l1[l27(l90,l40)];l242=l46->l771.l447(
-l31);l558=1.0/(2.0*l242);}inline void l672(){if(l42==l90)l42=0;else
-l42++;if(l40==0)l40=l90;else l40--;l1[l27(0,l40)]=-l0[l27(0,l42)];l0[
-l27(l90,l42)]=-l1[l27(l90,l40)];l153=&l1[l27(0,l40)];l271=&l0[l27(l90
-,l42)];}inline int l27(int l362,int l374){return l362+l374<=l90?l362+
-l374:l362+l374-l71;}inline void l415(double l87){const bool l566=l87>
-0.0;if(l566){l723(l87*l558);}l672();filter();l366();if(l566){l112=
-true;}}inline void l723(double l288){l0[l27(l15.l131,l42)]+=l288*l15.
-l181;l0[l27(l15.l168,l42)]+=l288*l15.l240;l1[l27(l15.l131,l40)]+=l288
- *l15.l181;l1[l27(l15.l168,l40)]+=l288*l15.l240;}inline double l420(){
-return-2.0*l242*static_cast<double>( *l271);}inline double l642(){
-return l15.l181*l0[l27(l15.l131,l42)]+l15.l240*l0[l27(l15.l168,l42)]+
-l15.l181*l1[l27(l15.l131,l40)]+l15.l240*l1[l27(l15.l168,l40)];}inline
-void lx(){l42=0;l40=0;l112=false;l193=false;l406=0;l315=0;std::fill(
-l0.begin(),l0.end(),0.0f);std::fill(l1.begin(),l1.end(),0.0f);l153=&
-l0[l42];l271=&l1[l27(l90,l40)];l219.lx();l262.lx();l351.lx();l161.lx(
-);}private:inline void filter(){l262.l34( *l153);l219.l34( *l153);
-l161.l34( *l153);if(l193){l351.l34( *l153);}}int l406=0;int l315=0;
-inline void l366(){const int l605=l31>=96?128:64;constexpr int l777=8
-;if(++l315<l605){return;}l315=0;constexpr float l538=1.0e-5f;
-constexpr float l687=l538*l538;if(l704()<l687){if(++l406>=l777){l112=
-false;lx();}}else{l406=0;l112=true;}}inline float l704(){float l343=
-0.0f;for(int lh=0;lh<l71;++lh){l343+=l0[static_cast<std::size_t>(lh)]
- *l0[static_cast<std::size_t>(lh)]+l1[static_cast<std::size_t>(lh)] *
-l1[static_cast<std::size_t>(lh)];}l343/=static_cast<float>(2*l71);
-float state_energy=std::max(l219.state_energy(),l262.state_energy());
-state_energy=std::max(state_energy,static_cast<float>(l161.
-state_energy()));if(l193){state_energy=std::max(state_energy,l351.
-state_energy());}return std::max(l343,state_energy);}};
-class l477{public:int l31=69;const lu::l358::l339::le*l48=nullptr;
-double l139=0.0;double l65=0.0;double l79=0.0;double l103=0.0;double
-l172=0.0;double l188=0.0;bool l228=false;double l457=0.0;public:l477(
-double ln,int lk,const l78*l46):l139((1.0/2.0)/ln),l31(lk),l48(l46->
-l48.l367(l31)){l457=l139/l48->l703;}inline double l524(double l165){
-if(!l228)return 0.0;if(l65<0.0||l79<0.0){lx();return 0.0;}double l87=
-l725(l165);if(!std::isfinite(l87)||l87<=0.0){lx();return 0.0;}if(l103
-<0||l188<0.0){l188+=l103*l139;if(l188>0.0){l188=0.0;}}if(l188<l48->
-l758){lx();return 0.0;}l65=l65+(l172-l165) *l139;l79=l79+(l103-l172) *
-l139;constexpr double l442=1.0e-12;if(!std::isfinite(l65)||!std::
-isfinite(l79)||l65<-l442||l79<-l442){lx();return 0.0;}l65=std::max(
-0.0,l65);l79=std::max(0.0,l79);if(l87>0.0)l103-=l87*l457;return l87;}
-inline void l377(double l778){if(l228)return;lx();l103=l778;l228=true
-;}inline void lx(){l65=0.0;l79=0.0;l103=0.0;l172=0.0;l188=0.0;l228=
-false;}private:inline double l553(double lo,double l488){return lo>=0
-?std::pow(lo,l488):-std::pow(-lo,l488);}inline double l532(double l473
-,double l779){return std::pow(l473>0.0?l473:0.0,l779);}inline double
-l725(double l165){double l128=l165-l65/l139;double l123=l103+l79/l139
-;if(!(l128<=l123)){return 0.0;}const double l497=l48->l752*l532(l65,
-l48->l743);const double l496=l48->l751*l532(l79,l48->l742);const
-double l211=l48->l211;const double l236=l48->l236;const double l227=
-l48->l227;const double l198=l48->l198;const auto l463=[&](double l451
-){const double l297=l497+l211*l553(l451-l165,l227);const double l396=
-l496+l236*l553(l103-l451,l198);return l297-l396;};const double l525=
-l463(l128);const double l489=l463(l123);if(!std::isfinite(l525)||!std
-::isfinite(l489)||l525>0.0||l489<0.0){return 0.0;}double l150=std::
-clamp(l172,l128,l123);constexpr int l680=8;constexpr double l609=
-1.0e-10;constexpr double l669=1.0e-10;constexpr double l763=1.0e-14;
-double l515=0.0;for(int lc=0;lc<l680;++lc){const double l545=l150-
-l165;const double l544=l103-l150;const double l398=std::abs(l545);
-const double l338=std::abs(l544);const double l467=std::pow(l398,l227
-);const double l468=std::pow(l338,l198);const double l731=std::
-copysign(l467,l545);const double l682=std::copysign(l468,l544);const
-double l297=l497+l211*l731;const double l396=l496+l236*l682;const
-double l287=l297-l396;if(!std::isfinite(l287)){return 0.0;}l515=l297;
-if(l287>0.0){l123=l150;}else{l128=l150;}if(std::abs(l287)<=l609){
-break;}if((l123-l128)<=l669){break;}double l203=0.0;if(l398>0.0){l203
-+=l211*l227* (l467/l398);}if(l338>0.0){l203+=l236*l198* (l468/l338);}
-double l257;if(std::isfinite(l203)&&l203>l763){const double l265=l150
--l287/l203;if(std::isfinite(l265)&&l265>l128&&l265<l123){l257=l265;}
-else{l257=(l128+l123) *0.5;}}else{l257=(l128+l123) *0.5;}l150=l257;}
-l172=l150;return l515;}};
-class BridgeModel{public:BridgeModel(){}void l34()const{}};
-class l108{static constexpr bool l617=true;l108(const l108&)=delete;
-l108&operator=(const l108&)=delete;static constexpr std::size_t l184=
-88;static constexpr std::size_t l122=8;static constexpr std::size_t
-l464=721;static constexpr std::array<std::size_t,l122>l517{37,87,181,
-271,359,492,687,721};struct l650{std::array<float,l464>data{};std::
-size_t length=1;std::size_t lh=0;inline void l760(std::size_t l594)noexcept
-{length=std::clamp<std::size_t>(l594,1,l464);lh=0;data.fill(0.0f);}
+"\x73\x6d\x61\x74\x63\x68");}l1.resize(l72,0.0f);l0.resize(l72,0.0f);
+l43=0;l37=0;l150=&l1[l43];l271=&l0[l29(l89,l37)];l239=l47->l772.l446(
+l33);l563=1.0/(2.0*l239);}inline void l667(){if(l43==l89)l43=0;else
+l43++;if(l37==0)l37=l89;else l37--;l0[l29(0,l37)]=-l1[l29(0,l43)];l1[
+l29(l89,l43)]=-l0[l29(l89,l37)];l150=&l0[l29(0,l37)];l271=&l1[l29(l89
+,l43)];}inline int l29(int l349,int l380){return l349+l380<=l89?l349+
+l380:l349+l380-l72;}inline void l418(double l93){const bool l565=l93>
+0.0;if(l565){l728(l93*l563);}l667();filter();l369();if(l565){l111=
+true;}}inline void l728(double l301){l1[l29(l16.l128,l43)]+=l301*l16.
+l195;l1[l29(l16.l182,l43)]+=l301*l16.l225;l0[l29(l16.l128,l37)]+=l301
+ *l16.l195;l0[l29(l16.l182,l37)]+=l301*l16.l225;}inline double l421(){
+return-2.0*l239*static_cast<double>( *l271);}inline double
+get_string_vs(){return l16.l195*l1[l29(l16.l128,l43)]+l16.l225*l1[l29
+(l16.l182,l43)]+l16.l195*l0[l29(l16.l128,l37)]+l16.l225*l0[l29(l16.
+l182,l37)];}inline void lx(){l43=0;l37=0;l111=false;l185=false;l341=0
+;l319=0;std::fill(l1.begin(),l1.end(),0.0f);std::fill(l0.begin(),l0.
+end(),0.0f);l150=&l1[l43];l271=&l0[l29(l89,l37)];l244.lx();l275.lx();
+l355.lx();l161.lx();}private:inline void filter(){l275.l30( *l150);
+l244.l30( *l150);l161.l30( *l150);if(l185){l355.l30( *l150);}}int l341
+=0;int l319=0;inline void l369(){const int l605=l33>=96?128:64;
+constexpr int l777=8;if(++l319<l605){return;}l319=0;constexpr float
+l541=1.0e-5f;constexpr float l684=l541*l541;if(l702()<l684){if(++l341
+>=l777){l111=false;lx();}}else{l341=0;l111=true;}}inline float l702(){
+float l347=0.0f;for(int lh=0;lh<l72;++lh){l347+=l1[static_cast<std::
+size_t>(lh)] *l1[static_cast<std::size_t>(lh)]+l0[static_cast<std::
+size_t>(lh)] *l0[static_cast<std::size_t>(lh)];}l347/=static_cast<
+float>(2*l72);float state_energy=std::max(l244.state_energy(),l275.
+state_energy());state_energy=std::max(state_energy,static_cast<float>
+(l161.state_energy()));if(l185){state_energy=std::max(state_energy,
+l355.state_energy());}return std::max(l347,state_energy);}};
+class l479{public:int l33=69;const lw::l351::l398::le*l46=nullptr;
+double l144=0.0;double l65=0.0;double l79=0.0;double l106=0.0;double
+l177=0.0;double l189=0.0;bool l230=false;double l456=0.0;public:l479(
+double lo,int lk,const l73*l47):l144((1.0/2.0)/lo),l33(lk),l46(l47->
+l46.l374(l33)){l456=l144/l46->l700;}inline double l524(double l176){
+if(!l230)return 0.0;if(l65<0.0||l79<0.0){lx();return 0.0;}double l93=
+l724(l176);if(!std::isfinite(l93)||l93<=0.0){lx();return 0.0;}if(l106
+<0||l189<0.0){l189+=l106*l144;if(l189>0.0){l189=0.0;}}if(l189<l46->
+l762){lx();return 0.0;}l65=l65+(l177-l176) *l144;l79=l79+(l106-l177) *
+l144;constexpr double l441=1.0e-12;if(!std::isfinite(l65)||!std::
+isfinite(l79)||l65<-l441||l79<-l441){lx();return 0.0;}l65=std::max(
+0.0,l65);l79=std::max(0.0,l79);if(l93>0.0)l106-=l93*l456;return l93;}
+inline void l321(double l781){if(l230)return;lx();l106=l781;l230=true
+;}inline void lx(){l65=0.0;l79=0.0;l106=0.0;l177=0.0;l189=0.0;l230=
+false;}private:inline double l555(double lm,double l490){return lm>=0
+?std::pow(lm,l490):-std::pow(-lm,l490);}inline double l531(double l468
+,double l778){return std::pow(l468>0.0?l468:0.0,l778);}inline double
+l724(double l176){double l133=l176-l65/l144;double l126=l106+l79/l144
+;if(!(l133<=l126)){return 0.0;}const double l498=l46->l756*l531(l65,
+l46->l744);const double l500=l46->l755*l531(l79,l46->l743);const
+double l231=l46->l231;const double l235=l46->l235;const double l196=
+l46->l196;const double l198=l46->l198;const auto l460=[&](double l449
+){const double l294=l498+l231*l555(l449-l176,l196);const double l396=
+l500+l235*l555(l106-l449,l198);return l294-l396;};const double l525=
+l460(l133);const double l489=l460(l126);if(!std::isfinite(l525)||!std
+::isfinite(l489)||l525>0.0||l489<0.0){return 0.0;}double l157=std::
+clamp(l177,l133,l126);constexpr int l678=8;constexpr double l612=
+1.0e-10;constexpr double l664=1.0e-10;constexpr double l658=1.0e-14;
+double l514=0.0;for(int lc=0;lc<l678;++lc){const double l547=l157-
+l176;const double l546=l106-l157;const double l342=std::abs(l547);
+const double l343=std::abs(l546);const double l571=std::pow(l342,l196
+);const double l465=std::pow(l343,l198);const double l730=std::
+copysign(l571,l547);const double l681=std::copysign(l465,l546);const
+double l294=l498+l231*l730;const double l396=l500+l235*l681;const
+double l284=l294-l396;if(!std::isfinite(l284)){return 0.0;}l514=l294;
+if(l284>0.0){l126=l157;}else{l133=l157;}if(std::abs(l284)<=l612){
+break;}if((l126-l133)<=l664){break;}double l202=0.0;if(l342>0.0){l202
++=l231*l196* (l571/l342);}if(l343>0.0){l202+=l235*l198* (l465/l343);}
+double l274;if(std::isfinite(l202)&&l202>l658){const double l264=l157
+-l284/l202;if(std::isfinite(l264)&&l264>l133&&l264<l126){l274=l264;}
+else{l274=(l133+l126) *0.5;}}else{l274=(l133+l126) *0.5;}l157=l274;}
+l177=l157;return l514;}};
+class l311{public:l311(){}void l30()const{}};
+class SoundboardModel{static constexpr bool l617=true;SoundboardModel
+(const SoundboardModel&)=delete;SoundboardModel&operator=(const
+SoundboardModel&)=delete;static constexpr std::size_t l183=88;static
+constexpr std::size_t l110=8;static constexpr std::size_t l462=721;
+static constexpr std::array<std::size_t,l110>l515{37,87,181,271,359,
+492,687,721};struct l649{std::array<float,l462>data{};std::size_t
+length=1;std::size_t lh=0;inline void l761(std::size_t l593)noexcept{
+length=std::clamp<std::size_t>(l593,1,l462);lh=0;data.fill(0.0f);}
 inline float read()const noexcept{return data[lh];}inline void write(
-float lo)noexcept{data[lh]=lo;++lh;if(lh>=length){lh=0;}}inline void
-reset()noexcept{data.fill(0.0f);lh=0;}};struct l308{float l272=1.0f;
-float l419=0.0f;float l51=0.0f;inline float l34(float lo)noexcept{
-const float l38=l272* (1.0f-l419) *lo+l419*l51;l51=l38;return l38;}
-inline void reset()noexcept{l51=0.0f;}};struct l413{float l69=0.0f;
-float l310=1.0f;float l304=1.0f;float l292=0.0f;inline float l34(
-float lo)noexcept{l292=l69*l292+(1.0f-l69) *lo;const float l260=l292;
-const float l384=lo-l260;return l310*l260+l304*l384;}inline void reset
-()noexcept{l292=0.0f;}};std::array<l650,l122>l274{};std::array<l308,
-l122>l239{};l413 l221{};l413 l243{};l413 l223{};double l61=44100.0;
-public:mutable std::array<float,l184>l121{};explicit l108(double ln=
-44100.0):l61(ln){l684();l696();l660();}inline float l216()noexcept{if
-(!l617){float l513=0.0;for(int lc=0;lc<l121.size();lc++){l513+=l121[
-lc];}return l513;}float l522=0.0f;float l486=0.0f;float l555=0.0f;for
-(std::size_t lc=0;lc<20;++lc){l522+=l121[lc];}for(std::size_t lc=20;
-lc<55;++lc){l486+=l121[lc];}for(std::size_t lc=55;lc<88;++lc){l555+=
-l121[lc];}const float l440=l221.l34(l522)+l243.l34(l486)+l223.l34(
-l555);std::array<float,l122>l66{};float l530=0.0f;for(std::size_t lc=
-0;lc<l122;++lc){l66[lc]=l239[lc].l34(l274[lc].read());l530+=l66[lc];}
-constexpr float l224=0.3535533905932738f;const float l591=l224* (l66[
-0]-l66[1]+l66[2]-l66[3]+l66[4]-l66[5]+l66[6]-l66[7]);const float l662
-=0.25f*l530;const float l206=l224*l440;for(std::size_t lc=0;lc<l122;
-++lc){const std::size_t l585=(lc+1)&7;const float l701=l66[l585]-l662
-;l274[lc].write(l701+l206);}constexpr float l640=0.18f;return l591+
-l640*l440;}inline void lx()noexcept{l121.fill(0.0f);for(auto&l169:
-l274){l169.reset();}for(auto&l674:l239){l674.reset();}l221.reset();
-l243.reset();l223.reset();}private:inline void l684()noexcept{for(std
-::size_t lc=0;lc<l122;++lc){l274[lc].l760(l517[lc]);}}inline void l696
-()noexcept{constexpr double l798=0.34;constexpr float l661=0.075f;for
-(std::size_t lc=0;lc<l122;++lc){const double l641=static_cast<double>
-(l517[lc])/l61;const double l272=std::pow(10.0,-3.0*l641/l798);l239[
-lc].l272=static_cast<float>(l272);l239[lc].l419=l661;l239[lc].l51=
-0.0f;}}inline void l660()noexcept{constexpr double l627=1800.0;const
-float l69=static_cast<float>(std::exp(-2.0*3.14159265358979323846*
-l627/l61));l221.l69=l69;l221.l310=1.00f;l221.l304=0.82f;l243.l69=l69;
-l243.l310=1.00f;l243.l304=1.00f;l223.l69=l69;l223.l310=0.95f;l223.
-l304=1.28f;}};class l235{public:double l629=0.0;int l31;int l57=3;
-const BridgeModel*l371;const l108*l142;l477 l99;std::array<l229,3>l19
-;std::array<double,3>l305={0.0,0.0,0.0};bool l207=false;bool l104=
-false;bool l226=false;const l78*l330=nullptr;double l250=0.0;double
-l474=0.0;double l581=0.0;std::array<double,3>l222={0.0,0.0,0.0};std::
-array<float,3>l418{};l235(int lk,double ln,int l105,l45::l43 l100,
-const l108*l666,const BridgeModel*l699,const l78*l46):l31(lk),l57(
-l105),l629(ln),l99(ln,lk,l46),l19{l229(ln,lk,l100,l45::l73::l0,l46),
-l229(ln,lk,l100,l45::l73::l324,l46),l229(ln,lk,l100,l45::l73::l1,l46),
-},l142(l666),l371(l699),l330(l46){for(int lc=0;lc<l57;++lc){l250+=l19
-[lc].l242;}if(l250>0.0){l474=1.0/l250;l581=1.0/(l250*2.0);for(int lc=
-0;lc<l57;++lc){l222[lc]=l19[lc].l242*l474;}}}inline void l700(){l647(
-);double l369=0.0;for(int lc=0;lc<l57;++lc){l305[lc]=l19[lc].l642();
-l369+=l222[lc] *l305[lc];}double l354=l99.l524(l369);double l512=l99.
-l524(l369+l354*l581);double l87=(l354+l512)/2.0;for(int lc=0;lc<l57;
-lc++){if(l19[lc].l31<96){l19[lc].l415(l87*l222[lc]);}else{l19[lc].
-l415(l354*l222[lc]);l418[lc]=l19[lc].l420();l19[lc].l415(l512*l222[lc
-]);}}l709();l366();if(!l104){l142->l121[l31-21]=0.0f;l418.fill(0.0f);
-}}inline void l377(double l586){for(int lc=0;lc<l57;lc++){l19[lc].
-l112=true;l305[lc]=0.0;}l99.l377(l586);}inline void l709(){float l148
-=0.0;for(int lc=0;lc<l57;lc++){if(l19[lc].l31<96){l148+=l19[lc].l420(
-);}else{l148+=(l19[lc].l420()+l418[lc])/2.0;}}l142->l121[l31-21]=l148
-;}inline void lx(){for(int lc=0;lc<l57;lc++){l19[lc].lx();}l99.lx();
-l207=false;l104=false;l305.fill(0.0);l226=false;}private:inline void
-l366(){l104=l99.l228;for(int lc=0;lc<l57;++lc){l104=l104||l19[lc].
-l112;}}inline void l647(){const bool l595=!l207&&!l226;for(int lh=0;
-lh<l57;++lh){l19[lh].l193=l595;}}};class l88{l88(const l88&)=delete;
-l88&operator=(const l88&)=delete;public:static constexpr l78 l46{};
-BridgeModel l371;l108 l142;std::array<l235* ,88>l10;l88(double ln){
-for(std::size_t lh=0;lh<l10.size();++lh){const int lk=static_cast<int
->(lh)+21;int l105=1;if(lk>=34){l105=3;}else if(lk>=29){l105=2;}l10[lh
-]=new l235(lk,ln,l105,l45::l43::l389,&l142,&l371,&l46);}}inline void
-l365(){for(int lc=0;lc<l10.size();lc++){if(l10[lc]->l104)l10[lc]->
-l700();}}inline float l216(){return 0.01*l142.l216();}inline void
-sustainpedal_control(bool l112){if(l112){for(int lc=0;lc<l10.size();
-lc++){l10[lc]->l226=true;}}else{for(int lc=0;lc<l10.size();lc++){l10[
-lc]->l226=false;}}}inline void lx(){for(int lc=0;lc<l10.size();lc++){
-l10[lc]->lx();}l142.lx();}~l88()noexcept{for(int lc=0;lc<l10.size();
-lc++){delete l10[lc];}}};
+float lm)noexcept{data[lh]=lm;++lh;if(lh>=length){lh=0;}}inline void
+reset()noexcept{data.fill(0.0f);lh=0;}};static constexpr std::size_t
+l707=8;struct l625{float l95=1.0f;float l84=0.0f;float l158=0.0f;
+float l60=0.0f;float l146=0.0f;float l261=0.0f;float l279=0.0f;inline
+float l30(float lm)noexcept{const float l32=l95*lm+l261;l261=l84*lm-
+l60*l32+l279;l279=l158*lm-l146*l32;return l32;}inline void reset()noexcept
+{l261=0.0f;l279=0.0f;}};struct l248{std::array<l625,l707>l105{};
+inline float l30(float lm)noexcept{for(auto&l24:l105){lm=l24.l30(lm);
+}return lm;}inline void reset()noexcept{for(auto&l24:l105){l24.reset(
+);}}};struct l415{float l70=0.0f;float l290=1.0f;float l306=1.0f;
+float l266=0.0f;inline float l30(float lm)noexcept{l266=l70*l266+(
+1.0f-l70) *lm;const float l276=l266;const float l388=lm-l276;return
+l290*l276+l306*l388;}inline void reset()noexcept{l266=0.0f;}};std::
+array<l649,l110>l273{};std::array<l248,l110>l300{};l415 l222{};l415
+l243{};l415 l228{};double l52=44100.0;public:mutable std::array<float
+,l183>l121{};explicit SoundboardModel(double lo=44100.0):l52(lo){l683
+();l693();l659();}inline float l219()noexcept{if(!l617){float l475=
+0.0;for(int lc=0;lc<l121.size();lc++){l475+=l121[lc];}return l475;}
+float l521=0.0f;float l486=0.0f;float l556=0.0f;for(std::size_t lc=0;
+lc<20;++lc){l521+=l121[lc];}for(std::size_t lc=20;lc<55;++lc){l486+=
+l121[lc];}for(std::size_t lc=55;lc<88;++lc){l556+=l121[lc];}const
+float l439=l222.l30(l521)+l243.l30(l486)+l228.l30(l556);std::array<
+float,l110>l75{};float l530=0.0f;for(std::size_t lc=0;lc<l110;++lc){
+l75[lc]=l300[lc].l30(l273[lc].read());l530+=l75[lc];}constexpr float
+l226=0.3535533905932738f;const float l590=l226* (l75[0]-l75[1]+l75[2]
+-l75[3]+l75[4]-l75[5]+l75[6]-l75[7]);const float l663=0.25f*l530;
+const float l233=l226*l439;for(std::size_t lc=0;lc<l110;++lc){const
+std::size_t l586=(lc+1)&7;const float l699=l75[l586]-l663;l273[lc].
+write(l699+l233);}constexpr float l643=0.18f;return l590+l643*l439;}
+inline void lx()noexcept{l121.fill(0.0f);for(auto&l166:l273){l166.
+reset();}for(auto&l670:l300){l670.reset();}l222.reset();l243.reset();
+l228.reset();}private:inline void l683()noexcept{for(std::size_t lc=0
+;lc<l110;++lc){l273[lc].l761(l515[lc]);}}inline void l693()noexcept{
+constexpr double l800=0.34;constexpr float l476=0.075f;for(std::
+size_t lc=0;lc<l110;++lc){const double l641=static_cast<double>(l515[
+lc])/l52;const double l704=std::pow(10.0,-3.0*l641/l800);for(auto&l24
+:l300[lc].l105){l24.l95=1.0f;l24.l84=0.0f;l24.l158=0.0f;l24.l60=0.0f;
+l24.l146=0.0f;l24.l261=0.0f;l24.l279=0.0f;}auto&l24=l300[lc].l105[0];
+l24.l95=static_cast<float>(l704) * (1.0f-l476);l24.l84=0.0f;l24.l158=
+0.0f;l24.l60=-l476;l24.l146=0.0f;}}inline void l659()noexcept{
+constexpr double l627=1800.0;const float l70=static_cast<float>(std::
+exp(-2.0*3.14159265358979323846*l627/l52));l222.l70=l70;l222.l290=
+1.00f;l222.l306=0.82f;l243.l70=l70;l243.l290=1.00f;l243.l306=1.00f;
+l228.l70=l70;l228.l290=0.95f;l228.l306=1.28f;}};class l207{public:
+double l632=0.0;int l33;int l54=3;const l311*l375;const
+SoundboardModel*l152;l479 l99;std::array<l237,3>l19;std::array<double
+,3>l316={0.0,0.0,0.0};bool l211=false;bool l107=false;bool l232=false
+;const l73*l333=nullptr;double l252=0.0;double l474=0.0;double l581=
+0.0;std::array<double,3>l212={0.0,0.0,0.0};std::array<float,3>l420{};
+l207(int lk,double lo,int l97,l49::l36 l104,const SoundboardModel*
+l754,const l311*l697,const l73*l47):l33(lk),l54(l97),l632(lo),l99(lo,
+lk,l47),l19{l237(lo,lk,l104,l49::l67::l1,l47),l237(lo,lk,l104,l49::
+l67::l329,l47),l237(lo,lk,l104,l49::l67::l0,l47),},l152(l754),l375(
+l697),l333(l47){for(int lc=0;lc<l54;++lc){l252+=l19[lc].l239;}if(l252
+>0.0){l474=1.0/l252;l581=1.0/(l252*2.0);for(int lc=0;lc<l54;++lc){
+l212[lc]=l19[lc].l239*l474;}}}inline void l698(){l646();double l372=
+0.0;for(int lc=0;lc<l54;++lc){l316[lc]=l19[lc].get_string_vs();l372+=
+l212[lc] *l316[lc];}double l360=l99.l524(l372);double l512=l99.l524(
+l372+l360*l581);double l93=(l360+l512)/2.0;for(int lc=0;lc<l54;lc++){
+if(l19[lc].l33<96){l19[lc].l418(l93*l212[lc]);}else{l19[lc].l418(l360
+ *l212[lc]);l420[lc]=l19[lc].l421();l19[lc].l418(l512*l212[lc]);}}
+l709();l369();if(!l107){l152->l121[l33-21]=0.0f;l420.fill(0.0f);}}
+inline void l321(double l585){for(int lc=0;lc<l54;lc++){l19[lc].l111=
+true;l316[lc]=0.0;}l99.l321(l585);}inline void l709(){float l154=0.0;
+for(int lc=0;lc<l54;lc++){if(l19[lc].l33<96){l154+=l19[lc].l421();}
+else{l154+=(l19[lc].l421()+l420[lc])/2.0;}}l152->l121[l33-21]=l154;}
+inline void lx(){for(int lc=0;lc<l54;lc++){l19[lc].lx();}l99.lx();
+l211=false;l107=false;l316.fill(0.0);l232=false;}private:inline void
+l369(){l107=l99.l230;for(int lc=0;lc<l54;++lc){l107=l107||l19[lc].
+l111;}}inline void l646(){const bool l598=!l211&&!l232;for(int lh=0;
+lh<l54;++lh){l19[lh].l185=l598;}}};class l88{l88(const l88&)=delete;
+l88&operator=(const l88&)=delete;public:static constexpr l73 l47{};
+l311 l375;SoundboardModel l152;std::array<l207* ,88>l10;l88(double lo
+){for(std::size_t lh=0;lh<l10.size();++lh){const int lk=static_cast<
+int>(lh)+21;int l97=1;if(lk>=34){l97=3;}else if(lk>=29){l97=2;}l10[lh
+]=new l207(lk,lo,l97,l49::l36::l346,&l152,&l375,&l47);}}inline void
+l365(){for(int lc=0;lc<l10.size();lc++){if(l10[lc]->l107)l10[lc]->
+l698();}}inline float l219(){return 0.01*l152.l219();}inline void l76
+(bool l111){if(l111){for(int lc=0;lc<l10.size();lc++){l10[lc]->l232=
+true;}}else{for(int lc=0;lc<l10.size();lc++){l10[lc]->l232=false;}}}
+inline void lx(){for(int lc=0;lc<l10.size();lc++){l10[lc]->lx();}l152
+.lx();}~l88()noexcept{for(int lc=0;lc<l10.size();lc++){delete l10[lc]
+;}}};
 #include<AudioToolbox/AudioToolbox.h>
-class l96{public:class l132{public:explicit l132(l96&l431)noexcept:
-l573(&l431),l141(l431.l713()){}l132(const l132&)=delete;l132&operator
-=(const l132&)=delete;~l132(){if(l141){l573->l691();}}explicit
-operator bool()const noexcept{return l141;}private:l96*l573;bool l141
-;};l96()noexcept=default;l96(const l96&)=delete;l96&operator=(const
-l96&)=delete;void open()noexcept{l36.store(0,std::
-memory_order_release);}void l559()noexcept{std::uint32_t l51=l36.
-fetch_or(l180,std::memory_order_acq_rel)|l180;while((l51&l321)!=0){
-l36.wait(l51,std::memory_order_acquire);l51=l36.load(std::
-memory_order_acquire);}}bool l811()const noexcept{return(l36.load(std
-::memory_order_acquire)&l180)==0;}private:static constexpr std::
-uint32_t l180=0x80000000U;static constexpr std::uint32_t l321=~l180;
-bool l713()noexcept{std::uint32_t l51=l36.load(std::
-memory_order_acquire);while((l51&l180)==0){if((l51&l321)==l321){
-return false;}if(l36.compare_exchange_weak(l51,l51+1,std::
+class l98{public:class l141{public:explicit l141(l98&l431)noexcept:
+l573(&l431),l159(l431.l714()){}l141(const l141&)=delete;l141&operator
+=(const l141&)=delete;~l141(){if(l159){l573->l689();}}explicit
+operator bool()const noexcept{return l159;}private:l98*l573;bool l159
+;};l98()noexcept=default;l98(const l98&)=delete;l98&operator=(const
+l98&)=delete;void open()noexcept{l42.store(0,std::
+memory_order_release);}void l564()noexcept{std::uint32_t l115=l42.
+fetch_or(l165,std::memory_order_acq_rel)|l165;while((l115&l327)!=0){
+l42.wait(l115,std::memory_order_acquire);l115=l42.load(std::
+memory_order_acquire);}}bool l811()const noexcept{return(l42.load(std
+::memory_order_acquire)&l165)==0;}private:static constexpr std::
+uint32_t l165=0x80000000U;static constexpr std::uint32_t l327=~l165;
+bool l714()noexcept{std::uint32_t l115=l42.load(std::
+memory_order_acquire);while((l115&l165)==0){if((l115&l327)==l327){
+return false;}if(l42.compare_exchange_weak(l115,l115+1,std::
 memory_order_acq_rel,std::memory_order_acquire)){return true;}}return
-false;}void l691()noexcept{l36.fetch_sub(1,std::memory_order_release);
-l36.notify_all();}std::atomic<std::uint32_t>l36{l180};};class l28{l28
-(l28&&)=delete;l28&operator=(l28&&)=delete;AudioUnit l50=nullptr;l96
-l254;bool l93=false;public:l28(const l28&)=delete;l28&operator=(const
-l28&)=delete;explicit l28(double ln){try{AudioComponentDescription
-l177{};l177.componentType=kAudioUnitType_Output;l177.componentSubType
-=kAudioUnitSubType_DefaultOutput;l177.componentManufacturer=
-kAudioUnitManufacturer_Apple;l177.componentFlags=0;l177.
-componentFlagsMask=0;AudioComponent l570=AudioComponentFindNext(
-nullptr,&l177);if(l570==nullptr){throw std::runtime_error("\x46\x61"
+false;}void l689()noexcept{l42.fetch_sub(1,std::memory_order_release);
+l42.notify_all();}std::atomic<std::uint32_t>l42{l165};};class
+Soundcard{Soundcard(Soundcard&&)=delete;Soundcard&operator=(Soundcard
+&&)=delete;AudioUnit l48=nullptr;l98 l258;bool l82=false;public:
+Soundcard(const Soundcard&)=delete;Soundcard&operator=(const Soundcard
+&)=delete;explicit Soundcard(double lo){try{AudioComponentDescription
+l191{};l191.componentType=kAudioUnitType_Output;l191.componentSubType
+=kAudioUnitSubType_DefaultOutput;l191.componentManufacturer=
+kAudioUnitManufacturer_Apple;l191.componentFlags=0;l191.
+componentFlagsMask=0;AudioComponent l569=AudioComponentFindNext(
+nullptr,&l191);if(l569==nullptr){throw std::runtime_error("\x46\x61"
 "\x69\x6c\x65\x64\x20\x74\x6f\x20\x66\x69\x6e\x64\x20\x61\x75\x64\x69"
-"\x6f\x20\x63\x6f\x6d\x70\x6f\x6e\x65\x6e\x74\x2e");}OSStatus l668=
-AudioComponentInstanceNew(l570,&l50);if(l668!=noErr){throw std::
+"\x6f\x20\x63\x6f\x6d\x70\x6f\x6e\x65\x6e\x74\x2e");}OSStatus l665=
+AudioComponentInstanceNew(l569,&l48);if(l665!=noErr){throw std::
 runtime_error("\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x63\x72\x65"
 "\x61\x74\x65\x20\x61\x75\x64\x69\x6f\x20\x75\x6e\x69\x74\x2e");}
-AudioStreamBasicDescription l25{};l25.mSampleRate=ln;l25.mFormatID=
-kAudioFormatLinearPCM;l25.mFormatFlags=
-kAudioFormatFlagsNativeFloatPacked;l25.mBitsPerChannel=32;l25.
-mChannelsPerFrame=1;l25.mBytesPerFrame=sizeof(Float32) *l25.
-mChannelsPerFrame;l25.mFramesPerPacket=1;l25.mBytesPerPacket=l25.
-mBytesPerFrame*l25.mFramesPerPacket;l25.mReserved=0;OSStatus l753=
-AudioUnitSetProperty(l50,kAudioUnitProperty_StreamFormat,
-kAudioUnitScope_Input,0,&l25,sizeof(l25));if(l753!=noErr){throw std::
+AudioStreamBasicDescription l23{};l23.mSampleRate=lo;l23.mFormatID=
+kAudioFormatLinearPCM;l23.mFormatFlags=
+kAudioFormatFlagsNativeFloatPacked;l23.mBitsPerChannel=32;l23.
+mChannelsPerFrame=1;l23.mBytesPerFrame=sizeof(Float32) *l23.
+mChannelsPerFrame;l23.mFramesPerPacket=1;l23.mBytesPerPacket=l23.
+mBytesPerFrame*l23.mFramesPerPacket;l23.mReserved=0;OSStatus l752=
+AudioUnitSetProperty(l48,kAudioUnitProperty_StreamFormat,
+kAudioUnitScope_Input,0,&l23,sizeof(l23));if(l752!=noErr){throw std::
 runtime_error("\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x73\x65\x74"
 "\x20\x73\x74\x72\x65\x61\x6d\x20\x66\x6f\x72\x6d\x61\x74\x2e");}
-AURenderCallbackStruct l158{};l158.inputProc=&l28::l724;l158.
-inputProcRefCon=this;OSStatus l741=AudioUnitSetProperty(l50,
-kAudioUnitProperty_SetRenderCallback,kAudioUnitScope_Input,0,&l158,
-sizeof(l158));if(l741!=noErr){throw std::runtime_error("\x46\x61\x69"
+AURenderCallbackStruct l173{};l173.inputProc=&Soundcard::l723;l173.
+inputProcRefCon=this;OSStatus l741=AudioUnitSetProperty(l48,
+kAudioUnitProperty_SetRenderCallback,kAudioUnitScope_Input,0,&l173,
+sizeof(l173));if(l741!=noErr){throw std::runtime_error("\x46\x61\x69"
 "\x6c\x65\x64\x20\x74\x6f\x20\x73\x65\x74\x20\x72\x65\x6e\x64\x65\x72"
 "\x20\x63\x61\x6c\x6c\x62\x61\x63\x6b\x2e");}}catch(...){
-AudioComponentInstanceDispose(l50);l50=nullptr;throw;}}static OSStatus
-l724(void*l715,AudioUnitRenderActionFlags*l84,const AudioTimeStamp*
-l819,UInt32 l825,UInt32 l587,AudioBufferList*l328)noexcept{auto*l155=
-static_cast<l28* >(l715);if(l155==nullptr||l328==nullptr){return
-kAudio_ParamError;}l96::l132 l612(l155->l254);if(!l612){l245(l84,l328
-);return noErr;}return l155->l519(l84,l587,l328);}OSStatus l519(
-AudioUnitRenderActionFlags*l84,UInt32 l253,AudioBufferList*data)noexcept
-;void l68(){if(l93)return;OSStatus l4=AudioUnitInitialize(l50);if(l4
+AudioComponentInstanceDispose(l48);l48=nullptr;throw;}}static OSStatus
+l723(void*l715,AudioUnitRenderActionFlags*l80,const AudioTimeStamp*
+l819,UInt32 l825,UInt32 l587,AudioBufferList*l378)noexcept{auto*l136=
+static_cast<Soundcard* >(l715);if(l136==nullptr||l378==nullptr){
+return kAudio_ParamError;}l98::l141 l610(l136->l258);if(!l610){l289(
+l80,l378);return noErr;}return l136->l519(l80,l587,l378);}OSStatus
+l519(AudioUnitRenderActionFlags*l80,UInt32 l256,AudioBufferList*data)noexcept
+;void l64(){if(l82)return;OSStatus l6=AudioUnitInitialize(l48);if(l6
 !=noErr){throw std::runtime_error("\x46\x61\x69\x6c\x65\x64\x20\x74"
 "\x6f\x20\x69\x6e\x69\x74\x69\x61\x6c\x69\x7a\x65\x20\x61\x75\x64\x69"
-"\x6f\x20\x75\x6e\x69\x74\x2e");}l254.open();l4=AudioOutputUnitStart(
-l50);if(l4!=noErr){l254.l559();AudioUnitUninitialize(l50);throw std::
+"\x6f\x20\x75\x6e\x69\x74\x2e");}l258.open();l6=AudioOutputUnitStart(
+l48);if(l6!=noErr){l258.l564();AudioUnitUninitialize(l48);throw std::
 runtime_error("\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x73\x74\x61"
-"\x72\x74\x20\x61\x75\x64\x69\x6f\x20\x75\x6e\x69\x74\x2e");}l93=true
-;}void l67()noexcept{if(!l93)return;l254.l559();AudioOutputUnitStop(
-l50);AudioUnitUninitialize(l50);l93=false;}static void l245(
-AudioUnitRenderActionFlags*l84,AudioBufferList*data)noexcept;~l28()noexcept
-{l67();if(l50!=nullptr){AudioComponentInstanceDispose(l50);l50=
-nullptr;}}};
+"\x72\x74\x20\x61\x75\x64\x69\x6f\x20\x75\x6e\x69\x74\x2e");}l82=true
+;}void l78()noexcept{if(!l82)return;l258.l564();AudioOutputUnitStop(
+l48);AudioUnitUninitialize(l48);l82=false;}static void l289(
+AudioUnitRenderActionFlags*l80,AudioBufferList*data)noexcept;~
+Soundcard()noexcept{l78();if(l48!=nullptr){
+AudioComponentInstanceDispose(l48);l48=nullptr;}}};
 #include<mach/mach_time.h>
-class l333{private:uint64_t l441=0;double l61=44100.0;double l118=0.0
-;public:explicit l333(double ln):l61(ln){}inline void l690()noexcept{
-l441=clock_gettime_nsec_np(CLOCK_UPTIME_RAW);}inline void l620(int
-l584)noexcept{const uint64_t end=clock_gettime_nsec_np(
-CLOCK_UPTIME_RAW);const uint64_t l334=end-l441;const double l720=
-1000000000.0*static_cast<double>(l584)/l61;const double l658=
-static_cast<double>(l334)/l720;l118=0.9*l118+0.1*l658;}[[nodiscard]]
-inline double l805()const noexcept{return l118;}[[nodiscard]]inline
-double l822()const noexcept{return l118*100.0;}[[nodiscard]]inline
-double l807()const noexcept{if(l118<=0.0){return 0.0;}return 1.0/l118
-;}[[nodiscard]]inline bool l821()const noexcept{return l118<=1.0;}[[
-nodiscard]]double l626(std::unique_ptr<l88>&l91,int l671=512,int l499
-=8192,int l202=5)const{constexpr int l509=31;l202=std::clamp(l202,1,
-l509);std::array<double,l509>l300{};volatile float l311=0.0f;for(int
-l320=0;l320<l202;++l320){for(int l53=0;l53<l671;++l53){l91->l365();
-l311=l311+l91->l216();}const uint64_t l68=clock_gettime_nsec_np(
-CLOCK_UPTIME_RAW);for(int l53=0;l53<l499;++l53){l91->l365();l311=l311
-+l91->l216();}const uint64_t end=clock_gettime_nsec_np(
-CLOCK_UPTIME_RAW);const double l334=static_cast<double>(end-l68);
-const double l730=1000000000.0*static_cast<double>(l499)/l61;l300[
-l320]=l334/l730;}std::sort(l300.begin(),l300.begin()+l202);return l300
-[static_cast<std::size_t>(l202/2)];}inline void reset()noexcept{l118=
-0.0;}void l303(std::unique_ptr<l88>&l91,std::string l795)const{const
-double l312=l626(l91);const double l531=1000000.0/l61;const double
-l652=l531*l312;std::cout<<std::fixed<<std::setprecision(2)<<"\x20\x20"
-"\x20\x20\x46\x72\x61\x6d\x65\x3a\x20"<<l652<<"\x20\x75\x73\x20\x2f"
-"\x20"<<l531<<"\x20\x75\x73\n"<<"\x20\x20\x20\x20\x4f\x63\x63\x75\x70"
-"\x61\x6e\x63\x79\x3a\x20"<<l312*100.0<<"\x25\n"<<"\x20\x20\x20\x20"
-"\x53\x70\x65\x65\x64\x3a\x20"<<(1.0/l312)<<"\x78\x20\x72\x65\x61\x6c"
-"\x74\x69\x6d\x65\n"<<"\x20\x20\x20\x20"+l795+"\x20\x72\x65\x61\x6c"
-"\x74\x69\x6d\x65\x3a\x20"<<(l312<=1.0?"\x50\x41\x53\x53":"\x46\x41"
-"\x49\x4c")<<"\n\n";}};
+class l336{private:uint64_t l442=0;double l52=44100.0;double l132=0.0
+;public:explicit l336(double lo):l52(lo){}inline void l688()noexcept{
+l442=clock_gettime_nsec_np(CLOCK_UPTIME_RAW);}inline void l620(int
+l463)noexcept{const uint64_t end=clock_gettime_nsec_np(
+CLOCK_UPTIME_RAW);const uint64_t l371=end-l442;const double l720=
+1000000000.0*static_cast<double>(l463)/l52;const double l655=
+static_cast<double>(l371)/l720;l132=0.9*l132+0.1*l655;}[[nodiscard]]
+inline double l805()const noexcept{return l132;}[[nodiscard]]inline
+double l822()const noexcept{return l132*100.0;}[[nodiscard]]inline
+double l807()const noexcept{if(l132<=0.0){return 0.0;}return 1.0/l132
+;}[[nodiscard]]inline bool l821()const noexcept{return l132<=1.0;}[[
+nodiscard]]double l640(std::unique_ptr<l88>&piano,int l672=512,int
+l499=8192,int l205=5)const{constexpr int l480=31;l205=std::clamp(l205
+,1,l480);std::array<double,l480>l281{};volatile float l310=0.0f;for(
+int l325=0;l325<l205;++l325){for(int l58=0;l58<l672;++l58){piano->
+l365();l310=l310+piano->l219();}const uint64_t l64=
+clock_gettime_nsec_np(CLOCK_UPTIME_RAW);for(int l58=0;l58<l499;++l58){
+piano->l365();l310=l310+piano->l219();}const uint64_t end=
+clock_gettime_nsec_np(CLOCK_UPTIME_RAW);const double l371=static_cast
+<double>(end-l64);const double l729=1000000000.0*static_cast<double>(
+l499)/l52;l281[l325]=l371/l729;}std::sort(l281.begin(),l281.begin()+
+l205);return l281[static_cast<std::size_t>(l205/2)];}inline void reset
+()noexcept{l132=0.0;}void l292(std::unique_ptr<l88>&piano,std::string
+l797)const{const double l314=l640(piano);const double l528=1000000.0/
+l52;const double l650=l528*l314;std::cout<<std::fixed<<std::
+setprecision(2)<<"\x20\x20\x20\x20\x46\x72\x61\x6d\x65\x3a\x20"<<l650
+<<"\x20\x75\x73\x20\x2f\x20"<<l528<<"\x20\x75\x73\n"<<"\x20\x20\x20"
+"\x20\x4f\x63\x63\x75\x70\x61\x6e\x63\x79\x3a\x20"<<l314*100.0<<"\x25"
+"\n"<<"\x20\x20\x20\x20\x53\x70\x65\x65\x64\x3a\x20"<<(1.0/l314)<<""
+"\x78\x20\x72\x65\x61\x6c\x74\x69\x6d\x65\n"<<"\x20\x20\x20\x20"+l797
++"\x20\x72\x65\x61\x6c\x74\x69\x6d\x65\x3a\x20"<<(l314<=1.0?"\x50\x41"
+"\x53\x53":"\x46\x41\x49\x4c")<<"\n\n";}};
 #include<type_traits>
-enum class l6:std::uint8_t{l49,l98,l187,l562,l469,l536,l448,l59,};
-struct l92{l6 l14=l6::l59;int lq=0;double lt=0.0;};template<std::
-size_t l117>class l162{static_assert(l117>=2&&(l117&(l117-1))==0);
-static_assert(std::is_trivially_copyable_v<l92>);public:l162()noexcept
-{for(std::size_t lh=0;lh<l117;++lh){l332[lh].l107.store(lh,std::
-memory_order_relaxed);}}l162(const l162&)=delete;l162&operator=(const
-l162&)=delete;bool l738(l92 l3)noexcept{std::size_t l8=l318.load(std
-::memory_order_relaxed);for(;;){l364&l24=l332[l8&(l117-1)];const std
-::size_t l107=l24.l107.load(std::memory_order_acquire);const auto l296
-=static_cast<std::intptr_t>(l107)-static_cast<std::intptr_t>(l8);if(
-l296==0){if(l318.compare_exchange_weak(l8,l8+1,std::
-memory_order_relaxed)){l24.l3=l3;l24.l107.store(l8+1,std::
-memory_order_release);return true;}}else if(l296<0){return false;}
-else{l8=l318.load(std::memory_order_relaxed);}}}bool l375(l92&l3)noexcept
-{l364&l24=l332[l293&(l117-1)];const std::size_t l107=l24.l107.load(
-std::memory_order_acquire);const auto l296=static_cast<std::intptr_t>
-(l107)-static_cast<std::intptr_t>(l293+1);if(l296!=0){return false;}
-l3=l24.l3;l24.l107.store(l293+l117,std::memory_order_release);++l293;
-return true;}void clear()noexcept{l92 l3;while(l375(l3)){}}private:
-struct l364{std::atomic<std::size_t>l107{0};l92 l3{};};alignas(64)std
-::array<l364,l117>l332{};alignas(64)std::atomic<std::size_t>l318{0};
-alignas(64)std::size_t l293=0;};class l788{public:bool l590(l92 l3)noexcept
-{if(l286.l738(l3)){return true;}l337.store(true,std::
-memory_order_release);return false;}template<class l608>void l654(
-l608&&l564){l92 l3;if(l337.exchange(false,std::memory_order_acq_rel)){
-while(l286.l375(l3)){}l564(l92{l6::l59,0,0.0});}while(l286.l375(l3)){
-l564(l3);}}void clear()noexcept{l286.clear();l337.store(false,std::
-memory_order_release);}private:l162<4096>l286;std::atomic<bool>l337{
-false};};std::unique_ptr<l88>lz;std::unique_ptr<l28>l155;std::
-unique_ptr<l333>l82;namespace{constexpr int l189=21;constexpr int l383
-=108;l788 l140;std::atomic<bool>l394{false};std::atomic<std::uint32_t
->l301{0};bool l63(int l249)noexcept{return l249>=l189&&l249<=l383;}
-void l565()noexcept{l301.fetch_add(1,std::memory_order_release);l301.
-notify_all();}void l114(l6 l14,int l249,double lt)noexcept{
-static_cast<void>(l140.l590({l14,l249,lt}));}void l233(const l92&l3){
-if(!lz){throw std::logic_error("\x50\x69\x61\x6e\x6f\x20\x65\x6e\x67"
-"\x69\x6e\x65\x20\x69\x73\x20\x6e\x6f\x74\x20\x69\x6e\x69\x74\x69\x61"
-"\x6c\x69\x7a\x65\x64\x2e");}switch(l3.l14){case l6::l49:{if(!l63(l3.
-lq))break;l235*l72=lz->l10[l3.lq-l189];l72->l207=true;for(int lc=0;lc
-<l72->l57;++lc){l72->l19[lc].l193=false;}l72->l104=true;const double
-l790=std::pow(2,(l3.lt-52.0)/25.0);l72->l377(l790);break;}case l6::
-l98:{if(l63(l3.lq)){lz->l10[l3.lq-l189]->l207=false;}l235*l72=lz->l10
-[l3.lq-l189];l72->l207=false;if(!l72->l226){for(int lc=0;lc<l72->l57;
-++lc){l72->l19[lc].l193=true;}}l72->l104=true;break;}case l6::l448:lz
-->sustainpedal_control(l3.lt>0.01);break;case l6::l59:lz->lx();break;
-case l6::l187:case l6::l562:case l6::l469:case l6::l536:break;}}}void
-l577(double ln){lz=std::make_unique<l88>(ln);}void l535()noexcept{lz.
-reset();}void l493(double ln){l82=std::make_unique<l333>(ln);}void
-l502()noexcept{l82.reset();}void l436(double ln){l155=std::
-make_unique<l28>(ln);l155->l68();}void l372()noexcept{l155.reset();}
-void l373(float*out,int l347,double l645){if(out==nullptr||l347<0){
-throw std::invalid_argument("\x49\x6e\x76\x61\x6c\x69\x64\x20\x61\x75"
-"\x64\x69\x6f\x20\x6f\x75\x74\x70\x75\x74\x20\x62\x75\x66\x66\x65\x72"
-"\x2e");}if(!lz||!l82){throw std::logic_error("\x50\x69\x61\x6e\x6f"
-"\x20\x65\x6e\x67\x69\x6e\x65\x20\x69\x73\x20\x6e\x6f\x74\x20\x69\x6e"
-"\x69\x74\x69\x61\x6c\x69\x7a\x65\x64\x2e");}l140.l654([](const l92&
-l3){l233(l3);});l82->l690();for(int lc=0;lc<l347;++lc){lz->l365();
-float lo=lz->l216();if(!std::isfinite(lo)){std::cerr<<"\x4f\x55\x54"
-"\x50\x55\x54\x20\x41\x42\x4e\x4f\x52\x4d\x41\x4c\n"<<"\x73\x61\x6d"
-"\x70\x6c\x65\x20\x3d\x20"<<lo<<'\n'<<"\x66\x72\x61\x6d\x65\x20\x3d"
-"\x20"<<lc<<'\n';for(int lc=0;lc<lz->l10.size();lc++){if(lz->l10[lc]
-->l104){std::cout<<"\x68\x61\x6d\x6d\x65\x72\x5f\x2e\x77\x5f\x61\x5f"
-"\x31\x5f"<<lz->l10[lc]->l99.l65<<"\n";std::cout<<"\x68\x61\x6d\x6d"
-"\x65\x72\x5f\x2e\x77\x5f\x62\x5f\x31\x5f"<<lz->l10[lc]->l99.l79<<""
-"\n";std::cout<<"\x68\x61\x6d\x6d\x65\x72\x5f\x2e\x6d\x69\x64\x64\x6c"
-"\x65\x5f\x76\x5f"<<lz->l10[lc]->l99.l172<<"\n";}}std::cout<<"\n";lo=
-0.0f;}out[lc]=lo*l645;}l82->l620(l347);}void l49(int lk,double l94)noexcept
-{if(l63(lk)){l114(l6::l49,lk,l94);}}void l98(int lk,double l94)noexcept
-{if(l63(lk)){l114(l6::l98,lk,l94);}}void l187(int lk,double l516)noexcept
-{if(l63(lk)){l114(l6::l187,lk,l516);}}void l125(double l11)noexcept{
-l114(l6::l562,0,l11);}void l119(double l11)noexcept{l114(l6::l469,0,
-l11);}void l127(double l11)noexcept{l114(l6::l536,0,l11);}void
-sustainpedal_control(double l11)noexcept{l114(l6::l448,0,l11);}void
-l59()noexcept{l114(l6::l59,0,0.0);}void l576()noexcept{l140.clear();
-if(lz){lz->lx();}}void l386()noexcept{l394.store(true,std::
-memory_order_release);l565();}bool l197()noexcept{return l394.load(
-std::memory_order_acquire);}void l521()noexcept{l394.store(false,std
-::memory_order_release);}bool l520(std::stop_token stop_token)noexcept
-{std::stop_callback l551(stop_token,[]{l565();});while(!stop_token.
-stop_requested()&&!l197()){const std::uint32_t l610=l301.load(std::
-memory_order_acquire);if(stop_token.stop_requested()||l197()){break;}
-l301.wait(l610,std::memory_order_acquire);}return l197();}void l454(){
-if(!lz||!l82){throw std::logic_error("\x50\x69\x61\x6e\x6f\x20\x65"
-"\x6e\x67\x69\x6e\x65\x20\x69\x73\x20\x6e\x6f\x74\x20\x69\x6e\x69\x74"
-"\x69\x61\x6c\x69\x7a\x65\x64\x2e");}l140.clear();lz->lx();for(int lm
-=79;lm<=l383;++lm){l233({l6::l49,lm,110.0});}l82->l303(lz,"\x48\x69"
-"\x67\x68\x2d\x72\x61\x6e\x67\x65");l140.clear();lz->lx();for(int lm=
-48;lm<=78;++lm){l233({l6::l49,lm,110.0});}l82->l303(lz,"\x4d\x69\x64"
-"\x2d\x72\x61\x6e\x67\x65");l140.clear();lz->lx();for(int lm=l189;lm
-<=47;++lm){l233({l6::l49,lm,110.0});}l82->l303(lz,"\x42\x61\x73\x73"
-"\x2d\x72\x61\x6e\x67\x65");l140.clear();lz->lx();for(int lm=l189;lm
-<=l383;++lm){l233({l6::l49,lm,110.0});}l82->l303(lz,"\x38\x38\x2d\x6b"
-"\x65\x79\x73");lz->lx();}
+enum class l5:std::uint8_t{note_on,l96,l187,l562,l473,l534,l447,l55,}
+;struct PianoCommand{l5 l13=l5::l55;int lq=0;double lt=0.0;};template
+<std::size_t l120>class l164{static_assert(l120>=2&&(l120&(l120-1))==
+0);static_assert(std::is_trivially_copyable_v<PianoCommand>);public:
+l164()noexcept{for(std::size_t lh=0;lh<l120;++lh){l334[lh].l109.store
+(lh,std::memory_order_relaxed);}}l164(const l164&)=delete;l164&
+operator=(const l164&)=delete;bool l742(PianoCommand l3)noexcept{std
+::size_t l8=l389.load(std::memory_order_relaxed);for(;;){l338&l20=
+l334[l8&(l120-1)];const std::size_t l109=l20.l109.load(std::
+memory_order_acquire);const auto l302=static_cast<std::intptr_t>(l109
+)-static_cast<std::intptr_t>(l8);if(l302==0){if(l389.
+compare_exchange_weak(l8,l8+1,std::memory_order_relaxed)){l20.l3=l3;
+l20.l109.store(l8+1,std::memory_order_release);return true;}}else if(
+l302<0){return false;}else{l8=l389.load(std::memory_order_relaxed);}}
+}bool try_pop(PianoCommand&l3)noexcept{l338&l20=l334[l296&(l120-1)];
+const std::size_t l109=l20.l109.load(std::memory_order_acquire);const
+auto l302=static_cast<std::intptr_t>(l109)-static_cast<std::intptr_t>
+(l296+1);if(l302!=0){return false;}l3=l20.l3;l20.l109.store(l296+l120
+,std::memory_order_release);++l296;return true;}void clear()noexcept{
+PianoCommand l3;while(try_pop(l3)){}}private:struct l338{std::atomic<
+std::size_t>l109{0};PianoCommand l3{};};alignas(64)std::array<l338,
+l120>l334{};alignas(64)std::atomic<std::size_t>l389{0};alignas(64)std
+::size_t l296=0;};class l795{public:bool l591(PianoCommand l3)noexcept
+{if(l287.l742(l3)){return true;}l340.store(true,std::
+memory_order_release);return false;}template<class l607>void l656(
+l607&&l466){PianoCommand l3;if(l340.exchange(false,std::
+memory_order_acq_rel)){while(l287.try_pop(l3)){}l466(PianoCommand{l5
+::l55,0,0.0});}while(l287.try_pop(l3)){l466(l3);}}void clear()noexcept
+{l287.clear();l340.store(false,std::memory_order_release);}private:
+l164<4096>l287;std::atomic<bool>l340{false};};std::unique_ptr<l88>ly;
+std::unique_ptr<Soundcard>l136;std::unique_ptr<l336>l81;namespace{
+constexpr int l186=21;constexpr int l387=108;l795 l153;std::atomic<
+bool>l395{false};std::atomic<std::uint32_t>l255{0};bool l57(int l251)noexcept
+{return l251>=l186&&l251<=l387;}void l469()noexcept{l255.fetch_add(1,
+std::memory_order_release);l255.notify_all();}void l123(l5 l13,int
+l251,double lt)noexcept{static_cast<void>(l153.l591({l13,l251,lt}));}
+void l236(const PianoCommand&l3){if(!ly){throw std::logic_error("\x50"
+"\x69\x61\x6e\x6f\x20\x65\x6e\x67\x69\x6e\x65\x20\x69\x73\x20\x6e\x6f"
+"\x74\x20\x69\x6e\x69\x74\x69\x61\x6c\x69\x7a\x65\x64\x2e");}switch(
+l3.l13){case l5::note_on:{if(!l57(l3.lq))break;l207*l66=ly->l10[l3.lq
+-l186];l66->l211=true;for(int lc=0;lc<l66->l54;++lc){l66->l19[lc].
+l185=false;}l66->l107=true;const double l790=std::pow(2,(l3.lt-52.0)/
+25.0);l66->l321(l790);break;}case l5::l96:{if(l57(l3.lq)){ly->l10[l3.
+lq-l186]->l211=false;}l207*l66=ly->l10[l3.lq-l186];l66->l211=false;if
+(!l66->l232){for(int lc=0;lc<l66->l54;++lc){l66->l19[lc].l185=true;}}
+l66->l107=true;break;}case l5::l447:ly->l76(l3.lt>0.01);break;case l5
+::l55:ly->lx();break;case l5::l187:case l5::l562:case l5::l473:case l5
+::l534:break;}}}void l577(double lo){ly=std::make_unique<l88>(lo);}
+void bbpiano_shutdown()noexcept{ly.reset();}void l493(double lo){l81=
+std::make_unique<l336>(lo);}void l501()noexcept{l81.reset();}void l435
+(double lo){l136=std::make_unique<Soundcard>(lo);l136->l64();}void
+l376()noexcept{l136.reset();}void l362(float*out,int l352,double l644
+){if(out==nullptr||l352<0){throw std::invalid_argument("\x49\x6e\x76"
+"\x61\x6c\x69\x64\x20\x61\x75\x64\x69\x6f\x20\x6f\x75\x74\x70\x75\x74"
+"\x20\x62\x75\x66\x66\x65\x72\x2e");}if(!ly||!l81){throw std::
+logic_error("\x50\x69\x61\x6e\x6f\x20\x65\x6e\x67\x69\x6e\x65\x20\x69"
+"\x73\x20\x6e\x6f\x74\x20\x69\x6e\x69\x74\x69\x61\x6c\x69\x7a\x65\x64"
+"\x2e");}l153.l656([](const PianoCommand&l3){l236(l3);});l81->l688();
+for(int lc=0;lc<l352;++lc){ly->l365();float lm=ly->l219();if(!std::
+isfinite(lm)){std::cerr<<"\x4f\x55\x54\x50\x55\x54\x20\x41\x42\x4e"
+"\x4f\x52\x4d\x41\x4c\n"<<"\x73\x61\x6d\x70\x6c\x65\x20\x3d\x20"<<lm
+<<'\n'<<"\x66\x72\x61\x6d\x65\x20\x3d\x20"<<lc<<'\n';for(int lc=0;lc<
+ly->l10.size();lc++){if(ly->l10[lc]->l107){std::cout<<"\x68\x61\x6d"
+"\x6d\x65\x72\x5f\x2e\x77\x5f\x61\x5f\x31\x5f"<<ly->l10[lc]->l99.l65
+<<"\n";std::cout<<"\x68\x61\x6d\x6d\x65\x72\x5f\x2e\x77\x5f\x62\x5f"
+"\x31\x5f"<<ly->l10[lc]->l99.l79<<"\n";std::cout<<"\x68\x61\x6d\x6d"
+"\x65\x72\x5f\x2e\x6d\x69\x64\x64\x6c\x65\x5f\x76\x5f"<<ly->l10[lc]->
+l99.l177<<"\n";}}std::cout<<"\n";lm=0.0f;}out[lc]=lm*l644;}l81->l620(
+l352);}void note_on(int lk,double l90)noexcept{if(l57(lk)){l123(l5::
+note_on,lk,l90);}}void l96(int lk,double l90)noexcept{if(l57(lk)){
+l123(l5::l96,lk,l90);}}void l187(int lk,double l517)noexcept{if(l57(
+lk)){l123(l5::l187,lk,l517);}}void l130(double l11)noexcept{l123(l5::
+l562,0,l11);}void l124(double l11)noexcept{l123(l5::l473,0,l11);}void
+l114(double l11)noexcept{l123(l5::l534,0,l11);}void l76(double l11)noexcept
+{l123(l5::l447,0,l11);}void l55()noexcept{l123(l5::l55,0,0.0);}void
+l576()noexcept{l153.clear();if(ly){ly->lx();}}void l390()noexcept{
+l395.store(true,std::memory_order_release);l469();}bool l199()noexcept
+{return l395.load(std::memory_order_acquire);}void l522()noexcept{
+l395.store(false,std::memory_order_release);}bool l520(std::
+stop_token stop_token)noexcept{std::stop_callback l552(stop_token,[]{
+l469();});while(!stop_token.stop_requested()&&!l199()){const std::
+uint32_t l609=l255.load(std::memory_order_acquire);if(stop_token.
+stop_requested()||l199()){break;}l255.wait(l609,std::
+memory_order_acquire);}return l199();}void l453(){if(!ly||!l81){throw
+std::logic_error("\x50\x69\x61\x6e\x6f\x20\x65\x6e\x67\x69\x6e\x65"
+"\x20\x69\x73\x20\x6e\x6f\x74\x20\x69\x6e\x69\x74\x69\x61\x6c\x69\x7a"
+"\x65\x64\x2e");}l153.clear();ly->lx();for(int ln=79;ln<=l387;++ln){
+l236({l5::note_on,ln,110.0});}l81->l292(ly,"\x48\x69\x67\x68\x2d\x72"
+"\x61\x6e\x67\x65");l153.clear();ly->lx();for(int ln=48;ln<=78;++ln){
+l236({l5::note_on,ln,110.0});}l81->l292(ly,"\x4d\x69\x64\x2d\x72\x61"
+"\x6e\x67\x65");l153.clear();ly->lx();for(int ln=l186;ln<=47;++ln){
+l236({l5::note_on,ln,110.0});}l81->l292(ly,"\x42\x61\x73\x73\x2d\x72"
+"\x61\x6e\x67\x65");l153.clear();ly->lx();for(int ln=l186;ln<=l387;++
+ln){l236({l5::note_on,ln,110.0});}l81->l292(ly,"\x38\x38\x2d\x6b\x65"
+"\x79\x73");ly->lx();}
 #include<cstring>
-OSStatus l28::l519(AudioUnitRenderActionFlags*l84,UInt32 l253,
+OSStatus Soundcard::l519(AudioUnitRenderActionFlags*l80,UInt32 l256,
 AudioBufferList*data)noexcept{if(data==nullptr||data->mNumberBuffers
 !=1||data->mBuffers[0].mData==nullptr||data->mBuffers[0].
-mNumberChannels!=1||data->mBuffers[0].mDataByteSize<l253*sizeof(
-Float32)||l253>static_cast<UInt32>(std::numeric_limits<int>::max())){
-l386();l245(l84,data);return noErr;}AudioBuffer&buffer=data->mBuffers
-[0];auto*l692=static_cast<Float32* >(buffer.mData);try{l373(l692,
-static_cast<int>(l253),0.90);return noErr;}catch(...){l386();l245(l84
-,data);return noErr;}}void l28::l245(AudioUnitRenderActionFlags*l84,
-AudioBufferList*data)noexcept{if(data!=nullptr){for(UInt32 lc=0;lc<
-data->mNumberBuffers;++lc){AudioBuffer&buffer=data->mBuffers[lc];if(
-buffer.mData!=nullptr){std::memset(buffer.mData,0,buffer.
-mDataByteSize);}}}if(l84!=nullptr){ *l84|=
-kAudioUnitRenderAction_OutputIsSilence;}}
+mNumberChannels!=1||data->mBuffers[0].mDataByteSize<l256*sizeof(
+Float32)||l256>static_cast<UInt32>(std::numeric_limits<int>::max())){
+l390();l289(l80,data);return noErr;}AudioBuffer&l116=data->mBuffers[0
+];auto*l696=static_cast<Float32* >(l116.mData);try{l362(l696,
+static_cast<int>(l256),0.90);return noErr;}catch(...){l390();l289(l80
+,data);return noErr;}}void Soundcard::l289(AudioUnitRenderActionFlags
+ *l80,AudioBufferList*data)noexcept{if(data!=nullptr){for(UInt32 lc=0
+;lc<data->mNumberBuffers;++lc){AudioBuffer&l116=data->mBuffers[lc];if
+(l116.mData!=nullptr){std::memset(l116.mData,0,l116.mDataByteSize);}}
+}if(l80!=nullptr){ *l80|=kAudioUnitRenderAction_OutputIsSilence;}}
 #include<csignal>
 #include<cstdlib>
 #include<exception>
 #include<getopt.h>
 #include<pthread.h>
 #include<signal.h>
-namespace{void l83(const char*l13,const char*l29);void l185();void
-l579(bool l166);void l327();class l152{public:explicit l152(bool l166
-){l579(l166);}l152(const l152&)=delete;l152&operator=(const l152&)=
-delete;~l152(){l327();}};}int l466(int l204,char*l18[],const char*l13
-,const char*l29,std::stop_token l238){sigset_t l135;sigemptyset(&l135
-);sigaddset(&l135,SIGINT);sigaddset(&l135,SIGTERM);sigaddset(&l135,
-SIGUSR1);const int l593=pthread_sigmask(SIG_BLOCK,&l135,nullptr);if(
-l593!=0){std::cerr<<"\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x62\x6c"
+namespace{void l87(const char*l17,const char*l28);void l188();void
+l575(bool l169);void l332();class l155{public:explicit l155(bool l169
+){l575(l169);}l155(const l155&)=delete;l155&operator=(const l155&)=
+delete;~l155(){l332();}};}int l464(int l206,char*l18[],const char*l17
+,const char*l28,std::stop_token l241){sigset_t l147;sigemptyset(&l147
+);sigaddset(&l147,SIGINT);sigaddset(&l147,SIGTERM);sigaddset(&l147,
+SIGUSR1);const int l592=pthread_sigmask(SIG_BLOCK,&l147,nullptr);if(
+l592!=0){std::cerr<<"\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x62\x6c"
 "\x6f\x63\x6b\x20\x70\x72\x6f\x63\x65\x73\x73\x20\x73\x69\x67\x6e\x61"
 "\x6c\x73\x2e\n";return EXIT_FAILURE;}static const option l633[]={{""
 "\x68\x65\x6c\x70",no_argument,nullptr,'h'},{"\x76\x65\x72\x73\x69"
@@ -2264,43 +2270,43 @@ nullptr,'p'},{"\x6b\x65\x79\x62\x6f\x61\x72\x64",no_argument,nullptr,
 "\x72\x65\x63\x6f\x72\x64",no_argument,nullptr,'r'},{"\x74\x65\x73"
 "\x74",no_argument,nullptr,'t'},{"\x69\x6e\x74\x65\x72\x6e\x61\x6c"
 "\x2d\x74\x65\x73\x74",no_argument,nullptr,'i'},{nullptr,0,nullptr,0}
-};int l495;struct l757{bool l185=false;bool l13=false;std::optional<
-std::string>lm=std::nullopt;bool l91=false;bool l70=false;std::
-optional<std::string>l208=std::nullopt;bool l325=false;bool l247=
-false;bool l314=false;};l757 lv;while((l495=getopt_long(l204,l18,""
+};int l495;struct l759{bool l188=false;bool l17=false;std::optional<
+std::string>ln=std::nullopt;bool piano=false;bool l74=false;std::
+optional<std::string>l245=std::nullopt;bool l331=false;bool l249=
+false;bool l318=false;};l759 lv;while((l495=getopt_long(l206,l18,""
 "\x68\x76\x6d\x3a\x70\x6b\x65\x3a\x72\x74\x69",l633,nullptr))!=-1){
-switch(l495){case'h':lv.l185=true;break;case'v':lv.l13=true;break;
-case'm':lv.lm=optarg;break;case'p':lv.l91=true;break;case'k':lv.l70=
-true;break;case'e':lv.l208=optarg;break;case'r':lv.l325=true;break;
-case't':lv.l247=true;break;case'i':lv.l314=true;break;default:return
-EXIT_FAILURE;}}if(!(lv.l185||lv.l13||lv.lm||lv.l91||lv.l70||lv.l208||
-lv.l325||lv.l247||lv.l314)){l83(l13,l29);return EXIT_FAILURE;}if(lv.
-l185){l185();return EXIT_SUCCESS;}if(lv.l13){l83(l13,l29);return
-EXIT_SUCCESS;}std::stop_source l86;const std::stop_token stop_token=
-l86.get_token();std::stop_callback l806(l238,[&l86]{l86.request_stop(
-);});const bool l166=!lv.l208.has_value()&&!lv.l247;l152 l809(l166);
-std::jthread l511([l135,&l86](std::stop_token l611){const pthread_t
-l482=pthread_self();std::stop_callback l816(l611,[l482]{static_cast<
-void>(pthread_kill(l482,SIGUSR1));});int l548=0;if(sigwait(&l135,&
-l548)==0&&l548!=SIGUSR1){l86.request_stop();}});std::jthread l768([&
-l86]{const bool l618=l520(l86.get_token());if(l618&&!l86.
-stop_requested()){l86.request_stop();}});std::exception_ptr l426;try{
-if(lv.lm){l83(l13,l29);l560( *lv.lm,stop_token);}else if(lv.l91){l83(
-l13,l29);l500(stop_token);}else if(lv.l70){l83(l13,l29);l437(
-stop_token);}else if(lv.l208){l83(l13,l29);l561( *lv.l208,stop_token);
-}else if(lv.l325){l83(l13,l29);l537(stop_token);}else if(lv.l247){l83
-(l13,l29);l505(stop_token);}else if(lv.l314){l83(l13,l29);l475(
-stop_token);}}catch(...){l426=std::current_exception();}l86.
-request_stop();l511.request_stop();l511.join();l768.join();l372();
-const bool l745=l197();if(l426){try{std::rethrow_exception(l426);}
-catch(const std::exception&l648){std::cerr<<"\x62\x62\x70\x6c\x3a\x20"
-<<l648.what()<<'\n';}catch(...){std::cerr<<"\x62\x62\x70\x6c\x3a\x20"
+switch(l495){case'h':lv.l188=true;break;case'v':lv.l17=true;break;
+case'm':lv.ln=optarg;break;case'p':lv.piano=true;break;case'k':lv.l74
+=true;break;case'e':lv.l245=optarg;break;case'r':lv.l331=true;break;
+case't':lv.l249=true;break;case'i':lv.l318=true;break;default:return
+EXIT_FAILURE;}}if(!(lv.l188||lv.l17||lv.ln||lv.piano||lv.l74||lv.l245
+||lv.l331||lv.l249||lv.l318)){l87(l17,l28);return EXIT_FAILURE;}if(lv
+.l188){l188();return EXIT_SUCCESS;}if(lv.l17){l87(l17,l28);return
+EXIT_SUCCESS;}std::stop_source l91;const std::stop_token stop_token=
+l91.get_token();std::stop_callback l806(l241,[&l91]{l91.request_stop(
+);});const bool l169=!lv.l245.has_value()&&!lv.l249;l155 l809(l169);
+std::jthread l510([l147,&l91](std::stop_token l615){const pthread_t
+l535=pthread_self();std::stop_callback l816(l615,[l535]{static_cast<
+void>(pthread_kill(l535,SIGUSR1));});int l550=0;if(sigwait(&l147,&
+l550)==0&&l550!=SIGUSR1){l91.request_stop();}});std::jthread l769([&
+l91]{const bool l618=l520(l91.get_token());if(l618&&!l91.
+stop_requested()){l91.request_stop();}});std::exception_ptr l428;try{
+if(lv.ln){l87(l17,l28);l559( *lv.ln,stop_token);}else if(lv.piano){
+l87(l17,l28);l504(stop_token);}else if(lv.l74){l87(l17,l28);l436(
+stop_token);}else if(lv.l245){l87(l17,l28);l561( *lv.l245,stop_token);
+}else if(lv.l331){l87(l17,l28);l537(stop_token);}else if(lv.l249){l87
+(l17,l28);l505(stop_token);}else if(lv.l318){l87(l17,l28);l516(
+stop_token);}}catch(...){l428=std::current_exception();}l91.
+request_stop();l510.request_stop();l510.join();l769.join();l376();
+const bool l745=l199();if(l428){try{std::rethrow_exception(l428);}
+catch(const std::exception&l652){std::cerr<<"\x62\x62\x70\x6c\x3a\x20"
+<<l652.what()<<'\n';}catch(...){std::cerr<<"\x62\x62\x70\x6c\x3a\x20"
 "\x75\x6e\x6b\x6e\x6f\x77\x6e\x20\x73\x65\x72\x76\x69\x63\x65\x20\x66"
 "\x61\x69\x6c\x75\x72\x65\x2e\n";}return EXIT_FAILURE;}if(l745){std::
 cerr<<"\x54\x68\x65\x20\x61\x75\x64\x69\x6f\x20\x72\x65\x6e\x64\x65"
 "\x72\x20\x63\x61\x6c\x6c\x62\x61\x63\x6b\x20\x66\x61\x69\x6c\x65\x64"
-"\x2e\n";return EXIT_FAILURE;}return EXIT_SUCCESS;}namespace{void l83
-(const char*l13,const char*l29){std::cout<<l29;}void l185(){std::cout
+"\x2e\n";return EXIT_FAILURE;}return EXIT_SUCCESS;}namespace{void l87
+(const char*l17,const char*l28){std::cout<<l28;}void l188(){std::cout
 <<"\n\x20\x20\x20\x20\x62\x62\x70\x6c\x20\x2d\x20\x62\x42\x70\x69\x61"
 "\x6e\x6f\x20\x70\x68\x79\x73\x69\x63\x61\x6c\x2d\x6d\x6f\x64" "\x65"
 "\x6c\x69\x6e\x67\x20\x70\x69\x61\x6e\x6f\x20\x65\x6e\x67\x69\x6e\x65"
@@ -2373,18 +2379,19 @@ cerr<<"\x54\x68\x65\x20\x61\x75\x64\x69\x6f\x20\x72\x65\x6e\x64\x65"
 "\x20\x6f\x75\x74" "\x70\x75\x74\x20\x64\x65\x76\x69\x63\x65\x2e\x20"
 "\x45\x78\x69\x73\x74\x69\x6e\x67\x20\x6f\x75\x74\x70\x75\x74\x20\x66"
 "\x69\x6c\x65" "\x73\x20\x61\x72\x65\x20\x6e\x6f\x74\x20\x6f\x76\x65"
-"\x72\x77\x72\x69\x74\x74\x65\x6e\x2e\n\n\x20\x20\x20\x20";}void l579
-(bool l166){l521();try{l577(ln);l493(ln);if(l166){l436(ln);}}catch(
-...){l327();throw;}}void l327(){l372();l576();l502();l535();}}extern "C" {void midi_service_start(const char*l44);void midi_service_stop
-(void);void piano_service_start(void);void piano_service_stop(void);
-void keyboard_service_start(void);void keyboard_service_stop(void);
-void export_service_start(const char*l44);void export_service_stop(
-void);void record_service_start(void);void record_service_stop(void);
-void test_service_start(void);void test_service_stop(void);void
-internal_test_service_start(void);void internal_test_service_stop(
-void);void close_all_service(void);}
-namespace{static constexpr const char*l138="\x4c\x31\x2d\x43\x6c\x61"
-"\x76\x69\x65\x72";static constexpr const char*l143="\n\x20\x20\x20"
+"\x72\x77\x72\x69\x74\x74\x65\x6e\x2e\n\n\x20\x20\x20\x20";}void l575
+(bool l169){l522();try{l577(lo);l493(lo);if(l169){l435(lo);}}catch(
+...){l332();throw;}}void l332(){l376();l576();l501();bbpiano_shutdown
+();}}extern "C" {void midi_service_start(const char*l40);void
+midi_service_stop(void);void piano_service_start(void);void
+piano_service_stop(void);void keyboard_service_start(void);void
+keyboard_service_stop(void);void export_service_start(const char*l40);
+void export_service_stop(void);void record_service_start(void);void
+record_service_stop(void);void test_service_start(void);void
+test_service_stop(void);void internal_test_service_start(void);void
+internal_test_service_stop(void);void close_all_service(void);}
+namespace{static constexpr const char*l139="\x4c\x31\x2d\x43\x6c\x61"
+"\x76\x69\x65\x72";static constexpr const char*l140="\n\x20\x20\x20"
 "\x20\x20\x20\x20\x20\x20\x20\x20\x20\xe2\x94\x8c\xe2\x94\x80\xe2\x94"
 "\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2" "\x94\x80\xe2\x94\x80"
 "\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94"
@@ -2454,40 +2461,40 @@ namespace{static constexpr const char*l138="\x4c\x31\x2d\x43\x6c\x61"
 "\x20\x32\x30\x32\x36\x20\x5a\x69\x79\x61\x6e\x67\x20\x54\x61\x6e\x2e"
 "\n\x20\x20\x20\x20\x20\x20" "\x20\x20\x20\x20\x20\x20\x41\x6c\x6c"
 "\x20\x72\x69\x67\x68\x74\x73\x20\x72\x65\x73\x65\x72\x76\x65\x64\x2e"
-"\n\n\x20\x20\x20\x20" "\x20\x20\x20\x20";std::jthread l428;std::
-jthread l349;std::jthread l393;std::jthread l421;std::jthread l353;
-std::jthread l340;std::jthread l427;void l39(std::jthread&l370){if(!
-l370.joinable()){return;}l370.request_stop();l370.join();}}void
-midi_service_start(const char*l44){if(l44==nullptr){return;}l39(l428);
-std::string path(l44);l428=std::jthread([path=std::move(path)](std::
-stop_token stop_token)mutable{char l47[]="\x62\x62\x70\x6c";char
-option[]="\x2d\x6d";char*l18[]={l47,option,path.data()};l116(3,l18,
-l138,l143,stop_token);});}void midi_service_stop(void){l39(l428);}
-void piano_service_start(void){l39(l349);l349=std::jthread([](std::
-stop_token stop_token){char l47[]="\x62\x62\x70\x6c";char option[]=""
-"\x2d\x70";char*l18[]={l47,option};l116(2,l18,l138,l143,stop_token);}
-);}void piano_service_stop(void){l39(l349);}void
-keyboard_service_start(void){l39(l393);l393=std::jthread([](std::
-stop_token stop_token){char l47[]="\x62\x62\x70\x6c";char option[]=""
-"\x2d\x6b";char*l18[]={l47,option};l116(2,l18,l138,l143,stop_token);}
-);}void keyboard_service_stop(void){l39(l393);}void
-export_service_start(const char*l44){if(l44==nullptr){return;}l39(
-l421);std::string path(l44);l421=std::jthread([path=std::move(path)](
-std::stop_token stop_token)mutable{char l47[]="\x62\x62\x70\x6c";char
-option[]="\x2d\x65";char*l18[]={l47,option,path.data()};l116(3,l18,
-l138,l143,stop_token);});}void export_service_stop(void){l39(l421);}
-void record_service_start(void){l39(l353);l353=std::jthread([](std::
-stop_token stop_token){char l47[]="\x62\x62\x70\x6c";char option[]=""
-"\x2d\x72";char*l18[]={l47,option};l116(2,l18,l138,l143,stop_token);}
-);}void record_service_stop(void){l39(l353);}void test_service_start(
-void){l39(l340);l340=std::jthread([](std::stop_token stop_token){char
-l47[]="\x62\x62\x70\x6c";char option[]="\x2d\x74";char*l18[]={l47,
-option};l116(2,l18,l138,l143,stop_token);});}void test_service_stop(
-void){l39(l340);}void internal_test_service_start(void){l39(l427);
-l427=std::jthread([](std::stop_token stop_token){char l47[]="\x62\x62"
-"\x70\x6c";char option[]="\x2d\x69";char*l18[]={l47,option};l116(2,
-l18,l138,l143,stop_token);});}void internal_test_service_stop(void){
-l39(l427);}void close_all_service(void){midi_service_stop();
+"\n\n\x20\x20\x20\x20" "\x20\x20\x20\x20";std::jthread l414;std::
+jthread l354;std::jthread l409;std::jthread l423;std::jthread l356;
+std::jthread l361;std::jthread l337;void l39(std::jthread&l373){if(!
+l373.joinable()){return;}l373.request_stop();l373.join();}}void
+midi_service_start(const char*l40){if(l40==nullptr){return;}l39(l414);
+std::string path(l40);l414=std::jthread([path=std::move(path)](std::
+stop_token stop_token)mutable{char l45[]="\x62\x62\x70\x6c";char
+option[]="\x2d\x6d";char*l18[]={l45,option,path.data()};l119(3,l18,
+l139,l140,stop_token);});}void midi_service_stop(void){l39(l414);}
+void piano_service_start(void){l39(l354);l354=std::jthread([](std::
+stop_token stop_token){char l45[]="\x62\x62\x70\x6c";char option[]=""
+"\x2d\x70";char*l18[]={l45,option};l119(2,l18,l139,l140,stop_token);}
+);}void piano_service_stop(void){l39(l354);}void
+keyboard_service_start(void){l39(l409);l409=std::jthread([](std::
+stop_token stop_token){char l45[]="\x62\x62\x70\x6c";char option[]=""
+"\x2d\x6b";char*l18[]={l45,option};l119(2,l18,l139,l140,stop_token);}
+);}void keyboard_service_stop(void){l39(l409);}void
+export_service_start(const char*l40){if(l40==nullptr){return;}l39(
+l423);std::string path(l40);l423=std::jthread([path=std::move(path)](
+std::stop_token stop_token)mutable{char l45[]="\x62\x62\x70\x6c";char
+option[]="\x2d\x65";char*l18[]={l45,option,path.data()};l119(3,l18,
+l139,l140,stop_token);});}void export_service_stop(void){l39(l423);}
+void record_service_start(void){l39(l356);l356=std::jthread([](std::
+stop_token stop_token){char l45[]="\x62\x62\x70\x6c";char option[]=""
+"\x2d\x72";char*l18[]={l45,option};l119(2,l18,l139,l140,stop_token);}
+);}void record_service_stop(void){l39(l356);}void test_service_start(
+void){l39(l361);l361=std::jthread([](std::stop_token stop_token){char
+l45[]="\x62\x62\x70\x6c";char option[]="\x2d\x74";char*l18[]={l45,
+option};l119(2,l18,l139,l140,stop_token);});}void test_service_stop(
+void){l39(l361);}void internal_test_service_start(void){l39(l337);
+l337=std::jthread([](std::stop_token stop_token){char l45[]="\x62\x62"
+"\x70\x6c";char option[]="\x2d\x69";char*l18[]={l45,option};l119(2,
+l18,l139,l140,stop_token);});}void internal_test_service_stop(void){
+l39(l337);}void close_all_service(void){midi_service_stop();
 piano_service_stop();keyboard_service_stop();export_service_stop();
 record_service_stop();test_service_stop();internal_test_service_stop(
 );}

@@ -977,6 +977,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		14335DCF307180E400C66CDE /* Pianoteq 8 */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Pianoteq 8";
+			sourceTree = "<group>";
+		};
 		14E708382F78BE0C005C806C /* app */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = app;
@@ -2915,6 +2920,7 @@
 		147AA5363061371F0093A6B5 /* wav_snippet */ = {
 			isa = PBXGroup;
 			children = (
+				14335DCF307180E400C66CDE /* Pianoteq 8 */,
 				147AA2F63061371F0093A6B5 /* bBpiano L0-100c */,
 				147AA3103061371F0093A6B5 /* bBpiano L0-beta */,
 				147AA3203061371F0093A6B5 /* bBpiano L0-Pizzicato */,

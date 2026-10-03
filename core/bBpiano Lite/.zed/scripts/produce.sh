@@ -63,16 +63,24 @@ clang++ -std=c++20 './build/bbpl_SDK/main.cpp' \
     -framework CoreFoundation \
     -o './build/bbpl_SDK/bbpl'
 
-    # Sign the final executable
+    # Sign with Developer ID
     codesign \
         --force \
-        --sign "Apple Development: arcopus07@gmail.com (K6Y4GK2K9T)" \
+        --options runtime \
+        --timestamp \
+        --sign "A24B9DE5A1CE348226459768FBD1E57363EBB5C5" \
         './build/bbpl_SDK/bbpl'
+
     # Verify signature
     codesign \
         --verify \
         --strict \
-        --verbose=2 \
+        --verbose=4 \
+        './build/bbpl_SDK/bbpl'
+
+    # Display signing identity
+    codesign \
+        -dvvv \
         './build/bbpl_SDK/bbpl'
 
 rm './build/bbpl_SDK/main.cpp'
