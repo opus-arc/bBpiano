@@ -117,6 +117,7 @@ int cli_helper(int argc, char *argv[], const char *version, const char *logo,
       {"piano", no_argument, nullptr, 'p'},
       {"keyboard", no_argument, nullptr, 'k'},
       {"export", required_argument, nullptr, 'e'}, // midi_path
+      {"output-folder", required_argument, nullptr, 'o'},
       {"record", no_argument, nullptr, 'r'},
       {"test", no_argument, nullptr, 't'},
       {"internal-test", no_argument, nullptr, 'i'},
@@ -145,13 +146,14 @@ int cli_helper(int argc, char *argv[], const char *version, const char *logo,
     bool piano = false;
     bool keyboard = false;
     std::optional<std::string> export_path = std::nullopt;
+    std::optional<std::string> output_folder = std::nullopt;
     bool record = false;
     bool test = false;
     bool internal_test = false;
   };
   CliOptions options;
 
-  while ((opt = getopt_long(argc, argv, "hvm:pke:rti", long_options,
+  while ((opt = getopt_long(argc, argv, "hvm:pke:o:rti", long_options,
                             nullptr)) != -1) {
     switch (opt) {
     // ------------------------
@@ -180,6 +182,9 @@ int cli_helper(int argc, char *argv[], const char *version, const char *logo,
     case 'e':
       options.export_path = optarg;
       break;
+    case 'o':
+      options.output_folder = optarg;
+      break;
     case 'r':
       options.record = true;
       break;
@@ -203,8 +208,8 @@ int cli_helper(int argc, char *argv[], const char *version, const char *logo,
   // 基本门槛
   // ------------------------
   if (!(options.help || options.version || options.midi || options.piano ||
-        options.keyboard || options.export_path || options.record ||
-        options.test || options.internal_test)) {
+        options.keyboard || options.export_path || options.output_folder ||
+        options.record || options.test || options.internal_test)) {
     print_logo_and_version(version, logo);
     return EXIT_FAILURE;
   }
@@ -228,6 +233,16 @@ int cli_helper(int argc, char *argv[], const char *version, const char *logo,
   const std::stop_token stop_token = service_stop.get_token();
   std::stop_callback external_stop_callback(
       external_stop, [&service_stop] { service_stop.request_stop(); });
+
+  if (options.output_folder && !options.export_path) {
+    std::cerr << "bbpl: --output-folder requires --export.\n";
+    return EXIT_FAILURE;
+  }
+
+  if (options.output_folder && options.output_folder->empty()) {
+    std::cerr << "bbpl: output folder must not be empty.\n";
+    return EXIT_FAILURE;
+  }
 
   // 在导出以及测试模式之外都启动声卡
   const bool start_soundcard =
@@ -276,7 +291,8 @@ int cli_helper(int argc, char *argv[], const char *version, const char *logo,
       keyboard_service(stop_token);
     } else if (options.export_path) {
       print_logo_and_version(version, logo);
-      export_service(*options.export_path, stop_token);
+      export_service(*options.export_path, stop_token,
+                     options.output_folder.value_or(""));
     } else if (options.record) {
       print_logo_and_version(version, logo);
       record_service(stop_token);
@@ -347,34 +363,37 @@ void help() {
       bbpl <command>
 
     Playback:
-      -k, --keyboard          Play using the computer keyboard
-      -p, --piano             Play using a connected MIDI keyboard
-      -m, --midi <file.mid>   Play a Standard MIDI File
+      -k, --keyboard             Play using the computer keyboard
+      -p, --piano                Play using a connected MIDI keyboard
+      -m, --midi <file.mid>      Play a Standard MIDI File
 
     Recording and export:
-      -r, --record            Play from a MIDI keyboard and record to MIDI
-      -e, --export <file.mid> Render a MIDI file to WAV
+      -r, --record               Play from a MIDI keyboard and record to MIDI
+      -e, --export <file.mid>    Render a MIDI file to WAV
+      -o, --output-folder <dir>  Write exported WAV into this directory
 
     Diagnostics:
-      -t, --test              Run the service-lifecycle smoke test
-      -i, --internal-test     Play the built-in A4 engine test
+      -t, --test                 Run the service-lifecycle smoke test
+      -i, --internal-test        Play the built-in A4 engine test
 
     General:
-      -h, --help              Show this help and exit
-      -v, --version           Show version information and exit
+      -h, --help                 Show this help and exit
+      -v, --version              Show version information and exit
 
     Examples:
       bbpl --keyboard
       bbpl --piano
       bbpl --record
       bbpl --midi "performance.mid"
-      bbpl --export "performance.mid"
+      bbpl --export "performance.mid" --output-folder "./renders"
 
     Notes:
       Specify exactly one command per invocation.
       Press Ctrl-C to stop a running service cleanly.
       --record creates a timestamped MIDI file in the current directory.
-      --export writes <file.wav> beside the input file without opening
+      --export writes <file.wav> beside the input file by default.
+      --output-folder writes it into an existing directory.
+      Existing output files are not overwritten.
       the audio output device. Existing output files are not overwritten.
 
     )";

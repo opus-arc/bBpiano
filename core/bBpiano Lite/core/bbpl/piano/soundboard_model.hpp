@@ -7,7 +7,7 @@
 #include <cstddef>
 
 class SoundboardModel {
-  static constexpr bool soundboard_active_ = false;
+  static constexpr bool soundboard_active_ = true;
 
   SoundboardModel(const SoundboardModel &) = delete;
   SoundboardModel &operator=(const SoundboardModel &) = delete;

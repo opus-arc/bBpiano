@@ -86,12 +86,31 @@ void keyboard_service(std::stop_token stop_token) {
   PcKeyboard keyboard;
   keyboard.run(stop_token);
 }
-void export_service(std::string midi_path, std::stop_token stop_token) {
-  std::filesystem::path output_path(midi_path);
+void export_service(std::string midi_path, std::stop_token stop_token,
+                    std::string output_folder) {
+  const std::filesystem::path midi_file_path(midi_path);
+  std::filesystem::path output_path;
+
+  if (output_folder.empty()) {
+    output_path = midi_file_path;
+  } else {
+    const std::filesystem::path output_directory(output_folder);
+
+    if (!std::filesystem::is_directory(output_directory)) {
+      throw std::runtime_error(
+          "WAV output directory does not exist or is not a directory: " +
+          output_directory.string());
+    }
+
+    output_path = output_directory / midi_file_path.filename();
+  }
+
   output_path.replace_extension(".wav");
+
   const MidiExporter::Result result = MidiExporter::export_wav(
       midi_path, output_path, static_cast<std::uint32_t>(sample_rate), 5.0,
       stop_token);
+
   if (result == MidiExporter::Result::completed) {
     std::cout << "Exported WAV: " << output_path << '\n';
   }

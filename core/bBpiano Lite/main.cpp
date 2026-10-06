@@ -24,13 +24,13 @@
 
 // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 // [ZERO AI-GENERATED CODE]
-// Every line in this file is written and understood by its author. Every result is
-// reproducible, every assumption is open to inspection, and every implementation
-// stands open to criticism and challenge.
-// AI may be used for non-core, replaceable, engineering work;
-// this file, however, contains core logic that the author considers
-// necessary to understand firsthand, explain line by line, and take full responsibility for,
-// and is therefore implemented entirely by hand.
+// Every line in this file is written and understood by its author. Every result
+// is reproducible, every assumption is open to inspection, and every
+// implementation stands open to criticism and challenge. AI may be used for
+// non-core, replaceable, engineering work; this file, however, contains core
+// logic that the author considers necessary to understand firsthand, explain
+// line by line, and take full responsibility for, and is therefore implemented
+// entirely by hand.
 // ---------------------------------------------------------------------------
 // [本文件承诺不含任何 AI 生成代码]
 // 每一行代码均由作者亲自编写，并确知其意义。一切结果可以复现，一切假设可经受检验，一切实现经得起批评与质疑。
@@ -44,8 +44,8 @@
 // --------------------------------------------------------------------
 // MARK: version & logo
 
-static constexpr const char* version = "L1-Clavier";
-static constexpr const char* logo =
+static constexpr const char *version = "L1-Clavier";
+static constexpr const char *logo =
     R"(
         ┌────────────────────────────┐──╭────╮
         │                            │==│╲╱╲╱│
@@ -59,72 +59,75 @@ static constexpr const char* logo =
         │                            │==│╲╱╲╱│
         │  bBSonicLab                │==│╱╲╱╲│
         └────────────────────────────┘──╰────╯
-    
+
         With Special Thanks to
         Zhuoran Chen
         for the conversations and inspiration
-
+1
     )";
 
 // --------------------------------------------------------------------
 // MARK: library
 
-#include "./core/service_controller.hpp"
 #include "./core/bbpl/piano_controller.hpp"
+#include "./core/service_controller.hpp"
 
 #include <cstdlib>
 #include <exception>
 #include <iostream>
 
+int main(int argc, char *argv[]) {
+  // --------------------------------------------------------------------
+  // MARK: arg tmp test
+  //        char* testArgv[] = {
+  //            argv[0],
+  //            "-k"
+  //        };
+  //        argc = 2;
+  //        argv = testArgv;
 
-int main(int argc, char* argv[]) {
-    // --------------------------------------------------------------------
-    // MARK: arg tmp test
-//        char* testArgv[] = {
-//            argv[0],
-//            "-k"
-//        };
-//        argc = 2;
-//        argv = testArgv;    
-    
-//            char* testArgv[] = {
-//                argv[0],
-//                "-m",
-//                "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/core/bbpl/resource/midi_samples/Fancy's selection/midi/Sonata in D Minor, K. 141_2018.midi"
-//            };
-//            argc = 3;
-//            argv = testArgv;
-    
-//            char* testArgv[] = {
-//                argv[0],
-//                "-m",
-//                "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/core/bbpl/resource/midi_samples/Fancy's selection/midi/Sonata in B Min._2006.midi"
-//            };
-//            argc = 3;
-//            argv = testArgv;
-//    char* testArgv[] = {
-//                argv[0],
-//                "-m",
-//                "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano Lite/core/bbpl/resource/midi_samples/Fancy's selection/midi/Sonata No. 28 in A Major, Op. 101 (Complete)_2014.midi"
-//            };
-//            argc = 3;
-//            argv = testArgv;
-//    
-    try {
-            
-      return cli_entry(argc, argv, version, logo);
-        
-    } catch (const std::exception& error) {
-        
-      std::cerr << "bbpl: " << error.what() << '\n';
-      return EXIT_FAILURE;
-        
-    } catch (...) {
-        
-      std::cerr << "bbpl: unknown fatal error.\n";
-      return EXIT_FAILURE;
-        
-    }
+  //            char* testArgv[] = {
+  //                argv[0],
+  //                "-m",
+  //                "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano
+  //                Lite/core/bbpl/resource/midi_samples/Fancy's
+  //                selection/midi/Sonata in D Minor, K. 141_2018.midi"
+  //            };
+  //            argc = 3;
+  //            argv = testArgv;
+
+  //            char* testArgv[] = {
+  //                argv[0],
+  //                "-m",
+  //                "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano
+  //                Lite/core/bbpl/resource/midi_samples/Fancy's
+  //                selection/midi/Sonata in B Min._2006.midi"
+  //            };
+  //            argc = 3;
+  //            argv = testArgv;
+  //    char* testArgv[] = {
+  //                argv[0],
+  //                "-m",
+  //                "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano
+  //                Lite/core/bbpl/resource/midi_samples/Fancy's
+  //                selection/midi/Sonata No. 28 in A Major, Op. 101
+  //                (Complete)_2014.midi"
+  //            };
+  //            argc = 3;
+  //            argv = testArgv;
+  //
+  try {
+
+    return cli_entry(argc, argv, version, logo);
+
+  } catch (const std::exception &error) {
+
+    std::cerr << "bbpl: " << error.what() << '\n';
+    return EXIT_FAILURE;
+
+  } catch (...) {
+
+    std::cerr << "bbpl: unknown fatal error.\n";
+    return EXIT_FAILURE;
+  }
 }
-
-
