@@ -25,6 +25,7 @@
 #include "./details/tunning_preset.hpp"
 #include "./details/hammer_preset.hpp"
 #include "./details/string_impedance_preset.hpp"
+#include "./details/bridge_transmission_preset.hpp"
 
 class Configuration {
     Configuration(const Configuration&) = delete;
@@ -34,6 +35,7 @@ public:
     static constexpr TunningPresets tuning_presets{};
     static constexpr HammerPresets hammer_presets{};
     static constexpr StringImpedancePresets string_impedance_presets{};
+    static constexpr BridgeTransmissionPresets bridge_transmission_presets{};
 
     constexpr Configuration() noexcept = default;
     

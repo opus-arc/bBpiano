@@ -40,15 +40,15 @@ public:
         }
 
         const double q =
-            std::tan(0.5 * target_omega * phase_delay_samples) /
-            std::tan(0.5 * target_omega);
+        std::tan(0.5 * target_omega * phase_delay_samples) /
+        std::tan(0.5 * target_omega);
 
         const double coefficient = (1.0 - q) / (1.0 + q);
 
         if (!std::isfinite(coefficient) ||
             std::abs(coefficient) >= 1.0) {
             throw std::runtime_error(
-                "fractional_filter: invalid allpass coefficient");
+                                     "fractional_filter: invalid allpass coefficient");
         }
 
         a1 = static_cast<float>(coefficient);
@@ -60,7 +60,7 @@ public:
         }
         // y = a1 * x + x1 - a1 * y1;
         const float y =
-            x1 + a1 * (x - y1);
+        x1 + a1 * (x - y1);
 
         x1 = x;
         y1 = y;

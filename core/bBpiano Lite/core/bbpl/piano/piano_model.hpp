@@ -35,7 +35,6 @@ class PianoModel {
 public:
     
     static constexpr Configuration configuration{};
-    BridgeModel bridge_;
     SoundboardModel soundboard_;
     std::array<KeyModel*, 88> piano_keys;
     
@@ -55,7 +54,6 @@ public:
                                              string_count,
                                              TunningPresets::Temperament::equal,
                                              &soundboard_,
-                                             &bridge_,
                                              &configuration);
         }
     }
@@ -66,7 +64,7 @@ public:
                 piano_keys[i]->key_movement();
         }
         
-//        piano_keys[69-21]->key_movement();
+        //        piano_keys[69-21]->key_movement();
     }
     
     inline float get_sample() {

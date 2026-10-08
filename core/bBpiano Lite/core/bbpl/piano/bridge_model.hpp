@@ -20,29 +20,105 @@
 #ifndef bridge_model_hpp
 #define bridge_model_hpp
 
-#include <iostream>
-#include "./string_model.hpp"
+#include "./soundboard_model.hpp"
+#include "../configuration/configuration.hpp"
 
 class BridgeModel {
     
+    const int midi_n_ = 21;
+    SoundboardModel *soundboard_;
+    
+    float vb = 0.0f;
+    
+    std::array<float, Parameters::Bridge::TransmissionFIR::kFirTapCount> state_x_{};
+    std::array<float, Parameters::Bridge::TransmissionFIR::kFirTapCount> state_y_{};
+    int head_ = 0;
+    
+    const std::array<double, Parameters::Bridge::TransmissionFIR::kFirTapCount>* coefficients_;
+    
+    static constexpr int k_group_delay = (Parameters::Bridge::TransmissionFIR::kFirTapCount - 1) / 2;
     
     
 public:
-    BridgeModel () {
-        
-        
+    
+    BridgeModel (const int midi_n,
+                 const std::array<double, Parameters::Bridge::TransmissionFIR::kFirTapCount>* coefficients,
+                 SoundboardModel *soundboard) :
+        midi_n_(midi_n),
+        coefficients_(coefficients),
+        soundboard_(soundboard)
+    {}
+    
+    inline void vb_update_filter() {
+        vb = 0.0f;
+        int index = head_;
+        if(index < 0) {
+            index += Parameters::Bridge::TransmissionFIR::kFirTapCount;
+        }
+        for(int i = 0; i < Parameters::Bridge::TransmissionFIR::kFirTapCount; i++) {
+            vb += static_cast<float>((*coefficients_)[i]) * state_y_[index];
+            index--;
+            if(index < 0) {
+                index += Parameters::Bridge::TransmissionFIR::kFirTapCount;
+            }
+        }
     }
     
-    void process() const {
+    inline void coupling_process(float* v_x, float* v_y) {
+        
+        add_history(*v_x, *v_y);
+        
+        vb_update_filter();
+        
+        int index = head_ - k_group_delay;
+        if(index < 0) {
+            index += Parameters::Bridge::TransmissionFIR::kFirTapCount;
+        }
+        
+        const float vo = vb - state_y_[index]; // [n - D] ; D == 8
 
-//        const float z = boundary_point->z;
-//        const float y = boundary_point->y;
-//
-//        boundary_point->z = 0.999848f * z - 0.017452f * y;
-//
-//        boundary_point->y = 0.017452f * z + 0.999848f * y;
+        const float x = -state_x_[index];
+        const float y = vo;
+
+        
+        *v_x = 0.999848f * x - 0.017452f * y;
+        *v_y = 0.017452f * x + 0.999848f * y;
+        
     }
     
+    inline void add_history(float vi_x, float vi_y) {
+        head_++;
+        if(head_ > (Parameters::Bridge::TransmissionFIR::kFirTapCount - 1)) {
+            head_ -= Parameters::Bridge::TransmissionFIR::kFirTapCount;
+        }
+        state_y_[head_] = vi_y;
+        state_x_[head_] = vi_x;
+    }
+    
+    inline float get_vb() {
+        return vb;
+    }
+    
+    inline void system_reset() {
+        head_ = 0;
+        std::fill(state_y_.begin(), state_y_.end(), 0.0f);
+        std::fill(state_x_.begin(), state_y_.end(), 0.0f);
+        vb = 0.0f;
+    }
+    
+    inline float get_state_energy() const {
+        float energy = 0.0f;
+
+        for (const float v : state_y_) {
+            energy += v * v;
+        }
+
+        return energy;
+    }
+    
+    inline void update_vb() {
+        soundboard_->bridge_velocity[midi_n_ - 21] = vb;
+    }
 };
 
 #endif /* bridge_model_hpp */

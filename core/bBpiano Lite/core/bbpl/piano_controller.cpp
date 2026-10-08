@@ -174,9 +174,9 @@ void get_next_buffer(float* out, int frameCount, double amplitudeLimiter) {
         
         if (!std::isfinite(x)) {
             std::cerr
-                << "OUTPUT ABNORMAL\n"
-                << "sample = " << x << '\n'
-                << "frame = " << i << '\n';
+            << "OUTPUT ABNORMAL\n"
+            << "sample = " << x << '\n'
+            << "frame = " << i << '\n';
             
             for(int i = 0; i < bBpiano->piano_keys.size(); i++) {
                 if(bBpiano->piano_keys[i]->key_active_) {
@@ -190,8 +190,8 @@ void get_next_buffer(float* out, int frameCount, double amplitudeLimiter) {
             }
             
             std::cout<<"\n";
-                x = 0.0f;
-            }
+            x = 0.0f;
+        }
         
         out[i] = x * amplitudeLimiter;
     }
@@ -259,50 +259,42 @@ void clear_piano_commands() noexcept {
 }
 
 void report_audio_render_failure() noexcept {
-    audio_render_failure.store(
-        true, std::memory_order_release);
+    audio_render_failure.store(true, std::memory_order_release);
 
     notify_engine_event();
 }
 
 bool audio_render_failed() noexcept {
-    return audio_render_failure.load(
-        std::memory_order_acquire);
+    return audio_render_failure.load(std::memory_order_acquire);
 }
 
 void clear_audio_render_failure() noexcept {
-    audio_render_failure.store(
-        false, std::memory_order_release);
+    audio_render_failure.store(false, std::memory_order_release);
 }
 
-bool wait_for_stop_or_audio_failure(
-    std::stop_token stop_token) noexcept {
+bool wait_for_stop_or_audio_failure(std::stop_token stop_token) noexcept {
+                                        std::stop_callback wake_on_stop(stop_token,
+                                                                        [] {
+                                                                            notify_engine_event();
+                                                                        });
 
-    std::stop_callback wake_on_stop(
-        stop_token,
-        [] {
-            notify_engine_event();
-        });
+                                        while (!stop_token.stop_requested() &&
+                                               !audio_render_failed()) {
 
-    while (!stop_token.stop_requested() &&
-           !audio_render_failed()) {
+                                            const std::uint32_t generation =
+                                            engine_event_generation.load(std::memory_order_acquire);
 
-        const std::uint32_t generation =
-            engine_event_generation.load(
-                std::memory_order_acquire);
+                                            if (stop_token.stop_requested() ||
+                                                audio_render_failed()) {
+                                                break;
+                                            }
 
-        if (stop_token.stop_requested() ||
-            audio_render_failed()) {
-            break;
-        }
+                                            engine_event_generation.wait(generation,
+                                                                         std::memory_order_acquire);
+                                        }
 
-        engine_event_generation.wait(
-            generation,
-            std::memory_order_acquire);
-    }
-
-    return audio_render_failed();
-}
+                                        return audio_render_failed();
+                                    }
 
 
 // ======================== ======================== ========================
@@ -312,8 +304,8 @@ bool wait_for_stop_or_audio_failure(
 void print_engine_rate() {
     if (!bBpiano || !engine_eval) {
         throw std::logic_error(
-            "Piano engine is not initialized."
-        );
+                               "Piano engine is not initialized."
+                               );
     }
     
     // 保证测试从完全确定的状态开始。

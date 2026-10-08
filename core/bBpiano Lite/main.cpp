@@ -44,13 +44,13 @@
 // --------------------------------------------------------------------
 // MARK: version & logo
 
-static constexpr const char *version = "L1-Clavier";
+static constexpr const char *version = "L1-Santa-Clara";
 static constexpr const char *logo =
     R"(
         ┌────────────────────────────┐──╭────╮
         │                            │==│╲╱╲╱│
         │  bBpiano 1                 │==│╱╲╱╲│
-        │  L1-Clavier/260903         │==│╲╱╲╱│
+        │  L1-Santa-Clara/261013     │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
         │  Physical Modeling Piano   │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
@@ -63,7 +63,7 @@ static constexpr const char *logo =
         With Special Thanks to
         Zhuoran Chen
         for the conversations and inspiration
-1
+
     )";
 
 // --------------------------------------------------------------------

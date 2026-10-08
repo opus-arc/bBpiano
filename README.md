@@ -186,12 +186,13 @@ Can the soul of an acoustic instrument be reconstructed through mathematics and 
 ────────────────────────────────────────────────────────
 
                        ▼
-       Tominaga–Sato-inspired Two-layer
+       Redesigned Tominaga–Sato-inspired Two-layer
         Nonlinear Maxwell-type Hammer
-         双层非线性麦克斯韦型击锤模型
+       重新设计的双层非线性麦克斯韦型击锤模型
 
-       每个采样点进行两次 hammer 求解
+       每个采样点进行 hammer ZOH 零阶保持求解
       predictor / corrector 式接触力估计
+      (现阶段实验证明似乎 ZOH 优于线性插值)
                        │
                        ▼
        Impedance-weighted String Contact
@@ -203,21 +204,21 @@ Can the soul of an acoustic instrument be reconstructed through mathematics and 
                        │
                        ▼
           Bidirectional String Waveguide
-               双向行波波导弦
+             经简化的双向二维行波波导弦
 
-       力注入 F/(2Z) + 固定端反射 + 传播
+       				力注入 F = Zs(vi + vo)
+       		             │
+                       ▼
+          	 考虑 Zb(ω) 的固定端二维反射
+          	
+          						传播
                        │
                        ▼
        ┌──────── Per-roundtrip Loop ────────┐
        │                                    │
        │  First-order Fractional Allpass    │
        │  一阶分数延迟全通滤波器                │
-       │  承担 round-trip residual delay     │
-       │                 │                  │
-       │                 ▼                  │
-       │  Four-SOS Loss Filter Bank         │
-       │  四段二阶损耗滤波器                   │
-       │  控制逐模态衰减与 T60                 │
+       │  承担 round-trip residual delay     │         
        │                 │                  │
        │                 ▼                  │
        │  Dispersion Allpass Network        │
@@ -234,15 +235,13 @@ Can the soul of an acoustic instrument be reconstructed through mathematics and 
        MIDI 96–108：88.2 kHz 双步弦更新
                        │
                        ▼
-        Bridge-end Force Readout
-        + Unison String Force Sum
-        桥端力读取与同音弦求和
+        	Bridge-end Force Readout
+        	+ Unison String Force Sum
+        	桥端力读取与同音弦求和
                        │
                        ▼
            88-key Bridge-force Field
               88 键音桥激励场
-
-
                        │
                        ▼
              Soundboard Radiation Model
@@ -261,8 +260,8 @@ Can the soul of an acoustic instrument be reconstructed through mathematics and 
        · 直接声分量 direct path
                        │
                        ▼
-        Dense Modal Radiation Proxy
-           高模态密度辐射近似
+         Dense Modal Radiation Proxy
+              高模态密度辐射近似
                        │
                        ▼
              Master Gain × 0.01
