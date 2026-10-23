@@ -5,7 +5,7 @@ const creatorButtons = [...document.querySelectorAll('[data-creator]')];
 const creators = {
   ziyang: { name: 'Ziyang Tan', role: '设计、架构与开发', credit: 'Design, Architecture & Development' },
   zhuoran: { name: 'Zhuoran Chen', role: '特别致谢 · 讨论与灵感', credit: 'With Special Thanks' },
-  sol: { name: 'ChatGPT 5.6 Sol', role: '研究与工程辅助', credit: 'Research & Engineering Assistance' }
+  sol: { name: 'ChatGPT', role: '研究与工程辅助', credit: 'Research & Engineering Assistance' }
 };
 const positions = { ziyang: 0, zhuoran: 0, sol: 0 };
 let currentCreator = 'ziyang';

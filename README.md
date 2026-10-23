@@ -1,6 +1,6 @@
  # bBpiano - bBSonicLab Physical Modeling
 
-![Piano Structure](./doc/design/bB image.png)
+![Piano Structure](./doc/design/bB-image.png)
 
 <hr>
 <div align="center" style="line-height: 1;">
