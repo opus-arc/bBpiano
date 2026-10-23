@@ -50,10 +50,6 @@ bBpiano是一个受Pianoteq 9启发的物理建模钢琴合成项目，目前处
 
 ### **A Note from bBSonicLab**
 
-> *“Be different. Leave something worthy.”*
->
-> — Tim Cook 
-
 bBpiano is released as an open research project.
 
 bBpiano 以开放研究项目的形式发布。
