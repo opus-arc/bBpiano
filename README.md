@@ -1,6 +1,6 @@
  # bBpiano - bBSonicLab Physical Modeling
 
-![Piano Structure](./doc/design/bBsonicLab_logo_transparent_fullsize.png)
+![Piano Structure](./doc/design/bB image.png)
 
 <hr>
 <div align="center" style="line-height: 1;">
@@ -15,19 +15,32 @@
   <a href="https://opus-arc.github.io/bBpiano/"><b>Primary Research Document</b>👁️</a>
 </div>
 
-> Every resonance eventually fades.  
-> What remains is the desire to keep creating, to keep moving, and perhaps, one day, to become as free as the bluebird.
->
-> ***Bluebird** comes from David Bowie's final farewell, **Lazarus**:*
-> *"Just like that bluebird, I'll be free."*
 
-> 每一次共鸣最终都会消失。
+> 2.7m以上もあるコンサート・グランド・ピアノの高周波数帯域までの音響-構造連成シミュレーションは、非常に大規模な計算となるため、市販の解析ソフトでは性能（精度や計算速度など）が不十分であるという壁に突き当ります。我々は、そのような困難な状況に屈することなく、商用ソフトを凌駕する高性能な数値解析ソフトの自社開発にも精力的に取り組んでいます。このとき、最も必要になるのは、数学（線形代数、複素関数論、微分方程式など）の確かな理解と応用力です。
 >
-> 剩下的是继续创造的愿望，继续前进，也许有一天，会像蓝鸟一样自由。
+> 私は、音楽などの芸術と数学などのサイエンスに共通して、それを深く理解し新たな価値を創造する上で最も大切なものは、「美」に対する感性だと考えています。
 >
-> bB 来自大卫·鲍伊最后的告别，**Lazarus**：
+> 「美と真実だけを追求し、他は忘れろ」は、ジャズ・ピアノの巨匠ビル・エヴァンスが言ったとされる言葉です。
 >
-> *“Just like that bluebird, I'll be free.”*
+> 「楽器の科学的設計手法開発」を生業とする私の心にはいつもこの言葉があります。
+>
+> — **Eiji Tominaga（富永 英嗣）**, Yamaha Corporation
+
+
+
+### **Development Status**
+
+**Active Research & Development**
+
+The project is currently undergoing extensive research and architectural refinement toward its next major release.
+
+The latest public version remains available as a stable reference. Development is focused on improving physical modeling accuracy, numerical stability, and real-time performance.
+
+Public updates may be less frequent during this period as experimental work continues privately.
+
+Thank you for your patience and interest.
+
+
 
 ##     1. Introduction
 
@@ -35,8 +48,11 @@ bBpiano is a physical modeling piano synthesis project inspired by Pianoteq 9, c
 
 bBpiano是一个受Pianoteq 9启发的物理建模钢琴合成项目，目前处于积极的研发阶段。 其核心是一个物理建模的钢琴引擎，旨在保持轻巧和响应，同时捕捉现场乐器的即时性、存在感和表现力。
 
-
 ### **A Note from bBSonicLab**
+
+> *“Be different. Leave something worthy.”*
+>
+> — Tim Cook 
 
 bBpiano is released as an open research project.
 
@@ -616,6 +632,26 @@ Repeated evaluations indicate that CLAP exhibits measurable stochastic variation
 > Although the benchmark results of **bBpiano L0-100c** are not as impressive as we had hoped, we still consider it one of our most meaningful models. Compared with the earlier L0-beta version, L0-100c represents an attempt to strike a balance between physical accuracy derived from real-world measurements and the pursuit of a beautiful, musically satisfying tone. Through this process, it gradually developed a unique voice and aesthetic character of its own. Whatever its position in the benchmark tables, it remains a model with a strong personality, carrying within it countless experiments, revisions, and the genuine effort of those who created it.
 >
 > 尽管 **bBpiano L0-100c** 的基准测试结果并没有达到我们最初所期待的水平，我们仍然认为它是整个项目中最有意义的模型之一。与更早的 L0-beta 版本相比，L0-100c 是一次在源于真实世界测量的物理准确性，与对优美且富有音乐性的音色追求之间寻找平衡的尝试。在这一过程中，它逐渐形成了属于自己的独特声音与审美特征。无论它最终位于基准测试表格中的什么位置，它依然是一个拥有鲜明个性的模型，其中承载着无数次实验与修改，也承载着创造它的人所付出的真实努力。
+
+
+
+---
+
+
+
+Every resonance eventually fades.  
+What remains is the desire to keep creating, to keep moving, and perhaps, one day, to become as free as the bluebird.
+
+***Bluebird** comes from David Bowie's final farewell, **Lazarus**:*
+*"Just like that bluebird, I'll be free."*
+
+每一次共鸣最终都会消失。
+
+剩下的是继续创造的愿望，继续前进，也许有一天，会像蓝鸟一样自由。
+
+bB 来自大卫·鲍伊最后的告别，**Lazarus**：
+
+*“Just like that bluebird, I'll be free.”*
 
 
 
