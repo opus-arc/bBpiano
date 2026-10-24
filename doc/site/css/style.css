@@ -26,3 +26,6 @@
 /* Keep the complete identity visible without filling the phone viewport. */
 @media(max-width:600px){.about-layout{padding:1.25rem 8% 2.5rem;gap:1.25rem}.about-identity{width:min(100%,18rem,42svh);margin:0 auto}.about-identity img{width:100%;height:auto;object-fit:contain}}
 @media(min-width:601px) and (max-width:900px) and (max-height:500px) and (orientation:landscape){.about-layout{grid-template-columns:minmax(0,.8fr) minmax(0,1fr);align-items:start;padding:1rem 6% 2rem;gap:6%}.about-identity{width:100%;max-width:16rem;margin:0 auto}.about-identity img{width:100%;height:auto;object-fit:contain}}
+
+/* Suppress double-tap zoom on controls while retaining pan and pinch gestures. */
+button,a[href],input[type="range"]{touch-action:manipulation}
