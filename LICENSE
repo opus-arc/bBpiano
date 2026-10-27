@@ -1,204 +1,326 @@
-# bBpiano CLI Use and Extension License 1.1
+# bBpiano CLI Use and Extension License 1.2
 
 Copyright (c) 2026 Ziyang Tan. All rights reserved.
 
-This license applies to the bBpiano source code, command-line program,
-compiled binaries, and associated files made available in this repository or
-in an official bBpiano distribution (the "Licensed Software"), except for any
-file or component that carries a separate license notice.
+This license governs the official compiled bBpiano command-line program,
+its accompanying runtime data, and the documentation distributed with it
+(collectively, the "Licensed Software"), except for components identified
+as subject to separate license terms. It is a proprietary software license,
+not an open-source license. No source code, implementation details, or model
+parameters are made available or licensed by this agreement merely because
+You receive the Licensed Software.
 
-This is a proprietary source-available license. It is not an open-source
-license.
+## 1. Acceptance and Scope
 
-## 1. Acceptance
+By downloading, installing, copying, or using the Licensed Software, You
+agree to the terms of this license to the extent enforceable under applicable
+law. If You do not agree, do not install or use it.
 
-By downloading, installing, copying, building, or running the Licensed
-Software, You agree to this license. If You do not agree, do not use the
-Licensed Software.
+Only copies obtained from a distribution channel designated by the Licensor
+are authorized under this license. This license does not grant rights in any
+other materials, including source code, prototypes, or unpublished research
+assets, that may be available separately.
 
 ## 2. Definitions
 
-"Licensor" means Ziyang Tan or a successor copyright holder who offers the
-Licensed Software under this license.
+"Licensor" means Ziyang Tan, operating the bBpiano project under the name
+bBSonicLab, or a successor rights holder authorized to license the Licensed
+Software.
 
 "You" means the individual or legal entity exercising rights under this
 license.
 
-"Documentation" means documentation published by the Licensor for using the
-Licensed Software, including its command-line and operating-system interfaces.
+"Official Distribution" means the unmodified Licensed Software obtained
+from a source expressly designated by the Licensor.
 
-"Extension" means software independently written by You that invokes the
-Licensed Software only through interfaces described in the Documentation or
-through ordinary operating-system process interfaces.
+"Documentation" means user-facing documentation officially published by
+the Licensor describing supported command-line and other public interfaces.
 
-"Protected Implementation Information" means non-public or implementation-
-specific material embodied in or learned from the Licensed Software,
-including source or intermediate code, algorithms, architecture, digital
-signal processing and physical-modeling logic, coefficient tables, presets,
-constants, model parameters, calibration data, internal data structures, and
-implementation techniques.
+"Extension" means independently developed software that interacts with an
+Official Distribution through interfaces described in the Documentation or
+ordinary operating-system process interfaces, without incorporating any
+portion of the Licensed Software. An Extension may be a script, plug-in,
+application, or other independently authored component.
 
-Access to readable source code does not grant permission to copy, reuse,
-disclose, or otherwise exploit Protected Implementation Information except as
-expressly permitted by this license.
+"Commercial Extension or Integration" means an Extension or integration
+that is sold, licensed for a fee, monetized, supplied as part of a paid
+product or service, or otherwise offered to third parties in a commercial
+context. Internal scripts used solely to automate otherwise permitted use
+of the Licensed Software, without being offered as a product or service to
+third parties, are not Commercial Extensions solely because the user operates
+a business or earns income from the resulting work.
 
-"Output" means audio or other content produced by running the Licensed
-Software in compliance with this license. Output does not include the
-Licensed Software, an Extension, or Protected Implementation Information.
+"Hosted Service" means a network-accessible service, API, shared synthesis
+service, or comparable offering through which third parties access or obtain
+the Licensed Software's synthesis functionality, whether for payment or free
+of charge. Ordinary internal use across devices controlled by You, without
+providing that functionality to third parties, is not a Hosted Service.
 
-## 3. License Grant
+"Protected Implementation Information" means non-public implementation-
+specific information embodied in the Licensed Software, including source or
+intermediate code, internal algorithms and architecture, DSP and physical-
+modeling implementations, coefficients, presets, model parameters, calibration
+data, internal structures, and implementation techniques. This definition
+does not make independently known scientific principles, published facts,
+or lawfully observable performance measurements proprietary merely by
+naming them.
 
-Subject to all terms of this license, the Licensor grants You a limited,
-revocable, non-exclusive, non-transferable, non-sublicensable license to:
+"Output" means audio, recordings, or other independently usable content
+produced by an authorized operation of the Licensed Software. Output does
+not include the Licensed Software itself, an Extension, extracted runtime
+data, or Protected Implementation Information.
 
-1. download, install, make a reasonable number of backup copies of, and run
-   the Licensed Software for lawful personal, educational, research, artistic,
-   and internal business purposes;
-2. build the unmodified Licensed Software from the source supplied by the
-   Licensor solely for the permitted uses above;
-3. create, use, and distribute independent Extensions, provided that an
-   Extension:
-   - communicates with the Licensed Software only through the Documentation
-     or ordinary operating-system process interfaces;
-   - does not contain or disclose any portion of the Licensed Software or any
-     Protected Implementation Information; and
-   - requires each user to obtain the Licensed Software separately from an
-     official source designated by the Licensor;
-   - complies with the attribution requirements of Section 7; and
-4. use, reproduce, perform, publish, and distribute Output.
+"Written Authorization" means a separate express permission from the
+Licensor in writing, including an electronic written agreement or written
+correspondence verifiably issued by the Licensor. An authorization may set
+additional conditions for the activity it permits.
 
-No other rights are granted.
+## 3. Permitted Use and Portability
 
-## 4. Restrictions
+Subject to this license, the Licensor grants You a non-exclusive,
+non-transferable, non-sublicensable license to:
 
-Except to the extent that applicable law expressly requires otherwise, You
-must not, and must not assist another person to:
+1. download and install an Official Distribution;
+2. run the unmodified Licensed Software for lawful personal, educational,
+   research, artistic, professional, and internal business purposes,
+   including paid music production, recording, performance, and teaching;
+3. install, move, and use reasonable copies on multiple devices under Your
+   ownership or control, including portable, offline, development, and
+   internal work environments, and make reasonable backup copies; and
+4. write and use internal scripts to automate the permitted operation of the
+   Licensed Software, provided that they do not expose its synthesis
+   functionality as a Hosted Service or otherwise create a prohibited
+   Commercial Extension or Integration.
 
-1. sell, rent, sublicense, publish, mirror, share, or redistribute the Licensed
-   Software, whether in source or binary form;
-2. modify, patch, translate, adapt, or create derivative works of the Licensed
-   Software;
-3. reverse engineer, decompile, disassemble, or otherwise inspect or analyze a
-   binary, or analyze source code, for the purpose of extracting, reusing, or
-   disclosing Protected Implementation Information;
-4. bypass, disable, or interfere with license checks, technical protections,
-   access controls, or notices;
-5. extract, estimate, reconstruct, publish, transfer, or reuse the Licensed
-   Software's parameters, coefficients, presets, algorithms, calibration,
-   architecture, physical-modeling logic, or other Protected Implementation
-   Information;
-6. conduct systematic probing, model extraction, behavioral cloning,
-   distillation, parameter fitting, or similar activity intended to reproduce
-   or approximate the implementation or behavior of the Licensed Software;
-7. use Protected Implementation Information to develop, train, improve, or
-   validate a product, model, library, plug-in, service, or implementation that
-   replicates, competes with, or substitutes for the Licensed Software;
-8. operate the Licensed Software as a hosted, shared, time-sharing, service-
-   bureau, cloud, or network service that exposes its synthesis capability to
-   third parties; or
-9. remove or alter copyright, license, attribution, or proprietary notices.
+Copies permitted by this section are for Your own authorized use, not for
+publication, transfer, or distribution to third parties. You must retain
+notices included in copies of the Licensed Software. The Licensor does not
+promise continued availability, maintenance, or compatibility of any
+particular release.
 
-If applicable law gives You a non-waivable right to perform an otherwise
-restricted act, including an act strictly necessary to achieve
-interoperability, You may exercise only that right, only to the minimum extent
-required by law, and only after requesting the necessary interoperability
-information from the Licensor where the law permits that condition. Any
-information obtained may be used only for the legally permitted purpose and
-must not be used to create or market a substantially similar program.
+## 4. Independent Extensions
 
-## 5. Independent Development
+You may create, use, and distribute non-commercial Extensions without
+obtaining separate permission if each Extension:
 
-This license does not restrict software developed independently without use of
-the Licensed Software, Protected Implementation Information, or prohibited
-acts. Compatibility achieved solely through the interfaces described in the
-Documentation is permitted as part of an Extension under Section 3.
+1. communicates with the Licensed Software only through supported public
+   interfaces described in the Documentation or ordinary operating-system
+   process interfaces;
+2. does not incorporate, modify, bundle, disclose, or redistribute the
+   Licensed Software or Protected Implementation Information;
+3. requires its users to obtain any required bBpiano copy separately from
+   an Official Distribution; and
+4. complies with Section 9 (Attribution).
 
-## 6. Ownership
+A Commercial Extension or Integration requires the Licensor's prior Written
+Authorization, even if it does not bundle or redistribute the Licensed
+Software. An independently distributed non-commercial Extension does not
+become commercial merely because an end user employs it while making a
+recording or other Output for commercial use.
 
-The Licensed Software is licensed, not sold. The Licensor and its licensors
-retain all title, copyright, patent, trade-secret, and other intellectual-
-property rights in the Licensed Software and Protected Implementation
-Information. This license grants no trademark rights and no patent license
-except to the minimum extent necessarily implied for the permitted operation
-of an unmodified official copy.
+No provision in this section permits redistribution of the Licensed Software
+itself. Bundling an Official Distribution with another product, installer,
+package, or service requires separate prior Written Authorization.
 
-## 7. Attribution
+## 5. Rights in Output
 
-Any Extension distributed to another person or entity must clearly disclose
-that it uses or depends on bbpl technology and must attribute bbpl to the
-Licensor.
+You may use, reproduce, modify, publish, perform, distribute, license,
+sell, and otherwise exploit Output, including commercially, without further
+permission from, attribution to, or royalty payment to the Licensor.
 
-For software with a graphical user interface, this notice must appear in an
-ordinarily accessible About, Credits, Legal, or equivalent section.
+The Licensor makes no copyright claim to Output solely on the ground that
+it was generated using the Licensed Software. This section does not confer
+rights in any third-party compositions, performances, recordings, samples,
+or other material, and does not affect rights otherwise held by third parties.
 
-For command-line software or software without such a section, the notice must
-appear in accompanying documentation or another ordinarily accessible
-location.
+This freedom concerning Output does not authorize the separate prohibited
+acts of extracting Protected Implementation Information or systematically
+cloning the Licensed Software under Section 7.
 
-Unless otherwise specified by the Licensor, the following form is sufficient:
+## 6. Commercial Use and Hosted Services
 
-    Uses bbpl technology.
+Ordinary professional and internal business use authorized by Section 3,
+including providing music, performances, recordings, teaching, or other
+creative work to paying clients, does not require additional permission.
+
+The following activities require prior Written Authorization:
+
+1. Commercial Extensions or Integrations as defined in Section 2;
+2. redistribution, resale, sublicensing, or bundling of the Licensed
+   Software, whether for payment or without charge; and
+3. operating or offering a Hosted Service that exposes the Licensed
+   Software's synthesis functionality to third parties.
+
+A grant of commercial-use permission for one activity does not imply
+permission to perform another activity listed above.
+
+## 7. Restrictions and Research
+
+Except where expressly authorized by this license or by Written
+Authorization, and subject always to non-waivable rights under applicable
+law, You must not:
+
+1. publish, mirror, share, sell, rent, transfer, sublicense, redistribute,
+   or bundle any copy of the Licensed Software for third parties;
+2. modify, patch, translate, or make a derivative of its executable code,
+   bundled runtime data, or other protected components;
+3. circumvent license checks, technical protections, or access controls,
+   or remove or falsify proprietary notices;
+4. decompile, disassemble, or otherwise reverse engineer the Licensed
+   Software for the purpose of obtaining, copying, or disclosing Protected
+   Implementation Information;
+5. extract, reconstruct, disclose, or reuse non-public internal coefficients,
+   presets, calibration data, source code, or model parameters; or
+6. perform systematic model extraction, behavioral cloning, distillation,
+   parameter recovery, or similar activity directed at reproducing or
+   substituting for the Licensed Software's protected implementation.
+
+Independent acoustic analysis, listening tests, spectral and temporal
+measurements, performance benchmarks, comparisons with other instruments,
+and publication of research or critical findings are permitted. Reporting
+lawfully observed external behavior does not, by itself, constitute
+extraction of Protected Implementation Information. Independent scientific
+work is not prohibited merely because it studies techniques also used in
+piano synthesis.
+
+Nothing in this license limits rights that applicable law does not permit
+contractual terms to exclude, including any qualifying interoperability,
+security-research, or other statutory exceptions. Such rights remain subject
+to the conditions imposed by the applicable law.
+
+## 8. Independent Development and Ownership
+
+This license does not prevent independent development undertaken without
+misappropriating Protected Implementation Information or engaging in acts
+prohibited by this license. Public-interface compatibility as permitted in
+Section 4 is not, by itself, a prohibited act.
+
+The Licensed Software is licensed, not sold. The Licensor and relevant
+third-party rights holders retain their respective intellectual-property
+rights. Nothing in this license transfers ownership of the Licensed
+Software or grants trademark rights, except the limited right to identify
+bBpiano accurately as required by Section 9. No broader patent license is
+expressly granted.
+
+## 9. Attribution and Non-Endorsement
+
+Any Extension publicly distributed under Section 4, and any commercially
+authorized Extension unless its separate Written Authorization says
+otherwise, must identify its use of or compatibility with bBpiano and
+acknowledge its developer in an ordinarily accessible About, Credits, Legal,
+documentation, or equivalent location.
+
+One acceptable notice, when the Extension actually uses bBpiano, is:
+
+    Uses bBpiano (bbpl).
     Copyright (c) 2026 Ziyang Tan.
 
-The attribution must not be removed, obscured, or presented in a manner that
-implies sponsorship or endorsement of the surrounding product by the
-Licensor.
+When an Extension merely supports optional compatibility, an accurate
+statement such as "Compatible with bBpiano (bbpl)" may be used alongside
+the copyright notice instead. Notices must be accurate and must not imply
+that the Licensor sponsors, endorses, or certifies a third-party product.
 
-## 8. Third-Party Components
+No attribution is required for Output under Section 5. Academic research
+should follow applicable scholarly citation conventions, but this license
+does not prescribe a special citation format for research publications.
 
-Third-party components remain governed by their respective license terms. If
-a third-party license conflicts with this license for that component, the
-third-party license controls for that component only.
+## 10. Third-Party Components
 
-## 9. Termination
+Components carrying separate third-party license notices are governed by
+their respective terms. Where such terms differ from this license, the
+third-party terms control only for the affected components. You remain
+responsible for observing applicable third-party rights in any materials
+You use with the Licensed Software.
 
-This license terminates automatically and immediately if You breach any term.
-On termination, You must stop using the Licensed Software and destroy all
-copies in Your possession or control. Sections 4 through 13 survive
-termination.
+## 11. Release-Specific Terms and Termination
 
-## 10. Disclaimer of Warranty
+A particular release of the Licensed Software is governed by the version of
+this license provided with that release when You lawfully obtain it. A
+subsequent revision of the license does not, by itself, retroactively
+change rights validly granted for an earlier release. The Licensor may
+license future releases under different terms and is not required to
+maintain older versions or preserve interface compatibility.
 
-TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSED SOFTWARE IS PROVIDED
-"AS IS" AND "AS AVAILABLE," WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT,
-ACCURACY, OR RELIABILITY.
+This license terminates automatically if You materially breach its terms.
+Upon termination, You must cease using the affected Licensed Software and
+remove copies in Your possession or control to the extent required by
+applicable law, except copies that You are independently entitled to retain.
+Termination does not retract rights already validly exercised in Output,
+subject to third-party rights, and does not automatically terminate the
+independent rights of other users who remain compliant.
 
-## 11. Limitation of Liability
+Sections concerning restrictions on misuse of protected information,
+intellectual-property ownership, attribution relating to existing
+Extensions, third-party rights, warranty disclaimers, liability limits,
+and general interpretation survive termination only to the extent their
+nature and applicable law permit.
 
-TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSOR WILL NOT BE LIABLE FOR
-ANY INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, CONSEQUENTIAL, OR PUNITIVE
-DAMAGES, OR FOR LOSS OF DATA, PROFITS, REVENUE, BUSINESS, OR GOODWILL, ARISING
-FROM OR RELATED TO THE LICENSED SOFTWARE OR THIS LICENSE, UNDER ANY THEORY OF
-LIABILITY. THE LICENSOR'S TOTAL AGGREGATE LIABILITY WILL NOT EXCEED THE GREATER
-OF USD 10 OR THE AMOUNT YOU PAID THE LICENSOR FOR THE LICENSED SOFTWARE DURING
-THE TWELVE MONTHS BEFORE THE EVENT GIVING RISE TO LIABILITY.
+## 12. Disclaimer of Warranty
 
-## 12. General
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE LICENSED SOFTWARE IS
+PROVIDED "AS IS" AND "AS AVAILABLE," WITHOUT WARRANTIES OR CONDITIONS OF
+ANY KIND, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, ACCURACY,
+RELIABILITY, OR AVAILABILITY.
 
-If a provision is unenforceable, it will be modified only to the minimum
-extent necessary, and the remaining provisions will remain effective. A
-waiver must be in writing and applies only to the specific instance stated.
-You may not assign this license without the Licensor's prior written consent.
-This license is the entire agreement concerning the rights granted here and
-may be changed only in a writing issued or signed by the Licensor.
+## 13. Limitation of Liability
 
-## 13. Contact and Additional Permissions
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE LICENSOR SHALL NOT BE
+LIABLE FOR INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, CONSEQUENTIAL, OR
+PUNITIVE DAMAGES, OR LOSS OF DATA, PROFITS, REVENUE, BUSINESS, OR GOODWILL,
+ARISING FROM OR RELATING TO THE LICENSED SOFTWARE OR THIS LICENSE, ON ANY
+THEORY OF LIABILITY.
 
-Commercial redistribution, source modification, hosted-service use, or other
-rights not granted here require a separate written license from the Licensor.
-Use the contact information published in the bBpiano repository to request
-additional permission.
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE LICENSOR'S TOTAL
+AGGREGATE LIABILITY ARISING FROM OR RELATING TO THE LICENSED SOFTWARE OR
+THIS LICENSE SHALL NOT EXCEED THE GREATER OF USD 10 OR THE AMOUNT YOU PAID
+DIRECTLY TO THE LICENSOR FOR THE LICENSED SOFTWARE DURING THE TWELVE MONTHS
+PRECEDING THE EVENT GIVING RISE TO THE CLAIM. NOTHING IN THIS SECTION
+EXCLUDES LIABILITY THAT CANNOT LEGALLY BE EXCLUDED OR LIMITED.
+
+## 14. General
+
+If a provision is unenforceable, the remaining provisions remain effective
+to the extent permitted by law. Failure to enforce a provision is not a
+waiver. You may not assign this license without the Licensor's prior Written
+Authorization. Any waiver must be expressly provided in writing.
+
+This license is the complete statement of the standard permissions granted
+for the specified release. Additional permissions must be expressly given
+through Written Authorization. Changes to this license are handled on a
+release-specific basis as stated in Section 11. Nothing here reduces a
+right that applicable law makes non-waivable.
+
+## 15. Contact and Additional Permissions
+
+For permission to redistribute or bundle binaries, distribute commercial
+Extensions or Integrations, provide Hosted Services, or undertake any other
+use not granted here, contact the Licensor using the contact details
+published in the official bBpiano repository. Authorization must be
+obtained before the relevant activity begins.
 
 ---
 
-## 非约束性中文摘要
+## 非约束性中文摘要 / Non-Binding Chinese Summary
 
-本软件允许用户下载、安装、运行未经修改的官方版本，也允许通过公开的 CLI
-或操作系统进程接口独立开发扩展，并允许使用和发布合规运行产生的音频输出。
-分发 Extension 时，必须在 About、Credits、Legal、文档或其他合理可访问的位置
-明确声明使用了 bbpl，并保留相应署名。
-未经另行书面授权，不允许重新分发软件本体、修改源码或二进制、提取或复用实现
-逻辑与参数、逆向工程、系统性探测或行为克隆，也不允许把合成功能作为第三方托管
-服务提供。中文摘要仅为阅读便利；如与英文条款存在差异，以英文条款为准。
+本软件采用专有许可证，并以官方二进制程序形式提供。本许可证不授予源代码、
+内部算法、模型参数或其他未公开实现材料的访问或复用权利，也不是开源许可证。
+
+用户可以通过官方渠道取得程序，在本人或本机构控制的多台设备上安装、便携运行
+并合理备份，亦可在录音、演奏、教学、科研及日常商业工作中使用。用户依法使用
+程序所生成的音频，可自由发布、销售及用于商业作品，无须另外取得授权、支付
+版税或在音频作品中署名。
+
+第三方可以按照公开接口独立开发、分发非商业扩展，但不得附带或重新分发
+bBpiano 程序本体；公开分发的扩展应在适当位置注明技术来源。商业扩展或商业
+集成、第三方捆绑分发、向外部用户提供在线合成 API 或其他托管服务，均须事先
+取得 bBSonicLab 的书面许可。个人或机构内部用于正常业务的自动化脚本，不会
+仅因使用者从业务成果中获得收入就被视为商业扩展。
+
+允许进行声学测量、听感对照、性能评测、独立研究以及发表客观结果，但不得
+未经许可提取受保护的内部实现、恢复模型参数或实施旨在复制核心技术的模型
+克隆行为。法律规定不可通过合同排除的权利不受本许可证限制。
+
+某一软件版本的既有授权原则上沿用该版本随附的许可证；未来许可证修改不自动
+追溯改变此前合法取得的授权，违约终止及法律另有规定者除外。中文摘要仅供
+阅读理解，不具有独立约束力；如与英文正式条款不一致，以英文条款为准。

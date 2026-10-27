@@ -9,12 +9,25 @@ const creators = {
 };
 const positions = { ziyang: 0, zhuoran: 0, sol: 0 };
 let currentCreator = 'ziyang';
-function showCreator(person, step = 0) {
+let frameRequest = 0;
+async function showCreator(person, step = 0) {
   if (!Object.hasOwn(creators, person)) return;
   currentCreator = person;
   const group = frames.filter(frame => frame.dataset.person === person);
   positions[person] = (positions[person] + step + group.length) % group.length;
   const selected = group[positions[person]];
+  const request = ++frameRequest;
+  const image = selected.querySelector('img');
+  // Keep the current photograph visible until the requested one is decoded.
+  // Newer clicks supersede any slower request without changing their order.
+  if (image) {
+    try { await image.decode(); }
+    catch {
+      if (request === frameRequest) document.querySelector('#frame-status').textContent = '图片暂时无法载入，请稍后再试。';
+      return;
+    }
+  }
+  if (request !== frameRequest) return;
   const creator = creators[person];
   folio.dataset.frame = String(frames.indexOf(selected));
   frames.forEach(frame => {
@@ -61,7 +74,7 @@ const playIcon = document.querySelector('#play-icon');
 const seek = document.querySelector('#seek');
 const audioStatus = document.querySelector('#audio-status');
 const trackOptions = [...document.querySelectorAll('.track-option')];
-let currentTrackLabel = 'Fauré Op. 63 · No. 6，L1-Clavier';
+let currentTrackLabel = 'Mozart K. 576，L1-Clavier';
 const formatTime = time => Number.isFinite(time) ? `${Math.floor(time / 60)}:${String(Math.floor(time % 60)).padStart(2, '0')}` : '—:—';
 playButton.addEventListener('click', async () => {
   if (audio.paused) {
@@ -104,14 +117,19 @@ trackOptions.forEach(option => option.addEventListener('click', () => {
   syncPlayer();
 }));
 const panels = [...document.querySelectorAll('dialog.panel')];
+function openPanel(panel) {
+  if (!panel || panel.open) return;
+  panel.showModal();
+  document.body.style.overflow = 'hidden';
+}
 document.querySelectorAll('[data-open]').forEach(link => {
   link.addEventListener('click', event => {
     event.preventDefault();
     const panel = document.getElementById(link.dataset.open);
-    panel.showModal();
-    document.body.style.overflow = 'hidden';
+    openPanel(panel);
   });
 });
+openPanel(panels.find(panel => `#${panel.id}` === window.location.hash));
 panels.forEach(panel => {
   panel.querySelector('[data-close]').addEventListener('click', () => panel.close());
   panel.addEventListener('close', () => {

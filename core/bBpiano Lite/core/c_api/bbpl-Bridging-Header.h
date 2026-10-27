@@ -10,5 +10,4 @@
 
 #include "./bbpl_c_api.h"
 
-
 #endif /* bbpl_Bridging_Header_h */

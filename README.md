@@ -1,4 +1,4 @@
- # bBpiano - bBSonicLab Physical Modeling
+# bBpiano - bBSonicLab Physical Modeling
 
 ![Piano Structure](./doc/design/bB-image.png)
 
@@ -12,12 +12,11 @@
   <a href="https://github.com/opus-arc/bBpiano/milestone/1" target="_blank"><img alt="Milestone Issues"
     src="https://img.shields.io/github/milestones/progress/opus-arc/bBpiano/1?label=issues"/></a>
   <br>
-  <a href="https://opus-arc.github.io/bBpiano/"><b>Primary Research Document</b>👁️</a>
+    <a href="https://opus-arc.github.io/bBpiano/"><b>Page</b>👁️</a>
 </div>
 
 
-> 2.7m以上もあるコンサート・グランド・ピアノの高周波数帯域までの音響-構造連成シミュレーションは、非常に大規模な計算となるため、市販の解析ソフトでは性能（精度や計算速度など）が不十分であるという壁に突き当ります。我々は、そのような困難な状況に屈することなく、商用ソフトを凌駕する高性能な数値解析ソフトの自社開発にも精力的に取り組んでいます。このとき、最も必要になるのは、数学（線形代数、複素関数論、微分方程式など）の確かな理解と応用力です。
->
+
 > 私は、音楽などの芸術と数学などのサイエンスに共通して、それを深く理解し新たな価値を創造する上で最も大切なものは、「美」に対する感性だと考えています。
 >
 > 「美と真実だけを追求し、他は忘れろ」は、ジャズ・ピアノの巨匠ビル・エヴァンスが言ったとされる言葉です。
@@ -28,7 +27,28 @@
 
 
 
-### **Development Status**
+### α. Research Foundations & Acknowledgments
+
+The development of bBpiano has benefited greatly from earlier research in piano acoustics, physical modeling, and sound synthesis.
+
+In particular, I would like to acknowledge **Juliette Chabassier** and her collaborators for their rigorous studies of grand piano acoustics and the coupled dynamics of strings and soundboard; **Eiji Tominaga** for his experimental and theoretical investigations of piano hammer mechanics, as well as his generous guidance and insights; and **Balázs Bank** and his collaborators for their contributions to efficient physics-based piano synthesis, including digital waveguide modeling and modal synthesis.
+
+I am also grateful to **Julien Bensa** and his collaborators for their research on frequency-dependent string losses and dispersion, and to **Niko Plath** for making his experimental measurements of piano vibration and acoustic radiation available to the research community.
+
+Their work has provided invaluable theoretical foundations, experimental references, and new perspectives for this project. I am sincerely grateful for the care and dedication with which they have pursued a deeper understanding of the piano as a physical instrument.
+
+#### Selected References
+
+1. **Bank et al. (2000)** — [Efficient Physics-Based Sound Synthesis of the Piano Using DSP Methods](https://home.mit.bme.hu/~bank/publist/eusip00.pdf)
+2. **Bensa et al. (2003)** — [The Simulation of Piano String Vibration: From Physical Models to Finite Difference Schemes and Digital Waveguides](https://doi.org/10.1121/1.1587146)
+3. **Bank, Zambon & Fontana (2010)** — [A Modal-Based Real-Time Piano Synthesizer](https://doi.org/10.1109/TASL.2010.2040524)
+4. **Chabassier, Chaigne & Joly (2013)** — [Modeling and Simulation of a Grand Piano](https://doi.org/10.1121/1.4809649)
+5. **Plath (2019)** — [Influence of Playing on the Tonal Characteristics of a Concert Piano — Experimental Dataset](https://doi.org/10.5281/zenodo.3271370)
+6. **Tominaga & Sato (2026)** — [Time-Domain Simulation using Component Mode Synthesis for a Piano](https://doi.org/10.21203/rs.3.rs-9307819/v1)
+
+
+
+### **β. Development Status**
 
 **Active Research & Development**
 
@@ -50,260 +70,135 @@ bBpiano是一个受Pianoteq 9启发的物理建模钢琴合成项目，目前处
 
 ### **A Note from bBSonicLab**
 
-> *“Be different. Leave something worthy.”*
->
-> — Tim Cook 
-
-bBpiano is released as an open research project.
-
-bBpiano 以开放研究项目的形式发布。
-
 It is neither the product of a large company nor the work of a dedicated acoustics institute. Much of it has been built through curiosity, experimentation, and countless attempts to understand problems that often seemed larger than the people studying them.
 
-它既非大型公司的产品，也并非出自专业的声学研究机构。它的大部分工作，源于好奇、实验，以及无数次试图理解那些常常显得远比研究者自身更加庞大的问题。
+bBpiano 是一项独立开展的研究计划。我们将研究中逐渐成形的成果呈现于此，愿它们也能对他人有所助益。
 
-The project may be incomplete.
+It is neither the product of a large company nor the work of a dedicated acoustics institute. It began, rather simply, with curiosity, and has continued through experiments, repeated failures, and questions that remain difficult to answer.
 
-这个项目或许并不完整。
+它既非大型公司的产品，亦非出自专业的声学研究机构。最初，不过是出于一点好奇。此后，便是在实验、反复的失败，以及许多至今仍难以回答的问题中，一路走到了这里。
 
-Its models may be imperfect.
+The project remains incomplete. Its models are imperfect, and our understanding of the piano is still limited. There is much that we have yet to learn.
 
-它的模型或许并不完美。
+项目尚未完成，模型亦有诸多不足。对于钢琴，我们所理解的仍然十分有限。还有许多事情，需要慢慢学习。
 
-Its understanding of the piano is certainly unfinished.
+Nevertheless, we hope that something found along the way may have a life beyond this project.
 
-而它对于钢琴的理解，也无疑仍远未完成。
+尽管如此，我们仍希望，这一路上偶然寻得的某些东西，能够在项目之外，继续发挥一点作用。
 
-Yet we believe there is value in exploring these questions openly.
+If previous generations left behind instruments, scores, recordings, and performances, perhaps our generation can also leave behind something of its own — algorithms, models, experiments, and the quiet wish to understand why sound moves us.
 
-但我们相信，以开放的方式探索这些问题，本身便具有价值。
-
-If previous generations left behind instruments, scores, recordings, and performances, perhaps our generation can also leave behind something of its own — algorithms, models, experiments, and a persistent desire to understand why sound moves us.
-
-如果过去的世代为我们留下了乐器、乐谱、录音与演奏，那么或许，我们这一代人也能够留下些什么属于自己的东西——算法、模型、实验，以及一种始终不愿放弃的愿望：去理解声音为何能够触动我们。
+如果过去的世代为我们留下了乐器、乐谱、录音与演奏，那么或许，我们这一代人也能够留下些什么属于自己的东西——算法、模型、实验，以及那份想要理解声音为何动人的、未曾消散的心愿。
 
 This repository is one small shelter built around that pursuit.
 
 这个仓库，便是围绕这份追寻搭起的一处小小庇护所。
 
-Whatever knowledge, craftsmanship, beauty, or mistakes are contained within it are shared in the hope that others may continue the journey further.
+There may be something of value here, and certainly many things that could have been done better. We leave this record as it is, with gratitude to those whose work has guided us, and with the quiet hope that it may one day be of use to someone we have never met.
 
-无论其中包含的是知识、技艺、美，抑或错误，我们都愿将它们公开于此，并期待后来者能够沿着这条道路，继续走向更远的地方。
+这里或许有些值得留存的东西，也一定有许多本可以做得更好的地方。我们将这份记录留在此处，感谢一路上给予我们启发与指引的前人，也怀着一个朴素的愿望：愿它在未来的某一天，能够对某位素未谋面的人有所帮助。
 
 — bBSonicLab
 
-## 2. **Project Philosophy**
 
-Modern virtual pianos are predominantly based on sample playback. While high-quality sample libraries can achieve remarkable realism, they fundamentally rely on storing and replaying vast collections of recorded audio.
 
-现代虚拟钢琴主要建立在采样回放技术之上。尽管高质量的采样音源能够达到令人惊叹的真实感，但从根本上说，它们仍依赖于存储并重放规模庞大的录音素材。
+## 2. Project Philosophy
 
-bBpiano explores a different direction.
+Many virtual pianos today rely on sample-based synthesis, reproducing the sound of an instrument through carefully recorded performances. Over decades of refinement, this approach has achieved remarkable realism and musical expressiveness. bBpiano explores a different direction.
+
+Rather than reproducing the sounds an instrument has already made, we are interested in understanding how those sounds come into being.
+
+A piano is not merely a collection of notes. Each sound arises from a complex interaction of forces, materials, vibrations, and time. We believe that, by studying these relationships carefully, it may be possible to reconstruct something of the instrument itself through mathematics and computation.
+
+Our aim is not simply to reproduce a waveform, but to understand the physical processes from which it arises.
+
+A recorded sound preserves a moment that has already passed. A physical model attempts something different: to describe the conditions under which sound may arise again. In this sense, we are not merely trying to remember the sound of a piano, but to understand how a piano speaks.
+
+Whether such an understanding can ever become sufficiently complete is a question we cannot yet answer. Nevertheless, we hope that, through careful observation, mathematical reasoning, and repeated experimentation, the distance between the modeled instrument and the real one may gradually diminish.
+
+Physical modeling offers certain possibilities that we find particularly compelling.
+
+Instead of relying on extensive collections of recorded samples, an instrument can be described through a relatively compact set of mathematical relationships and physical parameters. Its response to an action is then calculated as it happens, allowing subtle variations in touch, vibration, and resonance to emerge from the interactions within the model.
+
+More importantly, these relationships can be examined. When something does not sound quite right, we may return to the underlying physics, reconsider an assumption, or question whether our understanding of the instrument was sufficient in the first place.
+
+Of course, this approach brings difficulties of its own. Greater physical detail does not necessarily lead to better sound, and a more accurate model is not always one that can be played in real time. Much of our work lies in finding a reasonable balance between physical fidelity, computational efficiency, and musical expression.
+
+Our long-term goal is to bring these two pursuits together: to understand the acoustic piano as faithfully as we can, and to make that understanding practical enough to become a playable instrument.
+
+A model may describe the behavior of a string or a soundboard with considerable accuracy, yet remain too demanding to run in real time. Conversely, an efficient instrument may be pleasant to play while still overlooking important aspects of the physics that give a real piano its character.
+
+We do not believe that either physical accuracy or computational efficiency should be pursued entirely at the expense of the other. The difficulty, and perhaps much of the interest of this work, lies in finding a way for them to coexist.
+
+If, one day, a musician can sit before such an instrument and simply play, without having to think about the mathematics taking place beneath their fingers, we would consider that a meaningful achievement.
+
+There is, however, one question that remains beyond the measurements and calculations.
+
+Even if we could describe every vibration with sufficient accuracy, would that mean we had understood everything that makes a piano a musical instrument?
+
+We do not know.
+
+Perhaps some things can only be understood through the act of listening, or through the experience of playing. Perhaps mathematics can bring us closer to them than we presently imagine.
+
+For now, we would simply like to continue asking.
+
+**Can the soul of an acoustic instrument be reconstructed through mathematics and computation alone?**
+
+---
+
+如今，许多虚拟钢琴采用基于采样的声音合成技术，通过精心录制的声音重现乐器的表现。经过数十年的发展与完善，这一技术路线已在声音真实感与音乐表现力方面取得了卓越的成果。
 
 bBpiano 探索的是另一条道路。
 
-Rather than preserving the sound of an instrument as recordings, bBpiano investigates whether it is possible to preserve the instrument itself.
+比起重现一件乐器曾经发出的声音，我们更感兴趣的是：这些声音究竟如何产生。
 
-与其通过录音保存一件乐器的声音，bBpiano 更希望探索另一种可能：我们是否能够保存这件乐器本身。
+钢琴并不只是一组音符的集合。每一个声音，都来自力、材料、振动与时间之间复杂的相互作用。我们相信，如果能够认真地理解这些关系，或许便有可能通过数学与计算，重构出这件乐器的某些本质。
 
-The goal is not merely to reproduce waveforms, but to uncover the underlying principles that give rise to them — the relationships between vibration, energy, material, structure, and sound.
+我们的目的，并不只是复现一段波形，而是理解使它得以产生的物理过程。
 
-我们的目标并非只是复现波形，而是试图揭示产生这些波形的内在原理——振动、能量、材料、结构与声音之间彼此作用的关系。
+录音保存的是一个已经过去的瞬间。而物理模型所尝试的，则是另一件事情：描述声音得以再次产生的条件。从这个意义上说，我们所追求的，不仅是记住钢琴的声音，更是理解钢琴如何发声。
 
-Through mathematics, parameters, and computation, bBpiano seeks to reconstruct the essence of an acoustic piano, and ultimately allow it to produce a sound that listeners can no longer reliably distinguish from the physical instrument that inspired it.
+这样的理解究竟能否趋于完整，目前我们还无法回答。尽管如此，我们仍希望通过细致的观察、数学推理与反复实验，使模型中的乐器与真实乐器之间的距离，逐渐缩小。
 
-通过数学、参数与计算，bBpiano 试图重构一架声学钢琴的本质，并最终使这一模型所产生的声音，达到听者无法再可靠地将其与作为原型的真实乐器区分开来的程度。
+物理建模为我们提供了某些格外令人着迷的可能性。
 
-This approach offers several potential advantages:
+一件乐器不再需要依靠大量录音样本来描述，而是可以由一组相对紧凑的数学关系与物理参数构成。它对演奏动作的响应，在声音产生的过程中被实时计算；触键、振动与共鸣之间那些细微的变化，也由模型内部的相互作用自然产生。
 
-这种方法具有若干潜在的优势：
+更重要的是，这些关系本身是可以被考察的。当某个声音不尽如人意时，我们可以重新回到它所依据的物理规律，检视某项假设，或是反思：我们对这件乐器的理解，是否从一开始便有所欠缺。
 
-- **Compact Representation — 紧凑的表征** 
+当然，这条道路也有其自身的困难。更丰富的物理细节未必意味着更好的声音，而更加精确的模型，也未必能够在实时演奏中运行。我们的大量工作，便是在物理保真度、计算效率与音乐表现力之间，寻找一种尽可能合理的平衡。
 
-  Instrument behavior is described by parameters and algorithms rather than multi-gigabyte sample libraries. 乐器的行为由参数与算法描述，而非依赖数以 GB 计的采样音源。
+我们的长期目标，是尝试将这两种追求结合起来：一方面尽可能忠实地理解声学钢琴，另一方面，也让这样的理解能够真正成为一件可供演奏的乐器。
 
-- **Continuous Expressiveness — 连续的表现力**
+一个模型或许能够相当精确地描述琴弦与音板的行为，却因为计算量过于庞大而无法实时运行。反过来，一件运行高效、演奏舒适的乐器，也可能仍然忽略了真实钢琴之所以具有独特性格的某些重要物理机制。
 
-  Dynamics, articulation, and transitions emerge continuously from physical interactions rather than interpolation between discrete recordings.
+我们并不认为，应当为了其中一方而完全牺牲另一方。如何让物理精度与计算效率得以共存，既是这项工作的困难所在，或许也是其中大部分趣味的来源。
 
-  力度、奏法与状态之间的过渡直接从连续的物理相互作用中产生，而非通过离散录音样本之间的插值得到。
+如果有一天，一位演奏者能够坐在这样的乐器面前，自然而然地开始演奏，而不必在意指尖之下正在进行怎样的数学计算，我们便会认为，这是一件颇有意义的成果。
 
-- **Physical Interpretability — 物理可解释性**
+然而，在所有测量与计算之外，仍有一个问题始终萦绕于心。
 
-  Individual acoustic phenomena can be analyzed, modified, measured, and improved directly within the model.
+即使有一天，我们能够足够精确地描述每一次振动，是否便意味着，我们已经理解了一架钢琴之所以成为乐器的一切？
 
-  各种独立的声学现象都能够在模型内部被直接分析、修改、测量与改进。
+我们还不知道。
 
-- **Scalability — 可扩展性**
+或许，有些事情只能在聆听之中，或是在亲自演奏时得到理解。也或许，数学能够带领我们抵达比今日所能想象的更远的地方。
 
-  Improvements to the underlying model benefit the entire instrument without requiring complete re-recording sessions.
-
-  对底层模型的改进能够作用于整件乐器，而无需重新进行完整的录音采样。
-
-- **Research Value — 研究价值**
-
-  The instrument becomes an explorable physical system rather than a fixed collection of audio assets.
-
-  乐器由此成为一个可以被探索、分析与实验的物理系统，而不再只是一组固定的音频素材。
-
-  
-
-The long-term vision is to investigate whether physically modeled instruments can simultaneously achieve:
-
-从长期来看，bBpiano 希望探索：物理建模乐器是否能够同时实现以下目标：
-
-- the realism expected from modern professional instruments,
-
-  现代专业级虚拟乐器所要求的真实感；
-
-- the responsiveness required for live performance,
-
-  现场演奏所要求的即时响应能力；
-
-- the portability demanded by contemporary computing environments,
-
-  当代计算环境所要求的可移植性；
-
-- and the compactness impossible for traditional sample-based approaches.
-
-  以及传统采样式方法难以企及的紧凑性。
-
-  
-
-Ultimately, bBpiano asks a simple question:
-
-归根结底，bBpiano 所追问的只是一个简单的问题：
-
-Can the soul of an acoustic instrument be reconstructed through mathematics and computation alone?
+至少在当下，我们仍愿意继续追问。
 
 **仅凭数学与计算，我们能否重构一件声学乐器的灵魂？**
 
+## 3. bBpiano Technical Overview
 
-
-## 3. bBpiano Physical Modeling Pipeline
-
-```text
-            Control / Event Domain
-────────────────────────────────────────────────────────
-
-        MIDI Keyboard / PC Keyboard / MIDI File
-                MIDI 演奏事件
-                       │
-                       ▼
-              PianoCommandQueue
-        每个音频 buffer 开始时消费命令
-                       │
-                       ▼
-       MIDI Velocity → Hammer Launch Velocity
-          vₕ = 2^((velocity - 52) / 25) m/s
-
-
-            Physics / DSP Domain
-────────────────────────────────────────────────────────
-
-                       ▼
-       Redesigned Tominaga–Sato-inspired Two-layer
-        Nonlinear Maxwell-type Hammer
-       重新设计的双层非线性麦克斯韦型击锤模型
-
-       每个采样点进行 hammer ZOH 零阶保持求解
-      predictor / corrector 式接触力估计
-      (现阶段实验证明似乎 ZOH 优于线性插值)
-                       │
-                       ▼
-       Impedance-weighted String Contact
-        阻抗加权的多弦接触速度与力分配
-                       │
-                       ▼
-            1 / 2 / 3 Unison Strings
-              单弦 / 双弦 / 三弦
-                       │
-                       ▼
-          Bidirectional String Waveguide
-             经简化的双向二维行波波导弦
-
-       				力注入 F = Zs(vi + vo)
-       		             │
-                       ▼
-          	 考虑 Zb(ω) 的固定端二维反射
-          	
-          						传播
-                       │
-                       ▼
-       ┌──────── Per-roundtrip Loop ────────┐
-       │                                    │
-       │  First-order Fractional Allpass    │
-       │  一阶分数延迟全通滤波器                │
-       │  承担 round-trip residual delay     │         
-       │                 │                  │
-       │                 ▼                  │
-       │  Dispersion Allpass Network        │
-       │  色散全通网络                        │
-       │  模拟钢琴弦非谐性                     │
-       │                 │                  │
-       │                 ▼                  │
-       │  Damper Filter, when active        │
-       │  制音器滤波器                        │
-       │                                    │
-       └────────────────────────────────────┘
-
-       MIDI 21–95：44.1 kHz 内部弦更新
-       MIDI 96–108：88.2 kHz 双步弦更新
-                       │
-                       ▼
-        	Bridge-end Force Readout
-        	+ Unison String Force Sum
-        	桥端力读取与同音弦求和
-                       │
-                       ▼
-           88-key Bridge-force Field
-              88 键音桥激励场
-                       │
-                       ▼
-             Soundboard Radiation Model
-                 音板辐射模型
-
-        Bass / Middle / Treble Region Shapers
-             低音 / 中音 / 高音区域整形
-                       │
-                       ▼
-          Shared 8-delay-line FDN
-      共享八延迟线反馈延迟网络
-
-       · 每条延迟线包含一阶频率相关损耗
-       · 移位 Householder 正交反馈矩阵
-       · 正负交替的输出向量
-       · 直接声分量 direct path
-                       │
-                       ▼
-         Dense Modal Radiation Proxy
-              高模态密度辐射近似
-                       │
-                       ▼
-             Master Gain × 0.01
-                       │
-                       ▼
-             Finite-value Guard
-                       │
-                       ▼
-          Output Gain / Limiter × 0.90
-                       │
-                       ▼
-            Mono Float32 Linear PCM
-                 单声道浮点 PCM
-                       │
-                       ▼
-              Core Audio Soundcard
-                       │
-                       ▼
-             Synthesized Piano Sound
-                 合成钢琴声音
-       			
-```
+![mermaid-diagram](./doc/assets/mermaid-diagram.png)
 
 ## 4. Quick Start
 
 ### Installation
+
+**macOS · Homebrew**
+
+Install via [Homebrew](https://brew.sh/):
 
 ```bash
 brew install opus-arc/tap/bBpiano-L
@@ -319,9 +214,11 @@ In addition to the MAESTRO Yamaha Disklavier dataset, selected evaluations also 
 
 除 MAESTRO Yamaha Disklavier 数据集之外，部分评估还引入了 Iowa Electronic Music Studios（Iowa EMS）所提供的 Steinway Model B 钢琴录音。由于 Iowa 数据集提供的是独立钢琴录音，而非与 MIDI 对齐的演奏数据，因此我们使用预训练的钢琴转录模型自动估计其中的音符事件与力度信息，并据此构建统一的基准测试序列。由此，bBpiano、其他物理建模乐器以及采样式钢琴得以在受控且可复现的条件下进行直接比较。
 
-*Detailed test results and statistical data are included in the attachment below.*
+*Detailed test results and statistical data are included in the attachment.*
 
-完整的测试结果与统计数据收录于下方附件中。
+完整的测试结果与统计数据收录于项目附件中。
+
+[Benchmarks & Acoustic Evaluation](./BENCHMARKS.md)
 
 ### Engine Overview
 
@@ -373,12 +270,6 @@ Scale 与 Polyphony 部分以 Pianoteq 9 作为参考标准，而 Performance �
 | bBpiano L0-beta | 2.3532 |
 | **bBpiano L1-Clavier** | **2.4326** |
 
-#### **Pianoteq 8-Referenced Benchmark**
-
-In addition to the MAESTRO-referenced performance evaluation, bBpiano maintains a separate benchmark using **Pianoteq 8 as the reference system**.
-
-除了MAESTRO参考的绩效评估外，bBpiano还维护了一个单独的基准，使用Pianoteq 8作为参考系统。
-
 | Method                     | VISQOL Score |
 | :------------------------- | -----------: |
 | Pianoteq 8                 |    Reference |
@@ -386,7 +277,7 @@ In addition to the MAESTRO-referenced performance evaluation, bBpiano maintains 
 
 ---
 
-### LAION-CLAP Similarity
+### LAION-CLAP
 
 The Scale and Polyphony sections use Pianoteq 9 as the standard, while the standard reference recordings for the performance sections are taken from the Yamaha Disklavier subset in the MAESTRO dataset. Higher values indicate a stronger similarity in the CLAP embedding space.
 
@@ -403,12 +294,6 @@ I believe the values provided by LAION-CLAP reflect more of an overall impressio
 | bBpiano L0-100c | 0.3213 |
 | bBpiano L0-beta | 0.4628 |
 | **bBpiano L1-Clavier** | **0.5833** |
-
-#### **Pianoteq 8-Referenced Benchmark**
-
-In addition to the MAESTRO-referenced performance evaluation, bBpiano maintains a separate benchmark using **Pianoteq 8 as the reference system**.
-
-除了MAESTRO参考的绩效评估外，bBpiano还维护了一个单独的基准，使用Pianoteq 8作为参考系统。
 
 | Method                     | **Cosine Similarity** |
 | :------------------------- | --------------------: |
@@ -429,215 +314,21 @@ In addition to the MAESTRO-referenced performance evaluation, bBpiano maintains 
 
 ## 6. License
 
-This repository and the packaged bBpiano CLI are released under the proprietary [bBpiano CLI Use and Extension License 1.1](https://github.com/opus-arc/bBpiano/blob/main/LICENSE). The license permits ordinary use, generated-output distribution, and independent extensions through documented interfaces, while prohibiting unauthorized redistribution, reverse engineering, parameter extraction, model extraction, and implementation cloning.
+bBpiano is distributed under the proprietary [bBpiano CLI Use and Extension License 1.2](https://github.com/opus-arc/bBpiano/blob/main/LICENSE).
 
-此存储库及打包发布的 bBpiano CLI 采用专有的 [bBpiano CLI Use and Extension License 1.1](https://github.com/opus-arc/bBpiano/blob/main/LICENSE)。该许可允许正常使用、分发生成的输出，以及通过公开接口开发独立扩展；未经许可不得重新分发软件本体、逆向工程、提取参数或模型，也不得复制其实现逻辑。
+The license permits ordinary personal, academic, and commercial use, including the unrestricted use and distribution of generated audio. Independent research and non-commercial extensions are welcome, while commercial integration and redistribution require prior authorization. The underlying implementations, algorithms, and model parameters remain proprietary.
+
+bBpiano 采用专有的 [bBpiano CLI Use and Extension License 1.2](https://github.com/opus-arc/bBpiano/blob/main/LICENSE) 发布。
+
+该许可允许正常的个人、学术及商业使用，包括自由使用与分发所生成的音频成果。我们欢迎独立研究与非商业扩展；商业集成及软件再分发则须事先获得授权。底层实现、算法及模型参数仍属于专有技术，受到保护。
 
 ## 7. Contact
 
-If you have any questions, please raise an issue or contact us at arcopus07@gmail.com or https://t.me/arcopus .
+For questions, feedback, or inquiries, you are welcome to open a GitHub issue or reach out via [Email](mailto:arcopus07@gmail.com) or [Instagram](https://www.instagram.com/arcopus07/).
 
-如果您有任何问题，请提出问题或通过arcopus07@gmail.com或https://t.me/arcopus与我们联系。
-
-
+如有任何问题、建议或交流意向，欢迎通过 GitHub Issue、[电子邮件](mailto:arcopus07@gmail.com)或 [Instagram](https://www.instagram.com/arcopus07/) 与我们联系。
 
 ---
-
-## **Appendix A. ViSQOL Benchmark Details**
-
-The following table provides the complete ViSQOL scores used to generate the aggregate results reported in Section 5.
-
-下表列出了用于生成第 5 节汇总结果的完整 ViSQOL 评分数据。
-
-The Scale and Polyphony sections use Pianoteq 9 as the standard, while the standard reference recordings for the performance sections are taken from the Yamaha Disklavier subset in the MAESTRO dataset. Higher values indicate stronger perceptual similarity to the reference recordings.
-
-Scale 与 Polyphony 部分以 Pianoteq 9 作为参考标准，而 Performance 部分的标准参考录音则取自 MAESTRO 数据集中的 Yamaha Disklavier 子集。数值越高，表示待测音频与参考录音在感知层面具有越高的相似度。
-
-### **A.1 Per-Piece Results**
-
-#### Scale:
-
-Scales across different pitch ranges; the primary focus of the test is on subsystems that are not affected by aliasing.
-
-覆盖不同音高区域的音阶测试；该测试主要关注不受混叠影响的各个子系统。
-
-| Piece | SF2 Grand Piano | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** |
-| :------------------------------------ | --------------: | --------------: | --------------: | --------------: |
-| Bass_scale | **3.258543816** | 2.279772871 | 2.494259218 | **3.371336762** |
-| Tenor_scale | **2.294533822** | 1.005804746 | 1.864653641 | **2.862334516** |
-| Middle_scale | **2.880688398** | 2.400253359 | 2.182012820 | **2.433165462** |
-| Treble_scale | **2.836848379** | 2.216778580 | 1.898298445 | **2.241825189** |
-| High Treble_scale | **1.224602593** | 1.047544827 | 1.093359043 | **1.000000000** |
-
-#### Polyphony:
-
-Chords in different registers; the primary focus of the testing is the coupled system.
-
-不同音域的和弦；测试的主要重点是耦合系统。
-
-| Piece | SF2 Grand Piano | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** |
-| :------------------------------------ | --------------: | --------------: | --------------: | --------------: |
-| Bass_chords | **2.534555915** | 2.077254981 | 2.166119601 | **2.702758894** |
-| Tenor_chords | **2.672740293** | 2.514874952 | 1.876183765 | **2.114384760** |
-| Middle_chords | **3.429775842** | 2.862829766 | 2.503931537 | **2.272731897** |
-| Treble_chords | **2.521915846** | 1.859617369 | 1.935985753 | **1.554736190** |
-| High Treble_chords | **1.482525693** | 1.222981887 | 1.139869631 | **1.000000000** |
-
-#### Perfomance:
-
-This comprehensive test features performances selected from the MAESTRO dataset that, as much as possible, encompass the vast majority of techniques that demonstrate a piano’s quality.
-
-这项综合测试的特点是从MAESTRO数据集中选择的表演，这些数据集尽可能涵盖展示钢琴质量的绝大多数技术。
-
-| Piece | Pianoteq 9 | SF2 Grand Piano | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** |
-| :------------------------------------ | ---------: | --------------: | --------------: | --------------: | --------------: |
-| Etude-Tableaux Op.39 No.5 | 2.9136 | **2.9863** | 2.6995 | 2.4852 | **2.567014830** |
-| Images, Book II "Poissons d'or" | **2.8029** | 2.7804 | 2.5644 | 2.3634 | **2.360572665** |
-| Piano Sonata "From the Street" | 2.9598 | **3.0255** | 2.4664 | 2.3462 | **2.580950304** |
-| Prel. Chor. Fug. | 2.9266 | **3.0012** | 2.5196 | 2.2769 | **2.557200327** |
-| Prelude and Fugue in A Minor, S.462/1 | 2.9671 | **3.0924** | 2.5948 | 2.4029 | **2.378045542** |
-| Prelude and Fugue in D Major, BWV 874 | **2.7859** | 2.6779 | 2.2438 | 2.2183 | **2.547757825** |
-| Sonata No.28 Op.101 | 2.8137 | **2.8996** | 2.3586 | 2.3095 | **2.472213729** |
-| Sonata No.4 Op.30 | 2.7626 | **2.8409** | 2.4185 | 2.2881 | **2.321314186** |
-| Sonata in B Minor | **2.8854** | 2.8354 | 2.3827 | 2.2733 | **2.428109815** |
-| Sonata in D Major K.576 | 2.8285 | **3.0614** | 2.0482 | 2.4669 | **2.249377555** |
-| Sonata in D Minor K.141 | **2.6867** | 2.5331 | 2.2945 | 2.4932 | **2.240295448** |
-| Sonata in F Minor Op.5 | 2.9342 | **2.9671** | 2.5207 | 2.3144 | **2.487915857** |
-
-### **A.2 Aggregate Statistics**
-
-| Engine | Mean | Min | Max |
-| :------------------- | ---------: | ---------: | ---------: |
-| Pianoteq 9 | 2.8466 | 2.6779 | 2.9671 |
-| SF2 Grand Piano | **2.9008** | 2.5331 | **3.0924** |
-| bBpiano L0-100c | 2.4260 | 2.0482 | 2.6995 |
-| bBpiano L0-beta | 2.3532 | 2.2183 | 2.4932 |
-| **bBpiano L1-Clavier** | **2.4326** | **2.2403** | **2.5810** |
-
-### **A.3 Reproducibility Notes**
-
-- Reference dataset: Yamaha Disklavier (MAESTRO)
-- Number of excerpts: 12
-- Metric: ViSQOL
-- Evaluation mode: pairwise comparison against aligned reference recordings
-- L1-Clavier render condition: `soundboard_active_ = false`
-
-ViSQOL estimates perceptual audio similarity by modeling the relationship between spectral structures observed in the reference and synthesized signals. Higher scores indicate greater perceptual similarity to the original recording.
-
-ViSQOL通过模拟参考信号中观察到的光谱结构和合成信号之间的关系来估计感知音频相似性。 分数越高，感知与原始录音的相似性越大。
-
-Unlike embedding-based metrics such as CLAP, ViSQOL directly evaluates the audio signals themselves and therefore serves as a complementary measure of synthesis quality.
-
-与CLAP等基于嵌入的指标不同，ViSQOL直接评估音频信号本身，因此作为合成质量的补充衡量标准。
-
-> [!NOTE]
->
-> An interesting observation is that while bBpiano L0-100c underperforms L0-beta in the CLAP benchmark, it achieves a slightly higher average ViSQOL score. This suggests that improvements in perceptual audio quality do not necessarily translate into higher embedding-space similarity, highlighting the importance of evaluating physical modeling instruments using multiple complementary metrics.
->
-> 一个值得注意的现象是：尽管 bBpiano L0-100c 在 CLAP 基准测试中的表现低于 L0-beta，但它却取得了略高的平均 ViSQOL 分数。这表明，感知音频质量的提升并不一定会转化为嵌入空间中更高的相似度，也进一步说明了使用多种相互补充的评价指标来衡量物理建模乐器的重要性。
-
-
-
----
-
-## Appendix B. CLAP Benchmark Details
-
-The following table provides the complete per-piece LAION-CLAP similarity scores used to generate the aggregate results reported in Section 5.
-
-下表列出了用于生成第 5 节汇总结果的完整逐曲目 LAION-CLAP 相似度评分。
-
-The Scale and Polyphony sections use Pianoteq 9 as the standard, while the standard reference recordings for the performance sections are taken from the Yamaha Disklavier subset in the MAESTRO dataset. Higher values indicate a stronger similarity in the CLAP embedding space.
-
-Scale 与 Polyphony 部分以 Pianoteq 9 作为参考标准，而 Performance 部分的标准参考录音则取自 MAESTRO 数据集中的 Yamaha Disklavier 子集。数值越高，表示待测音频与参考录音在 CLAP 嵌入空间中具有越高的相似度。
-
-I believe the values provided by LAION-CLAP reflect more of an overall impression—such as tone, style, and mood—rather than physical accuracy. bBpiano aims to create a model that closely resembles a real piano, but isn’t limited to that style.
-
-我们认为，LAION-CLAP 所给出的数值更多反映的是一种整体性的听觉印象——例如音色、风格与情绪——而非物理层面的准确性。bBpiano 的目标是构建一个能够高度逼近真实钢琴的模型，但它所能够产生的声音与表达，并不应被局限于对真实钢琴的单纯模仿。
-
-### B.1 Per-Piece Results
-
-#### Scale:
-
-Scales across different pitch ranges; the primary focus of the test is on subsystems that are not affected by aliasing.
-
-覆盖不同音高区域的音阶测试；该测试主要关注不受混叠影响的各个子系统。
-
-| Piece | SF2 Grand Piano | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** |
-| :------------------------------------ | --------------: | --------------: | --------------: | --------------: |
-| Bass_scale | 0.829674840 | 0.591492534 | 0.387630433 | **0.702944458** |
-| Tenor_scale | 0.896856070 | 0.371731043 | 0.300049216 | **0.716075599** |
-| Middle_scale | 0.720027626 | 0.233823359 | 0.168149158 | **0.619980037** |
-| Treble_scale | 0.718633533 | 0.192326903 | 0.166393086 | **0.524722159** |
-| High Treble_scale | 0.746628761 | 0.304847121 | 0.317520738 | **0.488264501** |
-
-#### Polyphony:
-
-Chords in different registers; the primary focus of the testing is the coupled system.
-
-不同音域的和弦；测试的主要重点是耦合系统。
-
-| Piece | SF2 Grand Piano | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** |
-| :------------------------------------ | --------------: | --------------: | --------------: | --------------: |
-| Bass_chords | **0.737208426** | 0.712322891 | 0.491204530 | **0.901042461** |
-| Tenor_chords | **0.898284912** | 0.612981141 | 0.465305507 | **0.725399315** |
-| Middle_chords | **0.782639027** | 0.344589412 | 0.309159577 | **0.654511511** |
-| Treble_chords | **0.825937271** | 0.233994871 | 0.203228608 | **0.647006929** |
-| High Treble_chords | **0.679073453** | 0.220188931 | 0.261892319 | **0.536056995** |
-
-#### Perfomance:
-
-This comprehensive test features performances selected from the MAESTRO dataset that, as much as possible, encompass the vast majority of techniques that demonstrate a piano’s quality.
-
-这项综合测试的特点是从MAESTRO数据集中选择的表演，这些数据集尽可能涵盖展示钢琴质量的绝大多数技术。
-
-| Piece | Pianoteq 9 | SF2 Grand Piano | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** |
-| :------------------------------------ | ---------: | --------------: | --------------: | --------------: | --------------: |
-| Etude-Tableaux Op.39 No.5 | 0.7640 | **0.8494** | 0.3476 | 0.5452 | **0.571054816** |
-| Images, Book II "Poissons d'or" | **0.7816** | 0.7704 | 0.4385 | 0.4862 | **0.544904232** |
-| Piano Sonata "From the Street" | **0.8993** | 0.8060 | 0.1505 | 0.5820 | **0.710870922** |
-| Prel. Chor. Fug. | 0.7994 | **0.8852** | 0.4831 | 0.4735 | **0.741906404** |
-| Prelude and Fugue in A Minor, S.462/1 | **0.9413** | 0.8776 | 0.5253 | 0.6226 | **0.509185374** |
-| Prelude and Fugue in D Major, BWV 874 | 0.6436 | **0.8413** | 0.1691 | 0.4318 | **0.545421720** |
-| Sonata No.28 Op.101 | 0.7851 | **0.8338** | 0.3241 | 0.4066 | **0.671635807** |
-| Sonata No.4 Op.30 | 0.7962 | **0.8154** | 0.4225 | 0.5763 | **0.514670193** |
-| Sonata in B Minor | **0.7088** | 0.7059 | 0.2329 | 0.5579 | **0.396069169** |
-| Sonata in D Major K.576 | **0.8754** | 0.8503 | 0.2747 | 0.4318 | **0.608233094** |
-| Sonata in D Minor K.141 | **0.8897** | 0.8641 | 0.2403 | 0.2966 | **0.544550717** |
-| Sonata in F Minor Op.5 | 0.7701 | **0.8401** | 0.2468 | 0.1436 | **0.641184807** |
-
-### B.2 Aggregate Statistics
-
-| Engine | Mean | Min | Max |
-| :------------------- | ---------: | ---------: | ---------: |
-| Pianoteq 9 | 0.8045 | 0.6436 | **0.9413** |
-| SF2 Grand Piano | **0.8283** | **0.7059** | 0.8852 |
-| bBpiano L0-100c | 0.3213 | 0.1505 | 0.5253 |
-| bBpiano L0-beta | 0.4628 | 0.1436 | 0.6226 |
-| **bBpiano L1-Clavier** | **0.5833** | **0.3961** | **0.7419** |
-
-### B.3 Reproducibility Notes
-
-- Reference dataset: Yamaha Disklavier (MAESTRO)
-- Number of excerpts: 12
-- Embedding model: LAION-CLAP
-- Similarity metric: cosine similarity
-- L1-Clavier render condition: `soundboard_active_ = true`
-
-Repeated evaluations indicate that CLAP exhibits measurable stochastic variation. Under identical conditions, fluctuations of approximately 5–10% are common, while deviations exceeding 30% have occasionally been observed. Consequently, CLAP scores should be interpreted as approximate perceptual indicators rather than absolute measures of acoustic realism.
-
-多次重复评估表明，CLAP 的结果存在可测量的随机波动。在相同条件下，约 5–10% 的分数变化较为常见，偶尔也会观察到超过 30% 的偏差。因此，CLAP 评分更适合作为一种近似的感知层面参考指标，而不应被视为衡量声学真实感的绝对尺度。
-
-> [!NOTE]
->
-> Although the benchmark results of **bBpiano L0-100c** are not as impressive as we had hoped, we still consider it one of our most meaningful models. Compared with the earlier L0-beta version, L0-100c represents an attempt to strike a balance between physical accuracy derived from real-world measurements and the pursuit of a beautiful, musically satisfying tone. Through this process, it gradually developed a unique voice and aesthetic character of its own. Whatever its position in the benchmark tables, it remains a model with a strong personality, carrying within it countless experiments, revisions, and the genuine effort of those who created it.
->
-> 尽管 **bBpiano L0-100c** 的基准测试结果并没有达到我们最初所期待的水平，我们仍然认为它是整个项目中最有意义的模型之一。与更早的 L0-beta 版本相比，L0-100c 是一次在源于真实世界测量的物理准确性，与对优美且富有音乐性的音色追求之间寻找平衡的尝试。在这一过程中，它逐渐形成了属于自己的独特声音与审美特征。无论它最终位于基准测试表格中的什么位置，它依然是一个拥有鲜明个性的模型，其中承载着无数次实验与修改，也承载着创造它的人所付出的真实努力。
-
-
-
----
-
-
 
 Every resonance eventually fades.  
 What remains is the desire to keep creating, to keep moving, and perhaps, one day, to become as free as the bluebird.

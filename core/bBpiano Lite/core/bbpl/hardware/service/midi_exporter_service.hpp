@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "../../piano_controller.hpp"
+#include "../../configuration/configuration.hpp"
 #include "midi_service.hpp"
 
 class MidiExporter {
@@ -27,13 +28,15 @@ class MidiExporter {
   // created here. A temporary file is atomically renamed on success.
   static Result export_wav(const std::string& midi_file_path,
                            std::filesystem::path output_path = {},
-                           std::uint32_t sample_rate = 44'100,
+                           std::uint32_t sample_rate = static_cast<std::uint32_t>(
+                               configuration.basic_presets.get_sample_rate()),
                            double tail_seconds = 5.0,
                            std::stop_token stop_token = {}) {
     if (midi_file_path.empty()) {
       throw std::invalid_argument("No MIDI file path provided.");
     }
-    if (sample_rate == 0 ||
+    if (sample_rate != static_cast<std::uint32_t>(
+                           configuration.basic_presets.get_sample_rate()) ||
         sample_rate >
             std::numeric_limits<std::uint32_t>::max() / sizeof(float) ||
         !std::isfinite(tail_seconds) || tail_seconds < 0.0) {

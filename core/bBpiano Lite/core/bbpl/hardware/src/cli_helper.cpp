@@ -34,6 +34,7 @@
 
 #include "../../../service_controller.hpp"
 #include "../../piano_controller.hpp"
+#include "../../configuration/configuration.hpp"
 
 // ======================== ======================== ========================
 // Internal declarations
@@ -412,20 +413,20 @@ void init_engine(bool start_soundcard) {
     // Initialize bbpl
     // 初始化 bbpl
     // ------------------------
-    bbpiano_init(sample_rate);
+    bbpiano_init(configuration.basic_presets.get_sample_rate());
 
     // ------------------------
     // Initialize eval
     // 初始化 eval
     // ------------------------
-    eval_init(sample_rate);
+    eval_init(configuration.basic_presets.get_sample_rate());
 
     // ------------------------
     // Initialize soundcard
     // 初始化声卡驱动
     // ------------------------
     if (start_soundcard) {
-      soundcard_init(sample_rate);
+      soundcard_init(configuration.basic_presets.get_sample_rate());
     }
   } catch (...) {
     shutdown_engine();

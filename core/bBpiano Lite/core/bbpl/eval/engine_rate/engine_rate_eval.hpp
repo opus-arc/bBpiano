@@ -4,19 +4,24 @@
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 
 #include <mach/mach_time.h>
+#include "../../configuration/configuration.hpp"
 
 class EngineEval {
 private:
     uint64_t start_ = 0;
 
-    double sample_rate_ = 44100.0;
+    double sample_rate_ = configuration.basic_presets.get_sample_rate();
     double instant_rate_ = 0.0;
 
 public:
     explicit EngineEval(double sample_rate)
-        : sample_rate_(sample_rate) {}
+        : sample_rate_(configuration.basic_presets.get_sample_rate()) {
+        if (sample_rate != sample_rate_)
+            throw std::invalid_argument("EngineEval sample rate differs from configuration");
+    }
 
     inline void start_timing() noexcept {
         start_ =

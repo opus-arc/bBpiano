@@ -22,47 +22,32 @@
 //   April 1, 2026
 // ============================================================================
 
-// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-// [ZERO AI-GENERATED CODE]
-// Every line in this file is written and understood by its author. Every result
-// is reproducible, every assumption is open to inspection, and every
-// implementation stands open to criticism and challenge. AI may be used for
-// non-core, replaceable, engineering work; this file, however, contains core
-// logic that the author considers necessary to understand firsthand, explain
-// line by line, and take full responsibility for, and is therefore implemented
-// entirely by hand.
-// ---------------------------------------------------------------------------
-// [本文件承诺不含任何 AI 生成代码]
-// 每一行代码均由作者亲自编写，并确知其意义。一切结果可以复现，一切假设可经受检验，一切实现经得起批评与质疑。
-// AI 可用于非核心、可替代的工程工作；
-// 本文件承载作者认为必须亲自理解、能够逐行解释并为之负责的核心逻辑，因此刻意保持完全人工实现。
-//
-// Ziyang Tan
-// 2026-09-03
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-// --------------------------------------------------------------------
 // MARK: version & logo
 
-static constexpr const char *version = "L1-Santa-Clara";
+static constexpr const char *version = "L2-Vera";
 static constexpr const char *logo =
     R"(
         ┌────────────────────────────┐──╭────╮
         │                            │==│╲╱╲╱│
-        │  bBpiano 1                 │==│╱╲╱╲│
-        │  L1-Santa-Clara/261013     │==│╲╱╲╱│
+        │  bBpiano 2                 │==│╱╲╱╲│
+        │  L2-Vera/261101            │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
         │  Physical Modeling Piano   │==│╲╱╲╱│
         │                            │==│╱╲╱╲│
         │  Developed by              │==│╲╱╲╱│
         │    Ziyang Tan              │==│╱╲╱╲│
-        │                            │==│╲╱╲╱│
-        │  bBSonicLab                │==│╱╲╱╲│
         └────────────────────────────┘──╰────╯
 
         With Special Thanks to
         Zhuoran Chen
         for the conversations and inspiration
+    
+        bBpiano CLI Use and Extension License
+        Version 1.2 · October 27, 2026
+    
+        bbpl Technology
+        Copyright © 2026 Ziyang Tan
+        bBSonicLab
 
     )";
 
@@ -77,24 +62,22 @@ static constexpr const char *logo =
 #include <iostream>
 
 int main(int argc, char *argv[]) {
-  // --------------------------------------------------------------------
-  // MARK: arg tmp test
-  //        char* testArgv[] = {
-  //            argv[0],
-  //            "-k"
-  //        };
-  //        argc = 2;
-  //        argv = testArgv;
+//   --------------------------------------------------------------------
+//   MARK: arg tmp test
+//          char* testArgv[] = {
+//              argv[0],
+//              "-t"
+//          };
+//          argc = 2;
+//          argv = testArgv;
 
-  //            char* testArgv[] = {
-  //                argv[0],
-  //                "-m",
-  //                "/Users/opusarc/Projects/XCodeProjects/bBpiano/Cli/bBpiano
-  //                Lite/core/bbpl/resource/midi_samples/Fancy's
-  //                selection/midi/Sonata in D Minor, K. 141_2018.midi"
-  //            };
-  //            argc = 3;
-  //            argv = testArgv;
+//              char* testArgv[] = {
+//                  argv[0],
+//                  "-e",
+//                  "/Users/opusarc/Projects/XCodeProjects/bBpiano/core/bBpiano Lite/core/bbpl/piano/test a4/D4_velocity127.mid"
+//              };
+//              argc = 3;
+//              argv = testArgv;
 
   //            char* testArgv[] = {
   //                argv[0],

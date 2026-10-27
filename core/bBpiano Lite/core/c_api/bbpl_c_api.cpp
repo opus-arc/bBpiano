@@ -7,30 +7,31 @@
 
 namespace {
 
-static constexpr const char *version_c_api = "L1-Clavier";
+static constexpr const char *version_c_api = "L2-Vera";
 
 static constexpr const char *logo_c_api =
-    R"(
+        R"(
             ┌────────────────────────────┐──╭────╮
             │                            │==│╲╱╲╱│
-            │  bBpiano 1                 │==│╱╲╱╲│
-            │  L1-Clavier/260903         │==│╲╱╲╱│
+            │  bBpiano 2                 │==│╱╲╱╲│
+            │  L2-Vera/261101            │==│╲╱╲╱│
             │                            │==│╱╲╱╲│
             │  Physical Modeling Piano   │==│╲╱╲╱│
             │                            │==│╱╲╱╲│
             │  Developed by              │==│╲╱╲╱│
             │    Ziyang Tan              │==│╱╲╱╲│
-            │                            │==│╲╱╲╱│
-            │  bBSonicLab                │==│╱╲╱╲│
             └────────────────────────────┘──╰────╯
 
             With Special Thanks to
             Zhuoran Chen
             for the conversations and inspiration
-
-            bBSonicLab Technology
-            Copyright (c) 2026 Ziyang Tan.
-            All rights reserved.
+        
+            bBpiano CLI Use and Extension License
+            Version 1.2 · October 27, 2026
+        
+            bbpl Technology
+            Copyright © 2026 Ziyang Tan
+            bBSonicLab
 
         )";
 

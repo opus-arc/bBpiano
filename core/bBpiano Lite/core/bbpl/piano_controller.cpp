@@ -1,27 +1,11 @@
-// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-// [ZERO AI-GENERATED CODE]
-// Every line in this file is written and understood by its author. Every result is
-// reproducible, every assumption is open to inspection, and every implementation
-// stands open to criticism and challenge.
-// AI may be used for non-core, replaceable, engineering work;
-// this file, however, contains core logic that the author considers
-// necessary to understand firsthand, explain line by line, and take full responsibility for,
-// and is therefore implemented entirely by hand.
-// ---------------------------------------------------------------------------
-// [本文件承诺不含任何 AI 生成代码]
-// 每一行代码均由作者亲自编写，并确知其意义。一切结果可以复现，一切假设可经受检验，一切实现经得起批评与质疑。
-// AI 可用于非核心、可替代的工程工作；
-// 本文件承载作者认为必须亲自理解、能够逐行解释并为之负责的核心逻辑，因此刻意保持完全人工实现。
-//
-// Ziyang Tan
-// 2026-09-04
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
+#include <algorithm>
+#include <cmath>
 #include <stop_token>
 #include <atomic>
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
+#include "./configuration/configuration.hpp"
 
 
 #include "./piano/piano_model.hpp"
@@ -73,36 +57,19 @@ void apply_piano_command(const PianoCommand& command) {
         case PianoCommandType::note_on: {
             if (!is_playable_note(command.note))
                 break;
-            KeyModel* key = bBpiano->piano_keys[command.note - k_lowest_midi_note];
-            key->key_down_ = true;
-            for (int i = 0; i < key->string_count_; ++i) {
-                key->strings_[i].damper_active = false;
-            }
-            key->key_active_ = true;
-            // Yamaha Disklavier 使用的 mapping
-            const double hammer_v0 = std::pow(2, (command.value - 52.0) / 25.0);
-            key->trigger(hammer_v0);
+            bBpiano->note_on(command.note, command.value);
             break;
         }
 
         case PianoCommandType::note_off: {
-            if (is_playable_note(command.note)) {
-                bBpiano->piano_keys[command.note - k_lowest_midi_note]->key_down_ = false;
-            }
-            KeyModel* key = bBpiano->piano_keys[command.note - k_lowest_midi_note];
-            key->key_down_ = false;
-            if (!key->sustainpedal_active_) {
-                for (int i = 0; i < key->string_count_; ++i) {
-                    key->strings_[i].damper_active = true;
-                }
-            }
-            key->key_active_ = true;
+            if (!is_playable_note(command.note))
+                break;
+            bBpiano->note_off(command.note);
             break;
         }
 
         case PianoCommandType::sustain_pedal:
-            bBpiano->sustainpedal_control(command.value > 0.01);
-            
+            bBpiano->sustain_pedal_control(command.value);
             break;
 
         case PianoCommandType::all_silence:
@@ -110,11 +77,14 @@ void apply_piano_command(const PianoCommand& command) {
             break;
 
         case PianoCommandType::note_aftertouch:
-            
+            break;
         case PianoCommandType::soft_pedal:
+//            bBpiano->soft_pedal_control(command.value);
+            break;
         case PianoCommandType::harmonic_pedal:
+            break;
         case PianoCommandType::sostenuto_pedal:
-            // 当前 PianoModel 尚未实现这些动作。
+            bBpiano->sostenuto_pedal_control(command.value);
             break;
     }
 }
@@ -127,7 +97,9 @@ void apply_piano_command(const PianoCommand& command) {
 // 初始化
 // ======================== ======================== ========================
 void bbpiano_init(double sample_rate) {
-    bBpiano = std::make_unique<PianoModel>(sample_rate);
+    if (sample_rate != configuration.basic_presets.get_sample_rate())
+        throw std::invalid_argument("Piano sample rate differs from configuration");
+    bBpiano = std::make_unique<PianoModel>();
 }
 void bbpiano_shutdown() noexcept {
     bBpiano.reset();
@@ -173,26 +145,14 @@ void get_next_buffer(float* out, int frameCount, double amplitudeLimiter) {
         float x = bBpiano->get_sample();
         
         if (!std::isfinite(x)) {
-            std::cerr
-            << "OUTPUT ABNORMAL\n"
-            << "sample = " << x << '\n'
-            << "frame = " << i << '\n';
-            
-            for(int i = 0; i < bBpiano->piano_keys.size(); i++) {
-                if(bBpiano->piano_keys[i]->key_active_) {
-                    std::cout << "hammer_.w_a_1_" <<
-                    bBpiano->piano_keys[i]->hammer_.w_a_1_ << "\n";
-                    std::cout << "hammer_.w_b_1_" <<
-                    bBpiano->piano_keys[i]->hammer_.w_b_1_ << "\n";
-                    std::cout << "hammer_.middle_v_" <<
-                    bBpiano->piano_keys[i]->hammer_.middle_v_ << "\n";
-                }
-            }
-            
-            std::cout<<"\n";
-            x = 0.0f;
+            // No synchronous I/O on the real-time render thread.
+            // Stop processing a corrupted engine state and clear this buffer.
+            std::fill(out + i, out + frameCount, 0.0f);
+            report_audio_render_failure();
+            engine_eval->end_timing(frameCount);
+            return;
         }
-        
+
         out[i] = x * amplitudeLimiter;
     }
     

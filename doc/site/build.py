@@ -1,9 +1,8 @@
-"""Build the landing page and MkDocs research section as one Pages artifact."""
+"""Build the public landing page and listening assets for GitHub Pages."""
 
 from html import escape
 from pathlib import Path
 import shutil
-import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -27,7 +26,7 @@ def redirect(path: str, destination: str) -> None:
 def main() -> None:
     if OUTPUT.exists():
         shutil.rmtree(OUTPUT)
-    subprocess.run(["mkdocs", "build", "--clean", "--strict"], cwd=ROOT, check=True)
+    OUTPUT.mkdir(parents=True)
 
     shutil.copy2(SOURCE / "index.html", OUTPUT / "index.html")
     for folder in ("css", "js", "assets", "audio"):
@@ -38,16 +37,16 @@ def main() -> None:
         )
     (OUTPUT / ".nojekyll").touch()
 
-    redirect("Audio/Audio.html", "../research/audio.html")
-    redirect("bBpiano.html", "research/project.html")
-    redirect("doc/research/From PDE to PCM.html", "../../research/from-pde-to-pcm.html")
+    shutil.copy2(SOURCE / "bBpiano.html", OUTPUT / "bBpiano.html")
+    redirect("Audio/Audio.html", "../index.html#sound")
 
     for required in (
         "index.html",
-        "research/index.html",
-        "research/from-pde-to-pcm.html",
-        "research/project.html",
-        "research/audio.html",
+        "css/style.css",
+        "js/script.js",
+        "bBpiano.html",
+        "audio/Audio.html",
+        "Audio/Audio.html",
     ):
         assert (OUTPUT / required).is_file(), required
 

@@ -37,23 +37,9 @@
 		14649DDA30510CCE00285A00 /* Exceptions for "core" folder in "bbpl" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				bbpl/configuration/configuration.cpp,
-				bbpl/configuration/details/src/hammer_preset.cpp,
-				bbpl/configuration/details/src/string_impedance_preset.cpp,
-				bbpl/configuration/details/src/tunning_preset.cpp,
 				bbpl/hardware/src/cli_helper.cpp,
 				bbpl/hardware/src/soundcard_helper.cpp,
 				bbpl/piano_controller.cpp,
-				bbpl/piano/src/bridge_model.cpp,
-				bbpl/piano/src/damper_model.cpp,
-				bbpl/piano/src/dispersion_filter.cpp,
-				bbpl/piano/src/fractional_filter.cpp,
-				bbpl/piano/src/hammer_model.cpp,
-				bbpl/piano/src/key_model.cpp,
-				bbpl/piano/src/loss_filter.cpp,
-				bbpl/piano/src/piano_model.cpp,
-				bbpl/piano/src/soundboard_model.cpp,
-				bbpl/piano/src/string_model.cpp,
 				service_controller.cpp,
 			);
 			target = 14B72C4D30491A3A007325C7 /* bbpl */;
@@ -72,16 +58,6 @@
 		14649E0630510CD200285A00 /* notes */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = notes;
-			sourceTree = "<group>";
-		};
-		147B11BE30611B2E00CB62C5 /* .zed */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = .zed;
-			sourceTree = "<group>";
-		};
-		147B11C130611D9800CB62C5 /* build */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = build;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -108,8 +84,6 @@
 				14649DD530510CCE00285A00 /* core */,
 				14649E0630510CD200285A00 /* notes */,
 				14648F8F30510CB700285A00 /* main.cpp */,
-				147B11BE30611B2E00CB62C5 /* .zed */,
-				147B11C130611D9800CB62C5 /* build */,
 			);
 			sourceTree = "<group>";
 		};

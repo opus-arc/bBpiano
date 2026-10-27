@@ -41,11 +41,14 @@ class MidiInputHub {
         // Never let an exception cross the CoreMIDI C callback boundary.
       }
 
+      bool wake_waiter = false;
       {
         std::lock_guard lock(mutex);
-        --active_calls;
+        wake_waiter = (--active_calls == 0 && !enabled);
       }
-      condition.notify_all();
+      if (wake_waiter) {
+        condition.notify_all();
+      }
     }
 
     void disable_and_synchronize() noexcept {
@@ -291,8 +294,13 @@ class MidiInputHub {
 
     const MIDIPacket* packet = &packet_list->packet[0];
     for (UInt32 index = 0; index < packet_list->numPackets; ++index) {
-      connection->hub->parse_packet(connection->parser, packet->data,
-                                    packet->length);
+      try {
+        connection->hub->parse_packet(connection->parser, packet->data,
+                                      packet->length);
+      } catch (...) {
+        // No exceptions may escape the CoreMIDI callback.
+        return;
+      }
       packet = MIDIPacketNext(packet);
     }
   }
@@ -307,11 +315,14 @@ class MidiInputHub {
   }
 
   void end_callback() noexcept {
+    bool wake_waiter = false;
     {
       std::lock_guard lock(state_mutex_);
-      --active_callbacks_;
+      wake_waiter = (--active_callbacks_ == 0 && !accepting_callbacks_);
     }
-    callback_condition_.notify_all();
+    if (wake_waiter) {
+      callback_condition_.notify_all();
+    }
   }
 
   static std::size_t data_bytes_for_status(std::uint8_t status) noexcept {
@@ -343,9 +354,19 @@ class MidiInputHub {
   }
 
   void parse_packet(ParserState& parser, const Byte* data,
-                    UInt16 length) noexcept {
-    std::vector<ParsedMessage> parsed;
-    parsed.reserve(static_cast<std::size_t>(length) / 2 + 1);
+                    UInt16 length) {
+    // Common MIDI packets fit on the stack; only unusually large packets
+    // need a heap-backed overflow buffer.
+    std::array<ParsedMessage, 256> parsed_inline{};
+    std::size_t parsed_count = 0;
+    std::vector<ParsedMessage> parsed_overflow;
+    auto append_message = [&](const ParsedMessage& message) {
+      if (parsed_count < parsed_inline.size()) {
+        parsed_inline[parsed_count++] = message;
+      } else {
+        parsed_overflow.push_back(message);
+      }
+    };
 
     {
       std::lock_guard parser_lock(parser.mutex);
@@ -358,7 +379,7 @@ class MidiInputHub {
           ParsedMessage message;
           message.bytes[0] = byte;
           message.size = 1;
-          parsed.push_back(message);
+          append_message(message);
           continue;
         }
 
@@ -395,7 +416,7 @@ class MidiInputHub {
             ParsedMessage message;
             message.bytes[0] = byte;
             message.size = 1;
-            parsed.push_back(message);
+            append_message(message);
             parser.current_status = 0;
           }
           continue;
@@ -422,32 +443,46 @@ class MidiInputHub {
             message.bytes[offset + 1] = parser.data[offset];
           }
           message.size = parser.expected_data + 1;
-          parsed.push_back(message);
+          append_message(message);
           parser.current_status = 0;
           parser.collected_data = 0;
         }
       }
     }
 
-    for (const ParsedMessage& message : parsed) {
-      dispatch(MidiMessage(message.bytes.data(), message.size));
-    }
-  }
-
-  void dispatch(MidiMessage message) noexcept {
-    std::vector<std::shared_ptr<HandlerSlot>> handlers;
+    // Take one subscriber snapshot per packet instead of allocating and
+    // locking the hub for every parsed message.
+    std::array<std::shared_ptr<HandlerSlot>, 8> handlers_inline{};
+    std::size_t handler_count = 0;
+    std::vector<std::shared_ptr<HandlerSlot>> handlers_overflow;
     {
       std::lock_guard lock(state_mutex_);
-      handlers.reserve(handlers_.size());
       for (const auto& weak_slot : handlers_) {
         if (auto slot = weak_slot.lock()) {
-          handlers.push_back(std::move(slot));
+          if (handler_count < handlers_inline.size()) {
+            handlers_inline[handler_count++] = std::move(slot);
+          } else {
+            handlers_overflow.push_back(std::move(slot));
+          }
         }
       }
     }
 
-    for (const auto& handler : handlers) {
-      handler->invoke(message);
+    auto dispatch_message = [&](const ParsedMessage& message) {
+      const MidiMessage bytes(message.bytes.data(), message.size);
+      for (std::size_t index = 0; index < handler_count; ++index) {
+        handlers_inline[index]->invoke(bytes);
+      }
+      for (const auto& handler : handlers_overflow) {
+        handler->invoke(bytes);
+      }
+    };
+
+    for (std::size_t index = 0; index < parsed_count; ++index) {
+      dispatch_message(parsed_inline[index]);
+    }
+    for (const ParsedMessage& message : parsed_overflow) {
+      dispatch_message(message);
     }
   }
 
