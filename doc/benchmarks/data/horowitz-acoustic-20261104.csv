@@ -1,0 +1,23 @@
+group,piece,reference_file,render_file,clap,visqol_audio_48k,seed,failures
+Scale,Bass_scale_sustain_7s,Bass_scale_sustain_7s.wav,Bass_scale_sustain_7s.wav,0.7909943461418152,4.24836726454148,20261104,{}
+Scale,High Treble_scale_sustain_3s,High Treble_scale_sustain_3s.wav,High Treble_scale_sustain_3s.wav,0.4696917235851288,4.268506549290905,20261105,{}
+Scale,Middle_scale_sustain_5s,Middle_scale_sustain_5s.wav,Middle_scale_sustain_5s.wav,0.8388530611991882,4.346348807324697,20261106,{}
+Scale,Tenor_scale_sustain_6s,Tenor_scale_sustain_6s.wav,Tenor_scale_sustain_6s.wav,0.6178753972053528,4.24723015631969,20261107,{}
+Scale,Treble_scale_sustain_4s,Treble_scale_sustain_4s.wav,Treble_scale_sustain_4s.wav,0.6563881039619446,4.347853980818261,20261108,{}
+Polyphony,Bass_polyphony_chords_5s,Bass_polyphony_chords_5s.wav,Bass_polyphony_chords_5s.wav,0.8554685115814209,3.9173480600515913,20261109,{}
+Polyphony,High Treble_polyphony_chords_5s,High Treble_polyphony_chords_5s.wav,High Treble_polyphony_chords_5s.wav,0.4859083294868469,4.293531524838609,20261110,{}
+Polyphony,Middle_polyphony_chords_5s,Middle_polyphony_chords_5s.wav,Middle_polyphony_chords_5s.wav,0.7500007152557373,4.267530751652197,20261111,{}
+Polyphony,Tenor_polyphony_chords_5s,Tenor_polyphony_chords_5s.wav,Tenor_polyphony_chords_5s.wav,0.771525502204895,4.017783996006729,20261112,{}
+Polyphony,Treble_polyphony_chords_5s,Treble_polyphony_chords_5s.wav,Treble_polyphony_chords_5s.wav,0.7094628810882568,4.359619418176784,20261113,{}
+Performance,Etude-Tableaux Op. 39 No. 5 in E-flat Minor_2008,Etude-Tableaux Op. 39 No. 5 in E-flat Minor_2008.wav,Etude-Tableaux Op. 39 No. 5 in E-flat Minor_2008.wav,0.5463077425956726,3.3686137186884215,20261114,{}
+Performance,"Images, Book II, _Poissons d'or__2008","Images, Book II, _Poissons d'or__2008.wav","Images, Book II, _Poissons d'or__2008.wav",0.6026560664176941,3.7627626866727635,20261115,{}
+Performance,Piano Sonata 1. X. 1905 _From the Street__2018,Piano Sonata 1. X. 1905 _From the Street__2018.wav,Piano Sonata 1. X. 1905 _From the Street__2018.wav,0.6171531081199646,3.9882329335845643,20261116,{}
+Performance,Prel._Chor._Fug._2006,Prel._Chor._Fug._2006.wav,Prel._Chor._Fug._2006.wav,0.6523743867874146,3.6527245421514847,20261117,{}
+Performance,"Prelude and Fugue in A Minor, S.462_1_2011","Prelude and Fugue in A Minor, S.462_1_2011.wav","Prelude and Fugue in A Minor, S.462_1_2011.wav",0.8437532782554626,2.1319129836024207,20261118,{}
+Performance,"Prelude and Fugue in D Major, WTC II, BWV 874_2015","Prelude and Fugue in D Major, WTC II, BWV 874_2015.wav","Prelude and Fugue in D Major, WTC II, BWV 874_2015.wav",0.7929843664169312,3.9407154994969544,20261119,{}
+Performance,"Sonata No. 28 in A Major, Op. 101 (Complete)_2014","Sonata No. 28 in A Major, Op. 101 (Complete)_2014.wav","Sonata No. 28 in A Major, Op. 101 (Complete)_2014.wav",0.6237906813621521,3.99081910664147,20261120,{}
+Performance,"Sonata No. 4 in F-sharp Major ,Op.30_2013","Sonata No. 4 in F-sharp Major ,Op.30_2013.wav","Sonata No. 4 in F-sharp Major ,Op.30_2013.wav",0.8173641562461853,3.950166347483874,20261121,{}
+Performance,Sonata in B Min._2006,Sonata in B Min._2006.wav,Sonata in B Min._2006.wav,0.5204178094863892,3.5664727801578273,20261122,{}
+Performance,"Sonata in D Major, K. 576, I - Allegro_2013","Sonata in D Major, K. 576, I - Allegro_2013.wav","Sonata in D Major, K. 576, I - Allegro_2013.wav",0.833300769329071,4.229334429783915,20261123,{}
+Performance,"Sonata in D Minor, K. 141_2018","Sonata in D Minor, K. 141_2018.wav","Sonata in D Minor, K. 141_2018.wav",0.6950756311416626,4.096353026032402,20261124,{}
+Performance,"Sonata in F Minor, Op. 5_2004","Sonata in F Minor, Op. 5_2004.wav","Sonata in F Minor, Op. 5_2004.wav",0.6603005528450012,4.049194548402614,20261125,{}

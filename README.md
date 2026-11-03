@@ -222,26 +222,46 @@ In addition to the MAESTRO Yamaha Disklavier dataset, selected evaluations also 
 
 ### Engine Overview
 
-| Category | MAESTRO Dataset | Pianoteq 8 | SF2 (Grand Piano) | bBpiano L0-100c | **bBpiano L1-Clavier** |
-|:----------|:----------:|:----------:|:----------:|:----------:|:----------:|
-| Type | Reference Recording | Physical Modeling | Sample-Based | Physical Modeling | **Physical Modeling** |
-| Size | 1–10 GB (test subset) | 380 KB | 36 MB | 1.1 MB | **281 KB** |
-| Real-Time Synthesis | ❌ | **✅** | ❌ | **✅** | **✅** |
-| Polyphony | N/A | **5 × 88** (M4) | N/A | 23.34 | **5.97 × 88** (M4, 2024) |
+| Category | MAESTRO Dataset | Pianoteq 8 | SF2 (Grand Piano) | bBpiano L0-100c | **bBpiano L1-Clavier** | **bBpiano L2-Horowitz** |
+| :---------- | :----------: | :----------: | :----------: | :----------: | :----------: | :----------: |
+| Type | Reference Recording | Physical Modeling | Sample-Based | Physical Modeling | **Physical Modeling** | Physical Modeling |
+| Size | 1–10 GB (test subset) | 380 KB | 36 MB | 1.1 MB | **281 KB** | 32.22 MB (88-key data embedded) |
+| Real-Time Synthesis | ❌ | **✅** | ❌ | **✅** | **✅** | Partial; see `-t` below |
+| Polyphony | N/A | **5 × 88** (M4) | N/A | 23.34 | **5.97 × 88** (M4, 2024) | 88 voices; 0.619× real-time at 88.2 kHz (M4) |
 
 
 即使在 88 个琴键同时处于活动状态的测试中，L1-Clavier 在该 M4 平台上平均占用约 **16.75% 的实时计算预算**，对应约 **5.97 倍实时速度**。
 
-The following L1-Clavier results are arithmetic means of **10 independent `bbpl -t` runs** on a 2024 Apple M4, Release build, at 44.1 kHz. Each run passed all four real-time checks.
+Both versions below use **10 independent original `bbpl -t` runs** on Apple M4, Release builds. L1-Clavier uses **44.1 kHz**; L2-Horowitz uses **88.2 kHz**. Each entry is the arithmetic mean; PASS counts retain all failures.
 
-下表为 2024 Apple M4 平台、44.1 kHz、Release 构建下 **10 次独立 `bbpl -t` 测试**的算术平均值；每次测试的四项实时检查均为 PASS。
+下表将两版放在同一表中：各为 Apple M4、Release 构建下 10 次原生 `bbpl -t` 测试。采样率不同，不能将占用差异直接当作同条件版本比较。Frame 为原 CLI 报告的每采样帧耗时，不是整个 128 帧回调的最坏耗时。
 
-| Range | Mean Frame | Frame Budget | Mean Occupancy | Mean Speed | Result |
-|:------|-----------:|-------------:|---------------:|-----------:|:------:|
-| High-range | 1.360 µs | 22.68 µs | 5.99% | 16.69× | PASS |
-| Mid-range | 1.146 µs | 22.68 µs | 5.05% | 19.80× | PASS |
-| Bass-range | 0.905 µs | 22.68 µs | 3.99% | 25.08× | PASS |
-| 88 keys | 3.797 µs | 22.68 µs | 16.75% | 5.97× | PASS |
+| Range | Metric | **bBpiano L1-Clavier · 44.1 kHz** | **bBpiano L2-Horowitz · 88.2 kHz** |
+| :-- | :-- | --: | --: |
+| High-range | Mean Frame | 1.360 µs | 5.811 µs |
+| High-range | Frame Budget | 22.68 µs | 11.34 µs |
+| High-range | Mean Occupancy | 5.99% | 51.248% |
+| High-range | Mean Speed | 16.69× | 1.997× |
+| High-range | PASS runs | 10/10 | 10/10 |
+| Mid-range | Mean Frame | 1.146 µs | 7.799 µs |
+| Mid-range | Frame Budget | 22.68 µs | 11.34 µs |
+| Mid-range | Mean Occupancy | 5.05% | 68.786% |
+| Mid-range | Mean Speed | 19.80× | 1.466× |
+| Mid-range | PASS runs | 10/10 | 10/10 |
+| Bass-range | Mean Frame | 0.905 µs | 12.692 µs |
+| Bass-range | Frame Budget | 22.68 µs | 11.34 µs |
+| Bass-range | Mean Occupancy | 3.99% | 111.945% |
+| Bass-range | Mean Speed | 25.08× | 0.903× |
+| Bass-range | PASS runs | 10/10 | 3/10 |
+| 88 keys | Mean Frame | 3.797 µs | 18.372 µs |
+| 88 keys | Frame Budget | 22.68 µs | 11.34 µs |
+| 88 keys | Mean Occupancy | 16.75% | 162.031% |
+| 88 keys | Mean Speed | 5.97× | 0.619× |
+| 88 keys | PASS runs | 10/10 | 0/10 |
+
+Horowitz retains the accepted v55 output bit for bit in the 88-key, three-velocity and pedal render. Its 88-key simultaneous `-t` test failed in all 10 runs; a counterbalanced v55/embedded/obfuscated control found comparable cost. [All runs and method](doc/benchmarks/data/horowitz-engine-20261104.json).
+
+Horowitz 在全键、三档力度及踏板验证中与采用的 v55 输出逐字节一致；88 键同时活动测试为 0/10 通过。原版、内嵌版与混淆版的交错对照耗时接近。
 
 > [!NOTE]
 >
@@ -261,19 +281,13 @@ The Scale and Polyphony sections use Pianoteq 9 as the standard, while the stand
 
 Scale 与 Polyphony 部分以 Pianoteq 9 作为参考标准，而 Performance 部分的标准参考录音则取自 MAESTRO 数据集中的 Yamaha Disklavier 子集。数值越高，表示待测音频与参考录音在感知层面具有越高的相似度。
 
-| Method | VISQOL Score |
-|:---------|---------:|
-| MAESTRO Yamaha Disklavier | Reference |
-| Pianoteq 9 | 2.8466 |
-| SF2 (Grand Piano) | **2.9008** |
-| bBpiano L0-100c | 2.4260 |
-| bBpiano L0-beta | 2.3532 |
-| **bBpiano L1-Clavier** | **2.4326** |
+| Method | MAESTRO Yamaha Disklavier | Pianoteq 9 | SF2 (Grand Piano) | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** | **bBpiano L2-Horowitz** |
+| :-- | --: | --: | --: | --: | --: | --: | --: |
+| ViSQOL Audio · 48 kHz | Reference | 3.9688 | 3.9090 | 3.7364 | 3.7301 | 2.8795 | 3.7273 |
 
-| Method                     | VISQOL Score |
-| :------------------------- | -----------: |
-| Pianoteq 8                 |    Reference |
-| **Tominaga et al. (2026)** |       3.0820 |
+ViSQOL is reported in **48 kHz audio mode**.
+
+ViSQOL 采用 **48 kHz 音频模式**。
 
 ---
 
@@ -287,13 +301,9 @@ I believe the values provided by LAION-CLAP reflect more of an overall impressio
 
 我们认为，LAION-CLAP 所给出的数值更多反映的是一种整体性的听觉印象——例如音色、风格与情绪——而非物理层面的准确性。bBpiano 的目标是构建一个能够高度逼近真实钢琴的模型，但它所能够产生的声音与表达，并不应被局限于对真实钢琴的单纯模仿。
 
-| Method | Cosine Similarity |
-|:---------|---------:|
-| Pianoteq 9 | 0.8045 |
-| SF2 (Grand Piano) | **0.8283** |
-| bBpiano L0-100c | 0.3213 |
-| bBpiano L0-beta | 0.4628 |
-| **bBpiano L1-Clavier** | **0.5833** |
+| Method | Pianoteq 9 | SF2 (Grand Piano) | bBpiano L0-100c | bBpiano L0-beta | **bBpiano L1-Clavier** | **bBpiano L2-Horowitz** |
+| :-- | --: | --: | --: | --: | --: | --: |
+| Cosine Similarity | 0.8045 | **0.8283** | 0.3213 | 0.4628 | **0.5833** | 0.6838 |
 
 | Method                     | **Cosine Similarity** |
 | :------------------------- | --------------------: |
@@ -304,13 +314,13 @@ I believe the values provided by LAION-CLAP reflect more of an overall impressio
 
 ### Historical Progress
 
-| Category | Benchmark | bBpiano L0-alpha | bBpiano L0-beta | bBpiano L0-100c | **bBpiano L1-Clavier** |
-|:---------|:---------|---------:|---------:|---------:|---------:|
-| Engine | Binary Size | 1.04 MB | 1.04 MB | 1.1 MB | **281 KB** |
-| Engine | Real-Time Synthesis | ✅ | ✅ | ✅ | **✅** |
-| Engine | Polyphony | 5.21 | 11.27 | 23.34 | **5.97 × 88** |
-| LAION-CLAP | Cosine Similarity (MAESTRO Reference) | - | 0.4628 | 0.3213 | **0.5833** |
-| VISQOL | Mean (MAESTRO Reference) | - | 2.3532 | 2.4260 | **2.4326** |
+| Category | Benchmark | bBpiano L0-alpha | bBpiano L0-beta | bBpiano L0-100c | **bBpiano L1-Clavier** | **bBpiano L2-Horowitz** |
+| :--------- | :--------- | ---------: | ---------: | ---------: | ---------: | --: |
+| Engine | Binary Size | 1.04 MB | 1.04 MB | 1.1 MB | **281 KB** | 32.22 MB |
+| Engine | Real-Time Synthesis | ✅ | ✅ | ✅ | **✅** | Partial; 88-key test FAIL |
+| Engine | Polyphony | 5.21 | 11.27 | 23.34 | **5.97 × 88** | 88 voices; 0.619× at 88.2 kHz |
+| LAION-CLAP | Cosine Similarity (MAESTRO Reference) | - | 0.4628 | 0.3213 | **0.5833** | 0.6838 |
+| VISQOL | Mean, audio 48 kHz (MAESTRO Reference) | — | 3.7301 | 3.7364 | 2.8795 | 3.7273 |
 
 ## 6. License
 
