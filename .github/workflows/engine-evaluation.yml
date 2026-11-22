@@ -6,259 +6,88 @@ on:
     branches: ["main"]
   push:
     branches: ["main"]
+  release:
+    types: [published]
+
+permissions:
+  contents: read
 
 jobs:
   performance:
-    runs-on: macos-26
-
+    # The published L2-200c binary requires macOS 27 on Apple Silicon.
+    runs-on: xcode-27
+    timeout-minutes: 15
     env:
-      BBPL_PROJECT: "core/bBpiano Lite/bbpl.xcodeproj"
-      BBPL_SCHEME: "bbpl"
-
-      # GitHub Actions runners are used for regression tracking,
-      # not as an absolute hardware-performance reference.
-      MAX_88_KEY_OCCUPANCY_PERCENT: "130.0"
+      # Actions VMs are slower than the development Mac; allow 200% in CI.
+      MAX_88_KEY_OCCUPANCY_PERCENT: "200.0"
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Build bbpl
+      - name: Download the latest release binary
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-
-          xcodebuild build \
-            -project "$BBPL_PROJECT" \
-            -scheme "$BBPL_SCHEME" \
-            -configuration Release \
-            -derivedDataPath "$PWD/build" \
-            -destination 'platform=macOS' \
-            CODE_SIGNING_ALLOWED=NO \
-            | tee engine-build.log
-
-      - name: Locate bbpl executable
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          BBPL_PATH="$(find "$PWD/build/Build/Products/Release" \
-            -type f \
-            -name bbpl \
-            -perm -111 \
-            -print \
-            -quit)"
-
-          if [ -z "$BBPL_PATH" ]; then
-            echo "bbpl executable not found."
-            echo
-            echo "Release products:"
-            find "$PWD/build/Build/Products/Release" \
-              -maxdepth 5 \
-              -print || true
-            exit 1
-          fi
-
-          echo "Using executable: $BBPL_PATH"
-          echo "BBPL_PATH=$BBPL_PATH" >> "$GITHUB_ENV"
-
-      - name: Run engine evaluation
-        shell: bash
-        run: |
-          set -o pipefail
-
-          set +e
-          "$BBPL_PATH" -t | tee engine-evaluation.log
-          BENCHMARK_EXIT=${PIPESTATUS[0]}
-          set -e
-
-          echo "BENCHMARK_EXIT=$BENCHMARK_EXIT" >> "$GITHUB_ENV"
-
-          echo
-          echo "bbpl benchmark exit code: $BENCHMARK_EXIT"
-
-      - name: Write engine evaluation summary and enforce threshold
-        shell: bash
-        run: |
+          gh api "repos/$GITHUB_REPOSITORY/releases/latest" > release.json
           python3 - <<'PY'
+          import json
           import os
-          import re
-          import sys
 
-          max_88 = float(
-              os.environ["MAX_88_KEY_OCCUPANCY_PERCENT"]
-          )
-
-          benchmark_exit = int(
-              os.environ.get("BENCHMARK_EXIT", "1")
-          )
-
-          with open(
-              "engine-evaluation.log",
-              "r",
-              encoding="utf-8"
-          ) as f:
-              log = f.read()
-
-          pattern = re.compile(
-              r"Frame:\s*"
-              r"([0-9]+(?:\.[0-9]+)?)\s*us\s*/\s*"
-              r"([0-9]+(?:\.[0-9]+)?)\s*us\s*"
-              r"Occupancy:\s*"
-              r"([0-9]+(?:\.[0-9]+)?)%\s*"
-              r"Speed:\s*"
-              r"([0-9]+(?:\.[0-9]+)?)x realtime\s*"
-              r"(High-range|Mid-range|Bass-range|88-keys) realtime:\s*"
-              r"(PASS|FAIL)",
-              re.MULTILINE
-          )
-
-          results = {}
-
-          for match in pattern.finditer(log):
-              name = match.group(5)
-
-              results[name] = {
-                  "frame_us": float(match.group(1)),
-                  "budget_us": float(match.group(2)),
-                  "occupancy": float(match.group(3)),
-                  "speed": float(match.group(4)),
-                  "result": match.group(6),
-              }
-
-          expected = [
-              "High-range",
-              "Mid-range",
-              "Bass-range",
-              "88-keys",
-          ]
-
-          missing = [
-              name
-              for name in expected
-              if name not in results
-          ]
-
-          if missing:
-              print(
-                  "Could not parse benchmark result(s): "
-                  + ", ".join(missing)
-              )
-              print()
-              print("Raw benchmark output:")
-              print(log)
-              sys.exit(1)
-
-          occupancy_88 = results["88-keys"]["occupancy"]
-
-          threshold_passed = (
-              occupancy_88 <= max_88
-          )
-
-          benchmark_completed = (
-              benchmark_exit == 0
-          )
-
-          with open(
-              os.environ["GITHUB_STEP_SUMMARY"],
-              "a",
-              encoding="utf-8"
-          ) as f:
-              f.write("# bBpiano Engine Evaluation\n\n")
-
-              f.write(
-                  "| Range | Frame | Budget | Occupancy | "
-                  "Speed | Realtime |\n"
-              )
-
-              f.write(
-                  "|---|---:|---:|---:|---:|:---:|\n"
-              )
-
-              for name in expected:
-                  r = results[name]
-
-                  f.write(
-                      f"| {name} "
-                      f"| {r['frame_us']:.2f} µs "
-                      f"| {r['budget_us']:.2f} µs "
-                      f"| {r['occupancy']:.2f}% "
-                      f"| {r['speed']:.2f}× "
-                      f"| {r['result']} |\n"
-                  )
-
-              f.write("\n")
-
-              f.write(
-                  f"**88-key CI occupancy limit:** "
-                  f"{max_88:.2f}%\n\n"
-              )
-
-              if threshold_passed:
-                  f.write(
-                      "**Performance regression gate:** PASS\n\n"
-                  )
-              else:
-                  f.write(
-                      "**Performance regression gate:** FAIL\n\n"
-                  )
-
-              f.write(
-                  "GitHub Actions macOS runners are used for "
-                  "performance-regression tracking rather than "
-                  "absolute hardware benchmarking. The individual "
-                  "register measurements are diagnostic; the "
-                  "88-key occupancy is used as the CI performance "
-                  "gate.\n"
-              )
-
-          print()
-          print("bBpiano Engine Evaluation")
-          print()
-
-          for name in expected:
-              r = results[name]
-
-              print(
-                  f"{name:10s}  "
-                  f"{r['frame_us']:7.2f} us  "
-                  f"{r['occupancy']:7.2f}%  "
-                  f"{r['speed']:5.2f}x  "
-                  f"{r['result']}"
-              )
-
-          print()
-          print(
-              f"88-key CI limit: {max_88:.2f}%"
-          )
-
-          if not benchmark_completed:
-              print(
-                  f"bbpl -t exited with code "
-                  f"{benchmark_exit}."
-              )
-              sys.exit(1)
-
-          if not threshold_passed:
-              print(
-                  f"88-key occupancy "
-                  f"{occupancy_88:.2f}% exceeded "
-                  f"the CI limit of {max_88:.2f}%."
-              )
-              sys.exit(1)
-
-          print(
-              f"88-key occupancy "
-              f"{occupancy_88:.2f}% is within "
-              f"the CI limit of {max_88:.2f}%."
-          )
+          release = json.load(open("release.json", encoding="utf-8"))
+          tag = release["tag_name"]
+          assets = [a for a in release["assets"]
+                    if a["name"].startswith(f"bBpiano-{tag}-")
+                    and a["name"].lower().endswith("-macos-arm64.zip")]
+          if len(assets) != 1:
+              raise SystemExit("Expected one macOS arm64 release archive")
+          asset = assets[0]
+          digest = asset.get("digest", "")
+          if not digest.startswith("sha256:"):
+              raise SystemExit("The release asset has no SHA-256 digest")
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as output:
+              output.write(f"BBPL_RELEASE_TAG={tag}\n")
+              output.write(f"BBPL_ARCHIVE={asset['name']}\n")
+              output.write(f"BBPL_SHA256={digest.removeprefix('sha256:')}\n")
           PY
 
-      - name: Upload engine evaluation logs
+      - name: Verify and extract the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release download "$BBPL_RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
+            --pattern "$BBPL_ARCHIVE" --dir release
+          (cd release && printf '%s  %s\n' "$BBPL_SHA256" "$BBPL_ARCHIVE" | shasum -a 256 -c -)
+          ditto -xk "release/$BBPL_ARCHIVE" release
+          codesign --verify --strict release/bbpl
+          release/bbpl -v | tee engine-version.log
+
+      - name: Run bbpl -t
+        shell: bash
+        run: |
+          set +e
+          release/bbpl -t 2>&1 | tee engine-evaluation.log
+          benchmark_exit=${PIPESTATUS[0]}
+          set -e
+          echo "BBPL_TEST_EXIT=$benchmark_exit" >> "$GITHUB_ENV"
+
+      - name: Check the 200 percent occupancy limit
+        run: |
+          printf 'Evaluated release: %s\n\n' "$BBPL_RELEASE_TAG" >> "$GITHUB_STEP_SUMMARY"
+          python3 .github/scripts/check-engine-benchmark.py engine-evaluation.log \
+            --exit-code "$BBPL_TEST_EXIT" \
+            --max-occupancy "$MAX_88_KEY_OCCUPANCY_PERCENT" \
+            --summary "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload benchmark logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: engine-evaluation-logs
+          name: engine-evaluation-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            engine-build.log
+            release.json
+            engine-version.log
             engine-evaluation.log

@@ -1,0 +1,201 @@
+metric,test_group,piece,reference,engine,score,L1_soundboard_active
+ViSQOL,Scale,Bass_scale,Pianoteq 9,SF2 Grand Piano,3.258543816,
+ViSQOL,Scale,Bass_scale,Pianoteq 9,bBpiano L0-100c,2.279772871,
+ViSQOL,Scale,Bass_scale,Pianoteq 9,bBpiano L0-beta,2.494259218,
+ViSQOL,Scale,Bass_scale,Pianoteq 9,bBpiano L1-Clavier,3.371336762,false
+ViSQOL,Scale,Tenor_scale,Pianoteq 9,SF2 Grand Piano,2.294533822,
+ViSQOL,Scale,Tenor_scale,Pianoteq 9,bBpiano L0-100c,1.005804746,
+ViSQOL,Scale,Tenor_scale,Pianoteq 9,bBpiano L0-beta,1.864653641,
+ViSQOL,Scale,Tenor_scale,Pianoteq 9,bBpiano L1-Clavier,2.862334516,false
+ViSQOL,Scale,Middle_scale,Pianoteq 9,SF2 Grand Piano,2.880688398,
+ViSQOL,Scale,Middle_scale,Pianoteq 9,bBpiano L0-100c,2.400253359,
+ViSQOL,Scale,Middle_scale,Pianoteq 9,bBpiano L0-beta,2.182012820,
+ViSQOL,Scale,Middle_scale,Pianoteq 9,bBpiano L1-Clavier,2.433165462,false
+ViSQOL,Scale,Treble_scale,Pianoteq 9,SF2 Grand Piano,2.836848379,
+ViSQOL,Scale,Treble_scale,Pianoteq 9,bBpiano L0-100c,2.216778580,
+ViSQOL,Scale,Treble_scale,Pianoteq 9,bBpiano L0-beta,1.898298445,
+ViSQOL,Scale,Treble_scale,Pianoteq 9,bBpiano L1-Clavier,2.241825189,false
+ViSQOL,Scale,High Treble_scale,Pianoteq 9,SF2 Grand Piano,1.224602593,
+ViSQOL,Scale,High Treble_scale,Pianoteq 9,bBpiano L0-100c,1.047544827,
+ViSQOL,Scale,High Treble_scale,Pianoteq 9,bBpiano L0-beta,1.093359043,
+ViSQOL,Scale,High Treble_scale,Pianoteq 9,bBpiano L1-Clavier,1.000000000,false
+ViSQOL,Polyphony,Bass_chords,Pianoteq 9,SF2 Grand Piano,2.534555915,
+ViSQOL,Polyphony,Bass_chords,Pianoteq 9,bBpiano L0-100c,2.077254981,
+ViSQOL,Polyphony,Bass_chords,Pianoteq 9,bBpiano L0-beta,2.166119601,
+ViSQOL,Polyphony,Bass_chords,Pianoteq 9,bBpiano L1-Clavier,2.702758894,false
+ViSQOL,Polyphony,Tenor_chords,Pianoteq 9,SF2 Grand Piano,2.672740293,
+ViSQOL,Polyphony,Tenor_chords,Pianoteq 9,bBpiano L0-100c,2.514874952,
+ViSQOL,Polyphony,Tenor_chords,Pianoteq 9,bBpiano L0-beta,1.876183765,
+ViSQOL,Polyphony,Tenor_chords,Pianoteq 9,bBpiano L1-Clavier,2.114384760,false
+ViSQOL,Polyphony,Middle_chords,Pianoteq 9,SF2 Grand Piano,3.429775842,
+ViSQOL,Polyphony,Middle_chords,Pianoteq 9,bBpiano L0-100c,2.862829766,
+ViSQOL,Polyphony,Middle_chords,Pianoteq 9,bBpiano L0-beta,2.503931537,
+ViSQOL,Polyphony,Middle_chords,Pianoteq 9,bBpiano L1-Clavier,2.272731897,false
+ViSQOL,Polyphony,Treble_chords,Pianoteq 9,SF2 Grand Piano,2.521915846,
+ViSQOL,Polyphony,Treble_chords,Pianoteq 9,bBpiano L0-100c,1.859617369,
+ViSQOL,Polyphony,Treble_chords,Pianoteq 9,bBpiano L0-beta,1.935985753,
+ViSQOL,Polyphony,Treble_chords,Pianoteq 9,bBpiano L1-Clavier,1.554736190,false
+ViSQOL,Polyphony,High Treble_chords,Pianoteq 9,SF2 Grand Piano,1.482525693,
+ViSQOL,Polyphony,High Treble_chords,Pianoteq 9,bBpiano L0-100c,1.222981887,
+ViSQOL,Polyphony,High Treble_chords,Pianoteq 9,bBpiano L0-beta,1.139869631,
+ViSQOL,Polyphony,High Treble_chords,Pianoteq 9,bBpiano L1-Clavier,1.000000000,false
+ViSQOL,Performance,Etude-Tableaux Op.39 No.5,MAESTRO Yamaha Disklavier subset,Pianoteq 9,2.9136,
+ViSQOL,Performance,Etude-Tableaux Op.39 No.5,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,2.9863,
+ViSQOL,Performance,Etude-Tableaux Op.39 No.5,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,2.6995,
+ViSQOL,Performance,Etude-Tableaux Op.39 No.5,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,2.4852,
+ViSQOL,Performance,Etude-Tableaux Op.39 No.5,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,2.567014830,false
+ViSQOL,Performance,"Images, Book II ""Poissons d'or""",MAESTRO Yamaha Disklavier subset,Pianoteq 9,2.8029,
+ViSQOL,Performance,"Images, Book II ""Poissons d'or""",MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,2.7804,
+ViSQOL,Performance,"Images, Book II ""Poissons d'or""",MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,2.5644,
+ViSQOL,Performance,"Images, Book II ""Poissons d'or""",MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,2.3634,
+ViSQOL,Performance,"Images, Book II ""Poissons d'or""",MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,2.360572665,false
+ViSQOL,Performance,"Piano Sonata ""From the Street""",MAESTRO Yamaha Disklavier subset,Pianoteq 9,2.9598,
+ViSQOL,Performance,"Piano Sonata ""From the Street""",MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,3.0255,
+ViSQOL,Performance,"Piano Sonata ""From the Street""",MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,2.4664,
+ViSQOL,Performance,"Piano Sonata ""From the Street""",MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,2.3462,
+ViSQOL,Performance,"Piano Sonata ""From the Street""",MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,2.580950304,false
+ViSQOL,Performance,Prel. Chor. Fug.,MAESTRO Yamaha Disklavier subset,Pianoteq 9,2.9266,
+ViSQOL,Performance,Prel. Chor. Fug.,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,3.0012,
+ViSQOL,Performance,Prel. Chor. Fug.,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,2.5196,
+ViSQOL,Performance,Prel. Chor. Fug.,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,2.2769,
+ViSQOL,Performance,Prel. Chor. Fug.,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,2.557200327,false
+ViSQOL,Performance,"Prelude and Fugue in A Minor, S.462/1",MAESTRO Yamaha Disklavier subset,Pianoteq 9,2.9671,
+ViSQOL,Performance,"Prelude and Fugue in A Minor, S.462/1",MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,3.0924,
+ViSQOL,Performance,"Prelude and Fugue in A Minor, S.462/1",MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,2.5948,
+ViSQOL,Performance,"Prelude and Fugue in A Minor, S.462/1",MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,2.4029,
+ViSQOL,Performance,"Prelude and Fugue in A Minor, S.462/1",MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,2.378045542,false
+ViSQOL,Performance,"Prelude and Fugue in D Major, BWV 874",MAESTRO Yamaha Disklavier subset,Pianoteq 9,2.7859,
+ViSQOL,Performance,"Prelude and Fugue in D Major, BWV 874",MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,2.6779,
+ViSQOL,Performance,"Prelude and Fugue in D Major, BWV 874",MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,2.2438,
+ViSQOL,Performance,"Prelude and Fugue in D Major, BWV 874",MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,2.2183,
+ViSQOL,Performance,"Prelude and Fugue in D Major, BWV 874",MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,2.547757825,false
+ViSQOL,Performance,Sonata No.28 Op.101,MAESTRO Yamaha Disklavier subset,Pianoteq 9,2.8137,
+ViSQOL,Performance,Sonata No.28 Op.101,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,2.8996,
+ViSQOL,Performance,Sonata No.28 Op.101,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,2.3586,
+ViSQOL,Performance,Sonata No.28 Op.101,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,2.3095,
+ViSQOL,Performance,Sonata No.28 Op.101,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,2.472213729,false
+ViSQOL,Performance,Sonata No.4 Op.30,MAESTRO Yamaha Disklavier subset,Pianoteq 9,2.7626,
+ViSQOL,Performance,Sonata No.4 Op.30,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,2.8409,
+ViSQOL,Performance,Sonata No.4 Op.30,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,2.4185,
+ViSQOL,Performance,Sonata No.4 Op.30,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,2.2881,
+ViSQOL,Performance,Sonata No.4 Op.30,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,2.321314186,false
+ViSQOL,Performance,Sonata in B Minor,MAESTRO Yamaha Disklavier subset,Pianoteq 9,2.8854,
+ViSQOL,Performance,Sonata in B Minor,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,2.8354,
+ViSQOL,Performance,Sonata in B Minor,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,2.3827,
+ViSQOL,Performance,Sonata in B Minor,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,2.2733,
+ViSQOL,Performance,Sonata in B Minor,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,2.428109815,false
+ViSQOL,Performance,Sonata in D Major K.576,MAESTRO Yamaha Disklavier subset,Pianoteq 9,2.8285,
+ViSQOL,Performance,Sonata in D Major K.576,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,3.0614,
+ViSQOL,Performance,Sonata in D Major K.576,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,2.0482,
+ViSQOL,Performance,Sonata in D Major K.576,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,2.4669,
+ViSQOL,Performance,Sonata in D Major K.576,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,2.249377555,false
+ViSQOL,Performance,Sonata in D Minor K.141,MAESTRO Yamaha Disklavier subset,Pianoteq 9,2.6867,
+ViSQOL,Performance,Sonata in D Minor K.141,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,2.5331,
+ViSQOL,Performance,Sonata in D Minor K.141,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,2.2945,
+ViSQOL,Performance,Sonata in D Minor K.141,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,2.4932,
+ViSQOL,Performance,Sonata in D Minor K.141,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,2.240295448,false
+ViSQOL,Performance,Sonata in F Minor Op.5,MAESTRO Yamaha Disklavier subset,Pianoteq 9,2.9342,
+ViSQOL,Performance,Sonata in F Minor Op.5,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,2.9671,
+ViSQOL,Performance,Sonata in F Minor Op.5,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,2.5207,
+ViSQOL,Performance,Sonata in F Minor Op.5,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,2.3144,
+ViSQOL,Performance,Sonata in F Minor Op.5,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,2.487915857,false
+LAION-CLAP,Scale,Bass_scale,Pianoteq 9,SF2 Grand Piano,0.829674840,
+LAION-CLAP,Scale,Bass_scale,Pianoteq 9,bBpiano L0-100c,0.591492534,
+LAION-CLAP,Scale,Bass_scale,Pianoteq 9,bBpiano L0-beta,0.387630433,
+LAION-CLAP,Scale,Bass_scale,Pianoteq 9,bBpiano L1-Clavier,0.702944458,true
+LAION-CLAP,Scale,Tenor_scale,Pianoteq 9,SF2 Grand Piano,0.896856070,
+LAION-CLAP,Scale,Tenor_scale,Pianoteq 9,bBpiano L0-100c,0.371731043,
+LAION-CLAP,Scale,Tenor_scale,Pianoteq 9,bBpiano L0-beta,0.300049216,
+LAION-CLAP,Scale,Tenor_scale,Pianoteq 9,bBpiano L1-Clavier,0.716075599,true
+LAION-CLAP,Scale,Middle_scale,Pianoteq 9,SF2 Grand Piano,0.720027626,
+LAION-CLAP,Scale,Middle_scale,Pianoteq 9,bBpiano L0-100c,0.233823359,
+LAION-CLAP,Scale,Middle_scale,Pianoteq 9,bBpiano L0-beta,0.168149158,
+LAION-CLAP,Scale,Middle_scale,Pianoteq 9,bBpiano L1-Clavier,0.619980037,true
+LAION-CLAP,Scale,Treble_scale,Pianoteq 9,SF2 Grand Piano,0.718633533,
+LAION-CLAP,Scale,Treble_scale,Pianoteq 9,bBpiano L0-100c,0.192326903,
+LAION-CLAP,Scale,Treble_scale,Pianoteq 9,bBpiano L0-beta,0.166393086,
+LAION-CLAP,Scale,Treble_scale,Pianoteq 9,bBpiano L1-Clavier,0.524722159,true
+LAION-CLAP,Scale,High Treble_scale,Pianoteq 9,SF2 Grand Piano,0.746628761,
+LAION-CLAP,Scale,High Treble_scale,Pianoteq 9,bBpiano L0-100c,0.304847121,
+LAION-CLAP,Scale,High Treble_scale,Pianoteq 9,bBpiano L0-beta,0.317520738,
+LAION-CLAP,Scale,High Treble_scale,Pianoteq 9,bBpiano L1-Clavier,0.488264501,true
+LAION-CLAP,Polyphony,Bass_chords,Pianoteq 9,SF2 Grand Piano,0.737208426,
+LAION-CLAP,Polyphony,Bass_chords,Pianoteq 9,bBpiano L0-100c,0.712322891,
+LAION-CLAP,Polyphony,Bass_chords,Pianoteq 9,bBpiano L0-beta,0.491204530,
+LAION-CLAP,Polyphony,Bass_chords,Pianoteq 9,bBpiano L1-Clavier,0.901042461,true
+LAION-CLAP,Polyphony,Tenor_chords,Pianoteq 9,SF2 Grand Piano,0.898284912,
+LAION-CLAP,Polyphony,Tenor_chords,Pianoteq 9,bBpiano L0-100c,0.612981141,
+LAION-CLAP,Polyphony,Tenor_chords,Pianoteq 9,bBpiano L0-beta,0.465305507,
+LAION-CLAP,Polyphony,Tenor_chords,Pianoteq 9,bBpiano L1-Clavier,0.725399315,true
+LAION-CLAP,Polyphony,Middle_chords,Pianoteq 9,SF2 Grand Piano,0.782639027,
+LAION-CLAP,Polyphony,Middle_chords,Pianoteq 9,bBpiano L0-100c,0.344589412,
+LAION-CLAP,Polyphony,Middle_chords,Pianoteq 9,bBpiano L0-beta,0.309159577,
+LAION-CLAP,Polyphony,Middle_chords,Pianoteq 9,bBpiano L1-Clavier,0.654511511,true
+LAION-CLAP,Polyphony,Treble_chords,Pianoteq 9,SF2 Grand Piano,0.825937271,
+LAION-CLAP,Polyphony,Treble_chords,Pianoteq 9,bBpiano L0-100c,0.233994871,
+LAION-CLAP,Polyphony,Treble_chords,Pianoteq 9,bBpiano L0-beta,0.203228608,
+LAION-CLAP,Polyphony,Treble_chords,Pianoteq 9,bBpiano L1-Clavier,0.647006929,true
+LAION-CLAP,Polyphony,High Treble_chords,Pianoteq 9,SF2 Grand Piano,0.679073453,
+LAION-CLAP,Polyphony,High Treble_chords,Pianoteq 9,bBpiano L0-100c,0.220188931,
+LAION-CLAP,Polyphony,High Treble_chords,Pianoteq 9,bBpiano L0-beta,0.261892319,
+LAION-CLAP,Polyphony,High Treble_chords,Pianoteq 9,bBpiano L1-Clavier,0.536056995,true
+LAION-CLAP,Performance,Etude-Tableaux Op.39 No.5,MAESTRO Yamaha Disklavier subset,Pianoteq 9,0.7640,
+LAION-CLAP,Performance,Etude-Tableaux Op.39 No.5,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,0.8494,
+LAION-CLAP,Performance,Etude-Tableaux Op.39 No.5,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,0.3476,
+LAION-CLAP,Performance,Etude-Tableaux Op.39 No.5,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,0.5452,
+LAION-CLAP,Performance,Etude-Tableaux Op.39 No.5,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,0.571054816,true
+LAION-CLAP,Performance,"Images, Book II ""Poissons d'or""",MAESTRO Yamaha Disklavier subset,Pianoteq 9,0.7816,
+LAION-CLAP,Performance,"Images, Book II ""Poissons d'or""",MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,0.7704,
+LAION-CLAP,Performance,"Images, Book II ""Poissons d'or""",MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,0.4385,
+LAION-CLAP,Performance,"Images, Book II ""Poissons d'or""",MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,0.4862,
+LAION-CLAP,Performance,"Images, Book II ""Poissons d'or""",MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,0.544904232,true
+LAION-CLAP,Performance,"Piano Sonata ""From the Street""",MAESTRO Yamaha Disklavier subset,Pianoteq 9,0.8993,
+LAION-CLAP,Performance,"Piano Sonata ""From the Street""",MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,0.8060,
+LAION-CLAP,Performance,"Piano Sonata ""From the Street""",MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,0.1505,
+LAION-CLAP,Performance,"Piano Sonata ""From the Street""",MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,0.5820,
+LAION-CLAP,Performance,"Piano Sonata ""From the Street""",MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,0.710870922,true
+LAION-CLAP,Performance,Prel. Chor. Fug.,MAESTRO Yamaha Disklavier subset,Pianoteq 9,0.7994,
+LAION-CLAP,Performance,Prel. Chor. Fug.,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,0.8852,
+LAION-CLAP,Performance,Prel. Chor. Fug.,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,0.4831,
+LAION-CLAP,Performance,Prel. Chor. Fug.,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,0.4735,
+LAION-CLAP,Performance,Prel. Chor. Fug.,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,0.741906404,true
+LAION-CLAP,Performance,"Prelude and Fugue in A Minor, S.462/1",MAESTRO Yamaha Disklavier subset,Pianoteq 9,0.9413,
+LAION-CLAP,Performance,"Prelude and Fugue in A Minor, S.462/1",MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,0.8776,
+LAION-CLAP,Performance,"Prelude and Fugue in A Minor, S.462/1",MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,0.5253,
+LAION-CLAP,Performance,"Prelude and Fugue in A Minor, S.462/1",MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,0.6226,
+LAION-CLAP,Performance,"Prelude and Fugue in A Minor, S.462/1",MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,0.509185374,true
+LAION-CLAP,Performance,"Prelude and Fugue in D Major, BWV 874",MAESTRO Yamaha Disklavier subset,Pianoteq 9,0.6436,
+LAION-CLAP,Performance,"Prelude and Fugue in D Major, BWV 874",MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,0.8413,
+LAION-CLAP,Performance,"Prelude and Fugue in D Major, BWV 874",MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,0.1691,
+LAION-CLAP,Performance,"Prelude and Fugue in D Major, BWV 874",MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,0.4318,
+LAION-CLAP,Performance,"Prelude and Fugue in D Major, BWV 874",MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,0.545421720,true
+LAION-CLAP,Performance,Sonata No.28 Op.101,MAESTRO Yamaha Disklavier subset,Pianoteq 9,0.7851,
+LAION-CLAP,Performance,Sonata No.28 Op.101,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,0.8338,
+LAION-CLAP,Performance,Sonata No.28 Op.101,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,0.3241,
+LAION-CLAP,Performance,Sonata No.28 Op.101,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,0.4066,
+LAION-CLAP,Performance,Sonata No.28 Op.101,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,0.671635807,true
+LAION-CLAP,Performance,Sonata No.4 Op.30,MAESTRO Yamaha Disklavier subset,Pianoteq 9,0.7962,
+LAION-CLAP,Performance,Sonata No.4 Op.30,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,0.8154,
+LAION-CLAP,Performance,Sonata No.4 Op.30,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,0.4225,
+LAION-CLAP,Performance,Sonata No.4 Op.30,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,0.5763,
+LAION-CLAP,Performance,Sonata No.4 Op.30,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,0.514670193,true
+LAION-CLAP,Performance,Sonata in B Minor,MAESTRO Yamaha Disklavier subset,Pianoteq 9,0.7088,
+LAION-CLAP,Performance,Sonata in B Minor,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,0.7059,
+LAION-CLAP,Performance,Sonata in B Minor,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,0.2329,
+LAION-CLAP,Performance,Sonata in B Minor,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,0.5579,
+LAION-CLAP,Performance,Sonata in B Minor,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,0.396069169,true
+LAION-CLAP,Performance,Sonata in D Major K.576,MAESTRO Yamaha Disklavier subset,Pianoteq 9,0.8754,
+LAION-CLAP,Performance,Sonata in D Major K.576,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,0.8503,
+LAION-CLAP,Performance,Sonata in D Major K.576,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,0.2747,
+LAION-CLAP,Performance,Sonata in D Major K.576,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,0.4318,
+LAION-CLAP,Performance,Sonata in D Major K.576,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,0.608233094,true
+LAION-CLAP,Performance,Sonata in D Minor K.141,MAESTRO Yamaha Disklavier subset,Pianoteq 9,0.8897,
+LAION-CLAP,Performance,Sonata in D Minor K.141,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,0.8641,
+LAION-CLAP,Performance,Sonata in D Minor K.141,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,0.2403,
+LAION-CLAP,Performance,Sonata in D Minor K.141,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,0.2966,
+LAION-CLAP,Performance,Sonata in D Minor K.141,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,0.544550717,true
+LAION-CLAP,Performance,Sonata in F Minor Op.5,MAESTRO Yamaha Disklavier subset,Pianoteq 9,0.7701,
+LAION-CLAP,Performance,Sonata in F Minor Op.5,MAESTRO Yamaha Disklavier subset,SF2 Grand Piano,0.8401,
+LAION-CLAP,Performance,Sonata in F Minor Op.5,MAESTRO Yamaha Disklavier subset,bBpiano L0-100c,0.2468,
+LAION-CLAP,Performance,Sonata in F Minor Op.5,MAESTRO Yamaha Disklavier subset,bBpiano L0-beta,0.1436,
+LAION-CLAP,Performance,Sonata in F Minor Op.5,MAESTRO Yamaha Disklavier subset,bBpiano L1-Clavier,0.641184807,true

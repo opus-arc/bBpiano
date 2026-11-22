@@ -11,6 +11,10 @@ on:
         required: true
         type: string
 
+concurrency:
+  group: homebrew-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
 jobs:
   update-homebrew-formula:
     if: startsWith(github.event.release.tag_name || inputs.tag, 'L')
@@ -23,7 +27,7 @@ jobs:
           TAG: ${{ github.event.release.tag_name || inputs.tag }}
         run: |
           ASSETS=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq '.assets[].name')
-          mapfile -t ZIP_MATCHES < <(printf '%s\n' "$ASSETS" | awk -v prefix="bBpiano-${TAG}-" 'index($0, prefix) == 1 && /-macOS-arm64\.zip$/')
+          mapfile -t ZIP_MATCHES < <(printf '%s\n' "$ASSETS" | awk -v prefix="bBpiano-${TAG}-" 'index($0, prefix) == 1 && tolower($0) ~ /-macos-arm64\.zip$/')
 
           if [ "${#ZIP_MATCHES[@]}" -ne 1 ]; then
             echo "Expected exactly one macOS arm64 asset for ${TAG}, found ${#ZIP_MATCHES[@]}" >&2
