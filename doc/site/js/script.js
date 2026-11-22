@@ -74,7 +74,7 @@ const playIcon = document.querySelector('#play-icon');
 const seek = document.querySelector('#seek');
 const audioStatus = document.querySelector('#audio-status');
 const trackOptions = [...document.querySelectorAll('.track-option')];
-let currentTrackLabel = 'Liszt S. 161，L2-Horowitz';
+let currentTrackLabel = 'Enescu Op. 10，L2-200c';
 const formatTime = time => Number.isFinite(time) ? `${Math.floor(time / 60)}:${String(Math.floor(time % 60)).padStart(2, '0')}` : '—:—';
 playButton.addEventListener('click', async () => {
   if (audio.paused) {
@@ -105,7 +105,9 @@ trackOptions.forEach(option => option.addEventListener('click', () => {
   document.querySelector('#track-engine').textContent = option.dataset.engine;
   document.querySelector('#track-composer').textContent = option.dataset.composer;
   document.querySelector('#track-work').textContent = option.dataset.work;
+  document.querySelector('#sound-title').lang = option.dataset.lang || 'en';
   document.querySelector('#track-name').textContent = option.dataset.name;
+  document.querySelector('#track-name').nextElementSibling.hidden = !option.dataset.name;
   document.querySelector('#track-mode').textContent = option.dataset.mode;
   currentTrackLabel = `${option.dataset.composer} ${option.dataset.work}，${option.dataset.mode}`;
   audio.src = option.dataset.src;
