@@ -1,0 +1,658 @@
+{
+  "version": "L2-200c/261122",
+  "binary_sha256": "81418b1589839fcc091ecfb917dd35b8f981c0e2ec8cd3cffcba1b9495f932b0",
+  "binary_bytes": 54843520,
+  "optimization": "-O3",
+  "obfuscated": true,
+  "signed": true,
+  "hardware": "Apple M4",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "sample_rate": 88200,
+  "method": "10 independent unmodified bbpl -t processes; internal median of five measurements per range, 512 warmup frames, 8192 measured frames, block size 256; no concurrent synthesis, compilation or metric scoring",
+  "trials": [
+    {
+      "run": 1,
+      "rows": [
+        {
+          "frame_us": 1.26,
+          "budget_us": 11.34,
+          "occupancy_pct": 11.12,
+          "speed": 8.99,
+          "range": "High-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 1.5,
+          "budget_us": 11.34,
+          "occupancy_pct": 13.23,
+          "speed": 7.56,
+          "range": "Mid-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 2.39,
+          "budget_us": 11.34,
+          "occupancy_pct": 21.06,
+          "speed": 4.75,
+          "range": "Bass-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 4.54,
+          "budget_us": 11.34,
+          "occupancy_pct": 40.06,
+          "speed": 2.5,
+          "range": "88-keys",
+          "status": "PASS"
+        }
+      ],
+      "wall_s": 2.5318822499830276
+    },
+    {
+      "run": 2,
+      "rows": [
+        {
+          "frame_us": 1.32,
+          "budget_us": 11.34,
+          "occupancy_pct": 11.62,
+          "speed": 8.6,
+          "range": "High-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 1.7,
+          "budget_us": 11.34,
+          "occupancy_pct": 15.03,
+          "speed": 6.66,
+          "range": "Mid-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 2.54,
+          "budget_us": 11.34,
+          "occupancy_pct": 22.38,
+          "speed": 4.47,
+          "range": "Bass-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 4.63,
+          "budget_us": 11.34,
+          "occupancy_pct": 40.85,
+          "speed": 2.45,
+          "range": "88-keys",
+          "status": "PASS"
+        }
+      ],
+      "wall_s": 1.0162226669490337
+    },
+    {
+      "run": 3,
+      "rows": [
+        {
+          "frame_us": 1.27,
+          "budget_us": 11.34,
+          "occupancy_pct": 11.17,
+          "speed": 8.95,
+          "range": "High-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 1.63,
+          "budget_us": 11.34,
+          "occupancy_pct": 14.4,
+          "speed": 6.94,
+          "range": "Mid-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 2.39,
+          "budget_us": 11.34,
+          "occupancy_pct": 21.05,
+          "speed": 4.75,
+          "range": "Bass-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 4.42,
+          "budget_us": 11.34,
+          "occupancy_pct": 39.02,
+          "speed": 2.56,
+          "range": "88-keys",
+          "status": "PASS"
+        }
+      ],
+      "wall_s": 0.996481915935874
+    },
+    {
+      "run": 4,
+      "rows": [
+        {
+          "frame_us": 1.34,
+          "budget_us": 11.34,
+          "occupancy_pct": 11.79,
+          "speed": 8.48,
+          "range": "High-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 1.83,
+          "budget_us": 11.34,
+          "occupancy_pct": 16.18,
+          "speed": 6.18,
+          "range": "Mid-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 3.23,
+          "budget_us": 11.34,
+          "occupancy_pct": 28.48,
+          "speed": 3.51,
+          "range": "Bass-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 5.59,
+          "budget_us": 11.34,
+          "occupancy_pct": 49.34,
+          "speed": 2.03,
+          "range": "88-keys",
+          "status": "PASS"
+        }
+      ],
+      "wall_s": 1.112231916980818
+    },
+    {
+      "run": 5,
+      "rows": [
+        {
+          "frame_us": 1.33,
+          "budget_us": 11.34,
+          "occupancy_pct": 11.71,
+          "speed": 8.54,
+          "range": "High-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 1.72,
+          "budget_us": 11.34,
+          "occupancy_pct": 15.17,
+          "speed": 6.59,
+          "range": "Mid-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 2.57,
+          "budget_us": 11.34,
+          "occupancy_pct": 22.67,
+          "speed": 4.41,
+          "range": "Bass-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 4.65,
+          "budget_us": 11.34,
+          "occupancy_pct": 41.03,
+          "speed": 2.44,
+          "range": "88-keys",
+          "status": "PASS"
+        }
+      ],
+      "wall_s": 1.0222520420793444
+    },
+    {
+      "run": 6,
+      "rows": [
+        {
+          "frame_us": 1.26,
+          "budget_us": 11.34,
+          "occupancy_pct": 11.1,
+          "speed": 9.01,
+          "range": "High-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 1.61,
+          "budget_us": 11.34,
+          "occupancy_pct": 14.24,
+          "speed": 7.02,
+          "range": "Mid-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 2.34,
+          "budget_us": 11.34,
+          "occupancy_pct": 20.68,
+          "speed": 4.84,
+          "range": "Bass-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 4.5,
+          "budget_us": 11.34,
+          "occupancy_pct": 39.69,
+          "speed": 2.52,
+          "range": "88-keys",
+          "status": "PASS"
+        }
+      ],
+      "wall_s": 1.0089465419296175
+    },
+    {
+      "run": 7,
+      "rows": [
+        {
+          "frame_us": 1.19,
+          "budget_us": 11.34,
+          "occupancy_pct": 10.49,
+          "speed": 9.53,
+          "range": "High-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 1.59,
+          "budget_us": 11.34,
+          "occupancy_pct": 14.0,
+          "speed": 7.14,
+          "range": "Mid-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 2.38,
+          "budget_us": 11.34,
+          "occupancy_pct": 20.99,
+          "speed": 4.77,
+          "range": "Bass-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 4.41,
+          "budget_us": 11.34,
+          "occupancy_pct": 38.92,
+          "speed": 2.57,
+          "range": "88-keys",
+          "status": "PASS"
+        }
+      ],
+      "wall_s": 0.9972985829226673
+    },
+    {
+      "run": 8,
+      "rows": [
+        {
+          "frame_us": 1.25,
+          "budget_us": 11.34,
+          "occupancy_pct": 11.01,
+          "speed": 9.08,
+          "range": "High-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 1.52,
+          "budget_us": 11.34,
+          "occupancy_pct": 13.42,
+          "speed": 7.45,
+          "range": "Mid-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 2.31,
+          "budget_us": 11.34,
+          "occupancy_pct": 20.39,
+          "speed": 4.9,
+          "range": "Bass-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 4.42,
+          "budget_us": 11.34,
+          "occupancy_pct": 38.99,
+          "speed": 2.56,
+          "range": "88-keys",
+          "status": "PASS"
+        }
+      ],
+      "wall_s": 0.9848228748887777
+    },
+    {
+      "run": 9,
+      "rows": [
+        {
+          "frame_us": 1.21,
+          "budget_us": 11.34,
+          "occupancy_pct": 10.66,
+          "speed": 9.38,
+          "range": "High-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 1.53,
+          "budget_us": 11.34,
+          "occupancy_pct": 13.54,
+          "speed": 7.39,
+          "range": "Mid-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 2.29,
+          "budget_us": 11.34,
+          "occupancy_pct": 20.21,
+          "speed": 4.95,
+          "range": "Bass-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 4.4,
+          "budget_us": 11.34,
+          "occupancy_pct": 38.8,
+          "speed": 2.58,
+          "range": "88-keys",
+          "status": "PASS"
+        }
+      ],
+      "wall_s": 0.980227000080049
+    },
+    {
+      "run": 10,
+      "rows": [
+        {
+          "frame_us": 1.42,
+          "budget_us": 11.34,
+          "occupancy_pct": 12.5,
+          "speed": 8.0,
+          "range": "High-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 1.65,
+          "budget_us": 11.34,
+          "occupancy_pct": 14.55,
+          "speed": 6.87,
+          "range": "Mid-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 2.35,
+          "budget_us": 11.34,
+          "occupancy_pct": 20.74,
+          "speed": 4.82,
+          "range": "Bass-range",
+          "status": "PASS"
+        },
+        {
+          "frame_us": 4.5,
+          "budget_us": 11.34,
+          "occupancy_pct": 39.73,
+          "speed": 2.52,
+          "range": "88-keys",
+          "status": "PASS"
+        }
+      ],
+      "wall_s": 1.0088250001426786
+    }
+  ],
+  "summary": [
+    {
+      "range": "High-range",
+      "runs": 10,
+      "passes": 10,
+      "frame_us": {
+        "mean": 1.285,
+        "median": 1.2650000000000001,
+        "min": 1.19,
+        "max": 1.42,
+        "stdev": 0.06819090848492929
+      },
+      "budget_us": {
+        "mean": 11.34,
+        "median": 11.34,
+        "min": 11.34,
+        "max": 11.34,
+        "stdev": 0.0
+      },
+      "occupancy_pct": {
+        "mean": 11.317,
+        "median": 11.145,
+        "min": 10.49,
+        "max": 12.5,
+        "stdev": 0.5950546193417877
+      },
+      "speed": {
+        "mean": 8.856,
+        "median": 8.969999999999999,
+        "min": 8.0,
+        "max": 9.53,
+        "stdev": 0.4557094590976921
+      }
+    },
+    {
+      "range": "Mid-range",
+      "runs": 10,
+      "passes": 10,
+      "frame_us": {
+        "mean": 1.6280000000000001,
+        "median": 1.62,
+        "min": 1.5,
+        "max": 1.83,
+        "stdev": 0.10239357618739783
+      },
+      "budget_us": {
+        "mean": 11.34,
+        "median": 11.34,
+        "min": 11.34,
+        "max": 11.34,
+        "stdev": 0.0
+      },
+      "occupancy_pct": {
+        "mean": 14.376,
+        "median": 14.32,
+        "min": 13.23,
+        "max": 16.18,
+        "stdev": 0.9085666367049438
+      },
+      "speed": {
+        "mean": 6.9799999999999995,
+        "median": 6.98,
+        "min": 6.18,
+        "max": 7.56,
+        "stdev": 0.42957343182898694
+      }
+    },
+    {
+      "range": "Bass-range",
+      "runs": 10,
+      "passes": 10,
+      "frame_us": {
+        "mean": 2.479,
+        "median": 2.385,
+        "min": 2.29,
+        "max": 3.23,
+        "stdev": 0.27926291873032083
+      },
+      "budget_us": {
+        "mean": 11.34,
+        "median": 11.34,
+        "min": 11.34,
+        "max": 11.34,
+        "stdev": 0.0
+      },
+      "occupancy_pct": {
+        "mean": 21.865,
+        "median": 21.02,
+        "min": 20.21,
+        "max": 28.48,
+        "stdev": 2.4570499474867105
+      },
+      "speed": {
+        "mean": 4.617,
+        "median": 4.76,
+        "min": 3.51,
+        "max": 4.95,
+        "stdev": 0.42565113519041503
+      }
+    },
+    {
+      "range": "88-keys",
+      "runs": 10,
+      "passes": 10,
+      "frame_us": {
+        "mean": 4.606,
+        "median": 4.5,
+        "min": 4.4,
+        "max": 5.59,
+        "stdev": 0.35709320289744456
+      },
+      "budget_us": {
+        "mean": 11.34,
+        "median": 11.34,
+        "min": 11.34,
+        "max": 11.34,
+        "stdev": 0.0
+      },
+      "occupancy_pct": {
+        "mean": 40.643,
+        "median": 39.709999999999994,
+        "min": 38.8,
+        "max": 49.34,
+        "stdev": 3.156017356662596
+      },
+      "speed": {
+        "mean": 2.473,
+        "median": 2.52,
+        "min": 2.03,
+        "max": 2.58,
+        "stdev": 0.16296216329770136
+      }
+    }
+  ],
+  "raw_O3_comparison_build_command": [
+    "xcrun",
+    "clang++",
+    "-std=c++20",
+    "-O3",
+    "-DNDEBUG",
+    "main.cpp",
+    "core/bbpl/piano_controller.cpp",
+    "core/service_controller.cpp",
+    "core/bbpl/piano/details/plath_kernels.S",
+    "core/bbpl/noise/details/hammer_noise.S",
+    "core/bbpl/noise/details/key_noise.S",
+    "core/bbpl/hardware/src/cli_helper.cpp",
+    "core/bbpl/hardware/src/soundcard_helper.cpp",
+    "-framework",
+    "CoreAudio",
+    "-framework",
+    "CoreMIDI",
+    "-framework",
+    "AudioToolbox",
+    "-framework",
+    "CoreFoundation",
+    "-framework",
+    "Accelerate",
+    "-o",
+    "/Users/opusarc/Documents/Codex/2026-11-23/bbpl-L2-200c-release/bin/bbpl-O3"
+  ],
+  "final_build": {
+    "compiler": "Apple clang 21.0.0 (clang-2100.3.34.2)",
+    "optimization": "-O3",
+    "flags": [
+      "-std=c++20",
+      "-DNDEBUG"
+    ],
+    "source": "cpp-amalgamate output processed by cppobf --verify; linked with the three existing embedded-data assembler sources",
+    "strip": "strip -x",
+    "signing": "Developer ID Application, Hardened Runtime, timestamp",
+    "rebuild_script_sha256": "c56f77bfcbb756338ad64133f31f598dfb5e30b78359b495663117782aab9445"
+  },
+  "minimum_macos": "27.0",
+  "architecture": "arm64",
+  "optimization_comparison": {
+    "method": "20 separate -t processes; counterbalanced Os,O3,O3,Os repeated five times; each range uses existing internal median of 5; no concurrent compile/render jobs",
+    "variants": {
+      "Os": {
+        "ranges": {
+          "High-range": {
+            "mean_percent": 15.792,
+            "median_percent": 15.73,
+            "stdev_percent": 0.689537687311014,
+            "min_percent": 14.71,
+            "max_percent": 17.06,
+            "passes": 10,
+            "runs": 10
+          },
+          "Mid-range": {
+            "mean_percent": 19.467,
+            "median_percent": 19.365000000000002,
+            "stdev_percent": 0.8549860297754059,
+            "min_percent": 18.14,
+            "max_percent": 20.61,
+            "passes": 10,
+            "runs": 10
+          },
+          "Bass-range": {
+            "mean_percent": 26.153,
+            "median_percent": 25.43,
+            "stdev_percent": 1.6624951127747711,
+            "min_percent": 24.94,
+            "max_percent": 30.22,
+            "passes": 10,
+            "runs": 10
+          },
+          "88-keys": {
+            "mean_percent": 52.789,
+            "median_percent": 52.650000000000006,
+            "stdev_percent": 1.9814441983339095,
+            "min_percent": 50.75,
+            "max_percent": 57.47,
+            "passes": 10,
+            "runs": 10
+          }
+        },
+        "bytes": 55164600,
+        "sha256": "1299c88e4f967ae6a9dfd4583923fa18b8f14409f2ed330b7e36c5717643bef9"
+      },
+      "O3": {
+        "ranges": {
+          "High-range": {
+            "mean_percent": 11.824,
+            "median_percent": 11.725,
+            "stdev_percent": 0.7883202958752799,
+            "min_percent": 10.33,
+            "max_percent": 13.29,
+            "passes": 10,
+            "runs": 10
+          },
+          "Mid-range": {
+            "mean_percent": 15.179,
+            "median_percent": 14.780000000000001,
+            "stdev_percent": 1.2634560186690749,
+            "min_percent": 13.91,
+            "max_percent": 17.47,
+            "passes": 10,
+            "runs": 10
+          },
+          "Bass-range": {
+            "mean_percent": 21.363,
+            "median_percent": 21.395,
+            "stdev_percent": 0.5551186059453117,
+            "min_percent": 20.34,
+            "max_percent": 22.24,
+            "passes": 10,
+            "runs": 10
+          },
+          "88-keys": {
+            "mean_percent": 40.576,
+            "median_percent": 40.59,
+            "stdev_percent": 0.9957041059806203,
+            "min_percent": 38.87,
+            "max_percent": 42.19,
+            "passes": 10,
+            "runs": 10
+          }
+        },
+        "bytes": 55170824,
+        "sha256": "80235ca6a21d464127b6c4b8653d384797c02c5c5414cf490cbb25a83b14f31e"
+      }
+    }
+  }
+}
