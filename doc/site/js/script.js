@@ -74,7 +74,7 @@ const playIcon = document.querySelector('#play-icon');
 const seek = document.querySelector('#seek');
 const audioStatus = document.querySelector('#audio-status');
 const trackOptions = [...document.querySelectorAll('.track-option')];
-let currentTrackLabel = 'Enescu Op. 10，L2-200c';
+let currentTrackLabel = 'Enescu Op. 10，L2-200c Tiny';
 const formatTime = time => Number.isFinite(time) ? `${Math.floor(time / 60)}:${String(Math.floor(time % 60)).padStart(2, '0')}` : '—:—';
 playButton.addEventListener('click', async () => {
   if (audio.paused) {
