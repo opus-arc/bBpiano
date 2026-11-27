@@ -240,7 +240,7 @@ In addition to the MAESTRO Yamaha Disklavier dataset, selected evaluations also 
 | Category | MAESTRO Dataset | Pianoteq 8 | SF2 (Grand Piano) | bBpiano L0-100c | **bBpiano L1-Clavier** | **bBpiano L2-Horowitz** | **bBpiano L2-200c** |
 | :---------- | :----------: | :----------: | :----------: | :----------: | :----------: | :----------: | :----------: |
 | Type | Reference Recording | Physical Modeling | Sample-Based | Physical Modeling | **Physical Modeling** | Physical Modeling | Physical Modeling |
-| Size | 1–10 GB (test subset) | 380 KB | 36 MB | 1.1 MB | **281 KB** | 32.22 MB | 54.84 MB |
+| Size | 1–10 GB (test subset) | 380 KB | 36 MB | 1.1 MB | **281 KB** | 32.22 MB | 0.99 MB |
 | Real-Time Synthesis | ❌ | **✅** | ❌ | **✅** | **✅** | Partial; see `-t` below | ✅; see `-t` below |
 | Polyphony | N/A | **5 × 88** (M4) | N/A | 23.34 | **5.97 × 88** (M4, 2024) | 88 voices; 0.619× real-time at 88.2 kHz (M4) | 88 voices; 2.473× real-time at 88.2 kHz (M4) |
 
@@ -325,7 +325,7 @@ I believe the values provided by LAION-CLAP reflect more of an overall impressio
 
 | Category | Benchmark | bBpiano L0-alpha | bBpiano L0-beta | bBpiano L0-100c | **bBpiano L1-Clavier** | **bBpiano L2-Horowitz** | **bBpiano L2-200c** |
 | :--------- | :--------- | ---------: | ---------: | ---------: | ---------: | --: | --: |
-| Engine | Binary Size | 1.04 MB | 1.04 MB | 1.1 MB | **281 KB** | 32.22 MB | 54.84 MB |
+| Engine | Binary Size | 1.04 MB | 1.04 MB | 1.1 MB | **281 KB** | 32.22 MB | 0.99 MB |
 | Engine | Real-Time Synthesis | ✅ | ✅ | ✅ | **✅** | Partial; 88-key test FAIL | ✅; 88-key test 10/10 PASS |
 | Engine | Polyphony | 5.21 | 11.27 | 23.34 | **5.97 × 88** | 88 voices; 0.619× at 88.2 kHz | 88 voices; 2.473× at 88.2 kHz |
 | LAION-CLAP | Cosine Similarity (MAESTRO Reference) | - | 0.4628 | 0.3213 | **0.5833** | 0.6838 | 0.7215 |
