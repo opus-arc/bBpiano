@@ -63,6 +63,7 @@ jobs:
           (cd release && printf '%s  %s\n' "$BBPL_SHA256" "$BBPL_ARCHIVE" | shasum -a 256 -c -)
           ditto -xk "release/$BBPL_ARCHIVE" release
           codesign --verify --strict release/bbpl
+          codesign --verify --check-notarization -R='notarized' --verbose=2 release/bbpl
           release/bbpl -v | tee engine-version.log
 
       - name: Run bbpl -t

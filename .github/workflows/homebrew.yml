@@ -26,6 +26,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.release.tag_name || inputs.tag }}
         run: |
+          set -euo pipefail
           ASSETS=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq '.assets[].name')
           mapfile -t ZIP_MATCHES < <(printf '%s\n' "$ASSETS" | awk -v prefix="bBpiano-${TAG}-" 'index($0, prefix) == 1 && tolower($0) ~ /-macos-arm64\.zip$/')
 
@@ -47,8 +48,11 @@ jobs:
 
       - name: Calculate SHA256
         run: |
+          set -euo pipefail
           SHA256=$(curl -fL "$URL" | sha256sum | awk '{print $1}')
           echo "SHA256=${SHA256}" >> "$GITHUB_ENV"
+          # A replaced asset needs a distinct Homebrew download cache key.
+          echo "URL=${URL}?sha256=${SHA256}" >> "$GITHUB_ENV"
 
       - name: Checkout Homebrew tap
         uses: actions/checkout@v4
@@ -60,11 +64,39 @@ jobs:
       - name: Update Formula
         working-directory: homebrew-tap
         run: |
-          FORMULA="Formula/bBpiano-L.rb"
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
 
-          sed -i "s|^  version .*|  version \"${TAG}\"|" "$FORMULA"
-          sed -i "s|^  url .*|  url \"${URL}\"|" "$FORMULA"
-          sed -i "s|^  sha256 .*|  sha256 \"${SHA256}\"|" "$FORMULA"
+          path = Path("Formula/bBpiano-L.rb")
+          text = path.read_text()
+          old_version = re.search(r'^  version "([^"]+)"$', text, re.M).group(1)
+          old_sha = re.search(r'^  sha256 "([^"]+)"$', text, re.M).group(1)
+          old_revision = re.search(r'^  revision (\d+)$', text, re.M)
+          revision = int(old_revision.group(1)) if old_revision else 0
+          if old_version != os.environ["TAG"]:
+              revision = 0
+          elif old_sha != os.environ["SHA256"]:
+              revision += 1
+
+          for field, value in (("version", os.environ["TAG"]),
+                               ("url", os.environ["URL"]),
+                               ("sha256", os.environ["SHA256"])):
+              text, count = re.subn(rf'^  {field} .*$',
+                                    lambda _: f'  {field} "{value}"', text, flags=re.M)
+              if count != 1:
+                  raise SystemExit(f"Expected exactly one {field} in {path}")
+          text = re.sub(r'^  revision \d+\n', '', text, flags=re.M)
+          if revision:
+              text, count = re.subn(r'^(  license .*\n)',
+                                    lambda m: f'{m.group(1)}  revision {revision}\n',
+                                    text, flags=re.M)
+              if count != 1:
+                  raise SystemExit(f"Expected exactly one license in {path}")
+          path.write_text(text)
+          print(f"Updated {os.environ['TAG']}, revision {revision}")
+          PY
 
       - name: Commit and push Formula update
         working-directory: homebrew-tap

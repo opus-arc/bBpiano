@@ -204,6 +204,21 @@ Install via [Homebrew](https://brew.sh/):
 brew install opus-arc/tap/bBpiano-L
 ```
 
+**200c Tiny soft-pedal update · 2026-11-27**
+
+The current Tiny package includes Soft v1. MIDI CC67 controls continuous soft-pedal depth; in computer-keyboard mode (`bbpl -k`), press `-` to toggle it. At full depth, each new note uses `v_eff = 0.856 × v`; the same coefficient applies across the keyboard. Pedal movement after a note starts leaves its sounding tail unchanged.
+
+当前 Tiny 包已加入 Soft v1：MIDI CC67 控制连续柔音踏板深度，电脑键盘模式（`bbpl -k`）按 `-` 切换。全踩时，新音符的有效力度为 `v_eff = 0.856 × v`，全键盘使用同一系数；击键后改变柔音踏板不改写已经响起的尾音。
+
+Existing installations can upgrade to the replacement package with:
+
+已安装用户可通过以下命令更新：
+
+```bash
+brew update
+brew upgrade opus-arc/tap/bBpiano-L
+```
+
 ## 5. Evaluation Results
 
 To evaluate the acoustic realism and synthesis quality of bBpiano, we compare synthesized audio against reference recordings from the MAESTRO Yamaha Disklavier dataset. Baseline systems include Pianoteq 8 (physical modeling) and a conventional SF2 sampled piano. Current evaluations focus on model efficiency, representation-level similarity, and perceptual audio quality.
